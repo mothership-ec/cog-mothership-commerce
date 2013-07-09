@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+	backupGlobals="true"
+	backupStaticAttributes="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	stopOnFailure="false"
+	bootstrap="vendor/autoload.php"
+>
+	<testsuites>
+		<testsuite name="Cog Commerce Module Test Suite">
+			<directory>./tests</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist>
+			<directory>./src/Message</directory>
+		</whitelist>
+	</filter>
+	<php>
+		<env name="COG_ENV" value="test" />
+	</php>
+</phpunit>

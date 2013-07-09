@@ -1,0 +1,44 @@
+{
+	"name": "message/cog-mothership-cms",
+	"description": "Cog module for content management in Mothership",
+	"keywords": ["cms", "mothership", "content", "editing", "cog"],
+	"homepage": "http://message.co.uk",
+	"authors": [
+		{
+			"name" : "The Message Development Team",
+			"email": "dev@message.co.uk"
+		}
+	],
+	"support": {
+		"wiki"  : "http://server.local/wiki/projects/cog",
+		"issues": "http://github.com/messagedigital/cog-mothership-cms/issues"
+	},
+	"autoload": {
+		"psr-0": {
+			"Message\\Mothership\\CMS"      : "src",
+			"Message\\Mothership\\CMS\\Test": "tests"
+		}
+	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url" : "http://packages.message.co.uk"
+		}
+	],
+	"minimum-stability": "dev",
+	"require": {
+		"php": ">=5.3.0",
+
+		"message/cog-mothership-cp"          : "dev-master",
+		"message/cog-mothership-file-manager": "dev-master",
+
+		"dflydev/markdown": "1.0.*"
+	},
+	"suggest": {
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
+	}
+}
