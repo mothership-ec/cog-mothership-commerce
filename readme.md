@@ -19,3 +19,10 @@ You will need to add Message's private package server to the `repositories` key 
 			"message/cog-mothership-commerce": "1.0.*"
 		}
 	}
+
+## Todo
+
+* Add `Product` field type for the CMS
+	* This will require changes to how the CMS finds fields (currently it only looks within it's own cogule)
+* Add `Product` library
+* Add `Gateway` interfaces & library
