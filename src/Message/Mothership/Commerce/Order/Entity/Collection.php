@@ -27,8 +27,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	public function get($id)
 	{
 		$this->_load();
-		// throw exception if it doesn't exist
-		//
+
+		if (!$this->exists($id)) {
+			throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
+		}
+
 		return $this->_items[$id];
 	}
 
@@ -60,19 +63,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function offsetGet($id)
 	{
-		$this->_load();
-
-		if (!$this->exists($id)) {
-			throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
-		}
-
-		return $this->_items[$id];
+		return $this->get($id);
 	}
 
 	public function offsetExists($id)
 	{
-		$this->_load();
-
 		return $this->exists($id);
 	}
 
