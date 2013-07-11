@@ -2,11 +2,31 @@
 
 namespace Message\Mothership\Commerce\Order;
 
+use Message\Cog\DB;
+
 /**
- * Order loading decorator.
+ * Decorator for loading orders.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Loader
 {
+	protected $_query;
+
+	public function __construct(DB\Query $query)
+	{
+		$this->_query = $query;
+	}
+
+	public function getByID($id)
+	{
+		return $this->_load($id);
+	}
+
+	protected function _load($id)
+	{
+
+	}
 // taken from Order::load()
 /*
 		$query = '

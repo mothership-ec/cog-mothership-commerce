@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order;
 
 use Message\Cog\Service\Container;
+use Message\Cog\ValueObject\Authorship;
 
 /**
  * Order model. Container for all information about an order.
@@ -13,10 +14,24 @@ class Order
 {
 	public $id;
 	public $orderID; // alias of $id for BC
-	public $userID;
-	public $userName;
-	public $placedTimestamp;
-	public $updateTimestamp;
+
+	public $user;
+	public $authorship;
+
+	public $type;
+	public $locale;
+	public $currencyID;
+	public $conversionRate;
+
+	public $productNet;
+	public $productDiscount;
+	public $productTax;
+	public $productGross;
+
+	public $totalNet;
+	public $totalDiscount;
+	public $totalTax;
+	public $totalGross;
 
 	public $total;
 	public $tax;
@@ -41,9 +56,7 @@ class Order
 	public $repairs;
 	public $notes;
 
-	protected $metadata;
-
-	protected $localeData;
+	public $metadata;
 
 	/**
 	 * Constructor.
@@ -64,6 +77,8 @@ class Order
 	 */
 	public function __construct($orderID = null)
 	{
+		$this->authorship = new Authorship;
+
 		$this->items      = new Entity\Collection($this, Container::get('order.item.loader'));
 		// $this->addresses  = new Entity\Collection($this, Container::get('order.address.loader'));
 		// $this->discounts  = new Entity\Collection($this, Container::get('order.discounts.loader'));

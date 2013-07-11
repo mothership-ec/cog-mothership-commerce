@@ -26,7 +26,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function get($id)
 	{
-		$this->_load();
+		$this->load();
 
 		if (!$this->exists($id)) {
 			throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
@@ -37,21 +37,21 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function exists($id)
 	{
-		$this->_load();
+		$this->load();
 
 		return array_key_exists($id, $this->_items);
 	}
 
 	public function all()
 	{
-		$this->_load();
+		$this->load();
 
 		return $this->_items;
 	}
 
 	public function count()
 	{
-		$this->_load();
+		$this->load();
 
 		return count($this->_items);
 	}
@@ -73,22 +73,22 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function offsetUnset($id)
 	{
-		$this->_load();
+		$this->load();
 
 		unset($this->_items[$id]);
 	}
 
 	public function getIterator()
 	{
-		$this->_load();
+		$this->load();
 
 		return \ArrayIterator($this->_items);
 	}
 
-	protected function _load()
+	public function load()
 	{
 		if (null === $this->_items) {
-			$this->_items = $this->_loader->getByOrder($order) ?: array();
+			$this->_items = $this->_loader->getByOrder($this->_order) ?: array();
 
 			return true;
 		}

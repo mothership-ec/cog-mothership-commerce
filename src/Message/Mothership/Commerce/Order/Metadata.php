@@ -1,29 +1,29 @@
 <?php
 
+namespace Message\Mothership\Commerce\Order;
 
-class OrderMetadata
+class Metadata
 {
-	
 	protected $_metadata;
 	protected $_orderID;
-	
-	
+
+
 	public function __construct($orderID) {
 		$this->_orderID = (is_int($orderID) ? $orderID : NULL);
 		$this->_loadMetadata();
-	} 
-	
-	
+	}
+
+
 	public function __destruct() {
 		$this->_updateMetadata();
 	}
-	
-	
+
+
 	public function __get($key) {
 		return (isset($this->_metadata->{$key}) ? $this->_metadata->{$key} : NULL);
 	}
-	
-	
+
+
 	public function __toString() {
 		$str = '';
 		foreach ($this->_metadata as $key => $val) {
@@ -31,31 +31,31 @@ class OrderMetadata
 		}
 		return $str;
 	}
-	
-	
+
+
 	public function set($key, $value) {
 		$this->_metadata->{ (string) $key } = $value;
 		if (is_null($this->_metadata->{ (string) $key })) {
 			$this->delete($key);
 		}
 	}
-	
-	
+
+
 	public function delete($key) {
 		unset($this->_metadata->{ (string) $key });
 	}
-	
-	
+
+
 	public function save() {
 		$this->_updateMetadata();
 	}
-	
-	
+
+
 	public function setOrderID($orderID) {
 		$this->_orderID = $orderID;
 	}
-	
-	
+
+
 	public function _updateMetadata() {
 		if ($this->_orderID && count($this->_metadata)) {
 			$db = new DBtransaction;
@@ -75,8 +75,8 @@ class OrderMetadata
 			return $result;
 		}
 	}
-	
-	
+
+
 	protected function _loadMetadata() {
 		$this->_metadata = (object) array();
 		if ($this->_orderID) {
@@ -92,8 +92,8 @@ class OrderMetadata
 			unset($db);
 		}
 	}
-	
-	
+
+
 
 }
 

@@ -1,13 +1,18 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order;
+namespace Message\Mothership\Commerce\Order\Entity\Address;
 
+/**
+ * Represents an address for an order.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
 class Address
 {
 	const DELIVERY = 'delivery';
 	const BILLING  = 'billing';
 
-	public $orderID;
+	public $order;
 
 	public $type;
 	public $name;
