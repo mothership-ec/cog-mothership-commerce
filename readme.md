@@ -26,3 +26,6 @@ You will need to add Message's private package server to the `repositories` key 
 	* This will require changes to how the CMS finds fields (currently it only looks within it's own cogule)
 * Add `Product` library
 * Add `Gateway` interfaces & library
+* Revisit monetary value storage in `order_item`, `order_summary` etc
+* Revisit product options storage in `order_item`
+* Revisit product localised storage in `order_item`
