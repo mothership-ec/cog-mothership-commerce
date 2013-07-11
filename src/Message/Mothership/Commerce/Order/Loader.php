@@ -2,7 +2,12 @@
 
 namespace Message\Mothership\Commerce\Order;
 
+use Message\User;
+
 use Message\Cog\DB;
+
+use Message\Cog\ValueObject\Authorship;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
  * Decorator for loading orders.
@@ -12,10 +17,14 @@ use Message\Cog\DB;
 class Loader
 {
 	protected $_query;
+	protected $_eventDispatcher;
+	protected $_userLoader;
 
-	public function __construct(DB\Query $query)
+	public function __construct(DB\Query $query, User\Loader $userLoader, array $entities)
 	{
-		$this->_query = $query;
+		$this->_query      = $query;
+		$this->_userLoader = $userLoader;
+		$this->_entities   = $entities;
 	}
 
 	public function getByID($id)
@@ -23,65 +32,51 @@ class Loader
 		return $this->_load($id);
 	}
 
-	protected function _load($id)
+	protected function _load($id, $returnArray = false)
 	{
-
-	}
-// taken from Order::load()
-/*
-		$query = '
+		$result = $this->_query->run('
 			SELECT
-				UNIX_TIMESTAMP(order_datetime) AS placedTimestamp,
-				UNIX_TIMESTAMP(order_updated)  AS updateTimestamp,
-				order_total                    AS total,
-				order_discount                 AS discount,
-				order_taxable                  AS taxable,
-				order_tax                      AS tax,
-				order_tax_discount             AS taxDiscount,
-				order_payment                  AS paid,
-				order_change                   AS `change`,
-				order_summary.user_id          AS userID,
-				IF(
-					user_forename IS NOT NULL,
-					CONCAT_WS(" ", user_forename, user_surname),
-					"unknown"
-				)                              AS userName,
-				currency_id                    AS currencyID,
-				currency_name                  AS currencySymbol,
-				shipping_id                    AS shippingID,
-				shipping_name                  AS shippingName,
-				shipping_amount                AS shippingAmount,
-				shipping_tax                   AS shippingTax,
-				shop_id                        AS shopID,
-				shop.name                      AS shopName,
-				till_id                        AS tillID,
-				staff_id                       AS staffID,
-				status_id                      AS statusID,
-				status_name                    AS statusName
+				*,
+				order_id         AS id,
+				order_id         AS orderID,
+				currency_id      AS currencyID,
+				conversion_rate  AS conversionRate,
+				product_net      AS productNet,
+				product_discount AS productDiscount,
+				product_tax      AS productTax,
+				product_gross    AS productGross,
+				total_net        AS totalNet,
+				total_discount   AS totalDiscount,
+				total_tax        AS totalTax,
+				total_gross      AS totalGross
 			FROM
 				order_summary
-			LEFT JOIN
-				order_shipping USING (order_id)
-			JOIN
-				order_status_name USING (status_id)
-			JOIN
-				val_currency USING (currency_id)
-			LEFT JOIN
-				val_user ON order_summary.user_id = val_user.user_id
-			LEFT JOIN
-				order_pos USING (order_id)
-			LEFT JOIN
-				shop USING (shop_id)
 			WHERE
-				order_id = ' . $this->orderID;
-		$DB = new DBquery($query);
-		if ($row = $DB->row()) {
-			foreach ($row as $key => $val) {
-				$this->{$key} = $val;
-			}
-		} else {
-			throw new OrderException('Unable to retrieve order #' . $this->orderID);
+				order_id = ?i
+		', $id);
+
+		if (0 === count($result)) {
+			return $returnArray ? array() : false;
 		}
 
- */
+		$orders = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Order', array($this->_entities));
+
+		foreach ($result as $key => $row) {
+			$orders[$key]->user = $this->_userLoader->getByID($row->user_id);
+
+			$orders[$key]->authorship->create(
+				new DateTimeImmutable(date('c', $row->created_at)),
+				$row->created_by
+			);
+
+			if ($row->updated_at) {
+				$orders[$key]->authorship->update(
+					new DateTimeImmutable(date('c', $row->updated_at)),
+					$row->updated_by
+				);
+			}
+		}
+
+		return $returnArray ? $orders : reset($orders);
+	}
 }

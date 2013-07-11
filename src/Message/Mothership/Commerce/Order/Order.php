@@ -8,6 +8,9 @@ use Message\Cog\ValueObject\Authorship;
 /**
  * Order model. Container for all information about an order.
  *
+ * @todo currency symbol??
+ * @todo shipping on this model for orig order?
+ *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Order
@@ -33,68 +36,70 @@ class Order
 	public $totalTax;
 	public $totalGross;
 
-	public $total;
-	public $tax;
-	public $taxDiscount;
-	public $discount;
-	public $paid;
-	public $change;
-	public $currencyID;
-	public $currencySymbol;
-	public $shippingID;
-	public $shippingName;
-	public $shippingAmount;
-	public $shippingTax;
-
-	public $items;
-	public $addresses;
-	public $discounts;
-	public $payments;
-	public $refunds;
-	public $despatches;
-	public $returns;
-	public $repairs;
-	public $notes;
+	protected $_entities = array();
 
 	public $metadata;
 
 	/**
 	 * Constructor.
 	 *
-	 * For now, this will load the order if an order ID is passed as the first
-	 * property using the `Order\Loader` decorator.
-	 *
-	 * In future, this should be removed once we are confident it doesn't break
-	 * BC in favour of always asking `Order\Loader` directly for orders.
-	 *
-	 * @todo Don't call the service container statically: dependency inject an
-	 *       array of collections instead (where the key is the entity name: this
-	 *       will allow us to add custom entities in other Cogules)
-	 * @todo Don't call the order loader here, once all references to this
-	 *       shortcut are removed.
-	 *
-	 * @param int|null $orderID The ID of the order to load, or null to not load
+	 * @param array $entities An array of order entities to use, where the key
+	 *                        is the entity name and the value is the loader
 	 */
-	public function __construct($orderID = null)
+	public function __construct(array $entities = array())
 	{
 		$this->authorship = new Authorship;
 
-		$this->items      = new Entity\Collection($this, Container::get('order.item.loader'));
-		// $this->addresses  = new Entity\Collection($this, Container::get('order.address.loader'));
-		// $this->discounts  = new Entity\Collection($this, Container::get('order.discounts.loader'));
-		// $this->payments   = new Entity\Collection($this, Container::get('order.payment.loader'));
-		// $this->refunds    = new Entity\Collection($this, Container::get('order.refund.loader'));
-		// $this->despatches = new Entity\Collection($this, Container::get('order.despatch.loader'));
-		// $this->returns    = new Entity\Collection($this, Container::get('order.return.loader'));
-		// $this->repairs    = new Entity\Collection($this, Container::get('order.repair.loader'));
-		// $this->notes      = new Entity\Collection($this, Container::get('order.note.loader'));
-		// order.item.loader is an instance of Order\Loader\Item which implements CollectionLoader ???
+		foreach ($entities as $name => $loader) {
+			$this->addEntity($name, $loader);
+		}
+	}
 
-		if ($orderID) {
-			// statically call loader.. but wait, how the fuck can we replace $this?
-			// maybe we need to pass it $this and it sets all the properties? man that's lame.
+	/**
+	 * Magic getter. This maps to defined order entities.
+	 *
+	 * @param  string $var       Entity name
+	 *
+	 * @return Entity\Collection The entity collection instance
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
+	 */
+	public function __get($var)
+	{
+		if (!array_key_exists($var, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
 		}
 
+		return $this->_entities[$var];
+	}
+
+	/**
+	 * Magic isset. This maps to defined order entities.
+	 *
+	 * @param  string  $var Entity name
+	 *
+	 * @return boolean      True if the entity exist
+	 */
+	public function __isset($var)
+	{
+		return array_key_exists($var, $this->_entities);
+	}
+
+	/**
+	 * Add an entity to this order.
+	 *
+	 * @param string                 $name   Entity name
+	 * @param Entity\LoaderInterface $loader Entity loader
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name already exists
+	 */
+	public function addEntity($name, Entity\LoaderInterface $loader)
+	{
+		if (array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
+		}
+
+		$this->_entities[$name] = new Entity\Collection($this, $loader);
 	}
 
 	public function getItemArray()
@@ -274,13 +279,6 @@ class Order
 		$this->receipts->load();
 		return $this->receipts->getItems();
 	}
-
-	//RETURN THE REPAIRS
-	public function getRepairs() {
-		$this->repairs->load();
-		return $this->repairs->getItems();
-	}
-
 
 	//DOES THE ORDER INCLUDE FREE SHIPPING?
 	public function hasFreeShipping() {

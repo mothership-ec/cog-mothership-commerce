@@ -33,3 +33,8 @@ You will need to add Message's private package server to the `repositories` key 
 * Add comments to all columns in database tables
 * Figure out how to easily get the *first* shipping on an order?
 	* Might be easier to just not allow multiple shipping for now
+* Add all the Entities
+
+## Suggestions
+
+* For backwards compatibility, we might need to add a static method to `Order\Order` to quickly get an order by ID without directly using the loader. Hopefully not, though!
