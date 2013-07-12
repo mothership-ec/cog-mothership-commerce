@@ -36,9 +36,9 @@ class Order
 	public $totalTax;
 	public $totalGross;
 
-	protected $_entities = array();
-
 	public $metadata;
+
+	protected $_entities = array();
 
 	/**
 	 * Constructor.
@@ -381,16 +381,6 @@ class Order
 			$this->metadata = new OrderMetadata($this->orderID);
 		}
 		return $this->metadata;
-	}
-
-
-	//LOAD ALL COLLECTIONS
-	public function loadAll() {
-		foreach ($this as $property) {
-			if ($property instanceof OrderCollection) {
-				$property->load();
-			}
-		}
 	}
 
 

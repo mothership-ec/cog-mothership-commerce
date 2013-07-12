@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
+use Message\Cog\ValueObject\Authorship;
+
 /**
  * Represents an item on an order.
  *
@@ -13,7 +15,9 @@ class Item
 
 	public $order;
 	public $authorship;
+	public $status;
 
+	public $listPrice;
 	public $net;
 	public $discount;
 	public $tax;
@@ -27,17 +31,27 @@ class Item
 	public $unitRevision;
 	public $sku;
 	public $barcode;
+	public $options;
 	public $brandID;
 	public $brandName;
 
 	public $weight;
-	public $stockLocationID;
+	public $stockLocation;
+
+	public $personalisation = array(
+
+	);
 
 	// PERSONALISATION STUFF
 	protected $senderName;
 	protected $recipientName;
 	protected $recipientEmail;
 	protected $recipientMessage;
+
+	public function __construct()
+	{
+		$this->authorship = new Authorship;
+	}
 
 	public function price($price)
 	{
@@ -78,9 +92,24 @@ class Item
 		}
 	}
 
+	/**
+	 * Get the tax discount amount.
+	 *
+	 * If tax was charged for this item, `null` is always returned. Otherwise,
+	 * the list price minus the discount minus the net amount is returned. This
+	 * should equal the tax amount they would have paid if the order was taxable
+	 * (that was therefore discounted).
+	 *
+	 * @return float|null The tax discount amount, or null if there was no tax
+	 *                    discount
+	 */
 	public function getTaxDiscount()
 	{
-		return round($this->originalPrice - $this->price, 2);
+		if ($this->tax) {
+			return null;
+		}
+
+		return round($this->listPrice - $this->discount - $this->net, 2);
 	}
 
 	//UPDATE THE STATUS FOR THIS ORDER ITEM
@@ -132,11 +161,6 @@ class Item
 			$status = ucfirst($this->statusName);
 		}
 		return $status;
-	}
-
-	//MISSING METHOD REFERENCED IN THIS CLASS (PERMITTED BY ITEM PARENT CLASS). PRESUMABLY REDUNDANT
-	public function getStatus() {
-
 	}
 
 	public function returnable() {
