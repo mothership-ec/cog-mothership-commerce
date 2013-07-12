@@ -6,7 +6,7 @@ use Message\User\User;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 
-class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
+class Loader
 {
 	protected $_query;
 
