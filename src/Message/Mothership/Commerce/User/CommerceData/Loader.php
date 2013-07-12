@@ -26,7 +26,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 			WHERE
 				user_id = ?i
 			ORDER BY
-				created_at DESC',
+				created_at ASC',
 			array(
 				$user->id
 			)
