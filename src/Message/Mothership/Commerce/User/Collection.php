@@ -51,7 +51,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function offsetSet($id, $value)
 	{
-		throw new \BadMethodCallException('`Entity\Collection` does not allow setting entities using array access');
+		throw new \BadMethodCallException('`User\Collection` does not allow setting entities using array access');
 	}
 
 	public function offsetGet($id)

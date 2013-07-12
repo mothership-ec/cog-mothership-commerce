@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\User\Address;
 use Message\User\User;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 {
@@ -32,8 +33,12 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				user_address.state_id AS stateID,
 				state.name AS stateName,
 				user_address.country_id AS countryID,
-				country.name AS country_name,
-				user_address.telephone
+				country.name AS country,
+				user_address.telephone,
+				user_address.created_at,
+				user_address.created_by,
+				user_address.updated_at,
+				user_address.updated_by
 			FROM
 				user_address
 			JOIN
@@ -63,6 +68,18 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				$address->line_3,
 				$address->line_4,
 			);
+
+			$addresses[$key]->authorship->create(
+				new DateTimeImmutable(date('c', $address->created_at)),
+				$address->created_by
+			);
+
+			if ($address->updated_at) {
+				$addresses[$key]->authorship->update(
+					new DateTimeImmutable(date('c', $address->updated_at)),
+					$address->updated_by
+				);
+			}
 		}
 
 		return $addresses;
