@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\User;
+namespace Message\Mothership\Commerce\User\Address;
 
 class Address {
 
