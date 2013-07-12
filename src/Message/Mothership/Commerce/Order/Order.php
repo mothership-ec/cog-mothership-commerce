@@ -347,16 +347,23 @@ class Order
 
 
 	//GET THE PAID BALANCE ON THE ORDER
-	public function amountPaid() {
+	public function amountPaid(){
 		return $this->paid;
 	}
 
 
-	//RETURN THE SIMPLE CURRENCYID
-	public function getSimpleCurrencyID() {
-		$id = explode(':', $this->currencyID);
-		end($id);
-		return current($id);
+	/**
+	 * Get the "simple" currency ID for this order (the currency ID without the
+	 * locale ID).
+	 *
+	 * This is still here for backwards-compatibility and is due to be removed
+	 * in a future version.
+	 *
+	 * @return string The currency ID
+	 */
+	public function getSimpleCurrencyID()
+	{
+		return $this->currencyID;
 	}
 
 
@@ -375,11 +382,16 @@ class Order
 	}
 
 
-	//RETURN THE METADATA OBJECT FOR ARBITRARY DATA ASSOCIATED WITH THIS ORDER
-	public function getMetadata() {
-		if (is_null($this->metadata)) {
-			$this->metadata = new OrderMetadata($this->orderID);
-		}
+	/**
+	 * Get the metadata for this order.
+	 *
+	 * This is still here for backwards-compatibility and is due to be removed
+	 * in a future version.
+	 *
+	 * @return Metadata
+	 */
+	public function getMetadata()
+	{
 		return $this->metadata;
 	}
 

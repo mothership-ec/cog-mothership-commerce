@@ -69,19 +69,6 @@ class Item
 		}
 	}
 
-	//GENERATE A UNIQUE DESCRIPTION FOR THIS ITEM
-	protected function setItemDescription() {
-		if (!$this->description) {
-			$this->description = $this->productName;
-			if (trim($this->styleName)) {
-				$this->description .= ', ' . $this->styleName;
-			}
-			if (trim($this->sizeName)) {
-				$this->description .= ', ' . $this->sizeName;
-			}
-		}
-	}
-
 	//CALCULATE THE CORRECT AMOUNT OF TAX FOR THIS ORDER
 	public function calculateTax()
 	{

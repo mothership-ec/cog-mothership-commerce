@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
  * Order item loader.
@@ -71,7 +72,8 @@ class Loader implements Order\Entity\LoaderInterface
 			return $alwaysReturnArray ? array() : false;
 		}
 
-		$items = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Item\\Item');
+		$items  = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Item\\Item');
+		$return = array();
 
 		foreach ($result as $key => $row) {
 			$items[$key]->authorship->create(
@@ -90,8 +92,10 @@ class Loader implements Order\Entity\LoaderInterface
 			// TODO: set the status
 			// TODO: set the stock location
 			// TODO: set the personalisation data
+			//
+			$return[$row->id] = $items[$key];
 		}
 
-		return $alwaysReturnArray || count($items) > 1 ? $items : reset($items);
+		return $alwaysReturnArray || count($return) > 1 ? $return : reset($return);
 	}
 }
