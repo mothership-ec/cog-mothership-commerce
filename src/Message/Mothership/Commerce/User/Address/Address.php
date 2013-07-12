@@ -7,6 +7,8 @@ class Address {
 	const DELIVERY = 'delivery';
 	const BILLING  = 'billing';
 
+	public $id;
+	public $userID;
 	public $type;
 	public $name;
 	public $lines = array(

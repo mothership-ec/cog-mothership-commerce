@@ -32,7 +32,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				user_address.state_id AS stateID,
 				state.name AS stateName,
 				user_address.country_id AS countryID,
-				country.name AS country_name,
+				country.name AS country,
 				user_address.telephone
 			FROM
 				user_address
