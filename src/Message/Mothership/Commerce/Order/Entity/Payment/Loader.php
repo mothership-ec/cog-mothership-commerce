@@ -15,10 +15,12 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Loader implements Order\Entity\LoaderInterface
 {
 	protected $_query;
+	protected $_methods;
 
-	public function __construct(DB\Query $query)
+	public function __construct(DB\Query $query, MethodCollection $methods)
 	{
-		$this->_query = $query;
+		$this->_query   = $query;
+		$this->_methods = $methods;
 	}
 
 	/**
@@ -79,6 +81,8 @@ class Loader implements Order\Entity\LoaderInterface
 			}
 
 			// TODO: set the return here if a return_id is set
+
+			$entities[$key]->method = $this->_methods->get($row->method);
 
 			$return[$row->id] = $entities[$key];
 		}

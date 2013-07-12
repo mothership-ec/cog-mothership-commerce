@@ -32,12 +32,14 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.payment.loader'] = function($c) {
-			return new Commerce\Order\Entity\Payment\Loader($c['db.query']);
+			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
 		};
 
 		// Available payment & despatch methods
 		$services['order.payment.methods'] = $services->share(function($c) {
-			return new Commerce\Order\Entity\Payment\MethodCollection;
+			return new Commerce\Order\Entity\Payment\MethodCollection(array(
+				new Commerce\Order\Entity\Payment\Method\Card,
+			));
 		});
 	}
 }
