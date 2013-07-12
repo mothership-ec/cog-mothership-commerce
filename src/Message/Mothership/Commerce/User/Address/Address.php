@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\User\Address;
 
+use Message\Cog\ValueObject\Authorship;
+
 class Address {
 
 	const DELIVERY = 'delivery';
@@ -24,4 +26,10 @@ class Address {
 	public $country;
 	public $countryID;
 	public $telephone;
+	public $authorship;
+
+	public function __construct()
+	{
+		$this->authorship = new Authorship;
+	}
 }
