@@ -9,5 +9,18 @@ namespace Message\Mothership\Commerce\Order\Entity\Payment;
  */
 interface MethodInterface
 {
+	/**
+	 * Get the name for the payment method used internally as an identifier.
+	 *
+	 * @return string
+	 */
+	public function getName();
 
+	/**
+	 * Get the name for the payment method that is suitable to be displayed to
+	 * users.
+	 *
+	 * @return string
+	 */
+	public function getDisplayName();
 }
