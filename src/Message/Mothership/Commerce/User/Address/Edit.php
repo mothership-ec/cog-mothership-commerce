@@ -2,6 +2,10 @@
 
 namespace Message\Mothership\Commerce\User\Address;
 
+use Message\User\User;
+use Message\Cog\DB\Query;
+use Message\Cog\ValueObject\DateTimeImmutable;
+
 class Edit
 {
 	protected $_query;
@@ -33,23 +37,23 @@ class Edit
 				postcode   = :postcode?s,
 				telephone  = :telephone?s,
 				updated_at = :updated_at?d,
-				update_by  = :update_by?i
+				updated_by  = :updated_by?i
 			WHERE
 				address_id = :addressID?i
 			', array(
 				'addressID'	 => $address->id,
 				'name'       => $address->name,
-				'line_1'     => $address->line[1],
-				'line_2'     => $address->line[2],
-				'line_3'     => $address->line[3],
-				'line_4'     => $address->line[4],
+				'line_1'     => $address->lines[0],
+				'line_2'     => $address->lines[1],
+				'line_3'     => $address->lines[2],
+				'line_4'     => $address->lines[3],
 				'town'       => $address->town,
 				'state_id'   => $address->stateID,
 				'country_id' => $address->countryID,
 				'postcode'   => $address->postcode,
 				'telephone'  => $address->telephone,
 				'updated_at' => $address->authorship->updatedAt(),
-				'update_by'  => $address->authorship->updateBy(),
+				'updated_by'  => $address->authorship->updatedBy(),
 			)
 		);
 
