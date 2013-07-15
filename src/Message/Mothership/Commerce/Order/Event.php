@@ -6,7 +6,8 @@ use Message\Cog\Event\Event as BaseEvent;
 
 class Event extends BaseEvent
 {
-	const LOAD = 'commerce.order.load';
+	const CREATE = 'commerce.order.create';
+	const EDIT   = 'commerce.order.edit';
 
 	protected $_order;
 
