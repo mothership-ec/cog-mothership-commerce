@@ -63,10 +63,10 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 		$addresses = $result->bindTo('Message\\Mothership\\Commerce\\User\\Address\\Address');
 		foreach ($result as $key => $address) {
 			$addresses[$key]->lines = array(
-				$address->line_1,
-				$address->line_2,
-				$address->line_3,
-				$address->line_4,
+				1 => $address->line_1 ?: null,
+				2 => $address->line_2 ?: null,
+				3 => $address->line_3 ?: null,
+				4 => $address->line_4 ?: null,
 			);
 
 			$addresses[$key]->authorship->create(

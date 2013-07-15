@@ -6,23 +6,23 @@ use Message\User\User;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-class Edit
+class Create
 {
 	protected $_query;
 	protected $_user;
 
-	public function __construct(Query $query, User $user)
+	public function __construct(Query $query, User $user, Loader $loader)
 	{
-		$this->_query = $query;
-		$this->_user  = $user;
+		$this->_query  = $query;
+		$this->_user   = $user;
+		$this->_loader = $loader;
 	}
 
 	public function save(Address $address)
 	{
 		$date = new DateTimeImmutable;
-		$address->authorship->update($date, $this->_user->id);
 		$result = $this->_query->run(
-			'UPDATE
+			'INSERT INTO
 				user_address
 			SET
 				name       = :name?s,
@@ -35,12 +35,11 @@ class Edit
 				country_id = :country_id?s,
 				postcode   = :postcode?s,
 				telephone  = :telephone?s,
-				updated_at = :updated_at?d,
-				updated_by  = :updated_by?i
-			WHERE
-				address_id = :addressID?i
+				created_at = :created_at?d,
+				created_by = :created_by?i,
+				user_id    = :userID?i
 			', array(
-				'addressID'	 => $address->id,
+				'addressID'  => $address->id,
 				'name'       => $address->name,
 				'line_1'     => $address->lines[1],
 				'line_2'     => $address->lines[2],
@@ -51,8 +50,9 @@ class Edit
 				'country_id' => $address->countryID,
 				'postcode'   => $address->postcode,
 				'telephone'  => $address->telephone,
-				'updated_at' => $address->authorship->updatedAt(),
-				'updated_by'  => $address->authorship->updatedBy(),
+				'created_at' => $date,
+				'created_by' => $this->_user->id,
+				'userID'     => $address->userID,
 			)
 		);
 
