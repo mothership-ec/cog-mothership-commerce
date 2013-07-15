@@ -16,8 +16,9 @@ class Services implements ServicesInterface
 
 		$services['order.entities'] = function($c) {
 			return array(
-				'items'    => $c['order.item.loader'],
-				'payments' => $c['order.payment.loader'],
+				'addresses' => $c['order.address.loader'],
+				'items'     => $c['order.item.loader'],
+				'payments'  => $c['order.payment.loader'],
 			);
 		};
 
@@ -27,6 +28,10 @@ class Services implements ServicesInterface
 		};
 
 		// Order entity loaders
+		$services['order.address.loader'] = function($c) {
+			return new Commerce\Order\Entity\Address\Loader($c['db.query']);
+		};
+
 		$services['order.item.loader'] = function($c) {
 			return new Commerce\Order\Entity\Item\Loader($c['db.query']);
 		};
@@ -39,6 +44,8 @@ class Services implements ServicesInterface
 		$services['order.payment.methods'] = $services->share(function($c) {
 			return new Commerce\Order\Entity\Payment\MethodCollection(array(
 				new Commerce\Order\Entity\Payment\Method\Card,
+				new Commerce\Order\Entity\Payment\Method\Cash,
+				new Commerce\Order\Entity\Payment\Method\Cheque,
 			));
 		});
 	}
