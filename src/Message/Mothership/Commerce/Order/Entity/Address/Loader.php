@@ -57,7 +57,7 @@ class Loader implements Order\Entity\LoaderInterface
 			FROM
 				order_address
 			WHERE
-				order_id = ?ij
+				address_id = ?ij
 		', array($ids));
 
 		if (0 === count($result)) {
