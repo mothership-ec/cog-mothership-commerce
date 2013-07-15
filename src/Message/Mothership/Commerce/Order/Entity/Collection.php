@@ -35,6 +35,21 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 		return $this->_items[$id];
 	}
 
+	public function getByProperty($property, $value)
+	{
+		$this->load();
+
+		$return = array();
+
+		foreach ($this->_items as $id => $item) {
+			if (property_exists($item, $property) && $item->{$property} == $value) {
+				$return[$id] = $item;
+			}
+		}
+
+		return $return;
+	}
+
 	public function exists($id)
 	{
 		$this->load();

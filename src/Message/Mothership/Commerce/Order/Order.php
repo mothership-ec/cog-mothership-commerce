@@ -152,17 +152,37 @@ class Order
 		return $items;
 	}
 
-	//RETURN THE ADDRESS ITEMS
+	/**
+	 * Get the address for this order of a specific type.
+	 *
+	 * @param  string $type                 The address type
+	 *
+	 * @return Entity\Address\Address|false The address, or false if it was not
+	 *                                      found
+	 *
+	 * @throws \BadMethodCallException   If the addresses entity is not set
+	 * @throws \UnexpectedValueException If more than one address of this type
+	 *                                   was found
+	 */
 	public function getAddress($type)
 	{
-		$this->addresses->load();
-		foreach ($this->addresses->getItems() as $address) {
-			$class = 'OrderAddress' . ucfirst(strtolower($type));
-			if ($address instanceof $class) {
-				return $address;
-			}
+		if (!array_key_exists('addresses', $this->_entites)) {
+			throw new \BadMethodCallException(sprintf(
+				'Cannot get `%s` addresses as the addresses entity is not set on this order',
+				$type
+			));
 		}
-		return false;
+
+		$addresses = $this->_entites['addresses']->getByProperty('type', $type);
+
+		if (count($addresses) > 1) {
+			throw new \UnexpectedValueException(sprintf(
+				'Order has more than one `%s` address',
+				$type
+			));
+		}
+
+		return current($addresses) ?: false;
 	}
 
 
@@ -183,15 +203,7 @@ class Order
 
 	//RETURN THE DISCOUNT ITEMS
 	public function getDiscounts() {
-		$this->discounts->load();
-		return $this->discounts->getItems();
-	}
-
-
-	//RETURN THE CAMPAIGN ITEMS
-	public function getCampaigns() {
-		$this->campaigns->load();
-		return $this->campaigns->getItems();
+		return $this->_entities['discounts'];
 	}
 
 
