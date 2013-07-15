@@ -1,33 +1,20 @@
 <?php
 
+namespace Message\Mothership\Commerce\Order\Entity\Note;
 
-class OrderNote extends Item 
+class Note
 {
-
-	protected $noteID;        
-	protected $orderID;       
-	protected $userID; 
-	protected $userName;     
-	protected $datetime;     
-	protected $notifyCustomer;
-	protected $raisedFrom;  
-	protected $note;
-	
 	const TYPE_CHECKOUT   = 'checkout';
 	const TYPE_RETURN     = 'return';
 	const TYPE_ORDER_VIEW = 'order_view';
 
-	protected $publicProperties = array(
-		'noteID'           => 0,
-		'orderID'          => 0, 
-		'userID'           => 0,
-		'userName'         => '',
-		'datetime'         => '',
-		'notifyCustomer'   => false,
-		'raisedFrom'       => '',
-		'note'             => '',
-	);
+	public $id;
 
+	public $order;
+
+	public $note;
+	public $customerNotified;
+	public $raisedFrom;
 
 	public function sendCustomerNotification(Order $order)
 	{
@@ -53,16 +40,5 @@ class OrderNote extends Item
 		$customer = getUserDetails($order->userID);
 
 		return mail($customer['email_name'], $subject, ($mailintro.$mailbody.$mailfooter), $headers);
-	}
-
-	public function create($body, $userID, $raisedFrom, $notify = false)
-	{
-		$note = new self;
-		$note->note($body);
-		$note->userID($userID);
-		$note->raisedFrom($raisedFrom);
-		$note->notifyCustomer($notify);
-
-		return $note;
 	}
 }
