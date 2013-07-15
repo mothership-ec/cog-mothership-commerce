@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\User\Address;
 
 use Message\User\User;
 use Message\Cog\DB\Query;
+
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Create
@@ -26,12 +27,12 @@ class Create
 				user_address
 			SET
 				name       = :name?s,
-				line_1     = :line_1?sn,
+				line_1     = :line_1?s,
 				line_2     = :line_2?sn,
 				line_3     = :line_3?sn,
 				line_4     = :line_4?sn,
 				town       = :town?s,
-				state_id   = :state_id?s,
+				state_id   = :state_id?sn,
 				country_id = :country_id?s,
 				postcode   = :postcode?s,
 				telephone  = :telephone?s,
@@ -42,11 +43,11 @@ class Create
 				'addressID'  => $address->id,
 				'name'       => $address->name,
 				'line_1'     => $address->lines[1],
-				'line_2'     => $address->lines[2],
-				'line_3'     => $address->lines[3],
-				'line_4'     => $address->lines[4],
+				'line_2'     => $address->lines[2] ?: null,
+				'line_3'     => $address->lines[3] ?: null,
+				'line_4'     => $address->lines[4] ?: null,
 				'town'       => $address->town,
-				'state_id'   => $address->stateID,
+				'state_id'   => $address->stateID ?: null,
 				'country_id' => $address->countryID,
 				'postcode'   => $address->postcode,
 				'telephone'  => $address->telephone,
@@ -55,7 +56,10 @@ class Create
 				'userID'     => $address->userID,
 			)
 		);
+		if ($lastID = $result->id()) {
+			return $this->_loader->getByAddressID($lastID);
+		}
 
-		return $address;
+		return false;
 	}
 }
