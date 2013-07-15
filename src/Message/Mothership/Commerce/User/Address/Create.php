@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\User\Address;
 
 use Message\User\User;
+
 use Message\Cog\DB\Query;
 
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -19,9 +20,17 @@ class Create
 		$this->_loader = $loader;
 	}
 
-	public function save(Address $address)
+	/**
+	 * Save the new Address object into the DB and return it
+	 *
+	 * @param  Address $address The address object to be saved
+	 *
+	 * @return false|Address 	The loaded rAddress object or false if it wasn't inserted
+	 */
+	public function create(Address $address)
 	{
 		$date = new DateTimeImmutable;
+
 		$result = $this->_query->run(
 			'INSERT INTO
 				user_address
@@ -38,7 +47,8 @@ class Create
 				telephone  = :telephone?s,
 				created_at = :created_at?d,
 				created_by = :created_by?i,
-				user_id    = :userID?i
+				user_id    = :userID?i,
+				type 	   = :type?s
 			', array(
 				'addressID'  => $address->id,
 				'name'       => $address->name,
@@ -54,8 +64,10 @@ class Create
 				'created_at' => $date,
 				'created_by' => $this->_user->id,
 				'userID'     => $address->userID,
+				'type'		 => $address->type,
 			)
 		);
+
 		if ($lastID = $result->id()) {
 			return $this->_loader->getByAddressID($lastID);
 		}
