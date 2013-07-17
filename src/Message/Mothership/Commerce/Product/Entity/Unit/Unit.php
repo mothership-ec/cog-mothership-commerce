@@ -4,13 +4,11 @@ namespace Mothership\Commerce\Product\Entity\Unit;
 
 class Unit
 {
-	public function __construct()
-	{
-
-	}
-
-	public function getByProduct()
-	{
-
-	}
+	public $id;
+	public $weight;
+	public $stock = array();
+	public $price = array();
+	public $sku;
+	public $barcode;
+	public $visible;
 }

@@ -13,14 +13,14 @@ use Message\Mothership\Commerce\Product\Product;
  */
 class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 {
-	protected $_order;
+	protected $_product;
 	protected $_loader;
 
 	protected $_items = null;
 
-	public function __construct(Order $order, LoaderInterface $loader)
+	public function __construct(Product $product, LoaderInterface $loader)
 	{
-		$this->_order  = $order;
+		$this->_product  = $product;
 		$this->_loader = $loader;
 	}
 
@@ -103,7 +103,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	public function load()
 	{
 		if (null === $this->_items) {
-			$this->_items = $this->_loader->getByOrder($this->_order) ?: array();
+			$this->_items = $this->_loader->getByProduct($this->_product) ?: array();
 
 			return true;
 		}

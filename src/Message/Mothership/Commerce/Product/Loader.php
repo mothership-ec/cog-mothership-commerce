@@ -32,42 +32,42 @@ class Loader
 	{
 		$result = $this->_query->run(
 			'SELECT
-				catalogue.product_id   AS id,
-				catalogue.catalogue_id AS catalogueID,
-				catalogue.year         AS year,
-				catalogue.created_at   AS createdAt,
-				catalogue.created_by   AS createdBy,
-				catalogue.updated_at   AS updatedAt,
-				catalogue.updated_by   AS updatedBy,
-				catalogue.deleted_at   AS deletedAt,
-				catalogue.deleted_by   AS deletedBy,
-				catalogue.brand_id     AS brandID,
-				catalogue.name         AS name,
-				catalogue.tax_rate     AS taxRate,
-				catalogue.supplier_ref AS supplierRef,
-				catalogue.weight_grams AS weightGrams,
+				product.product_id   AS id,
+				product.product_id   AS catalogueID,
+				product.year         AS year,
+				product.created_at   AS createdAt,
+				product.created_by   AS createdBy,
+				product.updated_at   AS updatedAt,
+				product.updated_by   AS updatedBy,
+				product.deleted_at   AS deletedAt,
+				product.deleted_by   AS deletedBy,
+				product.brand_id     AS brandID,
+				product.name         AS name,
+				product.tax_rate     AS taxRate,
+				product.supplier_ref AS supplierRef,
+				product.weight_grams AS weightGrams,
 
-				catalogue_info.display_name      AS displayName,
-				catalogue_info.season            AS season,
-				catalogue_info.description       AS description,
-				catalogue_info.fabric            AS fabric,
-				catalogue_info.features          AS features,
-				catalogue_info.care_instructions AS careInstructions,
-				catalogue_info.short_description AS shortDescription,
-				catalogue_info.sizing            AS sizing,
-				catalogue_info.notes             AS notes,
+				product_info.display_name      AS displayName,
+				product_info.season            AS season,
+				product_info.description       AS description,
+				product_info.fabric            AS fabric,
+				product_info.features          AS features,
+				product_info.care_instructions AS careInstructions,
+				product_info.short_description AS shortDescription,
+				product_info.sizing            AS sizing,
+				product_info.notes             AS notes,
 
-				catalogue_export.export_description            AS exportDescription,
-				catalogue_export.export_value                  AS exportValue,
-				catalogue_export.export_manufacture_country_id AS exportManufactureCountryID
+				product_export.export_description            AS exportDescription,
+				product_export.export_value                  AS exportValue,
+				product_export.export_manufacture_country_id AS exportManufactureCountryID
 			FROM
-				catalogue
+				product
 			LEFT JOIN
-				catalogue_info ON (catalogue.catalogue_id = catalogue_info.catalogue_id)
+				product_info ON (product.product_id = product_info.product_id)
 			LEFT JOIN
-				catalogue_export ON (catalogue.catalogue_id = catalogue_export.catalogue_id)
+				product_export ON (product.product_id = product_export.product_id)
 			WHERE
-				product_id 	 IN (?ij)
+				product.product_id 	 IN (?ij)
 		', 	array(
 				(array) $productIDs,
 			)
