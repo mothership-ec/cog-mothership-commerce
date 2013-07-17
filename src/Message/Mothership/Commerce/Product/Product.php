@@ -4,47 +4,43 @@ namespace Message\Mothership\Commerce\Product;
 
 class Product
 {
-	public $productID;
-	public $productName;
-	public $productYear;
-	public $versionID;
-	public $categoryID;
-	public $categorySlug;
-	public $section;
+	public $id;
+	public $catalogueID;
+	public $year;
+	public $createdAt;
+	public $createdBy;
+	public $updatedAt;
+	public $updatedBy;
+	public $deletedAt;
+	public $deletedBy;
+
+	public $authorship;
+
 	public $brandID;
-	public $brandName;
-	public $brandSlug;
-	public $orderID;
-	public $bodypartID;
-	public $sizegroupID;
-	public $taxCode;
-	public $weight;
-	public $defaultDisplayName;
-	public $productKey;
-	public $defaultCrossSell;
-	public $pickingDescription;
+	public $name;
+	public $taxRate;
 	public $supplierRef;
-	public $notes;
+	public $weightGrams;
 
-	//PRICING
-	public $prices;
-
-	//LOCALISED DESCRIPTIVE CONTENT
 	public $displayName;
 	public $season;
 	public $description;
-	public $shortDescription;
 	public $fabric;
 	public $features;
 	public $careInstructions;
+	public $shortDescription;
 	public $sizing;
-	public $price;
-	public $wholesalePrice;
-	public $rrp;
-	public $costPrice;
+	public $notes;
 
-	protected $_images     = array();
-	protected $_tags     = array();
+	public $price = array(
+		'retail' => 0,
+		'rrp'    => 0,
+		'cost'   => 0,
+	);
+
+	public $units;
+	public $images   = array();
+	public $tags     = array();
 
 	public $exportDescription;
 	public $exportValue;
@@ -52,14 +48,6 @@ class Product
 	public $unstackedExportDescription;
 	public $unstackedExportValue;
 	public $unstackedExportManufactureCountryID;
-
-	protected $_units;
-
-/********************************************************************
-*
-*   PUBLIC METHODS TO GET STUFF
-*
-********************************************************************/
 
 	//CONSTRUCT WITH PRODUCT ID FOR LATEST LOCAL VERSION OF THE PRODUCT
 	public function __construct($multi = NULL, $versionID = NULL) {
@@ -91,12 +79,7 @@ class Product
 		$property = strtolower(substr($property,0,1) ) . substr($property,1);
 		$opts = array(
 			'images',
-			'colours',
-			'sizes',
-			'crossSells',
 			'ranges',
-			'variants',
-			'swatches'
 		);
 		if (in_array($property, $opts)) {
 			$func = '_load' . ucfirst($property);
@@ -476,26 +459,6 @@ class Product
 	}
 
 
-	public function setSizes($ids, $clear = true) {
-		$this->_setAttribute('size', $ids, $clear);
-	}
-
-
-	public function setColours($ids, $clear = true) {
-		$this->_setAttribute('colour', $ids, $clear);
-	}
-
-
-	public function setVariants($ids, $clear = true) {
-		$this->_setAttribute('variant', $ids, $clear);
-	}
-
-
-	public function setSwatches($ids, $clear = true) {
-		$this->_setAttribute('swatche', $ids, $clear);
-	}
-
-
 	protected function _setRanges($csv) {
 		$names = array_map('strtolower', array_map('trim', explode(',', $csv)));
 		$this->_saveRanges($names);
@@ -505,19 +468,6 @@ class Product
 			$ids[] = $ranges[$name];
 		}
 		$this->_setAttribute('range', $ids);
-	}
-
-
-	protected function _setCrossSell($csv) {
-		$ids = array();
-		$i = array();
-		if (strlen($csv)) {
-			$ids = array_map('trim', explode(',', $csv));
-		}
-		foreach($ids as $id) {
-			$i[] = "'".$id."'";
-		}
-		$this->_setAttribute('cross_sell', $i);
 	}
 
 
@@ -974,96 +924,6 @@ class Product
 					}
 				}
 			}
-		}
-	}
-
-	/*
-	//LOAD RANGES: STACKED
-	protected function _loadRanges($force = false) {
-		if ($force || empty($this->_ranges)) {
-			$query = 'SELECT val_range.range_id, range_name, stack_addition '
-				   . 'FROM catalogue '
-				   . 'JOIN catalogue_range USING (catalogue_id) '
-				   . 'JOIN val_range USING (range_id) '
-				   . 'WHERE product_id = ' . $this->productID . ' '
-				   . 'AND version_id <= ' . $this->versionID . ' '
-				   . 'ORDER BY version_id ASC';
-			$this->_db->query($query);
-			$tmp = array();
-			while ($row = $this->_db->row('OBJECT')) {
-				if (!$row->stack_addition) {
-					unset($tmp[$row->range_id]);
-				} else {
-					$tmp[$row->range_id] = $row->range_name;
-				}
-			}
-			asort($tmp);
-			$this->_ranges = $tmp;
-		}
-	}
-	*/
-
-	//LOAD RANGES: DO NOT STACK
-	protected function _loadRanges($force = false) {
-		if ($force || empty($this->_ranges)) {
-			$query = 'SELECT val_range.range_id, range_name, stack_addition '
-				   . 'FROM catalogue '
-				   . 'JOIN catalogue_range USING (catalogue_id) '
-				   . 'JOIN val_range USING (range_id) '
-				   . 'WHERE product_id = ' . $this->productID . ' '
-				   . 'AND version_id = ' . $this->versionID . ' '
-				   . 'ORDER BY version_id ASC, order_id ASC';
-			$this->_db->query($query);
-			$tmp = array();
-			while ($row = $this->_db->row('OBJECT')) {
-				if (!$row->stack_addition) {
-					unset($tmp[$row->range_id]);
-				} else {
-					$tmp[$row->range_id] = $row->range_name;
-				}
-			}
-			//asort($tmp); //retain ordering in database
-			$this->_ranges = $tmp;
-		}
-	}
-
-
-	//LOAD CROSS SELL
-	protected function _loadCrossSells($force = false) {
-
-		if ($force || empty($this->_crossSells)) {
-			$query = 'SELECT cross_sell_id, product_name, stack_addition '
-				   . 'FROM catalogue_product '
-				   . 'JOIN catalogue USING (product_id) '
-				   . 'JOIN catalogue_cross_sell USING (catalogue_id) '
-				   . 'WHERE product_id = ' . $this->productID . ' '
-				   . 'AND version_id <= ' . $this->versionID . ' '
-				   . 'ORDER BY version_id ASC, order_id ASC';
-				  // dump($query);
-			$this->_db->query($query);
-			$tmp = array();
-			while ($row = $this->_db->row('OBJECT')) {
-				if (!$row->stack_addition) {
-					unset($tmp[$row->cross_sell_id]);
-				} else {
-					$tmp[$row->cross_sell_id] = $row->product_name;
-				}
-			}
-			//ksort($tmp); //retain ordering in database
-			$this->_crossSells = $tmp;
-		}
-	}
-
-
-	protected function _loadAttributes() {
-		$attributes = array(
-			'colour',
-			'size',
-			'swatch',
-			'variant'
-		);
-		foreach ($attributes as $a) {
-			$this->_loadAttribute($a);
 		}
 	}
 
