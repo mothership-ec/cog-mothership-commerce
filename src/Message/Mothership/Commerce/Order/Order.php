@@ -9,7 +9,6 @@ use Message\Cog\ValueObject\Authorship;
  * Order model. Container for all information about an order.
  *
  * @todo currency symbol??
- * @todo shipping on this model for orig order?
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
@@ -35,6 +34,13 @@ class Order
 	public $totalDiscount;
 	public $totalTax;
 	public $totalGross;
+
+	public $shippingName;
+	public $shippingNet;
+	public $shippingDiscount;
+	public $shippingTax;
+	public $shippingTaxRate;
+	public $shippingGross;
 
 	public $metadata;
 
@@ -100,6 +106,11 @@ class Order
 		}
 
 		$this->_entities[$name] = new Entity\Collection($this, $loader);
+	}
+
+	public function getEntites()
+	{
+		return $this->_entities;
 	}
 
 	public function getItemArray()

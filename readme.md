@@ -29,8 +29,6 @@ You will need to add Message's private package server to the `repositories` key 
 * Add stock & stock movements stuff
 * Revisit product options storage in `order_item`
 * Add comments to all columns in database tables
-* Figure out how to easily get the *first* shipping on an order?
-	* Might be easier to just not allow multiple shipping for now
 * Add all the Entities
 
 ## Suggestions

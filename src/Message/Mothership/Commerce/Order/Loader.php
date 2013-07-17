@@ -36,21 +36,28 @@ class Loader
 	{
 		$result = $this->_query->run('
 			SELECT
-				*,
-				order_id         AS id,
-				order_id         AS orderID,
-				currency_id      AS currencyID,
-				conversion_rate  AS conversionRate,
-				product_net      AS productNet,
-				product_discount AS productDiscount,
-				product_tax      AS productTax,
-				product_gross    AS productGross,
-				total_net        AS totalNet,
-				total_discount   AS totalDiscount,
-				total_tax        AS totalTax,
-				total_gross      AS totalGross
+				order_summary.*,
+				order_summary.order_id         AS id,
+				order_summary.order_id         AS orderID,
+				order_summary.currency_id      AS currencyID,
+				order_summary.conversion_rate  AS conversionRate,
+				order_summary.product_net      AS productNet,
+				order_summary.product_discount AS productDiscount,
+				order_summary.product_tax      AS productTax,
+				order_summary.product_gross    AS productGross,
+				order_summary.total_net        AS totalNet,
+				order_summary.total_discount   AS totalDiscount,
+				order_summary.total_tax        AS totalTax,
+				order_summary.total_gross      AS totalGross,
+				order_shipping.name            AS shippingName,
+				order_shipping.net             AS shippingNet,
+				order_shipping.tax             AS shippingTax,
+				order_shipping.tax_rate        AS shippingTaxRate,
+				order_shipping.gross           AS shippingGross
 			FROM
 				order_summary
+			LEFT JOIN
+				order_shipping USING (order_id)
 			WHERE
 				order_id = ?i
 		', $id);
