@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Entity;
+namespace Message\Mothership\Commerce\Product\Entity;
 
-use Message\Mothership\Commerce\Order\Order;
+use Message\Mothership\Commerce\Product\Product;
 
 /**
  * Interface for loading decorators for order entities.
@@ -21,5 +21,5 @@ interface LoaderInterface
 	 *
 	 * @return array         Array of entities where the key is the entity ID
 	 */
-	public function getByProduct(Product $order);
+	public function getByProduct(Product $product);
 }

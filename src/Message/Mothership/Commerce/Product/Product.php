@@ -47,12 +47,11 @@ class Product
 	public $unstackedExportValue;
 	public $unstackedExportManufactureCountryID;
 
-	protected $_entities;
+	protected $_entities = array();
 
 	public function __construct(array $entities = array())
 	{
 		$this->authorship = new Authorship;
-
 		foreach ($entities as $name => $loader) {
 			$this->addEntity($name, $loader);
 		}
@@ -103,18 +102,20 @@ class Product
 
 
 	public function getUnits($inStockOnly = true, $visibleOnly = true) {
-		$this->_loadUnits();
-		$units = array();
+		de($this->_entities['unit']->load());
+		return $this->_entities['unit']->getByProduct($this);
+		// $this->_loadUnits();
+		// $units = array();
 
-		foreach ($this->_units as $unit) {
-			if (!$inStockOnly || $unit->getStock() > 0) {
-				if(!$visibleOnly || $unit->visible) {
-					$units[$unit->unit_id] = $unit;
-				}
-			}
-		}
+		// foreach ($this->_units as $unit) {
+		// 	if (!$inStockOnly || $unit->getStock() > 0) {
+		// 		if(!$visibleOnly || $unit->visible) {
+		// 			$units[$unit->unit_id] = $unit;
+		// 		}
+		// 	}
+		// }
 
-		return $units;
+		// return $units;
 	}
 
 
