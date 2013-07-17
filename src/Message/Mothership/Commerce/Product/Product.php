@@ -2,17 +2,14 @@
 
 namespace Message\Mothership\Commerce\Product;
 
+use Message\Cog\Service\Container;
+use Message\Cog\ValueObject\Authorship;
+
 class Product
 {
 	public $id;
 	public $catalogueID;
 	public $year;
-	public $createdAt;
-	public $createdBy;
-	public $updatedAt;
-	public $updatedBy;
-	public $deletedAt;
-	public $deletedBy;
 
 	public $authorship;
 
@@ -45,33 +42,38 @@ class Product
 	public $exportDescription;
 	public $exportValue;
 	public $exportManufactureCountryID;
+
 	public $unstackedExportDescription;
 	public $unstackedExportValue;
 	public $unstackedExportManufactureCountryID;
 
-	//CONSTRUCT WITH PRODUCT ID FOR LATEST LOCAL VERSION OF THE PRODUCT
-	public function __construct($multi = NULL, $versionID = NULL) {
+	protected $_entities;
 
-		//LOAD DB, FB
-		$this->_db = new DBquery;
-		$this->_fb = Feedback::instance();
-		//PRODUCT ID COULD BE AN INSTANCE OF CATALOGUE ITEM
-		if ($multi instanceof CatalogueItem) {
-			$productID = $multi->productID;
-			$versionID = $multi->versionID;
-		} else {
-			$productID = $multi;
+	public function __construct(array $entities = array())
+	{
+		$this->authorship = new Authorship;
+
+		foreach ($entities as $name => $loader) {
+			$this->addEntity($name, $loader);
 		}
-		//SAVE THE IDS
-		$productID = $productID ? (int) $productID : NULL;
-		$versionID = $versionID ? (int) $versionID : NULL;
-
-		//GET AN INSTANCE OF THE LOCALE OBJECT
-		$this->_locale = Locale::instance();
-		$this->_loadProduct($productID, $versionID);
-		$this->_loadCrossSells();
 	}
 
+	/**
+	 * Add an entity to this product.
+	 *
+	 * @param string                 $name   Entity name
+	 * @param Entity\LoaderInterface $loader Entity loader
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name already exists
+	 */
+	public function addEntity($name, Entity\LoaderInterface $loader)
+	{
+		if (array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
+		}
+
+		$this->_entities[$name] = new Entity\Collection($this, $loader);
+	}
 
 	//GET COLLECTIONS (SEE OPTS)
 	public function __call($property, $arg) {
