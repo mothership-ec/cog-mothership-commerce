@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Note;
 
+use Message\Cog\ValueObject\Authorship;
+
 class Note
 {
 	const TYPE_CHECKOUT   = 'checkout';
@@ -11,10 +13,16 @@ class Note
 	public $id;
 
 	public $order;
+	public $authorship;
 
 	public $note;
 	public $customerNotified;
 	public $raisedFrom;
+
+	public function __construct()
+	{
+		$this->authorship = new Authorship;
+	}
 
 	public function sendCustomerNotification(Order $order)
 	{

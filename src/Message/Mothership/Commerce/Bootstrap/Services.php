@@ -19,6 +19,7 @@ class Services implements ServicesInterface
 				'addresses' => $c['order.address.loader'],
 				'items'     => $c['order.item.loader'],
 				'payments'  => $c['order.payment.loader'],
+				'notes'     => $c['order.note.loader'],
 			);
 		};
 
@@ -38,6 +39,10 @@ class Services implements ServicesInterface
 
 		$services['order.payment.loader'] = function($c) {
 			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
+		};
+
+		$services['order.note.loader'] = function($c) {
+			return new Commerce\Order\Entity\Note\Loader($c['db.query']);
 		};
 
 		// Available payment & despatch methods
