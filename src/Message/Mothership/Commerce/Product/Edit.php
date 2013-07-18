@@ -10,6 +10,9 @@ use Message\User\User;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 
+/**
+ * Class for updating the attributes of a given Product object to the DB
+ */
 class Edit
 {
 	protected $_query;
@@ -34,24 +37,24 @@ class Edit
 			 LEFT JOIN
 			 	product_info ON (product.product_id = product_info.product_id)
 			 SET
-				product.year = :year?i,
-				product.updated_at = :updated_at?i,
-				product.updated_by = :updated_by?i,
-				product.brand_id = :brand_id?i,
-				product.name = :name?i,
-				product.tax_rate = :tax_rate?,
+				product.year         = :year?i,
+				product.updated_at   = :updated_at?i,
+				product.updated_by   = :updated_by?i,
+				product.brand_id     = :brand_id?i,
+				product.name         = :name?i,
+				product.tax_rate     = :tax_rate?,
 				product.supplier_ref = :supplier_ref?s,
 				product.weight_grams = :weight_grams?i,
 
-				product_info.display_name = :display_name?s,
-				product_info.season = :season?s,
-				product_info.description = :description?i,
-				product_info.fabric = :fabric?i,
-				product_info.features = :features?i,
+				product_info.display_name      = :display_name?s,
+				product_info.season            = :season?s,
+				product_info.description       = :description?i,
+				product_info.fabric            = :fabric?i,
+				product_info.features          = :features?i,
 				product_info.care_instructions = :care_instructions?i,
 				product_info.short_description = :short_description?i,
-				product_info.sizing = :sizing?s,
-				product_info.notes = :notes?s
+				product_info.sizing            = :sizing?s,
+				product_info.notes             = :notes?s
 			WHERE
 				product.product_id = :productID?i
 			', array(

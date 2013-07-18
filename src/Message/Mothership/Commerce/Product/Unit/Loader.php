@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Entity\Unit;
+namespace Message\Mothership\Commerce\Product\Unit;
 
-use Message\Mothership\Commerce\Product\Entity\LoaderInterface;
+use Message\Mothership\Commerce\Product\Unit\LoaderInterface;
 use Message\Mothership\Commerce\Product\Product;
 
 use Message\Cog\DB\Query;

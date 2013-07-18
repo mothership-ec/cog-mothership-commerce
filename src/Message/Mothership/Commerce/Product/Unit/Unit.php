@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Entity\Unit;
+namespace Message\Mothership\Commerce\Product\Unit;
 
 class Unit
 {
