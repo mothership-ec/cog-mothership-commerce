@@ -99,7 +99,7 @@ class Loader implements LoaderInterface
 			)
 		);
 
-		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Entity\\Unit\\Unit');
+		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Unit\\Unit');
 
 		foreach ($units as $key => $data) {
 
