@@ -30,9 +30,11 @@ class Product
 	public $notes;
 
 	public $price = array(
-		'retail' => 0,
-		'rrp'    => 0,
-		'cost'   => 0,
+		'GBP' => array(
+			'retail' => 0,
+			'rrp'    => 0,
+			'cost'   => 0,
+		),
 	);
 
 	public $units;
@@ -102,8 +104,8 @@ class Product
 
 
 	public function getUnits($inStockOnly = true, $visibleOnly = true) {
-		de($this->_entities['unit']->load());
-		return $this->_entities['unit']->getByProduct($this);
+		$this->_entities['unit']->load();;
+		return $this->_entities['unit']->all();
 		// $this->_loadUnits();
 		// $units = array();
 

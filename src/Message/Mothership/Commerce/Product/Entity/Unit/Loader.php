@@ -33,40 +33,75 @@ class Loader implements LoaderInterface
 			)
 		);
 
-		return count($result) ? $this->_load($result->flatten()) : false;
+		return count($result) ? $this->_load($result->flatten(), $product) : false;
 	}
 
-	protected function _load($unitIDs)
+	protected function _load($unitIDs, Product $product)
 	{
+
 		$result = $this->_query->run(
 			'SELECT
 				product_unit.unit_id       AS id,
 				product_unit.weight_grams  AS weightGrams,
-				product_unit_stock.stock   AS stock,
-				IF(product_unit_price.type = "retail", product_unit_price.price, 0) AS retail,
-				IF(product_unit_price.type = "rrp", product_unit_price.price, 0) AS retail,
 				product_unit.sku           AS sku,
 				product_unit.barcode       AS barcode,
 				product_unit.visible       AS visible
 			FROM
 				product_unit
-			JOIN
-				product_unit_price ON (product_unit_price.unit_id = product_unit.product_id)
-			LEFT JOIN
-				product_unit_stock ON (product_unit.unit_id = product_unit_stock.unit_id)
-			GROUP BY
-				product_unit.unit_id
 			WHERE
-				unit_id IN (?ij)
-			', array(
-				'en_GB',
+				product_unit.unit_id IN (?ij)
+			GROUP BY
+				product_unit.unit_id',
+			array(
 				(array) $unitIDs,
-			));
+			)
+		);
 
-		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Entity\\Unit');
+		$stock = $this->_query->run(
+			'SELECT
+				product_unit_stock.unit_id AS id,
+				product_unit_stock.stock,
+				product_unit_stock.location_id AS locationID
+			FROM
+				product_unit_stock
+			WHERE
+				product_unit_stock.unit_id IN (?ij)
+		', array(
+			(array) $unitIDs,
+		));
 
-		foreach ($result as $data) {
-			de($data);
+		$prices = $this->_query->run(
+			'SELECT
+				product_unit_price.unit_id     AS id,
+				product_unit_price.type        AS type,
+				product_unit_price.currency_id AS currencyID,
+				product_unit_price.price       AS price
+			FROM
+				product_unit_price
+			WHERE
+				product_unit_price.unit_id IN (?ij)
+		', array(
+			(array) $unitIDs,
+		));
+
+		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Entity\\Unit\\Unit');
+
+		foreach ($units as $key => $data) {
+
+			foreach ($stock as $values) {
+				if ($values->id == $data->id) {
+					$units[$key]->stock[$values->locationID] = $values->stock;
+				}
+			}
+
+			foreach ($prices as $price) {
+				if ($price->id == $data->id) {
+					$units[$key]->price[$price->currencyID][$price->type] = $price->price ?: $product->price[$type];
+				}
+			}
+
 		}
+
+		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;
 	}
 }

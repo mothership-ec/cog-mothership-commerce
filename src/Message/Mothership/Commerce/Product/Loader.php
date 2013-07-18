@@ -73,11 +73,20 @@ class Loader
 			)
 		);
 
-		return $this->_buildProduct($result);
-	}
+		$prices = $this->_query->run(
+			'SELECT
+				product_price.product_id     AS id,
+				product_price.type        AS type,
+				product_price.currency_id AS currencyID,
+				product_price.price       AS price
+			FROM
+				product_price
+			WHERE
+				product_price.product_id IN (?ij)
+		', array(
+			(array) $productIDs,
+		));
 
-	protected function _buildProduct(Result $result)
-	{
 		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_entities));
 
 		foreach ($result as $key => $data) {
@@ -91,10 +100,15 @@ class Loader
 			if ($data->deletedAt) {
 				$products[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
 			}
+
+			foreach ($prices as $price) {
+				if ($price->id == $data->id) {
+					$products[$key]->price[$price->currencyID][$price->type] = $price->price;
+				}
+			}
 		}
 
 		return count($products) == 1 && !$this->_returnArray ? array_shift($products) : $products;
-
 	}
 
 }
