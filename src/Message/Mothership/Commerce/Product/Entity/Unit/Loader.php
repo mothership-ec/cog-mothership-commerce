@@ -13,6 +13,9 @@ class Loader implements LoaderInterface
 	protected $_query;
 	protected $_locale;
 
+	protected $_loadInvisible  = true;
+	protected $_loadOutOfStock = false;
+
 	public function __construct(Query $query, Locale $locale = null)
 	{
 		$this->_query = $query;
@@ -34,6 +37,16 @@ class Loader implements LoaderInterface
 		);
 
 		return count($result) ? $this->_load($result->flatten(), $product) : false;
+	}
+
+	public function includeInvisible(bool $bool)
+	{
+		$this->_loadInvisible = $bool;
+	}
+
+	public function includeOutOfStock(bool $bool)
+	{
+		$this->_loadOutOfStock = $bool;
 	}
 
 	protected function _load($unitIDs, Product $product)
@@ -66,9 +79,10 @@ class Loader implements LoaderInterface
 				product_unit_stock
 			WHERE
 				product_unit_stock.unit_id IN (?ij)
-		', array(
-			(array) $unitIDs,
-		));
+		', 	array(
+				(array) $unitIDs,
+			)
+		);
 
 		$prices = $this->_query->run(
 			'SELECT
@@ -80,18 +94,29 @@ class Loader implements LoaderInterface
 				product_unit_price
 			WHERE
 				product_unit_price.unit_id IN (?ij)
-		', array(
-			(array) $unitIDs,
-		));
+		', 	array(
+				(array) $unitIDs,
+			)
+		);
 
 		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Entity\\Unit\\Unit');
 
 		foreach ($units as $key => $data) {
 
+			if (!$this->_loadInvisible && !$data->visible) {
+				unset($units[$key]);
+				continue;
+			}
+
 			foreach ($stock as $values) {
 				if ($values->id == $data->id) {
 					$units[$key]->stock[$values->locationID] = $values->stock;
 				}
+			}
+
+			if (!$this->_loadOutOfStock && array_sum($units[$key]->stock) == 0) {
+				unset($units[$key]);
+				continue;
 			}
 
 			foreach ($prices as $price) {
@@ -101,7 +126,7 @@ class Loader implements LoaderInterface
 			}
 
 		}
-
+		de($units);
 		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;
 	}
 }
