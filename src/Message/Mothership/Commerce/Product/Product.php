@@ -67,13 +67,13 @@ class Product
 	 *
 	 * @throws \InvalidArgumentException If an entity with the given name already exists
 	 */
-	public function addEntity($name, Entity\LoaderInterface $loader)
+	public function addEntity($name, Unit\LoaderInterface $loader)
 	{
 		if (array_key_exists($name, $this->_entities)) {
 			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
 		}
 
-		$this->_entities[$name] = new Entity\Collection($this, $loader);
+		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
 	//GET COLLECTIONS (SEE OPTS)
