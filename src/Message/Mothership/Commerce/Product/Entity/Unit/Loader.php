@@ -8,6 +8,7 @@ use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 
+
 class Loader implements LoaderInterface
 {
 	protected $_query;
@@ -39,19 +40,18 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), $product) : false;
 	}
 
-	public function includeInvisible(bool $bool)
+	public function includeInvisible($bool)
 	{
 		$this->_loadInvisible = $bool;
 	}
 
-	public function includeOutOfStock(bool $bool)
+	public function includeOutOfStock($bool)
 	{
 		$this->_loadOutOfStock = $bool;
 	}
 
 	protected function _load($unitIDs, Product $product)
 	{
-
 		$result = $this->_query->run(
 			'SELECT
 				product_unit.unit_id       AS id,
@@ -126,7 +126,7 @@ class Loader implements LoaderInterface
 			}
 
 		}
-		de($units);
+
 		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;
 	}
 }

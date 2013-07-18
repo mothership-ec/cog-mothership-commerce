@@ -102,9 +102,8 @@ class Product
 		$this->_db = new DBquery;
 	}
 
-
-	public function getUnits($inStockOnly = true, $visibleOnly = true) {
-		$this->_entities['unit']->load();;
+	public function getUnits($showOutOfStock = true, $showInvisible = false) {
+		$this->_entities['unit']->load($showOutOfStock, $showInvisible);;
 		return $this->_entities['unit']->all();
 		// $this->_loadUnits();
 		// $units = array();
