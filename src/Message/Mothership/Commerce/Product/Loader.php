@@ -4,20 +4,23 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
-
+use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Loader
 {
 	protected $_query;
+	protected $_locale;
 	protected $_entities;
 
 	protected $_returnArray;
 
-	public function __construct(Query $query, array $entities = array())
+	public function __construct(Query $query, Locale $locale, array $entities = array(), $priceTypes = array())
 	{
 		$this->_query = $query;
+		$this->_locale = $locale;
 		$this->_entities = $entities;
+		$this->_priceTypes = $priceTypes;
 	}
 
 	public function getByID($productID)
@@ -87,7 +90,7 @@ class Loader
 			(array) $productIDs,
 		));
 
-		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_entities));
+		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_locale, $this->_entities, $this->_priceTypes));
 
 		foreach ($result as $key => $data) {
 
@@ -103,7 +106,7 @@ class Loader
 
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$products[$key]->price[$price->currencyID][$price->type] = $price->price;
+					$products[$key]->price[$price->type]->setPrice($price->currencyID, $price->price);
 				}
 			}
 		}

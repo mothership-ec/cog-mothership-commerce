@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Mothership\Commerce\Product\Unit\LoaderInterface;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Cog\Localisation\Locale;
 
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
@@ -17,7 +18,7 @@ class Loader implements LoaderInterface
 	protected $_loadInvisible  = true;
 	protected $_loadOutOfStock = false;
 
-	public function __construct(Query $query, Locale $locale = null)
+	public function __construct(Query $query, Locale $locale)
 	{
 		$this->_query = $query;
 		$this->_locale = $locale;
@@ -72,8 +73,8 @@ class Loader implements LoaderInterface
 
 		$stock = $this->_query->run(
 			'SELECT
-				product_unit_stock.unit_id AS id,
-				product_unit_stock.stock,
+				product_unit_stock.unit_id     AS id,
+				product_unit_stock.stock       AS stock,
 				product_unit_stock.location_id AS locationID
 			FROM
 				product_unit_stock
@@ -86,20 +87,26 @@ class Loader implements LoaderInterface
 
 		$prices = $this->_query->run(
 			'SELECT
-				product_unit_price.unit_id     AS id,
-				product_unit_price.type        AS type,
-				product_unit_price.currency_id AS currencyID,
-				product_unit_price.price       AS price
+				product_unit.unit_id       AS id,
+				product_price.type          AS type,
+				product_price.currency_id   AS currencyID,
+				IFNULL(
+					product_unit_price.price, product_price.price
+				)     							 AS price
 			FROM
-				product_unit_price
+				product_price
+			JOIN
+				product_unit ON (product_price.product_id = product_unit.product_id)
+			LEFT JOIN
+				product_unit_price ON (product_unit.unit_id = product_unit_price.unit_id AND product_price.type = product_unit_price.type)
 			WHERE
-				product_unit_price.unit_id IN (?ij)
+				product_unit.unit_id IN (?ij)
 		', 	array(
 				(array) $unitIDs,
 			)
 		);
 
-		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Unit\\Unit');
+		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Unit\\Unit', array($this->_locale, $product->priceTypes));
 
 		foreach ($units as $key => $data) {
 
@@ -121,10 +128,9 @@ class Loader implements LoaderInterface
 
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$units[$key]->price[$price->currencyID][$price->type] = $price->price ?: $product->price[$type];
+					$units[$key]->price[$price->type]->setPrice($price->currencyID, $price->price);
 				}
 			}
-
 		}
 
 		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;

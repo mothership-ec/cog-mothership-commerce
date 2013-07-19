@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
+use Message\Cog\Localisation\Locale;
 
 class Product
 {
@@ -29,13 +30,7 @@ class Product
 	public $sizing;
 	public $notes;
 
-	public $price = array(
-		'GBP' => array(
-			'retail' => 0,
-			'rrp'    => 0,
-			'cost'   => 0,
-		),
-	);
+	public $price = array();
 
 	public $units;
 	public $images   = array();
@@ -49,14 +44,22 @@ class Product
 	public $unstackedExportValue;
 	public $unstackedExportManufactureCountryID;
 
+	public $priceTypes;
+
 	protected $_entities = array();
 
-	public function __construct(array $entities = array())
+	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
 	{
 		$this->authorship = new Authorship;
+		$this->priceTypes = $priceTypes;
 		foreach ($entities as $name => $loader) {
 			$this->addEntity($name, $loader);
 		}
+
+		foreach ($priceTypes as $type) {
+			$this->price[$type] = new Pricing($locale);
+		}
+
 	}
 
 	/**

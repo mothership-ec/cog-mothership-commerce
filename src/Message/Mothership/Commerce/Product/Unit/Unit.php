@@ -2,6 +2,9 @@
 
 namespace Message\Mothership\Commerce\Product\Unit;
 
+use Message\Cog\Localisation\Locale;
+use Message\Mothership\Commerce\Product\Pricing;
+
 class Unit
 {
 	public $id;
@@ -13,15 +16,16 @@ class Unit
 		4 => 0,
 	);
 
-	public $price = array(
-		'GBP' => array(
-			'retail' => 0,
-			'rrp'    => 0,
-			'cost'   => 0,
-		),
-	);
-
+	public $price;
 	public $sku;
 	public $barcode;
 	public $visible;
+
+	public function __construct(Locale $locale, array $priceTypes)
+	{
+		foreach ($priceTypes as $type) {
+			$this->price[$type] = new Pricing($locale);
+		}
+
+	}
 }
