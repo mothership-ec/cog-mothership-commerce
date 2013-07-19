@@ -9,12 +9,13 @@ use Message\Mothership\Commerce\Product\Pricing;
 class Unit
 {
 	public $id;
-	public $weight;
 	public $price;
 	public $sku;
 	public $barcode;
 	public $visible;
 	public $authorship;
+	public $supplierRef;
+	public $weightGrams;
 
 	public $stock = array(
 		1 => 0,
