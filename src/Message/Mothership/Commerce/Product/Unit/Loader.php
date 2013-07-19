@@ -110,6 +110,13 @@ class Loader implements LoaderInterface
 		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;
 	}
 
+	/**
+	 * Load the options for the given units
+	 *
+	 * @param  int|array $unitIDs UnitIDs to load options for
+	 *
+	 * @return Result 			  DB Result object
+	 */
 	protected function _loadOptions($unitIDs)
 	{
 		return $this->_query->run(
@@ -127,6 +134,14 @@ class Loader implements LoaderInterface
 		);
 	}
 
+	/**
+	 * Load prices for the gievn units for each type. If there is no unit level
+	 * specific pricing then it will use the Product price instead
+	 *
+	 * @param  int|array $unitIDs UnitIDs to load
+	 *
+	 * @return Result 			  DB Result object
+	 */
 	protected function _loadPrices($unitIDs)
 	{
 		return $this->_query->run(
@@ -151,6 +166,13 @@ class Loader implements LoaderInterface
 		);
 	}
 
+	/**
+	 * Load the stock levels for each of the given units
+	 *
+	 * @param  int|array $unitIDs UnitIDs to load
+	 *
+	 * @return Result 			  DB Result object
+	 */
 	protected function _loadStock($unitIDs)
 	{
 		return $this->_query->run(
@@ -168,6 +190,13 @@ class Loader implements LoaderInterface
 		);
 	}
 
+	/**
+	 * Load the attributes for the given unit IDs
+	 *
+	 * @param  int|array $unitIDs UnitIDs to load
+	 *
+	 * @return Result 			  DB Result object
+	 */
 	protected function _loadUnits($unitIDs)
 	{
 		return $this->_query->run(
