@@ -37,6 +37,11 @@ class Unit
 
 	}
 
+	public function setOption($type, $value)
+	{
+		$this->options[$type] = $value;
+	}
+
 	public function getOption($type)
 	{
 		if (!isset($this->options[$type])) {
