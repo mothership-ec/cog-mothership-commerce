@@ -58,6 +58,9 @@ class Item implements EntityInterface
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
+
+		// TODO: remove the below when stock stuff is built
+		$this->stockLocation = (object) array('id' => 1);
 	}
 
 	public function price($price)

@@ -31,6 +31,7 @@ You will need to add Message's private package server to the `repositories` key 
 * Add comments to all columns in database tables
 * Add all the Entities
 * Add event listener to set discount amounts on items
+* Implement stock locations on order item entity when ready
 
 ## Suggestions
 

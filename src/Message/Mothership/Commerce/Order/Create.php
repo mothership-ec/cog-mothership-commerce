@@ -74,9 +74,6 @@ class Create
 			$this->_currentUser->id
 		);
 
-		de($order)->depth(5);
-
-
 		$this->_trans->add('
 			INSERT INTO
 				order_summary
@@ -114,7 +111,31 @@ class Create
 			'totalGross'      => $order->totalGross,
 		));
 
+		$this->_trans->setIDVariable('ORDER_ID');
 		$order->id = '@ORDER_ID';
+
+		$this->_trans->add('
+			INSERT INTO
+				order_shipping
+			SET
+				order_id   = :orderID?i,
+				list_price = :listPrice?f,
+				net        = :net?f,
+				discount   = :discount?f,
+				tax        = :tax?f,
+				tax_rate   = :taxRate?f,
+				gross      = :gross?f,
+				name       = :name?sn
+		', array(
+			'orderID'   => $order->id,
+			'listPrice' => $order->shippingListPrice,
+			'net'       => $order->shippingNet,
+			'discount'  => $order->shippingDiscount,
+			'tax'       => $order->shippingTax,
+			'taxRate'   => $order->shippingTaxRate,
+			'gross'     => $order->shippingGross,
+			'name'      => $order->shippingName
+		));
 
 		foreach ($order->getEntities() as $name => $collection) {
 			if (count($collection) > 0 && !array_key_exists($name, $this->_entityCreators)) {
@@ -136,15 +157,14 @@ class Create
 			}
 		}
 
-		$event = new Event($this->_loader->getByID($this->_trans->getID()));
+		$this->_trans->commit();
+
+		$event = new Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')->value()));
 		$this->_eventDispatcher->dispatch(
 			Event::CREATE_COMPLETE,
 			$event
 		);
 
 		return $event->getOrder();
-
-
-		// run transaction, fire event & return created order
 	}
 }

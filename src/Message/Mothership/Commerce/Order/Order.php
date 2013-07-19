@@ -109,7 +109,7 @@ class Order
 		$this->_entities[$name] = new Entity\Collection($this, $loader);
 	}
 
-	public function getEntites()
+	public function getEntities()
 	{
 		return $this->_entities;
 	}

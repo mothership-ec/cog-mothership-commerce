@@ -35,6 +35,7 @@ class Services implements ServicesInterface
 				$c['user.current'],
 				array(
 					'addresses' => $c['order.address.create'],
+					'items'     => $c['order.item.create'],
 				)
 			);
 		};
@@ -59,6 +60,10 @@ class Services implements ServicesInterface
 		// Order entity creators
 		$services['order.address.create'] = function($c) {
 			return new Commerce\Order\Entity\Address\Create($c['db.query']);
+		};
+
+		$services['order.item.create'] = function($c) {
+			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['user.current']);
 		};
 
 		// Available payment & despatch methods
