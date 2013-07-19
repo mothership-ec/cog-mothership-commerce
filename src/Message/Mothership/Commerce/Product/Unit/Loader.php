@@ -53,74 +53,22 @@ class Loader implements LoaderInterface
 
 	protected function _load($unitIDs, Product $product)
 	{
-		$result = $this->_query->run(
-			'SELECT
-				product_unit.unit_id       AS id,
-				product_unit.weight_grams  AS weightGrams,
-				product_unit.sku           AS sku,
-				product_unit.barcode       AS barcode,
-				product_unit.visible       AS visible
-			FROM
-				product_unit
-			WHERE
-				product_unit.unit_id IN (?ij)
-			GROUP BY
-				product_unit.unit_id',
-			array(
-				(array) $unitIDs,
-			)
-		);
+		// Load the data for the units
+		$result = $this->_loadUnits($unitIDs);
+		// Load stock levels
+		$stock = $this->_loadStock($unitIDs);
+		// Load the prices
+		$prices = $this->_loadPrices($unitIDs);
+		// Load the options
+		$options = $this->_loadOptions($unitIDs);
 
-		$stock = $this->_query->run(
-			'SELECT
-				product_unit_stock.unit_id     AS id,
-				product_unit_stock.stock       AS stock,
-				product_unit_stock.location_id AS locationID
-			FROM
-				product_unit_stock
-			WHERE
-				product_unit_stock.unit_id IN (?ij)
-		', 	array(
-				(array) $unitIDs,
-			)
-		);
-
-		$prices = $this->_query->run(
-			'SELECT
-				product_unit.unit_id       AS id,
-				product_price.type          AS type,
-				product_price.currency_id   AS currencyID,
-				IFNULL(
-					product_unit_price.price, product_price.price
-				)     							 AS price
-			FROM
-				product_price
-			JOIN
-				product_unit ON (product_price.product_id = product_unit.product_id)
-			LEFT JOIN
-				product_unit_price ON (product_unit.unit_id = product_unit_price.unit_id AND product_price.type = product_unit_price.type)
-			WHERE
-				product_unit.unit_id IN (?ij)
-		', 	array(
-				(array) $unitIDs,
-			)
-		);
-
-		$options = $this->_query->run(
-			'SELECT
-				product_unit_option.unit_id AS id,
-				product_unit_option.option_name AS name,
-				product_unit_option.option_value AS value
-			FROM
-				product_unit_option
-			WHERE
-				unit_id IN (?ij)',
-			array(
-				(array) $unitIDs,
-			)
-		);
-
-		$bind = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Unit\\Unit', array($this->_locale, $product->priceTypes));
+		$bind = $result->bindTo(
+					'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
+					array(
+						$this->_locale,
+						$product->priceTypes
+					)
+				);
 
 		// Set the unit_id as the array key
 		$units = array();
@@ -160,5 +108,84 @@ class Loader implements LoaderInterface
 		}
 
 		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;
+	}
+
+	protected function _loadOptions($unitIDs)
+	{
+		return $this->_query->run(
+			'SELECT
+				product_unit_option.unit_id      AS id,
+				product_unit_option.option_name  AS name,
+				product_unit_option.option_value AS value
+			FROM
+				product_unit_option
+			WHERE
+				unit_id IN (?ij)',
+			array(
+				(array) $unitIDs,
+			)
+		);
+	}
+
+	protected function _loadPrices($unitIDs)
+	{
+		return $this->_query->run(
+			'SELECT
+				product_unit.unit_id      AS id,
+				product_price.type        AS type,
+				product_price.currency_id AS currencyID,
+				IFNULL(
+					product_unit_price.price, product_price.price
+				)     					  AS price
+			FROM
+				product_price
+			JOIN
+				product_unit ON (product_price.product_id = product_unit.product_id)
+			LEFT JOIN
+				product_unit_price ON (product_unit.unit_id = product_unit_price.unit_id AND product_price.type = product_unit_price.type)
+			WHERE
+				product_unit.unit_id IN (?ij)
+		', 	array(
+				(array) $unitIDs,
+			)
+		);
+	}
+
+	protected function _loadStock($unitIDs)
+	{
+		return $this->_query->run(
+			'SELECT
+				product_unit_stock.unit_id     AS id,
+				product_unit_stock.stock       AS stock,
+				product_unit_stock.location_id AS locationID
+			FROM
+				product_unit_stock
+			WHERE
+				product_unit_stock.unit_id IN (?ij)
+		', 	array(
+				(array) $unitIDs,
+			)
+		);
+	}
+
+	protected function _loadUnits($unitIDs)
+	{
+		return $this->_query->run(
+			'SELECT
+				product_unit.unit_id       AS id,
+				product_unit.weight_grams  AS weightGrams,
+				product_unit.sku           AS sku,
+				product_unit.barcode       AS barcode,
+				product_unit.visible       AS visible
+			FROM
+				product_unit
+			WHERE
+				product_unit.unit_id IN (?ij)
+			GROUP BY
+				product_unit.unit_id',
+			array(
+				(array) $unitIDs,
+			)
+		);
 	}
 }
