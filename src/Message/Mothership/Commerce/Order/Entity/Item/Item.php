@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+use Message\Mothership\Commerce\Product\Unit\Unit;
 
 use Message\Cog\ValueObject\Authorship;
 
@@ -50,9 +51,13 @@ class Item implements EntityInterface
 	protected $recipientEmail;
 	protected $recipientMessage;
 
-	static public function createFromUnit($unit)
+	static public function createFromUnit(Unit $unit)
 	{
-
+		$item = new static;
+		$item->listPrice = $unit->getPrice('retail')->getPrice($this->order->currencyID); // TODO: make this API better
+		$item->rrp = 0; // do the same as the above
+		$item->productID = $item->product->id;
+		// finish this off...
 	}
 
 	public function __construct()
