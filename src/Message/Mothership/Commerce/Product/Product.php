@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
+use Message\Cog\Localisation\Locale;
 
 class Product
 {
@@ -29,11 +30,7 @@ class Product
 	public $sizing;
 	public $notes;
 
-	public $price = array(
-		'retail' => 0,
-		'rrp'    => 0,
-		'cost'   => 0,
-	);
+	public $price = array();
 
 	public $units;
 	public $images   = array();
@@ -47,14 +44,22 @@ class Product
 	public $unstackedExportValue;
 	public $unstackedExportManufactureCountryID;
 
+	public $priceTypes;
+
 	protected $_entities = array();
 
-	public function __construct(array $entities = array())
+	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
 	{
 		$this->authorship = new Authorship;
+		$this->priceTypes = $priceTypes;
 		foreach ($entities as $name => $loader) {
 			$this->addEntity($name, $loader);
 		}
+
+		foreach ($priceTypes as $type) {
+			$this->price[$type] = new Pricing($locale);
+		}
+
 	}
 
 	/**
@@ -65,13 +70,13 @@ class Product
 	 *
 	 * @throws \InvalidArgumentException If an entity with the given name already exists
 	 */
-	public function addEntity($name, Entity\LoaderInterface $loader)
+	public function addEntity($name, Unit\LoaderInterface $loader)
 	{
 		if (array_key_exists($name, $this->_entities)) {
 			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
 		}
 
-		$this->_entities[$name] = new Entity\Collection($this, $loader);
+		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
 	//GET COLLECTIONS (SEE OPTS)
@@ -100,10 +105,9 @@ class Product
 		$this->_db = new DBquery;
 	}
 
-
-	public function getUnits($inStockOnly = true, $visibleOnly = true) {
-		de($this->_entities['unit']->load());
-		return $this->_entities['unit']->getByProduct($this);
+	public function getUnits($showOutOfStock = true, $showInvisible = false) {
+		$this->_entities['unit']->load($showOutOfStock, $showInvisible);;
+		return $this->_entities['unit'];
 		// $this->_loadUnits();
 		// $units = array();
 
@@ -830,120 +834,6 @@ class Product
 			$this->_loadExportInfo($this->_locale->getId());
 		}
 	}
-
-
-	//LOAD CORE PRODUCT INFO
-	protected function _loadProductCore($productID, $versionID) {
-		if (!is_null($productID)) {
-			$conditions = array(
-				'catalogue.product_id = ' . $productID,
-				'catalogue.date_deleted IS NULL'
-			);
-			if ($versionID) {
-				$conditions[] = 'catalogue.version_id = ' . $versionID;
-			}
-			$query = 'SELECT catalogue_id, version_id, category_id, category_slug, category.section, product_id, product_year, product_name, tax_code, weight, default_cross_sell, bodypart_id, sizegroup_id, supplier_ref, product_key, brand.brand_id, brand_name, brand_slug '
-				   . 'FROM catalogue '
-				   . 'JOIN catalogue_product USING (product_id) '
-				   . 'JOIN category USING (category_id) '
-				   . 'JOIN brand USING (brand_id) '
-				   . 'LEFT JOIN brand_info ON (brand.brand_id = brand_info.brand_id AND locale_id = '.$this->_db->escape($this->_locale->getId()).') '
-				   . 'WHERE ' . implode(' AND ', $conditions) . ' '
-				   . 'ORDER BY version_id DESC LIMIT 1';
-
-			$this->_db->query($query);
-
-			if ($product = $this->_db->row()) {
-				foreach ($product as $key => $val) {
-					$this->{toCamelCaps($key)} = $val;
-				}
-			}
-
-		}
-	}
-
-
-	//LOAD PRODUCT INFO FOR A GIVEN LOCALE. UTLISE STACK WITH PRODUCT VERSIONING
-	protected function _loadProductInfo($localeID) {
-		//AVOID RUNNING TWICE FOR THE SAME LOCALE
-		if ($localeID != $this->_static['savedLocaleID_1']) {
-			$this->price = NULL;
-			$this->rrp = NULL;
-			$this->_static['savedLocaleID_1'] = $localeID;
-			$skip = array(
-				'locale_id',
-				'catalogue_id'
-			);
-			$query = 'SELECT catalogue_info.* '
-				   . 'FROM catalogue '
-				   . 'JOIN catalogue_info USING (catalogue_id) '
-				   . 'WHERE product_id = ' . $this->productID . ' '
-				   . 'AND version_id <= ' . $this->versionID . ' '
-				   . 'AND locale_id = ' . $this->_db->escape($localeID) . ' '
-				   . 'ORDER BY version_id ASC ';
-			$this->_db->query($query);
-			while ($row = $this->_db->row()) {
-				foreach ($row as $key => $val) {
-					if (!is_null($val) && !in_array($key, $skip)) {
-						$this->{toCamelCaps($key)} = $val;
-					}
-				}
-			}
-			if ($localeID == Locale::DEFAULT_LOCALE_ID) {
-				$this->defaultDisplayName = $this->displayName;
-			}
-		}
-
-	}
-
-
-	//LOAD EXPORT INFORMATION
-	protected function _loadExportInfo($localeID) {
-		//AVOID RUNNING TWICE FOR THE SAME LOCALE
-		if ($localeID != $this->_static['savedLocaleID_4']) {
-			$this->_static['savedLocaleID_4'] = $localeID;
-			$skip = array(
-				'locale_id',
-				'catalogue_id'
-			);
-			$query = 'SELECT catalogue_export.* '
-				   . 'FROM catalogue '
-				   . 'JOIN catalogue_export USING (catalogue_id) '
-				   . 'WHERE product_id = ' . $this->productID . ' '
-				   . 'AND version_id <= ' . $this->versionID . ' '
-				   . 'AND locale_id = ' . $this->_db->escape($localeID) . ' '
-				   . 'ORDER BY version_id ASC ';
-			$this->_db->query($query);
-			while ($row = $this->_db->row()) {
-				foreach ($row as $key => $val) {
-					if (!is_null($val) && !in_array($key, $skip)) {
-
-						$this->{toCamelCaps($key)} = $val;
-
-						if($localeID == $this->_locale->getId()) {
-							$this->{'unstacked'.ucfirst(toCamelCaps($key))} = $val;
-						}
-
-					}
-				}
-			}
-		}
-	}
-
-
-	protected function _loadAttribute($attribute, $force = false) {
-		$func = '_load' . ucfirst(toCamelCaps($attribute)) . 's';
-		if (method_exists($this, $func)) {
-			$this->{$func}($force);
-		} else if ($force || empty($this->{'_' . $attribute . 's'})) {
-			$this->{'_' . $attribute . 's'} = array();
-			$this->_static['savedLocaleID_2'][$attribute] = NULL;
-			$this->_stackAttribute($attribute, Locale::DEFAULT_LOCALE_ID);
-			$this->_stackAttribute($attribute, $this->_locale->getId());
-		}
-	}
-
-
 	protected function _loadImages() {
 		if (empty($this->_images)) {
 			$this->_loadDefaultImages();
@@ -968,44 +858,6 @@ class Product
 			$this->_images[$obj->image_type_id][0] = $obj;
 		}
 	}
-
-
-	protected function _stackAttribute($attribute, $localeID) {
-		if (!isset($this->_static['savedLocaleID_2'][$attribute])) {
-			$this->_static['savedLocaleID_2'][$attribute] = NULL;
-		}
-		//AVOID RUNNING TWICE FOR THE SAME LOCALE
-		if ($localeID != $this->_static['savedLocaleID_2'][$attribute]) {
-			$this->_static['savedLocaleID_2'][$attribute] = $localeID;
-			$skip = array(
-				'locale_id'
-			);
-
-			$class = ucfirst($this->_corrected($attribute));
-			$query = 'SELECT val_' . $this->_corrected($attribute) . '.*, string_value, stack_addition '
-				   . 'FROM catalogue '
-				   . 'JOIN catalogue_' . $this->_corrected($attribute) . ' USING (catalogue_id) '
-				   . 'JOIN val_' . $this->_corrected($attribute) . ' USING (' . $this->_corrected($attribute) . '_id) '
-				   . 'JOIN locale_string USING (string_id) '
-				   . 'WHERE product_id = ' . $this->productID . ' '
-				   . 'AND version_id <= ' . $this->versionID . ' '
-				   . 'AND locale_id = ' . $this->_db->escape($localeID) . ' '
-				   . 'ORDER BY version_id ASC ';
-			$this->_db->query($query);
-			while ($row = $this->_db->row()) {
-				$obj = new $class;
-				foreach ($row as $key => $val) {
-					$obj->{$key} = $val;
-				}
-				if (!$obj->stack_addition) {
-					unset($this->{'_' . $attribute . 's'}[$obj->{$this->_corrected($attribute) . '_id'}]);
-				} else {
-					$this->{'_' . $attribute . 's'}[$obj->{$this->_corrected($attribute) . '_id'}] = $obj;
-				}
-			}
-		}
-	}
-
 
 	//LOAD PRODUCT INFO FOR A GIVEN LOCALE. UTLISE STACK WITH PRODUCT VERSIONING
 	protected function _stackImages($localeID) {
@@ -1038,82 +890,6 @@ class Product
 			}
 		}
 	}
-
-
-	//LOAD UNITS
-	protected function _loadUnits() {
-		if (is_null($this->_units)) {
-			$this->_units = array();
-			//LOAD LISTS
-			$this->getColours();
-			$this->getSizes();
-			$this->getVariants();
-			$query = 'SELECT u.unit_id, u.unit_name AS sku, u.visible, size_id, colour_id, variant_id, SUM(order_qty) AS tmp_qty, (IF (stock IS NOT NULL, stock, 0) - IF(order_qty, SUM(order_qty), 0)) AS current_stock, w.weight, barcode, u.supplier_ref, IF(u.supplier_ref, u.supplier_ref, catalogue_product.supplier_ref) AS supplierRef, brand_name, brand_id '
-				   . 'FROM catalogue_unit AS u '
-				   . 'LEFT JOIN catalogue_unit_stock USING (unit_id) '
-				   . 'LEFT JOIN catalogue_unit_stock_pending ON (u.unit_id = catalogue_unit_stock_pending.unit_id AND NOW() <  DATE_ADD(order_started,INTERVAL 10 MINUTE))'
-				   . 'LEFT JOIN catalogue_unit_size AS s ON (u.unit_id = s.unit_id) '
-				   . 'LEFT JOIN catalogue_unit_colour AS c ON (u.unit_id = c.unit_id) '
-				   . 'LEFT JOIN catalogue_unit_variant AS v ON (u.unit_id = v.unit_id) '
-				   . 'LEFT JOIN catalogue_unit_weight AS w ON (u.unit_id = w.unit_id) '
-				   . 'LEFT JOIN catalogue_unit_barcode AS b ON (u.unit_id = b.unit_id) '
-				   . 'LEFT JOIN catalogue USING (catalogue_id) '
-				   . 'LEFT JOIN catalogue_product USING (product_id) '
-				   . 'LEFT JOIN brand_info USING (brand_id) '
-				   . 'WHERE u.catalogue_id = ' . $this->catalogueID . ' '
-				   . 'GROUP BY unit_id';
-
-			$this->_db->query($query);
-			while ($row = $this->_db->row('OBJECT')) {
-				$unit = new ProductUnit;
-				foreach ($row as $key => $val) {
-					$unit->{$key} = $val;
-					$unit->{toCamelCaps($key)} = $val;
-				}
-				//GET LOCALISED STRINGS
-				$unit->size    = (isset($this->_sizes[$unit->size_id]) ? $this->_sizes[$unit->size_id]->string_value : '');
-				$unit->variant = (isset($this->_variants[$unit->variant_id]) ? $this->_variants[$unit->variant_id]->string_value : '');
-				$unit->colour  = (isset($this->_colours[$unit->colour_id]) ? $this->_colours[$unit->colour_id]->string_value : '');
-
-				//BUILD NAME
-				$name = array();
-				foreach (array('size', 'colour', 'variant') as $key) {
-					if ($unit->{$key}) {
-						$name[] = ucwords(strtolower($unit->{$key}));
-					}
-				}
-				$unit->name = implode(', ', $name);
-				//BUILD STYLE ID
-				$styleID = $unit->colour_id . '.' . $unit->variant_id;
-				$unit->style_id = ($styleID != '0.0' ? trim($styleID, '.') : NULL);
-				//BUILD STYLE NAME
-				$styleName = trim($unit->colour . ', ' . $unit->variant, ', ');
-				$unit->style = ($styleName) ? $styleName : NULL;
-				//BUILD DESCRIPTION
-				$unit->description = $this->displayName;
-				if ($unit->style) {
-					$unit->description .= ', ' . $unit->style;
-				}
-				if ($unit->size) {
-					$unit->description .= ', ' . $unit->size;
-				}
-				//ADD WEIGHT AND PRICE
-				if (!$unit->weight) {
-					$unit->weight = $this->weight;
-				}
-				//STACK SUPPLIER REF
-				if (!$unit->supplierRef) {
-					$unit->supplierRef = $this->supplierRef;
-				}
-
-				$this->_units[$unit->unit_id] = $unit;
-				unset($unit);
-			}
-			$this->_loadUnitPrices();
-			$this->_loadUnitStock();
-		}
-	}
-
 
 	protected function _loadPrices() {
 		if (is_null($this->_prices)) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Entity;
+namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Mothership\Commerce\Product\Product;
 
