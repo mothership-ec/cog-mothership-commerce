@@ -106,7 +106,27 @@ class Loader implements LoaderInterface
 			)
 		);
 
-		$units = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Unit\\Unit', array($this->_locale, $product->priceTypes));
+		$options = $this->_query->run(
+			'SELECT
+				product_unit_option.unit_id AS id,
+				product_unit_option.option_name AS name,
+				product_unit_option.option_value AS value
+			FROM
+				product_unit_option
+			WHERE
+				unit_id IN (?ij)',
+			array(
+				(array) $unitIDs,
+			)
+		);
+
+		$bind = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Unit\\Unit', array($this->_locale, $product->priceTypes));
+
+		// Set the unit_id as the array key
+		$units = array();
+		foreach ($bind as $unit) {
+			$units[$unit->id] = $unit;
+		}
 
 		foreach ($units as $key => $data) {
 
@@ -118,6 +138,12 @@ class Loader implements LoaderInterface
 			foreach ($stock as $values) {
 				if ($values->id == $data->id) {
 					$units[$key]->stock[$values->locationID] = $values->stock;
+				}
+			}
+
+			foreach ($options as $option) {
+				if ($option->id == $data->id) {
+					$units[$key]->options[$option->name] = $option->value;
 				}
 			}
 

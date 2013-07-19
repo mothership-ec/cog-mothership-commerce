@@ -9,6 +9,11 @@ class Unit
 {
 	public $id;
 	public $weight;
+	public $price;
+	public $sku;
+	public $barcode;
+	public $visible;
+
 	public $stock = array(
 		1 => 0,
 		2 => 0,
@@ -16,10 +21,9 @@ class Unit
 		4 => 0,
 	);
 
-	public $price;
-	public $sku;
-	public $barcode;
-	public $visible;
+	public $options = array(
+
+	);
 
 	public function __construct(Locale $locale, array $priceTypes)
 	{
@@ -27,5 +31,14 @@ class Unit
 			$this->price[$type] = new Pricing($locale);
 		}
 
+	}
+
+	public function getOption($type)
+	{
+		if (!isset($this->options[$type])) {
+			throw new Exception(sprintf('Option %s doesn\'t exist on unitID %i', $type, $this->id));
+		}
+
+		return $this->options[$type];
 	}
 }
