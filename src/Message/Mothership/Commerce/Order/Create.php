@@ -2,40 +2,149 @@
 
 namespace Message\Mothership\Commerce\Order;
 
+use Message\User\UserInterface;
+
+use Message\Cog\DB;
+use Message\Cog\Event\DispatcherInterface;
+use Message\Cog\ValueObject\Authorship;
+use Message\Cog\ValueObject\DateTimeImmutable;
+
+/**
+ * Order creator.
+ *
+ * Creates order with shipping, and delegates the creation of any entities
+ * attached to the order to the defined entity creators.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
 class Create
 {
+	protected $_trans;
+	protected $_loader;
+	protected $_eventDispatcher;
+	protected $_currentUser;
+
+	protected $_entityCreators = array();
+
+	public function __construct(DB\Transaction $trans, Loader $loader,
+		DispatcherInterface $eventDispatcher, UserInterface $user, array $entityCreators = array())
+	{
+		$this->_trans           = $trans;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $user;
+
+		foreach ($entityCreators as $name => $creator) {
+			$this->addEntityCreator($name, $creator);
+		}
+	}
+
+	/**
+	 * Define the creator for an entity type.
+	 *
+	 * @param string                                 $name    Entity name
+	 * @param Entity\TransactionalDecoratorInterface $creator Entity creator
+	 *
+	 * @throws \InvalidArgumentException If an entity creator with the given
+	 *                                   name already exists
+	 */
+	public function addEntityCreator($name, Entity\TransactionalDecoratorInterface $creator)
+	{
+		if (array_key_exists($name, $this->_entityCreators)) {
+			throw new \InvalidArgumentException(sprintf('Order entity creator already exists with name `%s`', $name));
+		}
+
+		$creator->setTransaction($this->_trans);
+
+		$this->_entityCreators[$name] = $creator;
+	}
+
 	public function create(Order $order, array $metadata = array())
 	{
-		// shipping?
-	}
+		$event = new Event($order);
+		$this->_eventDispatcher->dispatch(
+			Event::CREATE_START,
+			$event
+		);
 
-	public function addAddress(Entity\Address\Address $address)
-	{
+		$order = $event->getOrder();
 
-	}
+		$order->authorship->create(
+			new DateTimeImmutable,
+			$this->_currentUser->id
+		);
 
-	public function addItem(Entity\Item\Item $item)
-	{
+		de($order)->depth(5);
 
-	}
 
-	public function addPayment(Entity\Payment\Payment $payment)
-	{
+		$this->_trans->add('
+			INSERT INTO
+				order_summary
+			SET
+				created_at       = :createdAt?d,
+				created_by       = :createdBy?in,
+				user_id          = :userID?in,
+				type             = :type?sn,
+				locale           = :locale?s,
+				currency_id      = :currencyID?s,
+				conversion_rate  = :conversionRate?f,
+				product_net      = :productNet?f,
+				product_discount = :productDiscount?f,
+				product_tax      = :productTax?f,
+				product_gross    = :productGross?f,
+				total_net        = :totalNet?f,
+				total_discount   = :totalDiscount?f,
+				total_tax        = :totalTax?f,
+				total_gross      = :totalGross?f
+		', array(
+			'createdAt'       => $order->authorship->createdAt(),
+			'createdBy'       => $order->authorship->createdBy(),
+			'userID'          => $order->user ? $order->user->id : null,
+			'type'            => $order->type,
+			'locale'          => $order->locale,
+			'currencyID'      => $order->currencyID,
+			'conversionRate'  => $order->conversionRate,
+			'productNet'      => $order->productNet,
+			'productDiscount' => $order->productDiscount,
+			'productTax'      => $order->productTax,
+			'productGross'    => $order->productGross,
+			'totalNet'        => $order->totalNet,
+			'totalDiscount'   => $order->totalDiscount,
+			'totalTax'        => $order->totalTax,
+			'totalGross'      => $order->totalGross,
+		));
 
-	}
+		$order->id = '@ORDER_ID';
 
-	public function addDiscount(Entity\Discount\Discount $discount)
-	{
+		foreach ($order->getEntities() as $name => $collection) {
+			if (count($collection) > 0 && !array_key_exists($name, $this->_entityCreators)) {
+				throw new \LogicException(sprintf('Creator for `%s` order entity not set on order creator', $name));
+			}
 
-	}
+			foreach ($collection as $entity) {
+				$entity->order = $order;
 
-	public function addNote(Entity\Note\Note $note)
-	{
+				// Create the entities with the same authorship data as the order
+				if (isset($entity->authorship) && $entity->authorship instanceof Authorship) {
+					$entity->authorship->create(
+						$order->authorship->createdAt(),
+						$order->authorship->createdBy()
+					);
+				}
 
-	}
+				$this->_entityCreators[$name]->create($entity);
+			}
+		}
 
-	public function commit()
-	{
-		// run transaction
+		$event = new Event($this->_loader->getByID($this->_trans->getID()));
+		$this->_eventDispatcher->dispatch(
+			Event::CREATE_COMPLETE,
+			$event
+		);
+
+		return $event->getOrder();
+
+
+		// run transaction, fire event & return created order
 	}
 }

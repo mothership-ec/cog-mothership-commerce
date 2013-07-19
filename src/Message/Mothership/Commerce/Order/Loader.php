@@ -51,6 +51,7 @@ class Loader
 				order_summary.total_gross      AS totalGross,
 				order_shipping.name            AS shippingName,
 				order_shipping.net             AS shippingNet,
+				order_shipping.list_price      AS shippingListPrice,
 				order_shipping.tax             AS shippingTax,
 				order_shipping.tax_rate        AS shippingTaxRate,
 				order_shipping.gross           AS shippingGross

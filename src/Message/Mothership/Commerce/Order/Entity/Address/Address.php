@@ -2,12 +2,14 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Address;
 
+use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+
 /**
  * Represents an address for an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Address
+class Address implements EntityInterface
 {
 	const DELIVERY = 'delivery';
 	const BILLING  = 'billing';

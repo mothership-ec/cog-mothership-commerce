@@ -2,9 +2,11 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Note;
 
+use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+
 use Message\Cog\ValueObject\Authorship;
 
-class Note
+class Note implements EntityInterface
 {
 	const TYPE_CHECKOUT   = 'checkout';
 	const TYPE_RETURN     = 'return';

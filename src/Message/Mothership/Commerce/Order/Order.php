@@ -23,24 +23,25 @@ class Order
 	public $type;
 	public $locale;
 	public $currencyID;
-	public $conversionRate;
+	public $conversionRate    = 0;
 
-	public $productNet;
-	public $productDiscount;
-	public $productTax;
-	public $productGross;
+	public $productNet        = 0;
+	public $productDiscount   = 0;
+	public $productTax        = 0;
+	public $productGross      = 0;
 
-	public $totalNet;
-	public $totalDiscount;
-	public $totalTax;
-	public $totalGross;
+	public $totalNet          = 0;
+	public $totalDiscount     = 0;
+	public $totalTax          = 0;
+	public $totalGross        = 0;
 
 	public $shippingName;
-	public $shippingNet;
-	public $shippingDiscount;
-	public $shippingTax;
-	public $shippingTaxRate;
-	public $shippingGross;
+	public $shippingListPrice = 0;
+	public $shippingNet       = 0;
+	public $shippingDiscount  = 0;
+	public $shippingTax       = 0;
+	public $shippingTaxRate   = 0;
+	public $shippingGross     = 0;
 
 	public $metadata;
 

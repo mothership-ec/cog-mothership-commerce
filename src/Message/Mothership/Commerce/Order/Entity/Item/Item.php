@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
+use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+
 use Message\Cog\ValueObject\Authorship;
 
 /**
@@ -9,7 +11,7 @@ use Message\Cog\ValueObject\Authorship;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Item
+class Item implements EntityInterface
 {
 	public $id;
 
@@ -17,13 +19,13 @@ class Item
 	public $authorship;
 	public $status;
 
-	public $listPrice;
-	public $net;
-	public $discount;
-	public $tax;
-	public $taxRate;
-	public $gross;
-	public $rrp;
+	public $listPrice = 0;
+	public $net       = 0;
+	public $discount  = 0;
+	public $tax       = 0;
+	public $taxRate   = 0;
+	public $gross     = 0;
+	public $rrp       = 0;
 
 	public $productID;
 	public $productName;
@@ -47,6 +49,11 @@ class Item
 	protected $recipientName;
 	protected $recipientEmail;
 	protected $recipientMessage;
+
+	static public function createFromUnit($unit)
+	{
+
+	}
 
 	public function __construct()
 	{

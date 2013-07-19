@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
+use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+
 use Message\Cog\ValueObject\Authorship;
 
 /**
@@ -9,7 +11,7 @@ use Message\Cog\ValueObject\Authorship;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Payment
+class Payment implements EntityInterface
 {
 	public $id;
 	public $authorship;

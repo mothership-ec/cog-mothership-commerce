@@ -16,7 +16,8 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	protected $_order;
 	protected $_loader;
 
-	protected $_items = null;
+	protected $_loaded = false;
+	protected $_items  = array();
 
 	public function __construct(Order $order, LoaderInterface $loader)
 	{
@@ -28,11 +29,13 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$this->load();
 
-		if (!$this->exists($id)) {
-			throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
+		foreach ($this->_items as $item) {
+			if ($id === $item->id) {
+				return $item;
+			}
 		}
 
-		return $this->_items[$id];
+		throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
 	}
 
 	public function getByProperty($property, $value)
@@ -54,7 +57,14 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$this->load();
 
-		return array_key_exists($id, $this->_items);
+		try {
+			$this->get($id);
+		}
+		catch (\InvalidArgumentException $e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function all()
@@ -62,6 +72,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->load();
 
 		return $this->_items;
+	}
+
+	public function append(EntityInterface $entity)
+	{
+		$this->_items[] = $entity;
 	}
 
 	public function count()
@@ -97,15 +112,19 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$this->load();
 
-		return \ArrayIterator($this->_items);
+		return new \ArrayIterator($this->_items);
 	}
 
 	public function load()
 	{
-		if (null === $this->_items) {
-			$this->_items = $this->_loader->getByOrder($this->_order) ?: array();
+		if (!$this->_loaded) {
+			if ($this->_order->id && $items = $this->_loader->getByOrder($this->_order)) {
+				foreach ($items as $item) {
+					$this->append($item);
+				}
+			}
 
-			return true;
+			return $this->_loaded = true;
 		}
 
 		return false;
