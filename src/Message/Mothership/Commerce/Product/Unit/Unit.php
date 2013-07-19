@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Cog\Localisation\Locale;
+use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\Commerce\Product\Pricing;
 
 class Unit
@@ -13,6 +14,7 @@ class Unit
 	public $sku;
 	public $barcode;
 	public $visible;
+	public $authorship;
 
 	public $stock = array(
 		1 => 0,
@@ -27,6 +29,8 @@ class Unit
 
 	public function __construct(Locale $locale, array $priceTypes)
 	{
+		$this->authorship = new Authorship;
+
 		foreach ($priceTypes as $type) {
 			$this->price[$type] = new Pricing($locale);
 		}

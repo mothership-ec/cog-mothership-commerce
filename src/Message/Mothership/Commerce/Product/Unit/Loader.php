@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 use Message\Mothership\Commerce\Product\Unit\LoaderInterface;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\Localisation\Locale;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
@@ -62,21 +63,15 @@ class Loader implements LoaderInterface
 		// Load the options
 		$options = $this->_loadOptions($unitIDs);
 
-		$bind = $result->bindTo(
-					'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
-					array(
-						$this->_locale,
-						$product->priceTypes
-					)
-				);
+		$units = $result->bindTo(
+			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
+			array(
+				$this->_locale,
+				$product->priceTypes
+			)
+		);
 
-		// Set the unit_id as the array key
-		$units = array();
-		foreach ($bind as $unit) {
-			$units[$unit->id] = $unit;
-		}
-
-		foreach ($units as $key => $data) {
+		foreach ($result as $key => $data) {
 
 			if (!$this->_loadInvisible && !$data->visible) {
 				unset($units[$key]);
@@ -105,9 +100,24 @@ class Loader implements LoaderInterface
 					$units[$key]->price[$price->type]->setPrice($price->currencyID, $price->price);
 				}
 			}
+
+			$units[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
+
+			if ($data->updatedAt) {
+				$units[$key]->authorship->update(new DateTimeImmutable(date('c',$data->updatedAt)), $data->updatedBy);
+			}
+
+			if ($data->deletedAt) {
+				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
+			}
 		}
 
-		return count($units) == 1 && !$this->_returnArray ? array_shift($units) : $units;
+		$ordered = array();
+		foreach ($units as $unit) {
+			$ordered[$unit->id] = $unit;
+		}
+
+		return count($ordered) == 1 && !$this->_returnArray ? array_shift($ordered) : $ordered;
 	}
 
 	/**
@@ -205,7 +215,13 @@ class Loader implements LoaderInterface
 				product_unit.weight_grams  AS weightGrams,
 				product_unit.sku           AS sku,
 				product_unit.barcode       AS barcode,
-				product_unit.visible       AS visible
+				product_unit.visible       AS visible,
+				product_unit.created_at	   AS createdAt,
+				product_unit.created_by	   AS createdBy,
+				product_unit.updated_at	   AS updatedAt,
+				product_unit.updated_by	   AS updatedBy,
+				product_unit.deleted_at	   AS deletedAt,
+				product_unit.deleted_by	   AS deletedBy
 			FROM
 				product_unit
 			WHERE
