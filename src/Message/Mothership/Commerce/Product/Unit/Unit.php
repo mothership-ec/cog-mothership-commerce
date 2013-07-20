@@ -16,6 +16,7 @@ class Unit
 	public $authorship;
 	public $supplierRef;
 	public $weightGrams;
+	public $revisionID;
 
 	public $stock = array(
 		1 => 0,

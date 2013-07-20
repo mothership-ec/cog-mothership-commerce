@@ -239,25 +239,40 @@ class Loader implements LoaderInterface
 	{
 		return $this->_query->run(
 			'SELECT
-				product_unit.unit_id       AS id,
-				product_unit.weight_grams  AS weightGrams,
-				product_unit.sku           AS sku,
-				product_unit.barcode       AS barcode,
-				product_unit.visible       AS visible,
-				product_unit.created_at	   AS createdAt,
-				product_unit.created_by	   AS createdBy,
-				product_unit.updated_at	   AS updatedAt,
-				product_unit.updated_by	   AS updatedBy,
-				product_unit.deleted_at	   AS deletedAt,
-				product_unit.deleted_by	   AS deletedBy,
-				product_unit.supplier_ref  AS suppliderRef
+				product_unit.unit_id      	AS id,
+				product_unit.weight_grams 	AS weightGrams,
+				product_unit_info.sku     	AS sku,
+				product_unit.barcode      	AS barcode,
+				product_unit.visible      	AS visible,
+				product_unit.created_at   	AS createdAt,
+				product_unit.created_by   	AS createdBy,
+				product_unit.updated_at   	AS updatedAt,
+				product_unit.updated_by   	AS updatedBy,
+				product_unit.deleted_at   	AS deletedAt,
+				product_unit.deleted_by   	AS deletedBy,
+				product_unit.supplier_ref 	AS suppliderRef,
+				IFNULL(product_unit_info.revision_id,1) AS revisionID
 			FROM
 				product_unit
+			LEFT JOIN
+				product_unit_info ON (
+					product_unit_info.unit_id = product_unit.unit_id
+					AND revision_id = (
+						SELECT
+							IFNULL(MAX(revision_id),1)
+						FROM
+							product_unit_info AS info
+						WHERE
+							info.unit_id = product_unit.unit_id
+						GROUP BY unit_id
+					)
+				)
 			WHERE
 				product_unit.unit_id IN (?ij)
 			GROUP BY
 				product_unit.unit_id',
 			array(
+
 				(array) $unitIDs,
 			)
 		);
