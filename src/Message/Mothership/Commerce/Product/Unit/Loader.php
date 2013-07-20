@@ -164,8 +164,21 @@ class Loader implements LoaderInterface
 				product_unit_option.option_value AS value
 			FROM
 				product_unit_option
+			LEFT JOIN
+				product_unit_info ON (
+					product_unit_info.unit_id = product_unit_option.unit_id
+					AND product_unit_option.revision_id = (
+						SELECT
+							IFNULL(MAX(product_unit_info.revision_id),1)
+						FROM
+							product_unit_info AS info
+						WHERE
+							info.unit_id = product_unit_option.unit_id
+						GROUP BY unit_id
+					)
+				)
 			WHERE
-				unit_id IN (?ij)',
+				product_unit_option.unit_id IN (?ij)',
 			array(
 				(array) $unitIDs,
 			)
