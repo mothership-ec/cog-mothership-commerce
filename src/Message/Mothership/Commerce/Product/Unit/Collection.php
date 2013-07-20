@@ -100,7 +100,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 		return \ArrayIterator($this->_items);
 	}
 
-	public function load($showOutOfStock = true, $showInvisibleUnits = false)
+	public function load($showOutOfStock = true, $showInvisibleUnits = true)
 	{
 		$this->_loader->includeInvisible($showInvisibleUnits);
 		$this->_loader->includeOutOfStock($showOutOfStock);

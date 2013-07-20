@@ -249,7 +249,8 @@ class Loader implements LoaderInterface
 				product_unit.updated_at	   AS updatedAt,
 				product_unit.updated_by	   AS updatedBy,
 				product_unit.deleted_at	   AS deletedAt,
-				product_unit.deleted_by	   AS deletedBy
+				product_unit.deleted_by	   AS deletedBy,
+				product_unit.supplier_ref  AS suppliderRef
 			FROM
 				product_unit
 			WHERE
