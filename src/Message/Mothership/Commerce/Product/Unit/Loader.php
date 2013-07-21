@@ -18,6 +18,9 @@ class Loader implements LoaderInterface
 
 	protected $_loadInvisible  = true;
 	protected $_loadOutOfStock = false;
+	protected $_prices;
+
+	protected $_returnArray = false;
 
 	/**
 	 * Load depencancies
@@ -25,10 +28,11 @@ class Loader implements LoaderInterface
 	 * @param Query  $query  Query Object
 	 * @param Locale $locale Locale Object
 	 */
-	public function __construct(Query $query, Locale $locale)
+	public function __construct(Query $query, Locale $locale, array $prices)
 	{
-		$this->_query  = $query;
-		$this->_locale = $locale;
+		$this->_query   = $query;
+		$this->_locale  = $locale;
+		$this->_prices  = $prices;
 	}
 
 	/**
@@ -55,6 +59,23 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), $product) : false;
 	}
 
+	public function getByID($unitID, Product $product = null)
+	{
+		$result = $this->_query->run('
+			SELECT
+				unit_id
+			FROM
+				product_unit
+			WHERE
+				unit_id = ?i
+		', 	array(
+				$unitID
+			)
+		);
+
+		return count($result) ? $this->_load($result->value(), null) : false;
+	}
+
 	public function includeInvisible($bool)
 	{
 		$this->_loadInvisible = $bool;
@@ -73,7 +94,7 @@ class Loader implements LoaderInterface
 	 *
 	 * @return array|Unit 	Array of, or singular Unit object
 	 */
-	protected function _load($unitIDs, Product $product)
+	protected function _load($unitIDs, Product $product = null)
 	{
 		// Load the data for the units
 		$result = $this->_loadUnits($unitIDs);
@@ -88,7 +109,7 @@ class Loader implements LoaderInterface
 			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
 			array(
 				$this->_locale,
-				$product->priceTypes
+				$this->_prices
 			)
 		);
 
@@ -136,6 +157,10 @@ class Loader implements LoaderInterface
 
 			if ($data->deletedAt) {
 				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
+			}
+
+			if (!is_null($product)) {
+				$units[$key]->product = $product;
 			}
 		}
 

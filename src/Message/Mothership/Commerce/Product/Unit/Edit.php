@@ -14,16 +14,20 @@ use Message\User\User;
 class Edit
 {
 	protected $_query;
+	protected $_loader;
 	protected $_user;
 
-	public function __construct(Query $query, User $user)
+	public function __construct(Query $query, Loader $loader, User $user)
 	{
-		$this->_query = $query;
-		$this->_user  = $user;
+		$this->_query  = $query;
+		$this->_loader = $loader;
+		$this->_user   = $user;
 	}
 
 	public function save(Unit $unit)
 	{
+		$currentUnit = $this->_loader->getByID($unit->id, $unit->product);
+
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
 		$result = $this->_query->run(
@@ -47,27 +51,32 @@ class Edit
 			)
 		);
 
-		$options = array();
-		$inserts = array();
-		foreach ($unit->options as $optionName => $optionValue) {
-			$options[] = $unit->id;
-			$options[] = $optionName;
-			$options[] = $optionValue;
-			$inserts[] = '(?i,?s,?s)';
-		}
+		if ($currentUnit->options != $unit->options) {
+			$options = array();
+			$inserts = array();
+			$newRevisionID = $unit->revisionID + 1;
+			foreach ($unit->options as $optionName => $optionValue) {
+				$options[] = $unit->id;
+				$options[] = $optionName;
+				$options[] = $optionValue;
+				$options[] = $newRevisionID;
+				$inserts[] = '(?i,?s,?s,?i)';
+			}
 
-		$optionUpdate = $this->_query->run(
-			'REPLACE INTO
-				product_unit_option
-				(
-					unit_id,
-					option_name,
-					option_value
-				)
-			VALUES
-			'.implode(',',$inserts).'',
-				$options
-		);
+			$optionUpdate = $this->_query->run(
+				'INSERT INTO
+					product_unit_option
+					(
+						unit_id,
+						option_name,
+						option_value,
+						revision_id
+					)
+				VALUES
+				'.implode(',',$inserts).'',
+					$options
+			);
+		}
 
 		return $result->affected() ? $unit : false;
 	}

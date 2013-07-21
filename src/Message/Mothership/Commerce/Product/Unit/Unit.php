@@ -29,6 +29,8 @@ class Unit
 
 	);
 
+	public $product;
+
 	public function __construct(Locale $locale, array $priceTypes)
 	{
 		$this->authorship = new Authorship;
