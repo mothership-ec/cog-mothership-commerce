@@ -37,7 +37,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function registerMainMenuItems(BuildMenuEvent $event)
 	{
-		$event->addItem('ms.commerce.product.dashboard', 'Product', array('ms.commerce'));
+		$event->addItem('ms.commerce.product.dashboard', 'Products', array('ms.commerce'));
 	}
 
 }
