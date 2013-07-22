@@ -90,6 +90,18 @@ class Loader
 			(array) $productIDs,
 		));
 
+		$tags = $this->_query->run(
+			'SELECT
+				product_tag.product_id  AS id,
+				product_tag.name        AS name
+			FROM
+				product_tag
+			WHERE
+				product_tag.product_id IN (?ij)
+		', array(
+			(array) $productIDs,
+		));
+
 		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_locale, $this->_entities, $this->_priceTypes));
 
 		foreach ($result as $key => $data) {
@@ -106,7 +118,13 @@ class Loader
 
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$products[$key]->price[$price->type]->setPrice($price->currencyID, $price->price);
+					$products[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+				}
+			}
+
+			foreach ($tags as $k => $tag) {
+				if ($tag->id == $data->id) {
+					$products[$key]->tags[$k] = $tag->name;
 				}
 			}
 		}

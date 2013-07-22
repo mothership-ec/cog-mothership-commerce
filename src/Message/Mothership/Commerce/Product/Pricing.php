@@ -6,7 +6,7 @@ use  Message\Cog\Localisation\Locale;
 
 class Pricing
 {
-	protected $pricing = array();
+	public $pricing = array();
 	protected $_locale;
 
 	public function __construct(Locale $locale)
@@ -14,14 +14,14 @@ class Pricing
 		$this->_locale = $locale;
 	}
 
-	public function setPrice($currencyID, $price, Locale $locale = null)
+	public function setPrice($currencyID, $price, Locale $locale)
 	{
-		$this->pricing[is_null($locale) ? $this->_locale->getID() : $locale][$currencyID] = $price;
+		$this->pricing[is_null($locale) ? $this->_locale->getID() : $locale->getID()][$currencyID] = $price;
 	}
 
-	public function getPrice($currencyID, $locale = null)
+	public function getPrice($currencyID, Locale $locale)
 	{
-		return $this->pricing[is_null($locale) ? $this->_locale->getID() : $locale][$currencyID];
+		return isset($this->pricing[$locale->getID()][$currencyID]) ? $this->pricing[$locale->getID()][$currencyID] : 0;
 	}
 
 }

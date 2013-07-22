@@ -74,5 +74,52 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 			));
 		});
+
+		$services['product'] = function($c) {
+			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
+		};
+
+		$services['product.unit'] = function($c) {
+			return new Commerce\Product\Unit\Unit($c['locale'], $c['product.price.types']);
+		};
+
+		$services['product.price.types'] = function($c) {
+			return array(
+				'retail',
+				'rrp',
+				'cost',
+			);
+		};
+
+		$services['product.entities'] = function($c) {
+			return array(
+					'unit' => $c['product.unit.loader'],
+			);
+		};
+
+		$services['product.loader'] = function($c) {
+			return new Commerce\Product\Loader(
+				$c['db.query'],
+				$c['locale'],
+				$c['product.entities'],
+				$c['product.price.types']
+			);
+		};
+
+		$services['product.unit.loader'] = function($c) {
+			return new Commerce\Product\Unit\Loader(
+				$c['db.query'],
+				$c['locale'],
+				$c['product.price.types']
+			);
+		};
+
+		$services['product.create'] = function($c) {
+			return new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+		};
+
+		$services['product.edit'] = function($c) {
+			return new Commerce\Product\Edit($c['db.query'], $c['locale'], $c['user.current']);
+		};
 	}
 }

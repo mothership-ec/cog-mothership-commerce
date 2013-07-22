@@ -1,0 +1,12 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block main %}
+
+<h1>Edit a product</h1>
+
+{{ form_start(form) }}
+	{{ form_rest(form) }}
+	<button type="submit">Save</button>
+{{ form_end(form) }}
+
+{% endblock %}
