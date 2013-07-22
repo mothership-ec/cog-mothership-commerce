@@ -159,7 +159,7 @@ class Create
 
 		$this->_trans->commit();
 
-		$event = new Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')->value()));
+		$event = new Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
 		$this->_eventDispatcher->dispatch(
 			Event::CREATE_COMPLETE,
 			$event
