@@ -18,6 +18,9 @@ class Loader implements LoaderInterface
 
 	protected $_loadInvisible  = true;
 	protected $_loadOutOfStock = false;
+	protected $_prices;
+
+	protected $_returnArray = false;
 
 	/**
 	 * Load depencancies
@@ -25,10 +28,11 @@ class Loader implements LoaderInterface
 	 * @param Query  $query  Query Object
 	 * @param Locale $locale Locale Object
 	 */
-	public function __construct(Query $query, Locale $locale)
+	public function __construct(Query $query, Locale $locale, array $prices)
 	{
-		$this->_query  = $query;
-		$this->_locale = $locale;
+		$this->_query   = $query;
+		$this->_locale  = $locale;
+		$this->_prices  = $prices;
 	}
 
 	/**
@@ -55,6 +59,23 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), $product) : false;
 	}
 
+	public function getByID($unitID, Product $product = null)
+	{
+		$result = $this->_query->run('
+			SELECT
+				unit_id
+			FROM
+				product_unit
+			WHERE
+				unit_id = ?i
+		', 	array(
+				$unitID
+			)
+		);
+
+		return count($result) ? $this->_load($result->value(), null) : false;
+	}
+
 	public function includeInvisible($bool)
 	{
 		$this->_loadInvisible = $bool;
@@ -73,7 +94,7 @@ class Loader implements LoaderInterface
 	 *
 	 * @return array|Unit 	Array of, or singular Unit object
 	 */
-	protected function _load($unitIDs, Product $product)
+	protected function _load($unitIDs, Product $product = null)
 	{
 		// Load the data for the units
 		$result = $this->_loadUnits($unitIDs);
@@ -88,7 +109,7 @@ class Loader implements LoaderInterface
 			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
 			array(
 				$this->_locale,
-				$product->priceTypes
+				$this->_prices
 			)
 		);
 
@@ -137,6 +158,10 @@ class Loader implements LoaderInterface
 			if ($data->deletedAt) {
 				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
 			}
+
+			if (!is_null($product)) {
+				$units[$key]->product = $product;
+			}
 		}
 
 		// Reload the array to put the unitID as the key
@@ -164,8 +189,21 @@ class Loader implements LoaderInterface
 				product_unit_option.option_value AS value
 			FROM
 				product_unit_option
+			LEFT JOIN
+				product_unit_info ON (
+					product_unit_info.unit_id = product_unit_option.unit_id
+					AND product_unit_option.revision_id = (
+						SELECT
+							IFNULL(MAX(product_unit_info.revision_id),1)
+						FROM
+							product_unit_info AS info
+						WHERE
+							info.unit_id = product_unit_option.unit_id
+						GROUP BY unit_id
+					)
+				)
 			WHERE
-				unit_id IN (?ij)',
+				product_unit_option.unit_id IN (?ij)',
 			array(
 				(array) $unitIDs,
 			)
@@ -239,25 +277,40 @@ class Loader implements LoaderInterface
 	{
 		return $this->_query->run(
 			'SELECT
-				product_unit.unit_id       AS id,
-				product_unit.weight_grams  AS weightGrams,
-				product_unit.sku           AS sku,
-				product_unit.barcode       AS barcode,
-				product_unit.visible       AS visible,
-				product_unit.created_at	   AS createdAt,
-				product_unit.created_by	   AS createdBy,
-				product_unit.updated_at	   AS updatedAt,
-				product_unit.updated_by	   AS updatedBy,
-				product_unit.deleted_at	   AS deletedAt,
-				product_unit.deleted_by	   AS deletedBy,
-				product_unit.supplier_ref  AS suppliderRef
+				product_unit.unit_id      	AS id,
+				product_unit.weight_grams 	AS weightGrams,
+				product_unit_info.sku     	AS sku,
+				product_unit.barcode      	AS barcode,
+				product_unit.visible      	AS visible,
+				product_unit.created_at   	AS createdAt,
+				product_unit.created_by   	AS createdBy,
+				product_unit.updated_at   	AS updatedAt,
+				product_unit.updated_by   	AS updatedBy,
+				product_unit.deleted_at   	AS deletedAt,
+				product_unit.deleted_by   	AS deletedBy,
+				product_unit.supplier_ref 	AS suppliderRef,
+				IFNULL(product_unit_info.revision_id,1) AS revisionID
 			FROM
 				product_unit
+			LEFT JOIN
+				product_unit_info ON (
+					product_unit_info.unit_id = product_unit.unit_id
+					AND revision_id = (
+						SELECT
+							IFNULL(MAX(revision_id),1)
+						FROM
+							product_unit_info AS info
+						WHERE
+							info.unit_id = product_unit.unit_id
+						GROUP BY unit_id
+					)
+				)
 			WHERE
 				product_unit.unit_id IN (?ij)
 			GROUP BY
 				product_unit.unit_id',
 			array(
+
 				(array) $unitIDs,
 			)
 		);
