@@ -1,5 +1,9 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Sidebar#index', {'productID':product.id}))}}
+{% endblock %}
+
 {% block main %}
 	<h1>Dashboard</h1>
 {% endblock %}

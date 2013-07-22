@@ -30,6 +30,18 @@ class Loader
 		return $this->_loadProduct($productID);
 	}
 
+	public function getAll()
+	{
+		$result = $this->_query->run(
+			'SELECT
+				product_id
+			FROM
+				product'
+		);
+
+		return count($result) ? $this->_loadProduct($result->flatten()) : false;
+	}
+
 
 	protected function _loadProduct($productIDs)
 	{
