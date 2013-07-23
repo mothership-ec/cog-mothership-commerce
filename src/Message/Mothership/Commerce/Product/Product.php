@@ -96,7 +96,7 @@ class Product
 			}
 			return $this->{'_' . $property};
 		} else {
-			throw new Exception($property . ' cannot be called from Product with __call()');
+			throw new \Exception($property . ' cannot be called from Product with __call()');
 		}
 	}
 

@@ -1,1 +1,26 @@
 ms.commerce:
+  product:
+    name: Name
+    display-name: Display Name
+    short-description: Short Description
+    year: Year
+    tax-rate: Tax Rate
+    supplier-ref: Supplier Reference
+    weight-grams: Weight Grams
+    season: Season
+    description: Description
+    fabric: Fabric
+    export-manufacture-country: Manufacture Country Name
+    export-value: Export value
+    export-description: Export Description
+    tags: Tags
+    notes: Notes
+    sizing: Sizing
+    care-instructions: Care Instructions
+    features: Features
+    fabric: Fabric
+    description: Description
+    price:
+      retail: Retail Price
+      cost: Cost Price
+      rrp: RRP Price

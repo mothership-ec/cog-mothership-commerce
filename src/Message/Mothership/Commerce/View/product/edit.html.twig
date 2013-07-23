@@ -1,0 +1,16 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Sidebar#index', {'productID':product.id}))}}
+{% endblock %}
+
+{% block main %}
+
+<h1>Edit a product</h1>
+
+{{ form_start(form) }}
+	{{ form_rest(form) }}
+	<button type="submit">Save</button>
+{{ form_end(form) }}
+
+{% endblock %}
