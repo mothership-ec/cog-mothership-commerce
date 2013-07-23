@@ -142,5 +142,9 @@ class Services implements ServicesInterface
 		$services['product.edit'] = function($c) {
 			return new Commerce\Product\Edit($c['db.query'], $c['locale'], $c['user.current']);
 		};
+
+		$services['country.list'] = function($c) {
+			return new Commerce\CountryList;
+		};
 	}
 }

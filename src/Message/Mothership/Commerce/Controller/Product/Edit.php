@@ -8,14 +8,55 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit extends Controller
 {
 	protected $_product;
+	protected $_units;
 
 	public function index($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		return $this->render('::product:edit', array(
-			'form'  => $this->_getForm(),
+			'product' => $this->_product,
+			'form'    => $this->_getForm(),
 		));
+	}
+
+	public function units($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$this->_units = $this->_product->getUnits()->all();
+
+		$headings = array();
+		foreach($this->_units as $unit) {
+			foreach ($unit->options as $name => $value) {
+				$headings[$name] = $name;
+			}
+			foreach ($unit->price as $name => $value) {
+				$headings[$name] = $name;
+			}
+		}
+		return $this->render('::product:edit-unit', array(
+			'headings'=> $headings,
+			'locale'  => $this->get('locale'),
+			'product' => $this->_product,
+			'units'   => $this->_units ,
+			'forms'    => $this->_getUnitForm(),
+		));
+	}
+
+	protected function _getUnitForm()
+	{
+		$forms = array();
+		foreach ($this->_units as $id => $unit) {
+			foreach ($unit->price as $type => $value) {
+				$forms[$id] = $this->get('form')
+					->setName($id)
+					->setAction($this->generateUrl('ms.commerce.product.edit.unit.action', array('productID' => $this->_product->id)));
+
+				$forms[$id]->add($type, 'text', $this->trans('ms.commerce.product.price.'.$type),array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))));
+			}
+		}
+
+		return $forms;
 	}
 
 	public function process($productID)
@@ -101,13 +142,20 @@ class Edit extends Controller
 			->val()->maxLength(255);
 
 		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description'));
-		$form->add('description', 'textarea', $this->trans('ms.commerce.product.description'));
-		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.fabric'));
-		$form->add('features', 'textarea', $this->trans('ms.commerce.product.features'));
-		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.care-instructions'));
-		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.sizing'));
-		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.notes'));
-		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.tags'));
+		$form->add('description', 'textarea', $this->trans('ms.commerce.product.description'))
+			->val()->optional();
+		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.fabric'))
+			->val()->optional();
+		$form->add('features', 'textarea', $this->trans('ms.commerce.product.features'))
+			->val()->optional();
+		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.care-instructions'))
+			->val()->optional();
+		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.sizing'))
+			->val()->optional();
+		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.notes'))
+			->val()->optional();
+		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.tags'))
+			->val()->optional();
 
 		$form->add('year', 'text', $this->trans('ms.commerce.product.year'))
 			->val()->maxLength(4);
@@ -131,8 +179,10 @@ class Edit extends Controller
 			->val()->optional();
 		$form->add('export_value', 'text', $this->trans('ms.commerce.product.export-value'))
 			->val()->optional();
-		$form->add('export_manufacture_country_id', 'textarea', $this->trans('ms.commerce.product.export-manufacture-country'))
-			->val()->optional();
+		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.export-manufacture-country'), array(
+			'choices' => $this->get('country.list')->getAll(),
+			'attr' => array('data-help-key' => 'ms.cms.attributes.access.help'),
+		));
 
 		return $form;
 	}

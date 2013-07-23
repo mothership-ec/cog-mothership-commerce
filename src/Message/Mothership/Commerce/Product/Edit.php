@@ -35,6 +35,8 @@ class Edit
 				product
 			 JOIN
 			 	product_info ON (product.product_id = product_info.product_id AND product_info.locale = :localeID?s)
+			 LEFT JOIN
+			 	product_export ON (product.product_id = product_export.product_id AND product_export.locale = :localeID?s)
 			 SET
 				product.year         = :year?i,
 				product.updated_at   = :updated_at?i,
@@ -53,7 +55,11 @@ class Edit
 				product_info.care_instructions = :care_instructions?s,
 				product_info.short_description = :short_description?s,
 				product_info.sizing            = :sizing?s,
-				product_info.notes             = :notes?s
+				product_info.notes             = :notes?s,
+
+				product_export.export_value       = :exportValue?,
+				product_export.export_description = :exportDescription?,
+				product_export.export_manufacture_country_id  = :exportCountryID?s
 			WHERE
 				product.product_id = :productID?i
 			', array(
@@ -75,7 +81,10 @@ class Edit
 				'sizing'            => $product->sizing,
 				'notes'             => $product->notes,
 				'productID'			=> $product->id,
-				'localeID'			=> $this->_locale->getID()
+				'localeID'			=> $this->_locale->getID(),
+				'exportValue'		=> $product->exportValue,
+				'exportDescription'	=> $product->exportDescription,
+				'exportCountryID'	=> $product->exportManufactureCountryID,
 			)
 		);
 

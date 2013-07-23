@@ -6,11 +6,21 @@
 
 {% block main %}
 
-<h1>Edit a product</h1>
+<hgroup class="title">
+		<h1>Editing '{{ product.name }}'</h1>
+</hgroup>
 
-{{ form_start(form) }}
-	{{ form_rest(form) }}
-	<button type="submit">Save</button>
-{{ form_end(form) }}
-
+<div class="topbar">
+	<ul class="tabs">
+		<li class="active"><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live="">Attributes</a></li>
+		<li class=""><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live="">Units</a></li>
+		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live="">Stock</a></li>
+	</ul>
+</div>
+<section class="container-content">
+	{{ form_start(form) }}
+		{{ form_rest(form) }}
+		<button type="submit">Save</button>
+	{{ form_end(form) }}
+</section>
 {% endblock %}
