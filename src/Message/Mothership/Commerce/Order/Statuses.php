@@ -10,6 +10,7 @@ namespace Message\Mothership\Commerce\Order;
 class Statuses
 {
 	const AWAITING_DISPATCH    = 0;
+	const PROCESSING           = 500;
 	const PARTIALLY_DISPATCHED = 800;
 	const PARTIALLY_RECEIVED   = 900;
 	const DISPATCHED           = 1000;

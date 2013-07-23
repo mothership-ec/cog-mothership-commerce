@@ -86,8 +86,9 @@ class Services implements ServicesInterface
 		$services['order.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,     'Awaiting Dispatch'),
-				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED , 'Partially Dispatched'),
-				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED ,   'Partially Received'),
+				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,            'Processing'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED,  'Partially Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED,    'Partially Received'),
 				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,            'Dispatched'),
 				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,              'Received'),
 			));
@@ -96,7 +97,7 @@ class Services implements ServicesInterface
 		$services['order.item.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
 				new Commerce\Order\Status\Status(0   , 'Awaiting Dispatch'),
-//				new Commerce\Order\Status\Status(1000, 'Dispatched'),
+				new Commerce\Order\Status\Status(1000, 'Dispatched'),
 				new Commerce\Order\Status\Status(1100, 'Received'),
 			));
 		});
