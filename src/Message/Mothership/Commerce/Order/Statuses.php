@@ -1,0 +1,17 @@
+<?php
+
+namespace Message\Mothership\Commerce\Order;
+
+/**
+ * Container classes for order status codes.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
+class Statuses
+{
+	const AWAITING_DISPATCH    = 0;
+	const PARTIALLY_DISPATCHED = 800;
+	const PARTIALLY_RECEIVED   = 900;
+	const DISPATCHED           = 1000;
+	const RECEIVED             = 1100;
+}

@@ -1,15 +1,17 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order;
+namespace Message\Mothership\Commerce\Order\EventListener;
+
+use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
 
 /**
- * Order event listener.
+ * Order event listener for calculating the order totals.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener implements SubscriberInterface
+class TotalsListener implements SubscriberInterface
 {
 	/**
 	 * {@inheritdoc}
@@ -18,7 +20,7 @@ class EventListener implements SubscriberInterface
 	{
 		return array(Event::CREATE_START => array(
 			array('calculateShippingTax'),
-			array('setTotals', -9999),
+			array('setTotals', -900),
 		));
 	}
 

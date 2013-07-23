@@ -19,6 +19,7 @@ class Order
 
 	public $user;
 	public $authorship;
+	public $status;
 
 	public $type;
 	public $locale;

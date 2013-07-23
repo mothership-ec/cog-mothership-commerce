@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Event;
+use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
 
 use Message\Cog\Event\SubscriberInterface;
 
@@ -13,6 +14,8 @@ use Message\Cog\Event\SubscriberInterface;
  */
 class EventListener implements SubscriberInterface
 {
+	protected $_defaultStatus;
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -20,7 +23,32 @@ class EventListener implements SubscriberInterface
 	{
 		return array(Event::CREATE_START => array(
 			array('calculateTax'),
+			array('setDefaultStatus'),
 		));
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param BaseStatus $defaultStatus The default status to set on new order items
+	 */
+	public function __construct(BaseStatus $defaultStatus)
+	{
+		$this->_defaultStatus = $defaultStatus;
+	}
+
+	/**
+	 * Set the default statuses on all items that don't already have a status set.
+	 *
+	 * @param Event $event The event object
+	 */
+	public function setDefaultStatus(Event $event)
+	{
+		foreach ($event->getOrder()->items as $item) {
+			if (!$item->status) {
+				$item->status = new Status($this->_defaultStatus->code, $this->_defaultStatus->name);
+			}
+		}
 	}
 
 	/**

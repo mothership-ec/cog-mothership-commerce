@@ -61,13 +61,11 @@ class Create
 
 	public function create(Order $order, array $metadata = array())
 	{
-		$event = new Event($order);
-		$this->_eventDispatcher->dispatch(
-			Event::CREATE_START,
-			$event
-		);
+		$order = $this->_eventDispatcher->dispatch(Event::CREATE_START, new Event($order))
+			->getOrder();
 
-		$order = $event->getOrder();
+		// fire another event that we need a response from for setting order and item statuses?
+		// validate? a status ID must be set, type must be set, etc
 
 		$order->authorship->create(
 			new DateTimeImmutable,
@@ -80,6 +78,7 @@ class Create
 			SET
 				created_at       = :createdAt?d,
 				created_by       = :createdBy?in,
+				status_code      = :status?i,
 				user_id          = :userID?in,
 				type             = :type?sn,
 				locale           = :locale?s,
@@ -97,6 +96,7 @@ class Create
 			'createdAt'       => $order->authorship->createdAt(),
 			'createdBy'       => $order->authorship->createdBy(),
 			'userID'          => $order->user ? $order->user->id : null,
+			'status'          => $order->status->code,
 			'type'            => $order->type,
 			'locale'          => $order->locale,
 			'currencyID'      => $order->currencyID,

@@ -18,7 +18,7 @@ class Create implements Order\Entity\TransactionalDecoratorInterface
 {
 	protected $_query;
 
-	public function __construct(DB\QueryableInterface $query, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, UserInterface $currentUser)
 	{
 		$this->_query = $query;
 	}
@@ -38,7 +38,7 @@ class Create implements Order\Entity\TransactionalDecoratorInterface
 			);
 		}
 
-		$this->_query->run('
+		$this->_query->add('
 			INSERT INTO
 				order_item
 			SET
@@ -87,9 +87,38 @@ class Create implements Order\Entity\TransactionalDecoratorInterface
 			'stockLocation' => $item->stockLocation->id,
 		));
 
+		$this->_query->setIDVariable('ITEM_ID');
+		$item->id = '@ITEM_ID';
+
+		// Set the initial status, if defined
+		if ($item->status) {
+			if (!$item->status->authorship->createdAt()) {
+				$item->status->authorship->create(
+					$item->authorship->createdAt(),
+					$item->authorship->createdBy()
+				);
+			}
+
+			$this->_query->add('
+				INSERT INTO
+					order_item_status
+				SET
+					order_id    = :orderID?i,
+					item_id     = :itemID?i,
+					status_code = :code?i,
+					created_at  = :createdAt?d,
+					created_by  = :createdBy?in
+			', array(
+				'orderID'   => $item->order->id,
+				'itemID'    => $item->id,
+				'code'      => $item->status->code,
+				'createdAt' => $item->status->authorship->createdAt(),
+				'createdBy' => $item->status->authorship->createdBy(),
+			));
+		}
+
 		// insert personalisation?
 		//
-		// insert initial status?
 		// use item loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
 		return $item;
 	}

@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
+use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 
 use Message\Cog\Bootstrap\ServicesInterface;
 
@@ -27,6 +28,7 @@ class Services implements ServicesInterface
 		$services['order.loader'] = function($c) {
 			return new Commerce\Order\Loader($c['db.query'], $c['user.loader'], $c['order.entities']);
 		};
+
 		$services['order.create'] = function($c) {
 			return new Commerce\Order\Create(
 				$c['db.transaction'],
@@ -72,6 +74,25 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Card,
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
+			));
+		});
+
+		// Available order & item statuses
+		$services['order.statuses'] = $services->share(function($c) {
+			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,     'Awaiting Dispatch'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED , 'Partially Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED ,   'Partially Received'),
+				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,            'Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,              'Received'),
+			));
+		});
+
+		$services['order.item.statuses'] = $services->share(function($c) {
+			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(0   , 'Awaiting Dispatch'),
+//				new Commerce\Order\Status\Status(1000, 'Dispatched'),
+				new Commerce\Order\Status\Status(1100, 'Received'),
 			));
 		});
 	}
