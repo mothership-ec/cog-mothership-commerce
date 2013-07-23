@@ -46,7 +46,7 @@ class EventListener implements SubscriberInterface
 	{
 		foreach ($event->getOrder()->items as $item) {
 			if (!$item->status) {
-				$item->status = new Status($this->_defaultStatus->code, $this->_defaultStatus->name);
+				$item->status = new Status\Status($this->_defaultStatus->code, $this->_defaultStatus->name);
 			}
 		}
 	}
