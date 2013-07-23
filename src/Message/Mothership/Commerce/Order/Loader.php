@@ -19,11 +19,14 @@ class Loader
 	protected $_query;
 	protected $_eventDispatcher;
 	protected $_userLoader;
+	protected $_statuses;
+	protected $_entities;
 
-	public function __construct(DB\Query $query, User\Loader $userLoader, array $entities)
+	public function __construct(DB\Query $query, User\Loader $userLoader, Status\Collection $statuses, array $entities)
 	{
 		$this->_query      = $query;
 		$this->_userLoader = $userLoader;
+		$this->_statuses   = $statuses;
 		$this->_entities   = $entities;
 	}
 
@@ -83,6 +86,8 @@ class Loader
 					$row->updated_by
 				);
 			}
+
+			$orders[$key]->status = $this->_statuses->get($row->status_code);
 		}
 
 		return $returnArray ? $orders : reset($orders);

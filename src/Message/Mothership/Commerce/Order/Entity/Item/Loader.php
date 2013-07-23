@@ -15,10 +15,12 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Loader implements Order\Entity\LoaderInterface
 {
 	protected $_query;
+	protected $_statusLoader;
 
-	public function __construct(DB\Query $query)
+	public function __construct(DB\Query $query, Status\Loader $statusLoader)
 	{
-		$this->_query = $query;
+		$this->_query        = $query;
+		$this->_statusLoader = $statusLoader;
 	}
 
 	/**
@@ -88,8 +90,8 @@ class Loader implements Order\Entity\LoaderInterface
 				// TODO: load the order, put it in here. we need the order loader i guess
 			}
 
-			//$this->_statusLoader->setMostRecentOnItem($items[$key]);
-			// TODO: set the status
+			$this->_statusLoader->setLatest($items[$key]);
+
 			// TODO: set the stock location
 			// TODO: set the personalisation data
 			//

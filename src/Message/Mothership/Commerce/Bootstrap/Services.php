@@ -26,7 +26,7 @@ class Services implements ServicesInterface
 
 		// Order decorators
 		$services['order.loader'] = function($c) {
-			return new Commerce\Order\Loader($c['db.query'], $c['user.loader'], $c['order.entities']);
+			return new Commerce\Order\Loader($c['db.query'], $c['user.loader'], $c['order.statuses'], $c['order.entities']);
 		};
 
 		$services['order.create'] = function($c) {
@@ -48,7 +48,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.item.loader'] = function($c) {
-			return new Commerce\Order\Entity\Item\Loader($c['db.query']);
+			return new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader']);
 		};
 
 		$services['order.payment.loader'] = function($c) {
@@ -66,6 +66,11 @@ class Services implements ServicesInterface
 
 		$services['order.item.create'] = function($c) {
 			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['user.current']);
+		};
+
+		// Other decorators
+		$services['order.item.status.loader'] = function($c) {
+			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
 		};
 
 		// Available payment & despatch methods
