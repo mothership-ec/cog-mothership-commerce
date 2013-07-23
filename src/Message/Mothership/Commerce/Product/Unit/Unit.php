@@ -31,6 +31,12 @@ class Unit
 
 	public $product;
 
+    public function __clone() {
+		foreach ($this->price as $name => $pricing) {
+			$this->price[$name] = clone $pricing;
+		}
+    }
+
 	public function __construct(Locale $locale, array $priceTypes)
 	{
 		$this->authorship = new Authorship;

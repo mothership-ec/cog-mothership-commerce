@@ -18,6 +18,7 @@
 	</ul>
 </div>
 <section class="container-content">
+	{{ form_start(form) }}
 	<table>
 		<thead>
 			<tr>
@@ -25,6 +26,7 @@
 				{% for heading in headings %}
 					<th>{{heading}}</th>
 				{% endfor %}
+				<th>Prices</th>
 				<th>Weight (grams)</th>
 				<th>Visible</th>
 			</tr>
@@ -36,17 +38,18 @@
 					{% for name, value in unit.options %}
 						<td>{{ value }}</td>
 					{% endfor %}
-						{{ form_start(attribute(forms, unit.id)) }}
+						<td>
 						{% for name, value in unit.price %}
-							{{ dump(attribute(forms, unit.id))}}
-							{{ form_row(forms[unit.id][name]) }}
+							{{ form_row(form[unit.id]['price'][name]) }}
 						{% endfor %}
-						{{ form_end(form) }}
-					<td>{{ unit.weightGrams }}</td>
-					<td>{{ unit.visible }}</td>
+						</td>
+					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
+					<td>{{ form_widget(form[unit.id]['visible']) }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
+	<button type="submit">Update</button>
+	{{ form_end(form) }}
 </section>
 {% endblock %}
