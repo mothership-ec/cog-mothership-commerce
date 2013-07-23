@@ -30,33 +30,89 @@ class Edit extends Controller
 			foreach ($unit->options as $name => $value) {
 				$headings[$name] = $name;
 			}
-			foreach ($unit->price as $name => $value) {
-				$headings[$name] = $name;
-			}
 		}
 		return $this->render('::product:edit-unit', array(
 			'headings'=> $headings,
 			'locale'  => $this->get('locale'),
 			'product' => $this->_product,
 			'units'   => $this->_units ,
-			'forms'    => $this->_getUnitForm(),
+			'form'    => $this->_getUnitForm(),
 		));
 	}
 
 	protected function _getUnitForm()
 	{
-		$forms = array();
-		foreach ($this->_units as $id => $unit) {
-			foreach ($unit->price as $type => $value) {
-				$forms[$id] = $this->get('form')
-					->setName($id)
-					->setAction($this->generateUrl('ms.commerce.product.edit.unit.action', array('productID' => $this->_product->id)));
+		$mainForm = $this->get('form')
+			->setName('units-edit')
+			->setAction($this->generateUrl('ms.commerce.product.edit.units.action', array('productID' => $this->_product->id)));
 
-				$forms[$id]->add($type, 'text', $this->trans('ms.commerce.product.price.'.$type),array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))));
+		foreach ($this->_units as $id => $unit) {
+			$form = $this->get('form')
+				->setName($id)
+				->setDefaultValues(array(
+					'visible' => (bool) $unit->visible
+				))
+				->addOptions(array(
+					'auto_initialize' => false,
+				));
+
+			$priceForm = $this->get('form')
+				->setName('price')
+				->addOptions(array(
+					'auto_initialize' => false,
+			));
+
+			foreach ($unit->price as $type => $value) {
+				$priceForm->add($type, 'text', $type == 'rrp' ? 'RRP' : ucfirst($type), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
+					->val()->optional();
+			}
+
+			$form->add($priceForm->getForm(), 'form');
+			$form->add('weight', 'text','', array('attr' => array('value' =>  $unit->weightGrams)))
+				->val()->optional();
+			$form->add('visible', 'checkbox','', array('attr' => array('value' =>  $unit->weightGrams)))
+				->val()->optional();
+			$mainForm->add($form->getForm(), 'form');
+		}
+
+
+		return $mainForm;
+	}
+
+	public function unitProcess($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$this->_units = $this->_product->getUnits()->all();
+		$units = $this->_product->getUnits();
+
+		$form = $this->_getUnitForm();
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			foreach ($data as $unitID => $values) {
+				// original unit
+				// unit to update
+				$unit = clone $this->_units[$unitID];
+				$changedUnit = clone $unit;
+
+				$changedUnit->weightGrams = (int) $values['weight'];
+				$changedUnit->visible = (int) (bool) $values['visible'];
+
+				foreach ($values['price'] as $type => $value) {
+					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+
+				}
+
+				if ($changedUnit != $unit) {
+					$changedUnit = $this->get('product.unit.edit')->save($changedUnit);
+				}
+
+				if ($changedUnit->price !== $unit->price) {
+					$changedUnit = $this->get('product.unit.edit')->savePrices($changedUnit);
+				}
+
 			}
 		}
 
-		return $forms;
+		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
 	}
 
 	public function process($productID)

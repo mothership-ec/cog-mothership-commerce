@@ -148,6 +148,14 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Edit($c['db.query'], $c['locale'], $c['user.current']);
 		};
 
+		$services['product.unit.loader'] = function($c) {
+			return new Commerce\Product\Unit\Loader($c['db.query'], $c['locale'], $c['product.price.types']);
+		};
+
+		$services['product.unit.edit'] = function($c) {
+			return new Commerce\Product\Unit\Edit($c['db.query'], $c['product.unit.loader'], $c['user.current'], $c['locale']);
+		};
+
 		$services['country.list'] = function($c) {
 			return new Commerce\CountryList;
 		};

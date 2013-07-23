@@ -79,11 +79,15 @@ class Loader implements LoaderInterface
 	public function includeInvisible($bool)
 	{
 		$this->_loadInvisible = $bool;
+
+		return $this;
 	}
 
 	public function includeOutOfStock($bool)
 	{
 		$this->_loadOutOfStock = $bool;
+
+		return $this;
 	}
 
 	/**

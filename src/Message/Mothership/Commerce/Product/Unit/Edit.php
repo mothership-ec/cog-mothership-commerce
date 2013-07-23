@@ -16,17 +16,19 @@ class Edit
 	protected $_query;
 	protected $_loader;
 	protected $_user;
+	protected $_locale;
 
-	public function __construct(Query $query, Loader $loader, User $user)
+	public function __construct(Query $query, Loader $loader, User $user, Locale $locale)
 	{
 		$this->_query  = $query;
 		$this->_loader = $loader;
 		$this->_user   = $user;
+		$this->_locale = $locale;
 	}
 
 	public function save(Unit $unit)
 	{
-		$currentUnit = $this->_loader->getByID($unit->id, $unit->product);
+		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
 
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
@@ -79,5 +81,38 @@ class Edit
 		}
 
 		return $result->affected() ? $unit : false;
+	}
+
+	public function savePrices(Unit $unit)
+	{
+
+		$options = array();
+		$inserts = array();
+
+		foreach ($unit->price as $type => $price) {
+			$options[] = $unit->id;
+			$options[] = $type;
+			$options[] = $unit->price[$type]->getPrice('GBP', $this->_locale);
+			$options[] = 'GBP';
+			$options[] = $this->_locale->getID();
+			$inserts[] = '(?i,?s,?s,?s,?s)';
+		}
+
+		$result = $this->_query->run(
+			'REPLACE INTO
+				product_unit_price
+				(
+					unit_id,
+					type,
+					price,
+					currency_id,
+					locale
+				)
+			VALUES
+				'.implode(',',$inserts).' ',
+			$options
+		);
+
+		return $unit;
 	}
 }
