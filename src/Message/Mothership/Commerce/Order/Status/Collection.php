@@ -33,13 +33,22 @@ class Collection implements \IteratorAggregate, \Countable
 	 *
 	 * @return Collection    Returns $this for chainability
 	 *
+	 * @throws \InvalidArgumentException If the status has no code set
 	 * @throws \InvalidArgumentException If a status with the same code has
 	 *                                   already been set on this collection
 	 */
 	public function add(Status $status)
 	{
+		if (!$status->code && 0 !== $status->code) {
+			throw new \InvalidArgumentException(sprintf('Status `%s` has no code', $status->name));
+		}
+
 		if (array_key_exists($status->code, $this->_statuses)) {
-			throw new \InvalidArgumentException(sprintf('Status code `%i` is already defined as `%s`', $status->code, $this->_statuses[$code]->name));
+			throw new \InvalidArgumentException(sprintf(
+				'Status code `%i` is already defined as `%s`',
+				$status->code,
+				$this->_statuses[$status->code]->name
+			));
 		}
 
 		$this->_statuses[$status->code] = $status;
