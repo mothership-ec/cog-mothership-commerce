@@ -9,7 +9,7 @@ use Message\Cog\Localisation\Locale;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 class Create
 {
@@ -17,7 +17,7 @@ class Create
 	protected $_locale;
 	protected $_user;
 
-	public function __construct(Query $query, Locale $locale, User $user)
+	public function __construct(Query $query, Locale $locale, UserInterface $user)
 	{
 		$this->_query  = $query;
 		$this->_locale = $locale;

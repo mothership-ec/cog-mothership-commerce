@@ -6,7 +6,7 @@ use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\Localisation\Locale;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
@@ -20,7 +20,7 @@ class Edit
 	protected $_user;
 	protected $_locale;
 
-	public function __construct(Query $query, Locale $locale, User $user)
+	public function __construct(Query $query, Locale $locale, UserInterface $user)
 	{
 		$this->_query  = $query;
 		$this->_user   = $user;

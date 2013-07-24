@@ -9,7 +9,7 @@ use Message\Mothership\Commerce\Product\Pricing;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 class Edit
 {
@@ -18,7 +18,7 @@ class Edit
 	protected $_user;
 	protected $_locale;
 
-	public function __construct(Query $query, Loader $loader, User $user, Locale $locale)
+	public function __construct(Query $query, Loader $loader, UserInterface $user, Locale $locale)
 	{
 		$this->_query  = $query;
 		$this->_loader = $loader;

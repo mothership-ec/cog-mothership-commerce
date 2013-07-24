@@ -35,6 +35,11 @@ class Loader
 		return $this->_load($id);
 	}
 
+	public function getByCurrentItemStatus($statuses)
+	{
+		// get orders with at least one item with the most recent status set as one of these
+	}
+
 	protected function _load($id, $returnArray = false)
 	{
 		$result = $this->_query->run('
