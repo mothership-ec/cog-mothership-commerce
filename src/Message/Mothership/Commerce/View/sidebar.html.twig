@@ -2,6 +2,6 @@
 
 <ul class="main-menu">
 {% for product in products %}
-	<li><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}">{{ product.name }}</a></li>
+	<li><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live>{{ product.name }}</a></li>
 {% endfor %}
 </ul>
