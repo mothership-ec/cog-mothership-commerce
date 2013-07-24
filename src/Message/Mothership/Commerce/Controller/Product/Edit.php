@@ -87,6 +87,7 @@ class Edit extends Controller
 	{
 		$form = $this->get('form')
 			->setName('new')
+			->setAction($this->generateUrl('ms.commerce.product.edit.units.create.action', array('productID' => $this->_product->id)))
 			->setDefaultValues(array(
 				'visible' => false,
 		));
@@ -95,6 +96,18 @@ class Edit extends Controller
 		$form->add('weight', 'text','');
 		$form->add('option_name', 'text','Option name', array('attr' => array('list' => 'option_name')));
 		$form->add('option_value', 'text','Option value', array('attr' => array('list' => 'option_value')));
+
+		$priceForm = $this->get('form')
+			->setName('price')
+			->addOptions(array(
+				'auto_initialize' => false,
+		));
+
+		foreach ($this->get('product.price.types') as $type) {
+			$priceForm->add($type, 'text', ucfirst($type));
+		}
+
+		$form->add($priceForm->getForm(), 'form');
 
 		return $form;
 	}
@@ -134,9 +147,28 @@ class Edit extends Controller
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
 	}
 
-	public function addUnitProccess()
+	public function addUnitProccess($productID)
 	{
-		# code...
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$form = $this->_addUnitForm();
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+
+			$unit = $this->get('product.unit');
+			$unit->setOption($data['option_name'], $data['option_value']);
+			$unit->sku = $data['sku'];
+			$unit->weightGrams = $data['weight'];
+			$unit->revisionID = 1;
+			foreach ($data['price'] as $type => $value) {
+				$unit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+			}
+			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
+			$unit->product = $this->_product;
+			$unit = $this->get('product.unit.create')->save($unit);
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
+
 	}
 
 	public function process($productID)

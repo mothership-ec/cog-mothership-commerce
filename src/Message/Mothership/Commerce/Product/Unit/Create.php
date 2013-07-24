@@ -37,12 +37,12 @@ class Create
 				created_by   = :createdBy?i',
 			array(
 				'productID' => $unit->product->id,
-				'visible'	=> $unit->visible,
+				'visible'	=> (bool) $unit->visible,
 				'barcode'	=> $unit->barcode,
 				'sup_ref'	=> $unit->supplierRef,
 				'weight'	=> $unit->weightGrams,
 				'createdAt' => $unit->authorship->createdAt(),
-				'createdBy' => $unit->authorship->createdBy(),
+				'createdBy' => $unit->authorship->createdBy()->id,
 				$unit->id
 			)
 		);
