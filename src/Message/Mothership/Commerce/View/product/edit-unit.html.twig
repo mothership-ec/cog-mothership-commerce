@@ -29,6 +29,7 @@
 				<th>Prices</th>
 				<th>Weight (grams)</th>
 				<th>Visible</th>
+				<th>Delete</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -45,12 +46,14 @@
 						</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
 					<td>{{ form_widget(form[unit.id]['visible']) }}</td>
+					<td>{{ form_widget(form[unit.id]['delete']) }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 	<button type="submit" class="button small save" id="save-content">Update</button>
 	{{ form_end(form) }}
+	{{ form_start(addForm) }}
 	<table>
 		<thead>
 			<tr>
@@ -62,8 +65,6 @@
 			</tr>
 		</thead>
 		<tbody>
-
-	{{ form_start(addForm) }}
 			<tr>
 				<td>{{ form_widget(addForm.sku) }}</td>
 				<td>

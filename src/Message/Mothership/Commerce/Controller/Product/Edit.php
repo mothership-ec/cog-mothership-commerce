@@ -88,7 +88,9 @@ class Edit extends Controller
 			$form->add($priceForm->getForm(), 'form');
 			$form->add('weight', 'text','', array('attr' => array('value' =>  $unit->weightGrams)))
 				->val()->optional();
-			$form->add('visible', 'checkbox','', array('attr' => array('value' =>  $unit->weightGrams)))
+			$form->add('visible', 'checkbox','', array('attr' => array('value' =>  $unit->visible)))
+				->val()->optional();
+			$form->add('delete', 'checkbox','')
 				->val()->optional();
 			$mainForm->add($form->getForm(), 'form');
 		}
