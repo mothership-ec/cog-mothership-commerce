@@ -5,14 +5,14 @@ namespace Message\Mothership\Commerce\Product\Unit;
 use Message\Cog\DB\Transaction;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 class Create
 {
 	protected $_query;
 	protected $_user;
 
-	public function __construct(Transaction $query, User $user)
+	public function __construct(Transaction $query, UserInterface $user)
 	{
 		$this->_query 	= $query;
 		$this->_user	= $user;
