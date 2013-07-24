@@ -10,14 +10,14 @@
 		<h1>Editing Units of '{{ product.name }}'</h1>
 </hgroup>
 
-<div class="topbar">
+<div class="topbar products">
 	<ul class="tabs">
 		<li class=""><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live="">Attributes</a></li>
 		<li class="active"><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live="">Units</a></li>
 		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live="">Stock</a></li>
 	</ul>
 </div>
-<section class="container-content">
+<section class="container-products">
 	{{ form_start(form) }}
 	<table>
 		<thead>
@@ -49,7 +49,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<button type="submit">Update</button>
+	<button type="submit" class="button small save" id="save-content">Update</button>
 	{{ form_end(form) }}
 
 	{{ form_start(addForm) }}
