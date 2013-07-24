@@ -310,6 +310,8 @@ class Loader implements LoaderInterface
 				)
 			WHERE
 				product_unit.unit_id IN (?ij)
+			AND
+				deleted_at IS NULL
 			GROUP BY
 				product_unit.unit_id',
 			array(
