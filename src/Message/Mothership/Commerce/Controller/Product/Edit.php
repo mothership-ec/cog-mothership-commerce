@@ -115,19 +115,19 @@ class Edit extends Controller
 	public function unitProcess($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units = $this->_product->getUnits()->all();
-		$units = $this->_product->getUnits();
+		$this->_units   = $this->_product->getUnits()->all();
+		$units          = $this->_product->getUnits();
+		$form           = $this->_getUnitForm();
 
-		$form = $this->_getUnitForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			foreach ($data as $unitID => $values) {
 				// original unit
-				// unit to update
 				$unit = clone $this->_units[$unitID];
+				// unit to update
 				$changedUnit = clone $unit;
 
 				$changedUnit->weightGrams = (int) $values['weight'];
-				$changedUnit->visible = (int) (bool) $values['visible'];
+				$changedUnit->visible     = (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
@@ -153,17 +153,19 @@ class Edit extends Controller
 		$form = $this->_addUnitForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-
-			$unit = $this->get('product.unit');
-			$unit->setOption($data['option_name'], $data['option_value']);
-			$unit->sku = $data['sku'];
+			$unit              = $this->get('product.unit');
+			$unit->sku         = $data['sku'];
 			$unit->weightGrams = $data['weight'];
-			$unit->revisionID = 1;
+			$unit->revisionID  = 1;
+			$unit->product     = $this->_product;
+
 			foreach ($data['price'] as $type => $value) {
 				$unit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
 			}
+
 			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
-			$unit->product = $this->_product;
+			$unit->setOption($data['option_name'], $data['option_value']);
+
 			$unit = $this->get('product.unit.create')->save($unit);
 		}
 
