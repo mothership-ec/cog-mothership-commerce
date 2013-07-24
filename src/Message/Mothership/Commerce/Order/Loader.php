@@ -78,7 +78,7 @@ class Loader
 				item_id
 			HAVING
 				status_code IN (?ij)
-		', array($statuses));
+		', array((array) $statuses));
 
 		return $this->_load($result->flatten(), true);
 	}
@@ -87,6 +87,10 @@ class Loader
 	{
 		if (!is_array($ids)) {
 			$ids = (array) $ids;
+		}
+
+		if (0 === count($ids)) {
+			return $returnArray ? array() : false;
 		}
 
 		$result = $this->_query->run('
@@ -115,7 +119,7 @@ class Loader
 			LEFT JOIN
 				order_shipping USING (order_id)
 			WHERE
-				order_id = (?ij)
+				order_id IN (?ij)
 		', array($ids));
 
 		if (0 === count($result)) {
