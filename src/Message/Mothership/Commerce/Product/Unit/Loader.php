@@ -144,7 +144,6 @@ class Loader implements LoaderInterface
 				unset($units[$key]);
 				continue;
 			}
-
 			// Save prices to unit
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
@@ -174,7 +173,7 @@ class Loader implements LoaderInterface
 			$ordered[$unit->id] = $unit;
 		}
 
-		return count($ordered) == 1 && !$this->_returnArray ? array_shift($ordered) : $ordered;
+		return $ordered;
 	}
 
 	/**

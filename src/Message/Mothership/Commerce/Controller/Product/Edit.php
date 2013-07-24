@@ -10,6 +10,13 @@ class Edit extends Controller
 	protected $_product;
 	protected $_units;
 
+	/**
+	 * Show product edit screen
+	 *
+	 * @param  int 		$productID  ProductID to load
+	 *
+	 * @return Response 			Output for view
+	 */
 	public function index($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
@@ -20,6 +27,13 @@ class Edit extends Controller
 		));
 	}
 
+	/**
+	 * Show product units with for for editing them
+	 *
+	 * @param  int 		$productID 	ProductID to load
+	 *
+	 * @return [type]            [description]
+	 */
 	public function units($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
@@ -92,10 +106,13 @@ class Edit extends Controller
 				'visible' => false,
 		));
 
-		$form->add('sku', 'text','');
+		$form->add('sku', 'text','',array('attr' => array('list' => 'option_value', 'placeholder' => 'SKU')));
 		$form->add('weight', 'text','');
-		$form->add('option_name', 'text','Option name', array('attr' => array('list' => 'option_name')));
-		$form->add('option_value', 'text','Option value', array('attr' => array('list' => 'option_value')));
+		$form->add('option_name_1', 'text','Option name', array('attr' => array('list' => 'option_name', 'placeholder' => 'Name')));
+		$form->add('option_value_1', 'text','Option value', array('attr' => array('list' => 'option_value', 'placeholder' => 'Value')));
+
+		$form->add('option_name_2', 'text','Option name', array('attr' => array('list' => 'option_name', 'placeholder' => 'Name')));
+		$form->add('option_value_2', 'text','Option value', array('attr' => array('list' => 'option_value', 'placeholder' => 'Value')));
 
 		$priceForm = $this->get('form')
 			->setName('price')
@@ -104,7 +121,8 @@ class Edit extends Controller
 		));
 
 		foreach ($this->get('product.price.types') as $type) {
-			$priceForm->add($type, 'text', ucfirst($type));
+			$priceForm->add($type, 'text', '', array('attr'=>array('placeholder' => ucfirst($type))))
+				->val()->optional();
 		}
 
 		$form->add($priceForm->getForm(), 'form');
@@ -164,9 +182,14 @@ class Edit extends Controller
 			}
 
 			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
-			$unit->setOption($data['option_name'], $data['option_value']);
+			$unit->setOption($data['option_name_1'], $data['option_value_1']);
+
+			if (!empty($data['option_name_2']) && !empty($data['option_value_2'])) {
+				$unit->setOption($data['option_name_2'], $data['option_value_2']);
+			}
 
 			$unit = $this->get('product.unit.create')->save($unit);
+			$unit = $this->get('product.unit.create')->savePrices($unit);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));

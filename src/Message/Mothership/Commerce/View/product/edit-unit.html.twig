@@ -40,7 +40,7 @@
 					{% endfor %}
 						<td>
 						{% for name, value in unit.price %}
-							{{ form_row(form[unit.id]['price'][name]) }}
+							{{ form_widget(form[unit.id]['price'][name]) }}
 						{% endfor %}
 						</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
@@ -51,27 +51,51 @@
 	</table>
 	<button type="submit" class="button small save" id="save-content">Update</button>
 	{{ form_end(form) }}
+	<table>
+		<thead>
+			<tr>
+				<th>SKU</th>
+				<th>Type</th>
+				<th>Value</th>
+				<th>Prices</th>
+				<th>Weight (grams)</th>
+			</tr>
+		</thead>
+		<tbody>
 
 	{{ form_start(addForm) }}
-		{{ form_row(addForm.sku) }}
+			<tr>
+				<td>{{ form_widget(addForm.sku) }}</td>
+				<td>
+					{{ form_widget(addForm.option_name_1) }} <br />
+					{{ form_widget(addForm.option_name_2) }}
+				</td>
+				<td>
+					{{ form_widget(addForm.option_value_1) }} <br />
+					{{ form_widget(addForm.option_value_2) }}
+				</td>
+				<td>
+					{{ form_widget(addForm['price']['retail']) }}
+					{{ form_widget(addForm['price']['cost']) }}
+					{{ form_widget(addForm['price']['rrp']) }}
+				</td>
+				<td>{{ form_widget(addForm.weight) }}</td>
 
-		{{ form_row(addForm.option_name) }}
+			</tr>
+		</tbody>
+	</table>
+		<button type="submit">Add new</button>
 		<datalist id="option_name">
 			{% for option in optionName %}
 				<option value="{{ option }}">{{option}}</option>
 			{% endfor %}
 		</datalist>
 
-		{{ form_row(addForm.option_value) }}
 		<datalist id="option_value">
 			{% for option in optionValue %}
 				<option value="{{ option }}">{{option}}</option>
 			{% endfor %}
 		</datalist>
-
-		{{ form_row(addForm.weight) }}
-		{{ form_rest(addForm) }}
-		<button type="submit">Add new</button>
 
 	{{ form_end(addForm) }}
 </section>

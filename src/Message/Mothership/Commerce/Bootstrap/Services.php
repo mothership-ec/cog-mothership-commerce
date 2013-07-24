@@ -158,7 +158,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.unit.create'] = function($c) {
-			return new Commerce\Product\Unit\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale']);
 		};
 
 		$services['country.list'] = function($c) {
