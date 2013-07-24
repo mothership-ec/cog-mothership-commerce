@@ -160,5 +160,9 @@ class Services implements ServicesInterface
 		$services['country.list'] = function($c) {
 			return new Commerce\CountryList;
 		};
+
+		$services['option.loader'] = function($c) {
+			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
+		};
 	}
 }

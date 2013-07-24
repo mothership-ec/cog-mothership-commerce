@@ -31,12 +31,16 @@ class Edit extends Controller
 				$headings[$name] = $name;
 			}
 		}
+
 		return $this->render('::product:edit-unit', array(
 			'headings'=> $headings,
 			'locale'  => $this->get('locale'),
 			'product' => $this->_product,
 			'units'   => $this->_units ,
 			'form'    => $this->_getUnitForm(),
+			'addForm' => $this->_addUnitForm(),
+			'optionName' => $this->get('option.loader')->getAllOptionNames(),
+			'optionValue' => $this->get('option.loader')->getAllOptionValues(),
 		));
 	}
 
@@ -79,6 +83,22 @@ class Edit extends Controller
 		return $mainForm;
 	}
 
+	protected function _addUnitForm()
+	{
+		$form = $this->get('form')
+			->setName('new')
+			->setDefaultValues(array(
+				'visible' => false,
+		));
+
+		$form->add('sku', 'text','');
+		$form->add('weight', 'text','');
+		$form->add('option_name', 'text','Option name', array('attr' => array('list' => 'option_name')));
+		$form->add('option_value', 'text','Option value', array('attr' => array('list' => 'option_value')));
+
+		return $form;
+	}
+
 	public function unitProcess($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
@@ -98,7 +118,6 @@ class Edit extends Controller
 
 				foreach ($values['price'] as $type => $value) {
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
-
 				}
 
 				if ($changedUnit != $unit) {
@@ -113,6 +132,11 @@ class Edit extends Controller
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
+	}
+
+	public function addUnitProccess()
+	{
+		# code...
 	}
 
 	public function process($productID)

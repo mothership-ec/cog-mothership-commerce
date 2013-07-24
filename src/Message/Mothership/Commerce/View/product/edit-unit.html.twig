@@ -51,5 +51,28 @@
 	</table>
 	<button type="submit">Update</button>
 	{{ form_end(form) }}
+
+	{{ form_start(addForm) }}
+		{{ form_row(addForm.sku) }}
+
+		{{ form_row(addForm.option_name) }}
+		<datalist id="option_name">
+			{% for option in optionName %}
+				<option value="{{ option }}">{{option}}</option>
+			{% endfor %}
+		</datalist>
+
+		{{ form_row(addForm.option_value) }}
+		<datalist id="option_value">
+			{% for option in optionValue %}
+				<option value="{{ option }}">{{option}}</option>
+			{% endfor %}
+		</datalist>
+
+		{{ form_row(addForm.weight) }}
+		<button type="submit">Add new</button>
+
+	{{ form_end(addForm) }}
 </section>
+
 {% endblock %}
