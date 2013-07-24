@@ -20,14 +20,17 @@ class Loader
 	protected $_eventDispatcher;
 	protected $_userLoader;
 	protected $_statuses;
+	protected $_itemStatuses;
 	protected $_entities;
 
-	public function __construct(DB\Query $query, User\Loader $userLoader, Status\Collection $statuses, array $entities)
+	public function __construct(DB\Query $query, User\Loader $userLoader,
+		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
 	{
-		$this->_query      = $query;
-		$this->_userLoader = $userLoader;
-		$this->_statuses   = $statuses;
-		$this->_entities   = $entities;
+		$this->_query        = $query;
+		$this->_userLoader   = $userLoader;
+		$this->_statuses     = $statuses;
+		$this->_itemStatuses = $itemStatuses;
+		$this->_entities     = $entities;
 	}
 
 	public function getByID($id)
@@ -35,13 +38,57 @@ class Loader
 		return $this->_load($id);
 	}
 
+	/**
+	 * Get orders for items with a specific current status.
+	 *
+	 * At least one item in the order must have one of the given statuses as its
+	 * most recent (current) status.
+	 *
+	 * @param  int|array $statuses Status code or array of status codes
+	 *
+	 * @return array[Order]        Array of orders
+	 */
 	public function getByCurrentItemStatus($statuses)
 	{
-		// get orders with at least one item with the most recent status set as one of these
+		if (!is_array($statuses)) {
+			$statuses = (array) $statuses;
+		}
+
+		foreach ($statuses as $code) {
+			if (!$this->_itemStatuses->exists($code)) {
+				throw new Exception(sprintf('Order item status code `%s` not defined.', $code));
+			}
+		}
+
+		$result = $this->_query->run('
+			SELECT
+				order_item.order_id,
+				status_code
+			FROM
+				order_item
+			JOIN (
+				SELECT
+					*
+				FROM
+					order_item_status
+				ORDER BY
+					order_item_status.created_at DESC
+			) AS statuses USING (item_id)
+			GROUP BY
+				item_id
+			HAVING
+				status_code IN (?ij)
+		', array($statuses));
+
+		return $this->_load($result->flatten(), true);
 	}
 
-	protected function _load($id, $returnArray = false)
+	protected function _load($ids, $returnArray = false)
 	{
+		if (!is_array($ids)) {
+			$ids = (array) $ids;
+		}
+
 		$result = $this->_query->run('
 			SELECT
 				order_summary.*,
@@ -68,8 +115,8 @@ class Loader
 			LEFT JOIN
 				order_shipping USING (order_id)
 			WHERE
-				order_id = ?i
-		', $id);
+				order_id = (?ij)
+		', array($ids));
 
 		if (0 === count($result)) {
 			return $returnArray ? array() : false;

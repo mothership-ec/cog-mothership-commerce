@@ -26,7 +26,7 @@ class Services implements ServicesInterface
 
 		// Order decorators
 		$services['order.loader'] = function($c) {
-			return new Commerce\Order\Loader($c['db.query'], $c['user.loader'], $c['order.statuses'], $c['order.entities']);
+			return new Commerce\Order\Loader($c['db.query'], $c['user.loader'], $c['order.statuses'], $c['order.item.statuses'], $c['order.entities']);
 		};
 
 		$services['order.create'] = function($c) {

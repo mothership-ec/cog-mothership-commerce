@@ -43,7 +43,7 @@ class Collection implements \IteratorAggregate, \Countable
 			throw new \InvalidArgumentException(sprintf('Status `%s` has no code', $status->name));
 		}
 
-		if (array_key_exists($status->code, $this->_statuses)) {
+		if ($this->exists($status->code)) {
 			throw new \InvalidArgumentException(sprintf(
 				'Status code `%i` is already defined as `%s`',
 				$status->code,
@@ -69,11 +69,23 @@ class Collection implements \IteratorAggregate, \Countable
 	 */
 	public function get($code)
 	{
-		if (!isset($this->_statuses[$code])) {
+		if (!$this->exists($code)) {
 			throw new \InvalidArgumentException(sprintf('Status code `%i` not set on collection', $code));
 		}
 
 		return $this->_statuses[$code];
+	}
+
+	/**
+	 * Check if a given status code has been defined on this collection.
+	 *
+	 * @param  int $code The status code
+	 *
+	 * @return boolean   True if it exists, false otherwise
+	 */
+	public function exists($code)
+	{
+		return array_key_exists($code, $this->_statuses);
 	}
 
 	/**
