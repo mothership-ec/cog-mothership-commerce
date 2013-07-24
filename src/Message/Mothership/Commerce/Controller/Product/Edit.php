@@ -149,7 +149,7 @@ class Edit extends Controller
 				if ($values['delete']) {
 					$this->get('product.unit.delete')->delete($unit);
 
-					return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
+					continue;
 				}
 
 				$changedUnit->weightGrams = (int) $values['weight'];
