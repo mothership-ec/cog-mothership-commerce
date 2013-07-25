@@ -23,7 +23,7 @@ class Edit extends Controller
 
 		return $this->render('::product:edit', array(
 			'product' => $this->_product,
-			'form'    => $this->_getForm(),
+			'form'    => $this->_getProductForm(),
 		));
 	}
 
@@ -31,32 +31,35 @@ class Edit extends Controller
 	 * Show product units with for for editing them
 	 *
 	 * @param  int 		$productID 	ProductID to load
-	 *
-	 * @return [type]            [description]
 	 */
 	public function units($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units = $this->_product->getUnits()->all();
 
-		$this->_headings = array();
+		$headings = array();
 		foreach($this->_units as $unit) {
 			foreach ($unit->options as $name => $value) {
-				$this->_headings[$name] = ucfirst($name);
+				$headings[$name] = ucfirst($name);
 			}
 		}
 
 		return $this->render('::product:edit-unit', array(
-			'headings'=> $this->_headings,
-			'locale'  => $this->get('locale'),
-			'product' => $this->_product,
-			'units'   => $this->_units ,
-			'form'    => $this->_getUnitForm(),
-			'addForm' => $this->_addUnitForm(),
+			'headings'    => $headings,
+			'locale'      => $this->get('locale'),
+			'product'     => $this->_product,
+			'units'       => $this->_units ,
+			'form'        => $this->_getUnitForm(),
+			'addForm'     => $this->_addNewUnitForm(),
 			'optionValue' => $this->get('option.loader')->getAllOptionValues(),
 		));
 	}
 
+	/**
+	 * Method for unit stock interface
+	 *
+	 * @param  int 	$productID 	ProductID to load
+	 */
 	public function stock($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
@@ -66,17 +69,27 @@ class Edit extends Controller
 			'locale'  => $this->get('locale'),
 			'product' => $this->_product,
 			'units'   => $this->_units,
-			'form'	  => $this->_getUnitStock(),
+			'form'	  => $this->_getUnitStockForm(),
 		));
 	}
 
-	public function _getUnitStock()
+	/**
+	 * Return the form for editing unit stock levels
+	 *
+	 * @return Handler Form Handler for stock editing
+	 */
+	public function _getUnitStockForm()
 	{
-
+		// Make an overall form
 		$mainForm = $this->get('form')
 			->setName('units-stock')
-			->setAction($this->generateUrl('ms.commerce.product.edit.stock.action', array('productID' => $this->_product->id)));
-
+			->setAction(
+				$this->generateUrl('ms.commerce.product.edit.stock.action',
+					array(
+						'productID' => $this->_product->id
+					))
+			);
+		// Create a nested form for each unit
 		foreach ($this->_units as $id => $unit) {
 			$form = $this->get('form')
 				->setName($id)
@@ -91,24 +104,34 @@ class Edit extends Controller
 			));
 
 			foreach ($unit->stock as $type => $value) {
-				$stockForm->add('location_'.$type, 'text',$this->trans('ms.commerce.product.stock-location.'.strtolower($type)), array('attr' => array('value' =>  $value)))
-					->val()->optional();
+				$stockForm->add(
+					'location_'.$type,
+					'text',
+					$this->trans('ms.commerce.product.stock-location.'.strtolower($type)),
+					array('attr' => array(
+							'value' =>  $value
+					)))->val()->optional();
 			}
+
 			$form->add($stockForm->getForm(), 'form');
 			$mainForm->add($form->getForm(), 'form');
-
 		}
-
 
 		return $mainForm;
 	}
 
+	/**
+	 * Return the unit editing form
+	 *
+	 * @return Handler 		Form Handler for editing units and their prices
+	 */
 	protected function _getUnitForm()
 	{
+		// Main form
 		$mainForm = $this->get('form')
 			->setName('units-edit')
 			->setAction($this->generateUrl('ms.commerce.product.edit.units.action', array('productID' => $this->_product->id)));
-
+		// Create a nested form for each of the units in this product
 		foreach ($this->_units as $id => $unit) {
 			$form = $this->get('form')
 				->setName($id)
@@ -119,20 +142,9 @@ class Edit extends Controller
 					'auto_initialize' => false,
 				));
 
+			// create a nested form for prices so we can have name="units-edit[unitID][price][retail]"
 			$priceForm = $this->get('form')
 				->setName('price')
-				->addOptions(array(
-					'auto_initialize' => false,
-			));
-
-			$defaults = array();
-			foreach ($unit->options as $type => $value) {
-				$defaults[$type] = $value;
-			}
-
-			$optionForm = $this->get('form')
-				->setName('options')
-				->setDefaultValues($defaults)
 				->addOptions(array(
 					'auto_initialize' => false,
 			));
@@ -142,7 +154,26 @@ class Edit extends Controller
 					->val()->optional();
 			}
 
+			// Add the price form to the parent form
+			$form->add($priceForm->getForm(), 'form');
+
+			// Work out the default options which should be 'selected' in the option drop downs
+			$defaults = array();
 			foreach ($unit->options as $type => $value) {
+				$defaults[$type] = $value;
+			}
+
+			// create a nested form for the unit options so we can have name="units-edit[unitID][options][colour]"
+			$optionForm = $this->get('form')
+				->setName('options')
+				->setDefaultValues($defaults)
+				->addOptions(array(
+					'auto_initialize' => false,
+			));
+
+			// Build the options
+			foreach ($unit->options as $type => $value) {
+				// populate the select menu options by getting all available options from the DB
 				$choices = array();
 				foreach ($this->get('option.loader')->getByName($type) as $choice) {
 					$choice = trim($choice);
@@ -151,29 +182,31 @@ class Edit extends Controller
 
 				$optionForm->add($type, 'choice','', array('choices' => $choices))
 					->val()->optional();
-				$form->add($optionForm->getForm(), 'form');
 			}
+			// Add the option forms to the parent form
+			$form->add($optionForm->getForm(), 'form');
 
-
-			$form->add($priceForm->getForm(), 'form');
+			// Populate the rest of the editbale unit attributes
 			$form->add('sku', 'text','', array('attr' => array('value' =>  $unit->sku)));
 			$form->add('weight', 'text','', array('attr' => array('value' =>  $unit->weightGrams)))
 				->val()->optional();
 			$form->add('visible', 'checkbox','',array('attr' => array('value' =>  $unit->visible)))
 				->val()->optional();
-
 			$form->add('delete', 'checkbox','')
 				->val()->optional();
+
+			// Add the unit form to the main form
 			$mainForm->add($form->getForm(), 'form');
 		}
-
 
 		return $mainForm;
 	}
 
-	protected function _addUnitForm()
+	/**
+	 * Return the form for adding a new unit to a product
+	 */
+	protected function _addNewUnitForm()
 	{
-
 		$headings = array();
 		foreach ($this->get('option.loader')->getAllOptionNames() as $name => $value) {
 				$headings[$value] = ucfirst($value);
@@ -269,7 +302,7 @@ class Edit extends Controller
 	public function addUnitProccess($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$form = $this->_addUnitForm();
+		$form = $this->_addNewUnitForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$unit              = $this->get('product.unit');
@@ -301,7 +334,7 @@ class Edit extends Controller
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
-		$form = $this->_getForm();
+		$form = $this->_getProductForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$product = $this->_product;
 
@@ -347,7 +380,7 @@ class Edit extends Controller
 
 	}
 
-	protected function _getForm()
+	protected function _getProductForm()
 	{
 		$form = $this->get('form')
 			->setName('product-edit')
