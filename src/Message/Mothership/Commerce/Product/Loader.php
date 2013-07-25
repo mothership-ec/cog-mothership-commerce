@@ -58,6 +58,7 @@ class Loader
 				product.deleted_by   AS deletedBy,
 				product.brand_id     AS brandID,
 				product.name         AS name,
+				product.catgeory     AS category,
 				product.tax_rate     AS taxRate,
 				product.supplier_ref AS supplierRef,
 				product.weight_grams AS weightGrams,

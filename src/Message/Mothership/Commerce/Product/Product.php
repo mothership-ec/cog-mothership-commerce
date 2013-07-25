@@ -23,6 +23,7 @@ class Product
 	public $displayName;
 	public $season;
 	public $description;
+	public $category;
 	public $fabric;
 	public $features;
 	public $careInstructions;

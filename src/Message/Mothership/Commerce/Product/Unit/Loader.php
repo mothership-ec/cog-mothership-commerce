@@ -56,7 +56,7 @@ class Loader implements LoaderInterface
 			)
 		);
 
-		return count($result) ? $this->_load($result->flatten(), $product) : false;
+		return count($result) ? $this->_load($result->flatten(), true, $product) : false;
 	}
 
 	public function getByID($unitID, Product $product = null)
@@ -73,7 +73,7 @@ class Loader implements LoaderInterface
 			)
 		);
 
-		return count($result) ? $this->_load($result->value(), null) : false;
+		return count($result) ? $this->_load($result->value(), false, $product) : false;
 	}
 
 	public function includeInvisible($bool)
@@ -98,7 +98,7 @@ class Loader implements LoaderInterface
 	 *
 	 * @return array|Unit 	Array of, or singular Unit object
 	 */
-	protected function _load($unitIDs, Product $product = null)
+	protected function _load($unitIDs, $alwaysReturnArray = false, Product $product = null)
 	{
 		// Load the data for the units
 		$result = $this->_loadUnits($unitIDs);
@@ -116,6 +116,11 @@ class Loader implements LoaderInterface
 				$this->_prices
 			)
 		);
+
+		if (0 === count($result)) {
+			return $alwaysReturnArray ? array() : false;
+		}
+
 
 		foreach ($result as $key => $data) {
 
@@ -173,7 +178,7 @@ class Loader implements LoaderInterface
 			$ordered[$unit->id] = $unit;
 		}
 
-		return $ordered;
+		return $alwaysReturnArray  ? $ordered : reset($ordered);
 	}
 
 	/**
