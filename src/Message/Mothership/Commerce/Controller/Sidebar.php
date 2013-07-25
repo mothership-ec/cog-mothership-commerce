@@ -10,8 +10,13 @@ class Sidebar extends Controller
 	{
 		$loader = $this->get('product.loader');
 		$products  = $loader->getAll();
+		$listing = array();
+		foreach ($products as $product) {
+			$listing[$product->category][] = $product;
+		}
+
 		return $this->render('Message:Mothership:Commerce::sidebar', array(
-			'products'      => $products,
+			'listing'  => $listing,
 			'productID' => $productID,
 		));
 	}
