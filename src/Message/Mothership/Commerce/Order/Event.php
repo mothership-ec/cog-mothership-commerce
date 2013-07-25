@@ -6,9 +6,10 @@ use Message\Cog\Event\Event as BaseEvent;
 
 class Event extends BaseEvent
 {
-	const CREATE_START    = 'commerce.order.create.start';
-	const CREATE_COMPLETE = 'commerce.order.create.complete';
-	const EDIT            = 'commerce.order.edit';
+	const CREATE_START       = 'commerce.order.create.start';
+	const CREATE_COMPLETE    = 'commerce.order.create.complete';
+	const EDIT               = 'commerce.order.edit';
+	const ITEM_STATUS_CHANGE = 'commerce.order.item.status.change';
 
 	protected $_order;
 

@@ -42,6 +42,15 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$services['order.edit'] = function($c) {
+			return new Commerce\Order\Edit(
+				$c['db.query'],
+				$c['event.dispatcher'],
+				$c['order.statuses'],
+				$c['user.current']
+			);
+		};
+
 		// Order address entity
 		$services['order.address.loader'] = function($c) {
 			return new Commerce\Order\Entity\Address\Loader($c['db.query']);
@@ -61,7 +70,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.item.edit'] = function($c) {
-			return new Commerce\Order\Entity\Item\Edit($c['db.query'], $c['order.item.statuses'], $c['user.current']);
+			return new Commerce\Order\Entity\Item\Edit($c['db.query'], $c['event.dispatcher'], $c['order.item.statuses'], $c['user.current']);
 		};
 
 		// Order item status

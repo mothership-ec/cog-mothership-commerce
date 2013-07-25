@@ -77,6 +77,17 @@ class Collection implements \IteratorAggregate, \Countable
 	}
 
 	/**
+	 * Get all statuses set on this collection, where the keys are the status
+	 * codes.
+	 *
+	 * @return array
+	 */
+	public function all()
+	{
+		return $this->_statuses;
+	}
+
+	/**
 	 * Check if a given status code has been defined on this collection.
 	 *
 	 * @param  int $code The status code

@@ -2,25 +2,29 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
+use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Entity\TransactionalDecoratorInterface;
 use Message\Mothership\Commerce\Order\Status\Collection as StatusCollection;
 
 use Message\User\UserInterface;
 
 use Message\Cog\DB;
+use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Edit
 {
 	protected $_query;
+	protected $_eventDispatcher;
 	protected $_statuses;
 	protected $_currentUser;
 
-	public function __construct(DB\Query $query, StatusCollection $statuses, UserInterface $currentUser)
+	public function __construct(DB\Query $query, DispatcherInterface $dispatcher, StatusCollection $statuses, UserInterface $currentUser)
 	{
-		$this->_query = $query;
-		$this->_statuses = $statuses;
-		$this->_currentUser = $currentUser;
+		$this->_query           = $query;
+		$this->_eventDispatcher = $dispatcher;
+		$this->_statuses        = $statuses;
+		$this->_currentUser     = $currentUser;
 	}
 
 	public function updateStatus(Item $item, $statusCode)
@@ -36,6 +40,7 @@ class Edit
 			return false;
 		}
 
+		// Get instance of item status (so we have authorship info)
 		$status = new Status\Status($status->code, $status->name);
 
 		$status->authorship->create(
@@ -61,6 +66,11 @@ class Edit
 		));
 
 		$item->status = $status;
+
+		$this->_eventDispatcher->dispatch(
+			Event::ITEM_STATUS_CHANGE,
+			new Event($item->order)
+		);
 
 		return $item;
 	}
