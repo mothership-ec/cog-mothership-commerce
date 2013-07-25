@@ -39,21 +39,20 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units = $this->_product->getUnits()->all();
 
-		$headings = array();
+		$this->_headings = array();
 		foreach($this->_units as $unit) {
 			foreach ($unit->options as $name => $value) {
-				$headings[$name] = $name;
+				$this->_headings[$name] = ucfirst($name);
 			}
 		}
 
 		return $this->render('::product:edit-unit', array(
-			'headings'=> $headings,
+			'headings'=> $this->_headings,
 			'locale'  => $this->get('locale'),
 			'product' => $this->_product,
 			'units'   => $this->_units ,
 			'form'    => $this->_getUnitForm(),
 			'addForm' => $this->_addUnitForm(),
-			'optionName' => $this->get('option.loader')->getAllOptionNames(),
 			'optionValue' => $this->get('option.loader')->getAllOptionValues(),
 		));
 	}
@@ -174,6 +173,12 @@ class Edit extends Controller
 
 	protected function _addUnitForm()
 	{
+
+		$headings = array();
+		foreach ($this->get('option.loader')->getAllOptionNames() as $name => $value) {
+				$headings[$value] = ucfirst($value);
+		}
+
 		$form = $this->get('form')
 			->setName('new')
 			->setAction($this->generateUrl('ms.commerce.product.edit.units.create.action', array('productID' => $this->_product->id)))
@@ -183,10 +188,21 @@ class Edit extends Controller
 
 		$form->add('sku', 'text','',array('attr' => array('list' => 'option_value', 'placeholder' => 'SKU')));
 		$form->add('weight', 'text','');
-		$form->add('option_name_1', 'text','Option name', array('attr' => array('list' => 'option_name', 'placeholder' => 'Name')));
+
+		$form->add('option_name_1', 'choice','Option name 1',
+			array(
+				'choices' => $headings,
+				'empty_value' => 'Select option',
+			)
+		);
 		$form->add('option_value_1', 'text','Option value', array('attr' => array('list' => 'option_value', 'placeholder' => 'Value')));
 
-		$form->add('option_name_2', 'text','Option name', array('attr' => array('list' => 'option_name', 'placeholder' => 'Name')));
+		$form->add('option_name_2', 'choice','Option name 2',
+			array(
+				'choices' => $headings,
+				'empty_value' => 'Select option',
+			)
+		);
 		$form->add('option_value_2', 'text','Option value', array('attr' => array('list' => 'option_value', 'placeholder' => 'Value')));
 
 		$priceForm = $this->get('form')
