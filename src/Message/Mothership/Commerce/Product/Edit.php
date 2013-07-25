@@ -56,6 +56,7 @@ class Edit
 				product_info.short_description = :short_description?s,
 				product_info.sizing            = :sizing?s,
 				product_info.notes             = :notes?s,
+				product_info.category          = :category?s,
 
 				product_export.export_value       = :exportValue?,
 				product_export.export_description = :exportDescription?,
@@ -80,6 +81,7 @@ class Edit
 				'short_description' => $product->shortDescription,
 				'sizing'            => $product->sizing,
 				'notes'             => $product->notes,
+				'category'          => $product->category,
 				'productID'			=> $product->id,
 				'localeID'			=> $this->_locale->getID(),
 				'exportValue'		=> $product->exportValue,

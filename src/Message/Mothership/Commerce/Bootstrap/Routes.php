@@ -23,11 +23,11 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.edit', 'edit/{productID}', '::Controller:Product:Edit#index')
 			->setRequirement('productID', '\d+');
 
-		$router['ms.commerce']->add('ms.commerce.product.edit.units.action', 'product/edit/{productID}/units', '::Controller:Product:Edit#unitProcess')
+		$router['ms.product']->add('ms.commerce.product.edit.units.action', 'product/edit/{productID}/units', '::Controller:Product:Edit#unitProcess')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 
-		$router['ms.commerce']->add('ms.commerce.product.edit.units.create.action', 'product/edit/{productID}/units/create', '::Controller:Product:Edit#addUnitProccess')
+		$router['ms.product']->add('ms.commerce.product.edit.units.create.action', 'product/edit/{productID}/units/create', '::Controller:Product:Edit#addUnitProccess')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 

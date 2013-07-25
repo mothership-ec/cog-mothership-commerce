@@ -107,20 +107,8 @@ class Product
 	}
 
 	public function getUnits($showOutOfStock = true, $showInvisible = false) {
-		$this->_entities['unit']->load($this, $showOutOfStock, $showInvisible);;
+		$this->_entities['unit']->load($this, $showOutOfStock, $showInvisible);
 		return $this->_entities['unit'];
-		// $this->_loadUnits();
-		// $units = array();
-
-		// foreach ($this->_units as $unit) {
-		// 	if (!$inStockOnly || $unit->getStock() > 0) {
-		// 		if(!$visibleOnly || $unit->visible) {
-		// 			$units[$unit->unit_id] = $unit;
-		// 		}
-		// 	}
-		// }
-
-		// return $units;
 	}
 
 
@@ -139,40 +127,36 @@ class Product
 		return (!empty($this->getImage($typeID, $colourID)->image_location));
 	}
 
-	public function getColour($id) {
+	public function getColour($id)
+	{
 		$this->getColours();
 		return (isset($this->_colours[$id])) ? $this->_colours[$id] : false;
 	}
 
 
-	public function getAllUnits() {
-		return $this->getUnits(false, false);
+	public function getAllUnits()
+	{
+		return $this->getUnits(true, true);
 	}
 
-	public function getVisibleUnits() {
-		return $this->getUnits(false);
+	public function getVisibleUnits()
+	{
+		return $this->getUnits(true, false);
 	}
 
 
-	public function getUnit($unitID) {
+	public function getUnit($unitID)
+	{
+		$units = $this->getUnits(true, true);
 
-		$this->getUnits();
-
-		if (isset($this->_units[$unitID])) {
-			return $this->_units[$unitID];
+		try {
+			return $units->get($unitID);
+		} catch(\Exception $e) {
+			return false;
 		}
+
 		return false;
 	}
-
-
-	public function filterByVariant(array $variants) {
-		foreach($this->getUnits() as $unit) {
-			if (!in_array($unit->variant_id, $variants)) {
-				unset($this->_units[$unit->unit_id]);
-			}
-		}
-	}
-
 
 	public function filterByColour(array $colours) {
 		foreach($this->getUnits() as $unit) {
@@ -184,7 +168,7 @@ class Product
 
 
 	//GET PRODUCT PRICE FOR SPECIFIC LOCALE
-	public function getPrice($localeID = NULL, $type = 'retail') {
+	public function getPrice($locale = NULL, $type = 'retail') {
 		if (empty($localeID)) {
 			$localeID = $this->_locale->getCurrencyID();
 		}
