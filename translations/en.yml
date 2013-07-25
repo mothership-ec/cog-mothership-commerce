@@ -20,7 +20,14 @@ ms.commerce:
     features: Features
     fabric: Fabric
     description: Description
+    category: Category
     price:
       retail: Retail Price
       cost: Cost Price
       rrp: RRP Price
+    price-sans:
+      retail: Retail
+      cost: Cost
+      rrp: RRP
+    stock-location:
+      1: Web Stock

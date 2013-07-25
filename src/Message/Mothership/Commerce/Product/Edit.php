@@ -46,6 +46,7 @@ class Edit
 				product.tax_rate     = :tax_rate?s,
 				product.supplier_ref = :supplier_ref?s,
 				product.weight_grams = :weight_grams?i,
+				product.category     = :category?s,
 
 				product_info.display_name      = :display_name?s,
 				product_info.season            = :season?s,
@@ -80,6 +81,7 @@ class Edit
 				'short_description' => $product->shortDescription,
 				'sizing'            => $product->sizing,
 				'notes'             => $product->notes,
+				'category'          => $product->category,
 				'productID'			=> $product->id,
 				'localeID'			=> $this->_locale->getID(),
 				'exportValue'		=> $product->exportValue,

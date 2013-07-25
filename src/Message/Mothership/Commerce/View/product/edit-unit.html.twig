@@ -10,14 +10,14 @@
 		<h1>Editing Units of '{{ product.name }}'</h1>
 </hgroup>
 
-<div class="topbar">
+<div class="topbar products">
 	<ul class="tabs">
 		<li class=""><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live="">Attributes</a></li>
 		<li class="active"><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live="">Units</a></li>
 		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live="">Stock</a></li>
 	</ul>
 </div>
-<section class="container-content">
+<section class="container-products">
 	{{ form_start(form) }}
 	<table>
 		<thead>
@@ -29,6 +29,7 @@
 				<th>Prices</th>
 				<th>Weight (grams)</th>
 				<th>Visible</th>
+				<th>Delete</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -40,38 +41,64 @@
 					{% endfor %}
 						<td>
 						{% for name, value in unit.price %}
-							{{ form_row(form[unit.id]['price'][name]) }}
+							<div class="inline">
+								{{ form_row(form[unit.id]['price'][name]) }}
+							</div>
 						{% endfor %}
 						</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
 					<td>{{ form_widget(form[unit.id]['visible']) }}</td>
+					<td>{{ form_widget(form[unit.id]['delete']) }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
-	<button type="submit">Update</button>
+	<button type="submit" class="button small save" id="save-content">Update</button>
 	{{ form_end(form) }}
-
 	{{ form_start(addForm) }}
-		{{ form_row(addForm.sku) }}
+	<table>
+		<thead>
+			<tr>
+				<th>SKU</th>
+				<th>Type</th>
+				<th>Value</th>
+				<th>Prices</th>
+				<th>Weight (grams)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>{{ form_widget(addForm.sku) }}</td>
+				<td>
+					{{ form_widget(addForm.option_name_1) }} <br />
+					{{ form_widget(addForm.option_name_2) }}
+				</td>
+				<td>
+					{{ form_widget(addForm.option_value_1) }} <br />
+					{{ form_widget(addForm.option_value_2) }}
+				</td>
+				<td>
+					{{ form_row(addForm['price']['retail']) }}
+					{{ form_row(addForm['price']['cost']) }}
+					{{ form_row(addForm['price']['rrp']) }}
+				</td>
+				<td>{{ form_widget(addForm.weight) }}</td>
 
-		{{ form_row(addForm.option_name) }}
+			</tr>
+		</tbody>
+	</table>
+		<button type="submit" class="button small submit">Add new</button>
 		<datalist id="option_name">
 			{% for option in optionName %}
 				<option value="{{ option }}">{{option}}</option>
 			{% endfor %}
 		</datalist>
 
-		{{ form_row(addForm.option_value) }}
 		<datalist id="option_value">
 			{% for option in optionValue %}
 				<option value="{{ option }}">{{option}}</option>
 			{% endfor %}
 		</datalist>
-
-		{{ form_row(addForm.weight) }}
-		{{ form_rest(addForm) }}
-		<button type="submit">Add new</button>
 
 	{{ form_end(addForm) }}
 </section>

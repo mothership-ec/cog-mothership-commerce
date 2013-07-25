@@ -29,7 +29,6 @@ class Edit
 	public function save(Unit $unit)
 	{
 		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
-
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
 		$result = $this->_query->run(
@@ -66,7 +65,7 @@ class Edit
 			}
 
 			$optionUpdate = $this->_query->run(
-				'INSERT INTO
+				'REPLACE INTO
 					product_unit_option
 					(
 						unit_id,
@@ -86,10 +85,29 @@ class Edit
 	public function savePrices(Unit $unit)
 	{
 
+		$result = $this->_query->run(
+			'DELETE FROM
+				product_unit_price
+			WHERE
+				unit_id = ?i',
+			array(
+				$unit->id,
+			)
+		);
+
 		$options = array();
 		$inserts = array();
 
 		foreach ($unit->price as $type => $price) {
+			$unitPrice = $unit->price[$type]->getPrice('GBP', $this->_locale);
+			$productPrice = $unit->product->price[$type]->getPrice('GBP', $this->_locale);
+
+			// If the unit price is equal to the product price then we don't
+			// need to add a row, and same if the price is zero
+			if ($unitPrice === 0 || $unitPrice == $productPrice ) {
+				continue;
+			}
+
 			$options[] = $unit->id;
 			$options[] = $type;
 			$options[] = $unit->price[$type]->getPrice('GBP', $this->_locale);
@@ -98,20 +116,22 @@ class Edit
 			$inserts[] = '(?i,?s,?s,?s,?s)';
 		}
 
-		$result = $this->_query->run(
-			'REPLACE INTO
-				product_unit_price
-				(
-					unit_id,
-					type,
-					price,
-					currency_id,
-					locale
-				)
-			VALUES
-				'.implode(',',$inserts).' ',
-			$options
-		);
+		if ($options) {
+			$result = $this->_query->run(
+				'REPLACE INTO
+					product_unit_price
+					(
+						unit_id,
+						type,
+						price,
+						currency_id,
+						locale
+					)
+				VALUES
+					'.implode(',',$inserts).' ',
+				$options
+			);
+		}
 
 		return $unit;
 	}

@@ -10,17 +10,17 @@
 		<h1>Editing '{{ product.name }}'</h1>
 </hgroup>
 
-<div class="topbar">
+<div class="topbar products">
 	<ul class="tabs">
 		<li class="active"><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-liv>Attributes</a></li>
 		<li class=""><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live>Units</a></li>
 		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live>Stock</a></li>
 	</ul>
 </div>
-<section class="container-content">
+<section class="container-products">
 	{{ form_start(form) }}
 		{{ form_rest(form) }}
-		<button type="submit">Save</button>
+		<button type="submit" class="button small save" id="save-content">Save changes</button>
 	{{ form_end(form) }}
 </section>
 {% endblock %}

@@ -6,14 +6,17 @@
 
 {% block main %}
 
-<h1>Create a product</h1>
+<hgroup class="title">
+	<h1>Create a product</h1>
+</hgroup>
 
-{{ form_start(form) }}
-	{{ form_row(form.name) }}
-	{{ form_row(form.display_name) }}
-	{{ form_row(form.short_description) }}
+<div class="container-products create-product">	
+	{{ form_start(form) }}
+		{{ form_row(form.name) }}
+		{{ form_row(form.display_name) }}
+		{{ form_row(form.short_description) }}
 
-	<button type="submit">Create</button>
-{{ form_end(form) }}
-
+		<button type="submit" class="button small save">Create product</button>
+	{{ form_end(form) }}
+</div>
 {% endblock %}
