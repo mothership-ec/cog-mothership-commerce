@@ -35,9 +35,9 @@
 		<tbody>
 			{% for unit in units %}
 				<tr>
-					<td>{{ unit.sku }}</td>
+					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
 					{% for name, value in unit.options %}
-						<td>{{ value }}</td>
+						<td>{{ form_widget(form[unit.id]['options'][name]) }}</td>
 					{% endfor %}
 						<td>
 						{% for name, value in unit.price %}

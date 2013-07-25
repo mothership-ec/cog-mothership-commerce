@@ -114,7 +114,7 @@ class Edit extends Controller
 			$form = $this->get('form')
 				->setName($id)
 				->setDefaultValues(array(
-					'visible' => (bool) $unit->visible
+					'visible' => (bool) $unit->visible,
 				))
 				->addOptions(array(
 					'auto_initialize' => false,
@@ -126,16 +126,43 @@ class Edit extends Controller
 					'auto_initialize' => false,
 			));
 
+			$defaults = array();
+			foreach ($unit->options as $type => $value) {
+				$defaults[$type] = $value;
+			}
+
+			$optionForm = $this->get('form')
+				->setName('options')
+				->setDefaultValues($defaults)
+				->addOptions(array(
+					'auto_initialize' => false,
+			));
+
 			foreach ($unit->price as $type => $value) {
 				$priceForm->add($type, 'text',$this->trans('ms.commerce.product.price-sans.'.strtolower($type)), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
 					->val()->optional();
 			}
 
+			foreach ($unit->options as $type => $value) {
+				$choices = array();
+				foreach ($this->get('option.loader')->getByName($type) as $choice) {
+					$choice = trim($choice);
+					$choices[$choice] = $choice;
+				}
+
+				$optionForm->add($type, 'choice','', array('choices' => $choices))
+					->val()->optional();
+				$form->add($optionForm->getForm(), 'form');
+			}
+
+
 			$form->add($priceForm->getForm(), 'form');
+			$form->add('sku', 'text','', array('attr' => array('value' =>  $unit->sku)));
 			$form->add('weight', 'text','', array('attr' => array('value' =>  $unit->weightGrams)))
 				->val()->optional();
-			$form->add('visible', 'checkbox','', array('attr' => array('value' =>  $unit->visible)))
+			$form->add('visible', 'checkbox','',array('attr' => array('value' =>  $unit->visible)))
 				->val()->optional();
+
 			$form->add('delete', 'checkbox','')
 				->val()->optional();
 			$mainForm->add($form->getForm(), 'form');
@@ -197,12 +224,16 @@ class Edit extends Controller
 
 					continue;
 				}
-
+				$changedUnit->sku         = $values['sku'];
 				$changedUnit->weightGrams = (int) $values['weight'];
 				$changedUnit->visible     = (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+				}
+
+				foreach ($values['options'] as $type => $value) {
+					$changedUnit->options[$type] = $value;
 				}
 
 				if ($changedUnit != $unit) {
