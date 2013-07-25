@@ -41,7 +41,9 @@
 					{% endfor %}
 						<td>
 						{% for name, value in unit.price %}
-							{{ form_widget(form[unit.id]['price'][name]) }}
+							<div class="inline">
+								{{ form_row(form[unit.id]['price'][name]) }}
+							</div>
 						{% endfor %}
 						</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
@@ -76,9 +78,9 @@
 					{{ form_widget(addForm.option_value_2) }}
 				</td>
 				<td>
-					{{ form_widget(addForm['price']['retail']) }}
-					{{ form_widget(addForm['price']['cost']) }}
-					{{ form_widget(addForm['price']['rrp']) }}
+					{{ form_row(addForm['price']['retail']) }}
+					{{ form_row(addForm['price']['cost']) }}
+					{{ form_row(addForm['price']['rrp']) }}
 				</td>
 				<td>{{ form_widget(addForm.weight) }}</td>
 

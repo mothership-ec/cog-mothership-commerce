@@ -33,7 +33,8 @@ class Routes implements RoutesInterface
 
 		$router['ms.product']->add('ms.commerce.product.edit.units', 'edit/{productID}/units', '::Controller:Product:Edit#units')
 			->setRequirement('productID', '\d+');
-
+		$router['ms.product']->add('ms.commerce.product.edit.stock.action', 'edit/{productID}/stock', '::Controller:Product:Edit#stock')
+			->setRequirement('productID', '\d+');
 		$router['ms.product']->add('ms.commerce.product.edit.stock', 'edit/{productID}/stock', '::Controller:Product:Edit#stock')
 			->setRequirement('productID', '\d+');
 	}

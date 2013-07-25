@@ -58,6 +58,52 @@ class Edit extends Controller
 		));
 	}
 
+	public function stock($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$this->_units = $this->_product->getAllUnits()->all();
+
+		return $this->render('::product:edit-stock', array(
+			'locale'  => $this->get('locale'),
+			'product' => $this->_product,
+			'units'   => $this->_units,
+			'form'	  => $this->_getUnitStock(),
+		));
+	}
+
+	public function _getUnitStock()
+	{
+
+		$mainForm = $this->get('form')
+			->setName('units-stock')
+			->setAction($this->generateUrl('ms.commerce.product.edit.stock.action', array('productID' => $this->_product->id)));
+
+		foreach ($this->_units as $id => $unit) {
+			$form = $this->get('form')
+				->setName($id)
+				->addOptions(array(
+					'auto_initialize' => false,
+			));
+
+			$stockForm = $this->get('form')
+				->setName('stock')
+				->addOptions(array(
+					'auto_initialize' => false,
+			));
+
+			foreach ($unit->stock as $type => $value) {
+				$stockForm->add('location_'.$type, 'text',$this->trans('ms.commerce.product.stock-location.'.strtolower($type)), array('attr' => array('value' =>  $value)))
+					->val()->optional();
+			}
+			$form->add($stockForm->getForm(), 'form');
+			$mainForm->add($form->getForm(), 'form');
+
+		}
+
+
+		return $mainForm;
+	}
+
 	protected function _getUnitForm()
 	{
 		$mainForm = $this->get('form')
@@ -81,7 +127,7 @@ class Edit extends Controller
 			));
 
 			foreach ($unit->price as $type => $value) {
-				$priceForm->add($type, 'text', $type == 'rrp' ? 'RRP' : ucfirst($type), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
+				$priceForm->add($type, 'text',$this->trans('ms.commerce.product.price-sans.'.strtolower($type)), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
 					->val()->optional();
 			}
 
@@ -123,7 +169,7 @@ class Edit extends Controller
 		));
 
 		foreach ($this->get('product.price.types') as $type) {
-			$priceForm->add($type, 'text', '', array('attr'=>array('placeholder' => ucfirst($type))))
+			$priceForm->add($type, 'text', $this->trans('ms.commerce.product.price-sans.'.strtolower($type)))
 				->val()->optional();
 		}
 
@@ -224,6 +270,7 @@ class Edit extends Controller
 			$product->season                     = $data['season'];
 			$product->description                = $data['description'];
 			$product->fabric                     = $data['fabric'];
+			$product->category                   = $data['category'];
 			$product->features                   = $data['features'];
 			$product->careInstructions           = $data['care_instructions'];
 			$product->sizing                     = $data['sizing'];
@@ -268,6 +315,7 @@ class Edit extends Controller
 				'weight_grams'                  => $this->_product->weightGrams,
 				'season'                        => $this->_product->season,
 				'description'                   => $this->_product->description,
+				'category'                   	=> $this->_product->category,
 				'fabric'                        => $this->_product->fabric,
 				'features'                      => $this->_product->features,
 				'care_instructions'             => $this->_product->careInstructions,
@@ -284,6 +332,9 @@ class Edit extends Controller
 			->val()->maxLength(255);
 
 		$form->add('display_name', 'text', $this->trans('ms.commerce.product.display-name'))
+			->val()->maxLength(255);
+
+		$form->add('category', 'text', $this->trans('ms.commerce.product.category'))
 			->val()->maxLength(255);
 
 		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description'));
@@ -303,7 +354,9 @@ class Edit extends Controller
 			->val()->optional();
 
 		$form->add('year', 'text', $this->trans('ms.commerce.product.year'))
-			->val()->maxLength(4);
+			->val()
+				->maxLength(4)
+				->optional();
 		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.tax-rate'))
 			->val()->maxLength(255);
 		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.supplier-ref'))
@@ -318,7 +371,9 @@ class Edit extends Controller
 		$form->add('weight_grams', 'number', $this->trans('ms.commerce.product.weight-grams'))
 			->val()->maxLength(255);
 		$form->add('season', 'text', $this->trans('ms.commerce.product.season'))
-			->val()->maxLength(255);
+			->val()
+				->maxLength(255)
+				->optional();
 
 		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.export-description'))
 			->val()->optional();
@@ -327,7 +382,7 @@ class Edit extends Controller
 		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.export-manufacture-country'), array(
 			'choices' => $this->get('country.list')->getAll(),
 			'attr' => array('data-help-key' => 'ms.cms.attributes.access.help'),
-		));
+		))->val()->optional();
 
 		return $form;
 	}

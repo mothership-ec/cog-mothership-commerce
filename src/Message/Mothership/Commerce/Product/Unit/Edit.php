@@ -99,8 +99,12 @@ class Edit
 		$inserts = array();
 
 		foreach ($unit->price as $type => $price) {
+			$unitPrice = $unit->price[$type]->getPrice('GBP', $this->_locale);
+			$productPrice = $unit->product->price[$type]->getPrice('GBP', $this->_locale);
 
-			if ($unit->price[$type]->getPrice('GBP', $this->_locale) === 0) {
+			// If the unit price is equal to the product price then we don't
+			// need to add a row, and same if the price is zero
+			if ($unitPrice === 0 || $unitPrice == $productPrice ) {
 				continue;
 			}
 

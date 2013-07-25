@@ -14,7 +14,7 @@ class Create
 	protected $_user;
 	protected $_locale;
 
-	public function __construct(Query $query, User $user, Locale $locale)
+	public function __construct(Query $query, UserInterface $user, Locale $locale)
 
 	{
 		$this->_query  = $query;
