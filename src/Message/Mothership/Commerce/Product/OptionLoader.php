@@ -46,4 +46,23 @@ class OptionLoader
 		return $result->flatten();
 
 	}
+
+	public function getByName($type)
+	{
+		$result = $this->_query->run(
+			'SELECT
+				option_value
+			FROM
+				product_unit_option
+			WHERE
+				option_name = ?s
+			GROUP BY
+				option_value',
+			array(
+				$type
+			)
+		);
+
+		return $result->flatten();
+	}
 }
