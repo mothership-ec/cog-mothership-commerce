@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\EventListener;
 
+use Message\Mothership\Commerce\Order\OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
@@ -18,7 +19,7 @@ class TotalsListener implements SubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(Event::CREATE_START => array(
+		return array(OrderEvents::CREATE_START => array(
 			array('calculateShippingTax'),
 			array('setTotals', -900),
 		));
@@ -34,7 +35,7 @@ class TotalsListener implements SubscriberInterface
 	 *
 	 * @return false If there is no shipping cost and therefore nothing to be done
 	 */
-	public function calculateShippingTax(Event $event)
+	public function calculateShippingTax(Event\Event $event)
 	{
 		$order = $event->getOrder();
 
@@ -58,7 +59,7 @@ class TotalsListener implements SubscriberInterface
 	 *
 	 * @param Event $event The event object
 	 */
-	public function setTotals(Event $event)
+	public function setTotals(Event\Event $event)
 	{
 		$order = $event->getOrder();
 

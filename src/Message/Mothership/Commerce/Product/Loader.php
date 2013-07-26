@@ -6,6 +6,7 @@ use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Mothership\FileManager\File\Loader as FileLoader;
 
 class Loader
 {
@@ -15,12 +16,13 @@ class Loader
 
 	protected $_returnArray;
 
-	public function __construct(Query $query, Locale $locale, array $entities = array(), $priceTypes = array())
+	public function __construct(Query $query, Locale $locale, FileLoader $fileLoader, array $entities = array(), $priceTypes = array())
 	{
 		$this->_query = $query;
 		$this->_locale = $locale;
 		$this->_entities = $entities;
 		$this->_priceTypes = $priceTypes;
+		$this->_fileLoader = $fileLoader;
 	}
 
 	public function getByID($productID)
@@ -115,6 +117,21 @@ class Loader
 			(array) $productIDs,
 		));
 
+		$images = $this->_query->run(
+			'SELECT
+				product_image.product_id   AS id,
+				product_image.file_id      AS fileID,
+				product_image.type         AS type,
+				product_image.option_name  AS optionName,
+				product_image.option_value AS optionValue
+			FROM
+				product_image
+			WHERE
+				product_image.product_id IN (?ij)
+		', array(
+			(array) $productIDs,
+		));
+
 		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_locale, $this->_entities, $this->_priceTypes));
 
 		foreach ($result as $key => $data) {
@@ -138,6 +155,19 @@ class Loader
 			foreach ($tags as $k => $tag) {
 				if ($tag->id == $data->id) {
 					$products[$key]->tags[$k] = $tag->name;
+				}
+			}
+
+			foreach ($images as $image) {
+				if ($image->id == $data->id) {
+					$products[$key]->images[$image->fileID] = new Image(
+						$image->fileID,
+						$image->type,
+						$this->_locale,
+						$this->_fileLoader->getByID($image->fileID),
+						$image->optionName,
+						$image->optionValue
+					);
 				}
 			}
 		}

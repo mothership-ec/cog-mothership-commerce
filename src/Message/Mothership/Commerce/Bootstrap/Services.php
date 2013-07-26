@@ -42,35 +42,50 @@ class Services implements ServicesInterface
 			);
 		};
 
-		// Order entity loaders
+		$services['order.edit'] = function($c) {
+			return new Commerce\Order\Edit(
+				$c['db.query'],
+				$c['event.dispatcher'],
+				$c['order.statuses'],
+				$c['user.current']
+			);
+		};
+
+		// Order address entity
 		$services['order.address.loader'] = function($c) {
 			return new Commerce\Order\Entity\Address\Loader($c['db.query']);
 		};
 
-		$services['order.item.loader'] = function($c) {
-			return new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader']);
-		};
-
-		$services['order.payment.loader'] = function($c) {
-			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
-		};
-
-		$services['order.note.loader'] = function($c) {
-			return new Commerce\Order\Entity\Note\Loader($c['db.query']);
-		};
-
-		// Order entity creators
 		$services['order.address.create'] = function($c) {
 			return new Commerce\Order\Entity\Address\Create($c['db.query']);
+		};
+
+		// Order item entity
+		$services['order.item.loader'] = function($c) {
+			return new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader']);
 		};
 
 		$services['order.item.create'] = function($c) {
 			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['user.current']);
 		};
 
-		// Other decorators
+		$services['order.item.edit'] = function($c) {
+			return new Commerce\Order\Entity\Item\Edit($c['db.transaction'], $c['event.dispatcher'], $c['order.item.statuses'], $c['user.current']);
+		};
+
+		// Order item status
 		$services['order.item.status.loader'] = function($c) {
 			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
+		};
+
+		// Order payment entity
+		$services['order.payment.loader'] = function($c) {
+			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
+		};
+
+		// Order note entity
+		$services['order.note.loader'] = function($c) {
+			return new Commerce\Order\Entity\Note\Loader($c['db.query']);
 		};
 
 		// Available payment & despatch methods
@@ -102,6 +117,7 @@ class Services implements ServicesInterface
 			));
 		});
 
+		// Product
 		$services['product'] = function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
 		};
@@ -128,6 +144,7 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Loader(
 				$c['db.query'],
 				$c['locale'],
+				$c['file_manager.file.loader'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);

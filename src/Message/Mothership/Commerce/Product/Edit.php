@@ -46,6 +46,7 @@ class Edit
 				product.tax_rate     = :tax_rate?s,
 				product.supplier_ref = :supplier_ref?s,
 				product.weight_grams = :weight_grams?i,
+				product.category     = :category?s,
 
 				product_info.display_name      = :display_name?s,
 				product_info.season            = :season?s,
@@ -56,7 +57,6 @@ class Edit
 				product_info.short_description = :short_description?s,
 				product_info.sizing            = :sizing?s,
 				product_info.notes             = :notes?s,
-				product_info.category          = :category?s,
 
 				product_export.export_value       = :exportValue?,
 				product_export.export_description = :exportDescription?,
@@ -156,6 +156,31 @@ class Edit
 			VALUES
 				'.implode(',',$inserts).' ',
 			$options
+		);
+
+		return $product;
+	}
+
+	public function saveImage(Product $product, Image $image)
+	{
+		$result = $this->_query->run(
+			'REPLACE INTO
+				product_image
+			SET
+				product_id = ?i,
+				file_id = ?i,
+				locale = ?,
+				type = ?s,
+				option_name = ?sn,
+				option_value = ?sn',
+			array(
+				$product->id,
+				$image->fileID,
+				$image->locale->getID(),
+				$image->type,
+				$image->optionName,
+				$image->optionValue
+			)
 		);
 
 		return $product;

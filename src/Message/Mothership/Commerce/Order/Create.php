@@ -42,13 +42,13 @@ class Create
 	/**
 	 * Define the creator for an entity type.
 	 *
-	 * @param string                                 $name    Entity name
-	 * @param Entity\TransactionalDecoratorInterface $creator Entity creator
+	 * @param string                    $name    Entity name
+	 * @param DB\TransactionalInterface $creator Entity creator
 	 *
 	 * @throws \InvalidArgumentException If an entity creator with the given
 	 *                                   name already exists
 	 */
-	public function addEntityCreator($name, Entity\TransactionalDecoratorInterface $creator)
+	public function addEntityCreator($name, DB\TransactionalInterface $creator)
 	{
 		if (array_key_exists($name, $this->_entityCreators)) {
 			throw new \InvalidArgumentException(sprintf('Order entity creator already exists with name `%s`', $name));
@@ -61,10 +61,9 @@ class Create
 
 	public function create(Order $order, array $metadata = array())
 	{
-		$order = $this->_eventDispatcher->dispatch(Event::CREATE_START, new Event($order))
+		$order = $this->_eventDispatcher->dispatch(OrderEvents::CREATE_START, new Event\Event($order))
 			->getOrder();
 
-		// fire another event that we need a response from for setting order and item statuses?
 		// validate? a status ID must be set, type must be set, etc
 
 		$order->authorship->create(
@@ -159,9 +158,9 @@ class Create
 
 		$this->_trans->commit();
 
-		$event = new Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
+		$event = new Event\Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
 		$this->_eventDispatcher->dispatch(
-			Event::CREATE_COMPLETE,
+			OrderEvents::CREATE_COMPLETE,
 			$event
 		);
 

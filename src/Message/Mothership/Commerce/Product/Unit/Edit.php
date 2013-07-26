@@ -28,6 +28,7 @@ class Edit
 
 	public function save(Unit $unit)
 	{
+
 		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
@@ -52,7 +53,7 @@ class Edit
 			)
 		);
 
-		if ($currentUnit->options != $unit->options) {
+		if ($currentUnit->options != $unit->options || $currentUnit->sku != $unit->sku) {
 			$options = array();
 			$inserts = array();
 			$newRevisionID = $unit->revisionID + 1;
@@ -77,6 +78,26 @@ class Edit
 				'.implode(',',$inserts).'',
 					$options
 			);
+
+			$updateInfo = $this->_query->run(
+				'REPLACE INTO
+					product_unit_info
+					(
+						unit_id,
+						revision_id,
+						sku
+					)
+				VALUES
+					(
+						?i,
+						?i,
+						?s
+					)',
+				array(
+					$unit->id,
+					$newRevisionID,
+					$unit->sku,
+			));
 		}
 
 		return $result->affected() ? $unit : false;
@@ -99,8 +120,12 @@ class Edit
 		$inserts = array();
 
 		foreach ($unit->price as $type => $price) {
+			$unitPrice = $unit->price[$type]->getPrice('GBP', $this->_locale);
+			$productPrice = $unit->product->price[$type]->getPrice('GBP', $this->_locale);
 
-			if ($unit->price[$type]->getPrice('GBP', $this->_locale) === 0) {
+			// If the unit price is equal to the product price then we don't
+			// need to add a row, and same if the price is zero
+			if ($unitPrice === 0 || $unitPrice == $productPrice ) {
 				continue;
 			}
 

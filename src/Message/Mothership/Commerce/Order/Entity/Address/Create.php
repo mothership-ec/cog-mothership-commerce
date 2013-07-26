@@ -11,7 +11,7 @@ use Message\Cog\DB;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Create implements Order\Entity\TransactionalDecoratorInterface
+class Create implements DB\TransactionalInterface
 {
 	protected $_query;
 

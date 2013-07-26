@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
+use Message\Mothership\Commerce\Order\OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
 
@@ -21,7 +22,7 @@ class EventListener implements SubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(Event::CREATE_START => array(
+		return array(OrderEvents::CREATE_START => array(
 			array('calculateTax'),
 			array('setDefaultStatus'),
 		));
@@ -42,7 +43,7 @@ class EventListener implements SubscriberInterface
 	 *
 	 * @param Event $event The event object
 	 */
-	public function setDefaultStatus(Event $event)
+	public function setDefaultStatus(Event\Event $event)
 	{
 		foreach ($event->getOrder()->items as $item) {
 			if (!$item->status) {
@@ -57,7 +58,7 @@ class EventListener implements SubscriberInterface
 	 *
 	 * @param Event $event The event object
 	 */
-	public function calculateTax(Event $event)
+	public function calculateTax(Event\Event $event)
 	{
 		foreach ($event->getOrder()->items as $item) {
 			$item->gross = round($item->listPrice - $item->discount, 2);

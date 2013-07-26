@@ -12,11 +12,13 @@
 
 <div class="topbar products">
 	<ul class="tabs">
-		<li class=""><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live="">Attributes</a></li>
-		<li class="active"><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live="">Units</a></li>
-		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live="">Stock</a></li>
+		<li class="active"><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-liv>Attributes</a></li>
+		<li class=""><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live>Units</a></li>
+		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live>Stock</a></li>
+		<li class=""><a href="{{ url('ms.commerce.product.edit.images', {productID:product.id}) }}" data-live>Images</a></li>
 	</ul>
 </div>
+
 <section class="container-products">
 	{{ form_start(form) }}
 	<table>
@@ -35,13 +37,15 @@
 		<tbody>
 			{% for unit in units %}
 				<tr>
-					<td>{{ unit.sku }}</td>
+					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
 					{% for name, value in unit.options %}
-						<td>{{ value }}</td>
+						<td>{{ form_widget(form[unit.id]['options'][name]) }}</td>
 					{% endfor %}
 						<td>
 						{% for name, value in unit.price %}
-							{{ form_widget(form[unit.id]['price'][name]) }}
+							<div class="inline">
+								{{ form_row(form[unit.id]['price'][name]) }}
+							</div>
 						{% endfor %}
 						</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
@@ -76,9 +80,9 @@
 					{{ form_widget(addForm.option_value_2) }}
 				</td>
 				<td>
-					{{ form_widget(addForm['price']['retail']) }}
-					{{ form_widget(addForm['price']['cost']) }}
-					{{ form_widget(addForm['price']['rrp']) }}
+					{{ form_row(addForm['price']['retail']) }}
+					{{ form_row(addForm['price']['cost']) }}
+					{{ form_row(addForm['price']['rrp']) }}
 				</td>
 				<td>{{ form_widget(addForm.weight) }}</td>
 
@@ -86,12 +90,6 @@
 		</tbody>
 	</table>
 		<button type="submit" class="button small submit">Add new</button>
-		<datalist id="option_name">
-			{% for option in optionName %}
-				<option value="{{ option }}">{{option}}</option>
-			{% endfor %}
-		</datalist>
-
 		<datalist id="option_value">
 			{% for option in optionValue %}
 				<option value="{{ option }}">{{option}}</option>
