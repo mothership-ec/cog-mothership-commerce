@@ -8,7 +8,7 @@ use Message\Cog\DB;
 use Message\Cog\Event\Dispatcher;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-class Edit
+class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_eventDispatcher;
@@ -22,6 +22,11 @@ class Edit
 		$this->_eventDispatcher = $eventDispatcher;
 		$this->_statuses        = $statuses;
 		$this->_currentUser     = $currentUser;
+	}
+
+	public function setTransaction(DB\Transaction $trans)
+	{
+		$this->_query = $trans;
 	}
 
 	public function updateStatus(Order $order, $statusCode)
@@ -59,10 +64,10 @@ class Edit
 		));
 
 		$order->status = clone $status;
-		de('updating order status');
-		return $this->_dispatcher->dispatch(
-			Event::EDIT,
-			new Event($order)
+
+		return $this->_eventDispatcher->dispatch(
+			OrderEvents::EDIT,
+			new Event\Event($order)
 		)->getOrder();
 	}
 }
