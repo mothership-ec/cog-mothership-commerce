@@ -48,11 +48,14 @@ class Product
 	public $priceTypes;
 
 	protected $_entities = array();
+	protected $_locale;
 
 	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
 	{
 		$this->authorship = new Authorship;
 		$this->priceTypes = $priceTypes;
+		$this->_locale    = $locale;
+
 		foreach ($entities as $name => $loader) {
 			$this->addEntity($name, $loader);
 		}
@@ -80,37 +83,10 @@ class Product
 		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
-	//GET COLLECTIONS (SEE OPTS)
-	public function __call($property, $arg) {
-		$property = str_replace('get', '', $property);
-		$property = strtolower(substr($property,0,1) ) . substr($property,1);
-		$opts = array(
-			'images',
-			'ranges',
-		);
-		if (in_array($property, $opts)) {
-			$func = '_load' . ucfirst($property);
-			if (method_exists($this, $func)) {
-				$this->{$func}();
-			} else {
-				$this->_loadAttribute(substr($property, 0, strlen($property) -1));
-			}
-			return $this->{'_' . $property};
-		} else {
-			throw new \Exception($property . ' cannot be called from Product with __call()');
-		}
-	}
-
-
-	public function __wakeup() {
-		$this->_db = new DBquery;
-	}
-
 	public function getUnits($showOutOfStock = true, $showInvisible = false) {
 		$this->_entities['unit']->load($this, $showOutOfStock, $showInvisible);
 		return $this->_entities['unit'];
 	}
-
 
 	public function getImage($typeID, $colourID = 0) {
 		$this->getImages();
@@ -136,7 +112,7 @@ class Product
 
 	public function getAllUnits()
 	{
-		return $this->getUnits(true, true);
+		return $this->getUnits(true, true)->all();
 	}
 
 	public function getVisibleUnits()
@@ -147,156 +123,48 @@ class Product
 
 	public function getUnit($unitID)
 	{
-		$units = $this->getUnits(true, true);
-
 		try {
+			$units = $this->getUnits(true, true);
+
 			return $units->get($unitID);
 		} catch(\Exception $e) {
 			return false;
 		}
-
-		return false;
 	}
 
-	public function filterByColour(array $colours) {
-		foreach($this->getUnits() as $unit) {
-			if (!in_array($unit->colour_id, $colours)) {
-				unset($this->_units[$unit->unit_id]);
-			}
-		}
+	public function getPrice($type = 'retail', $currencyID = 'GBP') {
+		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 
-
-	//GET PRODUCT PRICE FOR SPECIFIC LOCALE
-	public function getPrice($locale = NULL, $type = 'retail') {
-		if (empty($localeID)) {
-			$localeID = $this->_locale->getCurrencyID();
-		}
-		$this->_loadPrices();
-		if (isset($this->_prices[$type][$localeID])) {
-			return $this->_prices[$type][$localeID];
-		}
-		return false;
-	}
-
-
-	//IF PRODUCT HAS VARYING PRICE, RETURN LOWEST
-	public function getPriceFrom($localeID = NULL, $type = 'retail') {
-		if (empty($localeID)) {
-			$localeID = $this->_locale->getCurrencyID();
-		}
-		$price = array();
-
-		foreach ($this->getUnits() as $unit) {
-			if(!isset($unit->price[$type])) {
-				$unit->price[$type] = array();
-			}
-
-			if(!isset($unit->price[$type][$localeID])) {
-				$unit->price[$type][$localeID] = false;
-			}
-
-			$price[$unit->price[$type][$localeID]] = true;
-		}
-		ksort($price);
-		if (count($price) < 2) {
-			return false;
-		}
-		//dump($price);
-		return key($price);
-	}
-
-	public function getPriceByColour($colourID, $localeID = NULL, $type = 'retail', &$from = false) {
-		if (empty($localeID)) {
-			$localeID = $this->_locale->getCurrencyID();
-		}
+	/**
+	 * Check unit level prices and see whether there is any unit prices which are
+	 * less that the product price
+	 *
+	 * @param  string $type       Type of price to check
+	 * @param  string $currencyID CurrencyID of price to check
+	 *
+	 * @return string|false       Lowest price or false if $prices is empty
+	 */
+	public function getPriceFrom($type = 'retail', $currencyID = 'GBP') {
 		$prices = array();
-		foreach($this->getVisibleUnits() as $unit) {
-			if ($unit->colour_id == $colourID) {
-				$prices[] = $unit->getPrice(NULL, $type);
+		foreach ($this->getAllUnits() as $unit) {
+			if ($unit->getPrice($type, $currencyID) < $this->getPrice($type, $currencyID)) {
+				$prices[$unit->getPrice($type, $currencyID)] = $unit->getPrice($type, $currencyID);
 			}
 		}
-
-		if(!count($prices)) {
-			$from = false;
-			return $this->getPrice($localeID, $type);
-		}
-
-		if(count($prices) >= 1 && count(array_unique($prices)) == 1) {
-			$from = false;
-		} else {
-			$from = true;
-		}
-
-		// This returns the lowest price (if there are a range of prices)
-		sort($prices);
-
-		return $prices[0];
+		// Sort the array with lowest value at the top
+		ksort($prices);
+		// get the lowest value
+		return $prices ? array_shift($prices) : false;
 	}
 
 
-	//RETURN A NAME WITH BRAND NAME
 	public function getFullName() {
 		return $this->brandName.', '.$this->displayName;
 	}
 
-
-	//RETURN A UNIQUE DEFAULT PRODUCT NAME
 	public function getDefaultName() {
-		return $this->productName
-		     . ' (V' . $this->versionID . ', '
-			 . $this->productYear . ')';
-	}
-
-	public function isAvailableInSize(Size $size) {
-
-		$return = false;
-
-		foreach($this->getUnits() as $unit) {
-
-			if(in_array($unit->size_id, $size->getAllSizes())) {
-				$return = true;
-				break;
-			}
-
-		}
-
-		return $return;
-
-	}
-
-	public function hasRRP($colourID = false) {
-		if($colourID) {
-			$rrp 	= $this->getPriceByColour($colourID, NULL, 'rrp');
-			$retail = $this->getPriceByColour($colourID, NULL, 'retail');
-			return ($rrp > $retail);
-		}
-
-		if(!isset($low)) $low = 0;
-
-		return (isset($this->rrp) && $low > $this->price);
-	}
-
-	public function getRrpRange($colourID = false, &$from = false) {
-		$from   = false;
-		$low 	= $this->rrp;
-		$high 	= $this->rrp;
-		foreach($this->getUnits() as $unit) {
-			if ($unit->colour_id == $colourID) {
-				if($unit->price['rrp'] < $low) {
-					$low = $unit->price['rrp'];
-				}
-				if($unit->price['rrp'] > $high) {
-					$high = $unit->price['rrp'];
-				}
-			}
-		}
-
-		if($low != $high) {
-			$from = true;
-		}
-
-		return array($low, $high);
+		return $this->name;
 	}
 
 /********************************************************************
