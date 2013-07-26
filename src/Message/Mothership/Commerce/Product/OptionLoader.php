@@ -51,6 +51,58 @@ class OptionLoader
 
 	}
 
+	public function getOptionNamesByProduct(Product $product)
+	{
+		$result = $this->_query->run(
+			'SELECT
+				option_name
+			FROM
+				product_unit_option
+			JOIN
+				product_unit ON (product_unit_option.unit_id = product_unit.unit_id)
+			WHERE
+				product_id = ?i
+			GROUP BY
+				product_unit_option.option_name',
+			array(
+				$product->id
+			)
+		);
+
+		$rows = array();
+		foreach ($result as $row) {
+			$rows[$row->option_name] = $row->option_name;
+		}
+
+		return $rows;
+	}
+
+	public function getOptionValuesByProduct(Product $product)
+	{
+		$result = $this->_query->run(
+			'SELECT
+				option_value
+			FROM
+				product_unit_option
+			JOIN
+				product_unit ON (product_unit_option.unit_id = product_unit.unit_id)
+			WHERE
+				product_id = ?i
+			GROUP BY
+				product_unit_option.option_value',
+			array(
+				$product->id
+			)
+		);
+
+		$rows = array();
+		foreach ($result as $row) {
+			$rows[$row->option_value] = $row->option_value;
+		}
+
+		return $rows;
+	}
+
 	/**
 	 * Return all the options for the given option name
 	 *

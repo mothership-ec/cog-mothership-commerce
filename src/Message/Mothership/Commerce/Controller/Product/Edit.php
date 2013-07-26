@@ -179,16 +179,16 @@ class Edit extends Controller
 				)
 			)
 		);
+
+		$optionNames = array();
+
 		$form->add('option_name', 'choice', 'Option name', array(
-			'choices' => array(
-				'colour' => 'colour',
-			),
+			'choices' => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
 		))->val()->optional();
 
 		$form->add('option_value', 'choice', 'Option Value', array(
-			'choices' => array(
-				'red' => 'red',
-			),
+			'choices' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
+
 		))->val()->optional();
 
 		return $form;
