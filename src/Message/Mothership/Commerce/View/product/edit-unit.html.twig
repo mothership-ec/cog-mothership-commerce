@@ -88,12 +88,6 @@
 		</tbody>
 	</table>
 		<button type="submit" class="button small submit">Add new</button>
-		<datalist id="option_name">
-			{% for option in optionName %}
-				<option value="{{ option }}">{{option}}</option>
-			{% endfor %}
-		</datalist>
-
 		<datalist id="option_value">
 			{% for option in optionValue %}
 				<option value="{{ option }}">{{option}}</option>
