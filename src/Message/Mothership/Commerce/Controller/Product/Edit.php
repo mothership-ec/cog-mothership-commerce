@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Controller\Product;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Mothership\Commerce\Product\Image;
 
 class Edit extends Controller
 {
@@ -35,7 +36,7 @@ class Edit extends Controller
 	public function units($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units = $this->_product->getUnits()->all();
+		$this->_units = $this->_product->getUnits();
 
 		$headings = array();
 		foreach($this->_units as $unit) {
@@ -63,7 +64,7 @@ class Edit extends Controller
 	public function stock($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units = $this->_product->getAllUnits()->all();
+		$this->_units = $this->_product->getAllUnits();
 
 		return $this->render('::product:edit-stock', array(
 			'locale'  => $this->get('locale'),
@@ -73,12 +74,23 @@ class Edit extends Controller
 		));
 	}
 
+	public function images($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+
+		return $this->render('::product:edit-images', array(
+			'locale'  => $this->get('locale'),
+			'product' => $this->_product,
+			'form'	  => $this->_getImageForm(),
+		));
+	}
+
 	/**
 	 * Return the form for editing unit stock levels
 	 *
 	 * @return Handler Form Handler for stock editing
 	 */
-	public function _getUnitStockForm()
+	protected function _getUnitStockForm()
 	{
 		// Make an overall form
 		$mainForm = $this->get('form')
@@ -118,6 +130,68 @@ class Edit extends Controller
 		}
 
 		return $mainForm;
+	}
+	public function imagesProcess($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$form = $this->_getImageForm();
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$image = new Image(
+				$data['image'],
+				$data['type'],
+				$this->get('locale'),
+				null,
+				$data['option_name'],
+				$data['option_value']
+			);
+
+			$this->get('product.edit')->saveImage($this->_product, $image);
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.images', array('productID' => $this->_product->id));
+	}
+
+	protected function _getImageForm()
+	{
+		$files   = (array) $this->get('file_manager.file.loader')->getAll();
+		$choices = array();
+		$allowedTypes = array();
+		foreach ($files as $file) {
+			if ($allowedTypes) {
+				if (!in_array($file->typeID, $allowedTypes)) {
+					continue;
+				}
+			}
+
+			$choices[$file->id] = $file->name;
+		}
+
+		$form = $this->get('form')
+			->setName('images')
+			->setAction(
+				$this->generateUrl('ms.commerce.product.edit.images',array('productID' => $this->_product->id))
+		);
+
+		$form->add('image', 'ms_file', 'image', array('choices' => $choices));
+		$form->add('type', 'choice', 'image type', array(
+			'choices' => array(
+					'default' => 'Default',
+				)
+			)
+		);
+		$form->add('option_name', 'choice', 'Option name', array(
+			'choices' => array(
+				'colour' => 'colour',
+			),
+		))->val()->optional();
+
+		$form->add('option_value', 'choice', 'Option Value', array(
+			'choices' => array(
+				'red' => 'red',
+			),
+		))->val()->optional();
+
+		return $form;
 	}
 
 	/**
@@ -254,11 +328,15 @@ class Edit extends Controller
 		return $form;
 	}
 
+	/**
+	 * Process the updating of the units data
+	 *
+	 * @param  int 		$productID ProductID to load
+	 */
 	public function unitProcess($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units   = $this->_product->getUnits()->all();
-		$units          = $this->_product->getUnits();
+		$this->_units   = $this->_product->getUnits();
 		$form           = $this->_getUnitForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {

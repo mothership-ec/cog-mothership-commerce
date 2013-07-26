@@ -144,6 +144,7 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Loader(
 				$c['db.query'],
 				$c['locale'],
+				$c['file_manager.file.loader'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);

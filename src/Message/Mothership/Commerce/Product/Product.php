@@ -10,11 +10,11 @@ class Product
 {
 	public $id;
 	public $catalogueID;
+	public $brandID;
 	public $year;
 
 	public $authorship;
 
-	public $brandID;
 	public $name;
 	public $taxRate;
 	public $supplierRef;
@@ -83,9 +83,17 @@ class Product
 		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
+	/**
+	 * return units and give options as to which ones to display
+	 *
+	 * @param  boolean $showOutOfStock [description]
+	 * @param  boolean $showInvisible  [description]
+	 *
+	 * @return [type]                  [description]
+	 */
 	public function getUnits($showOutOfStock = true, $showInvisible = false) {
 		$this->_entities['unit']->load($this, $showOutOfStock, $showInvisible);
-		return $this->_entities['unit'];
+		return $this->_entities['unit']->all();
 	}
 
 	public function getImage($typeID, $colourID = 0) {
@@ -112,7 +120,7 @@ class Product
 
 	public function getAllUnits()
 	{
-		return $this->getUnits(true, true)->all();
+		return $this->getUnits(true, true);
 	}
 
 	public function getVisibleUnits()
@@ -120,18 +128,31 @@ class Product
 		return $this->getUnits(true, false);
 	}
 
-
+	/**
+	 * Get a specfic unit by the unitID
+	 *
+	 * @param  int 		$unitID The unitID to load the Unit for
+	 *
+	 * @return Unit|false       Loaded unit or false if not found
+	 */
 	public function getUnit($unitID)
 	{
 		try {
-			$units = $this->getUnits(true, true);
-
-			return $units->get($unitID);
-		} catch(\Exception $e) {
+			return $this->_entities['unit']->get($unitID);
+		} catch (\Exception $e) {
 			return false;
 		}
 	}
 
+	/**
+	 * Get the current price of price type based on the current locale and
+	 * given currencyID
+	 *
+	 * @param  string $type       Price type to load
+	 * @param  string $currencyID CurrencyID to load
+	 *
+	 * @return string             Loaded price
+	 */
 	public function getPrice($type = 'retail', $currencyID = 'GBP') {
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}

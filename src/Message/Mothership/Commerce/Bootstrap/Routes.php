@@ -37,5 +37,10 @@ class Routes implements RoutesInterface
 			->setRequirement('productID', '\d+');
 		$router['ms.product']->add('ms.commerce.product.edit.stock', 'edit/{productID}/stock', '::Controller:Product:Edit#stock')
 			->setRequirement('productID', '\d+');
+		$router['ms.product']->add('ms.commerce.product.edit.images.action', 'edit/{productID}/images', '::Controller:Product:Edit#imagesProcess')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', '::Controller:Product:Edit#images')
+			->setRequirement('productID', '\d+');
 	}
 }

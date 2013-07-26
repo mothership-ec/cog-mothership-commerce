@@ -6,6 +6,10 @@ use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\Localisation\Locale;
 
+
+/**
+ * Simple class for loading unit options out of the database
+ */
 class OptionLoader
 {
 	protected $_query;
@@ -47,6 +51,13 @@ class OptionLoader
 
 	}
 
+	/**
+	 * Return all the options for the given option name
+	 *
+	 * @param  string $type type to search for
+	 *
+	 * @return array        Array of results
+	 */
 	public function getByName($type)
 	{
 		$result = $this->_query->run(

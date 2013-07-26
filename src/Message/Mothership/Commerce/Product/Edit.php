@@ -161,4 +161,29 @@ class Edit
 		return $product;
 	}
 
+	public function saveImage(Product $product, Image $image)
+	{
+		$result = $this->_query->run(
+			'REPLACE INTO
+				product_image
+			SET
+				product_id = ?i,
+				file_id = ?i,
+				locale = ?,
+				type = ?s,
+				option_name = ?sn,
+				option_value = ?sn',
+			array(
+				$product->id,
+				$image->fileID,
+				$image->locale->getID(),
+				$image->type,
+				$image->optionName,
+				$image->optionValue
+			)
+		);
+
+		return $product;
+	}
+
 }

@@ -1,0 +1,41 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Sidebar#index', {'productID':product.id}))}}
+{% endblock %}
+
+{% block main %}
+
+<hgroup class="title">
+		<h1>Editing Stock'</h1>
+</hgroup>
+
+<div class="topbar products">
+	<ul class="tabs">
+		<li class=""><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live="">Attributes</a></li>
+		<li class="active"><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live="">Units</a></li>
+		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live="">Stock</a></li>
+	</ul>
+</div>
+
+<section class="container-products">
+<ul>
+	{% for image in product.images %}
+		<li>
+			<img src="{{ resize(image.file.file.getPublicUrl, 200, 200) }}" />
+			<ul>
+				<li>{{ image.type }}</li>
+				<li>{{ image.optionName }}</li>
+				<li>{{ image.optionValue }}</li>
+			</ul>
+		</li>
+	{% endfor %}
+</ul>
+	{{ form_start(form) }}
+		{{ form_rest(form) }}
+		<button type="submit" class="button small save" id="save-content">Update</button>
+	{{ form_end(form) }}
+
+</section>
+
+{% endblock %}
