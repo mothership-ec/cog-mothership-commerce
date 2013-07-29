@@ -10,13 +10,8 @@
 		<h1>Editing '{{ product.name }}'</h1>
 </hgroup>
 
-<div class="topbar products">
-	<ul class="tabs">
-		<li class="active"><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-liv>Attributes</a></li>
-		<li class=""><a href="{{ url('ms.commerce.product.edit.units', {productID:product.id}) }}" data-live>Units</a></li>
-		<li class=""><a href="{{ url('ms.commerce.product.edit.stock', {productID:product.id}) }}" data-live>Stock</a></li>
-	</ul>
-</div>
+{{ render(controller('Message:Mothership:Commerce::Controller:ProductsMenu#index', {'productID':product.id}))}}
+
 <section class="container-products">
 	{{ form_start(form) }}
 		{{ form_rest(form) }}

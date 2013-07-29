@@ -13,29 +13,21 @@
 {{ render(controller('Message:Mothership:Commerce::Controller:ProductsMenu#index', {'productID':product.id}))}}
 
 <section class="container-products">
+<ul>
+	{% for image in product.images %}
+		<li>
+			<img src="{{ resize(image.file.file.getPublicUrl, 200, 200) }}" />
+			<ul>
+				<li>Image type: {{ image.type }}</li>
+				<li>Option name: {{ image.optionName }}</li>
+				<li>Option value: {{ image.optionValue }}</li>
+			</ul>
+		</li>
+	{% endfor %}
+</ul>
 	{{ form_start(form) }}
-	<table>
-		<thead>
-			<tr>
-				<th>SKU</th>
-				<th>Web Stock</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for unit in units %}
-				<tr>
-					<td>{{ unit.sku }}</td>
-					{% for name, value in unit.stock %}
-						<div class="inline">
-							{% set locationName = ('location_'~name) %}
-							<td>{{ form_widget(form[unit.id]['stock'][locationName]) }}</td>
-						</div>
-					{% endfor %}
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-	<button type="submit" class="button small save" id="save-content">Update</button>
+		{{ form_rest(form) }}
+		<button type="submit" class="button small save" id="save-content">Update</button>
 	{{ form_end(form) }}
 
 </section>

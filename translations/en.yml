@@ -21,6 +21,7 @@ ms.commerce:
     fabric: Fabric
     description: Description
     category: Category
+    brand: Brand
     price:
       retail: Retail Price
       cost: Cost Price

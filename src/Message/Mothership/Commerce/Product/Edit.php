@@ -27,9 +27,15 @@ class Edit
 		$this->_locale = $locale;
 	}
 
+	/**
+	 * Handles the bulk updating of most of the product properties
+	 *
+	 * @param  Product $product Updated Product object to save
+	 *
+	 * @return Product          Saved Product object
+	 */
 	public function save(Product $product)
 	{
-
 		$result = $this->_query->run(
 			'UPDATE
 				product
@@ -41,7 +47,7 @@ class Edit
 				product.year         = :year?i,
 				product.updated_at   = :updated_at?i,
 				product.updated_by   = :updated_by?i,
-				product.brand_id     = :brand_id?i,
+				product.brand     	 = :brand?s,
 				product.name         = :name?s,
 				product.tax_rate     = :tax_rate?s,
 				product.supplier_ref = :supplier_ref?s,
@@ -67,7 +73,7 @@ class Edit
 				'year'              => $product->year,
 				'updated_at'        => $product->authorship->updatedAt(),
 				'udpated_by'        => $product->authorship->updatedBy(),
-				'brand_id'          => $product->brandID,
+				'brand'          	=> $product->brand,
 				'name'              => $product->name,
 				'tax_rate'          => $product->taxRate,
 				'supplier_ref'      => $product->supplierRef,
@@ -93,6 +99,13 @@ class Edit
 		return $product;
 	}
 
+	/**
+	 * Updates any additions or deletions of tags for the given product
+	 *
+	 * @param  Product $product Product object to update
+	 *
+	 * @return Product          Saved Product object
+	 */
 	public function saveTags(Product $product)
 	{
 		$options = array();
@@ -103,6 +116,7 @@ class Edit
 			$inserts[] = '(?i,?s)';
 		}
 
+		// Delete any tags associated with this product
 		$this->_query->run(
 			'DELETE FROM
 				product_tag
@@ -113,6 +127,7 @@ class Edit
 			)
 		);
 
+		// Insert all the tags
 		$result = $this->_query->run(
 			'INSERT INTO
 				product_tag
@@ -128,9 +143,15 @@ class Edit
 		return $product;
 	}
 
+	/**
+	 * Update the prices for the product
+	 *
+	 * @param  Product $product Product object to update
+	 *
+	 * @return Product          Saved Product object
+	 */
 	public function savePrices(Product $product)
 	{
-
 		$options = array();
 		$inserts = array();
 
@@ -156,6 +177,39 @@ class Edit
 			VALUES
 				'.implode(',',$inserts).' ',
 			$options
+		);
+
+		return $product;
+	}
+
+	/**
+	 * Save the new image to the product object
+	 *
+	 * @param  Product 	$product 	Product object to update
+	 * @param  Image 	$image 		Image object to save
+	 *
+	 * @return Product          	Saved Product object
+	 */
+	public function saveImage(Product $product, Image $image)
+	{
+		$result = $this->_query->run(
+			'REPLACE INTO
+				product_image
+			SET
+				product_id = ?i,
+				file_id = ?i,
+				locale = ?,
+				type = ?s,
+				option_name = ?sn,
+				option_value = ?sn',
+			array(
+				$product->id,
+				$image->fileID,
+				$image->locale->getID(),
+				$image->type,
+				$image->optionName,
+				$image->optionValue
+			)
 		);
 
 		return $product;

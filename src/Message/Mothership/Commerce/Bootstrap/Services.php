@@ -140,7 +140,7 @@ class Services implements ServicesInterface
 
 		$services['product.entities'] = function($c) {
 			return array(
-				'unit' => $c['product.unit.loader'],
+				'units' => $c['product.unit.loader'],
 			);
 		};
 
@@ -148,6 +148,8 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Loader(
 				$c['db.query'],
 				$c['locale'],
+				$c['file_manager.file.loader'],
+				$c['product.image.types'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);
@@ -163,6 +165,12 @@ class Services implements ServicesInterface
 
 		$services['product.create'] = function($c) {
 			return new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+		};
+
+		$services['product.image.types'] = function($c) {
+			return new Commerce\Product\ImageType\Collection(array(
+				new Commerce\Product\ImageType\ImageType('default'),
+			));
 		};
 
 		$services['product.edit'] = function($c) {

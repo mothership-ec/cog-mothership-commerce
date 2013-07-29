@@ -10,11 +10,11 @@ class Product
 {
 	public $id;
 	public $catalogueID;
+	public $brand;
 	public $year;
 
 	public $authorship;
 
-	public $brandID;
 	public $name;
 	public $taxRate;
 	public $supplierRef;
@@ -33,7 +33,6 @@ class Product
 
 	public $price = array();
 
-	public $units;
 	public $images   = array();
 	public $tags     = array();
 
@@ -41,15 +40,49 @@ class Product
 	public $exportValue;
 	public $exportManufactureCountryID;
 
-	public $unstackedExportDescription;
-	public $unstackedExportValue;
-	public $unstackedExportManufactureCountryID;
-
 	public $priceTypes;
 
 	protected $_entities = array();
 	protected $_locale;
 
+
+	/**
+	 * Magic getter. This maps to defined order entities.
+	 *
+	 * @param  string $var       Entity name
+	 *
+	 * @return Entity\Collection The entity collection instance
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
+	 */
+	public function __get($var)
+	{
+		if (!array_key_exists($var, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+		}
+
+		return $this->_entities[$var];
+	}
+
+	/**
+	 * Magic isset. This maps to defined order entities.
+	 *
+	 * @param  string  $var Entity name
+	 *
+	 * @return boolean      True if the entity exist
+	 */
+	public function __isset($var)
+	{
+		return array_key_exists($var, $this->_entities);
+	}
+
+	/**
+	 * Initiate the object and set some basic properties up
+	 *
+	 * @param Locale $locale     	Current locale instance
+	 * @param array  $entities   	array of entities, this will proabbly only be units for now
+	 * @param array  $priceTypes 	array of price types
+	 */
 	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
 	{
 		$this->authorship = new Authorship;
@@ -83,36 +116,28 @@ class Product
 		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
+	/**
+	 * return units and give options as to which ones to display
+	 *
+	 * @param  boolean $showOutOfStock Bool to load out of stock units
+	 * @param  boolean $showInvisible  Bool to load invisble units
+	 *
+	 * @return array                   array of Unit objects
+	 */
 	public function getUnits($showOutOfStock = true, $showInvisible = false) {
-		$this->_entities['unit']->load($this, $showOutOfStock, $showInvisible);
-		return $this->_entities['unit'];
+		$this->_entities['units']->load($this, $showOutOfStock, $showInvisible);
+		return $this->_entities['units']->all();
 	}
 
-	public function getImage($typeID, $colourID = 0) {
-		$this->getImages();
-		if (isset($this->_images[$typeID][$colourID])) {
-			return $this->_images[$typeID][$colourID];
-		} elseif (isset($this->_images[$typeID][0])) { // 0 is all colours
-			return $this->_images[$typeID][0];
-		}
-		return false;
-	}
-
-
-	public function hasImage($typeID, $colourID = 0) {
-		return (!empty($this->getImage($typeID, $colourID)->image_location));
-	}
-
-	public function getColour($id)
-	{
-		$this->getColours();
-		return (isset($this->_colours[$id])) ? $this->_colours[$id] : false;
-	}
-
-
+	/**
+	 * Return an array of all units for this product, including out of stock and
+	 * units set to invisble.
+	 *
+	 * @return array 		array of Unit objects
+	 */
 	public function getAllUnits()
 	{
-		return $this->getUnits(true, true)->all();
+		return $this->getUnits(true, true);
 	}
 
 	public function getVisibleUnits()
@@ -120,19 +145,33 @@ class Product
 		return $this->getUnits(true, false);
 	}
 
-
+	/**
+	 * Get a specfic unit by the unitID
+	 *
+	 * @param  int 		$unitID 	The unitID to load the Unit for
+	 *
+	 * @return Unit|false       	Loaded unit or false if not found
+	 */
 	public function getUnit($unitID)
 	{
 		try {
-			$units = $this->getUnits(true, true);
-
-			return $units->get($unitID);
-		} catch(\Exception $e) {
+			return $this->_entities['units']->get($unitID);
+		} catch (\Exception $e) {
 			return false;
 		}
 	}
 
-	public function getPrice($type = 'retail', $currencyID = 'GBP') {
+	/**
+	 * Get the current price of price type based on the current locale and
+	 * given currencyID
+	 *
+	 * @param  string $type       Price type to load
+	 * @param  string $currencyID CurrencyID to load
+	 *
+	 * @return string             Loaded price
+	 */
+	public function getPrice($type = 'retail', $currencyID = 'GBP')
+	{
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 
@@ -145,7 +184,8 @@ class Product
 	 *
 	 * @return string|false       Lowest price or false if $prices is empty
 	 */
-	public function getPriceFrom($type = 'retail', $currencyID = 'GBP') {
+	public function getPriceFrom($type = 'retail', $currencyID = 'GBP')
+	{
 		$prices = array();
 		foreach ($this->getAllUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) < $this->getPrice($type, $currencyID)) {
@@ -158,77 +198,57 @@ class Product
 		return $prices ? array_shift($prices) : false;
 	}
 
-
+	/**
+	 * Brand name doesn't work just yet
+	 *
+	 * @return [type] [description]
+	 */
 	public function getFullName() {
 		return $this->brandName.', '.$this->displayName;
 	}
 
-	public function getDefaultName() {
+	/**
+	 * Return the internal product name (not the display name)
+	 *
+	 * @return string 	 product name
+	 */
+	public function getDefaultName()
+	{
 		return $this->name;
 	}
 
-/********************************************************************
-*
-*   SAVE IMAGES
-*
-********************************************************************/
+	/**
+	 * Return an image for a certain type and optional optionName nad optionValue
+	 *
+	 * @param  string  $type        Image type
+	 * @param  string  $optionName  Optional option name
+	 * @param  string  $optionValue Optional option value
+	 *
+	 * @return Image|false          Image object or false if it doesn't exist
+	 */
+	public function getImage($type = 'default', $optionName = null, $optionValue = null)
+	{
+		return $this->hasImage($type, $optionName, $optionValue);
+	}
 
-
-	public function setImage($imageTypeID, FileUpload $upload, $colourID = '0', $borderFlag = false) {
-		$size   = isset($this->_imageSizes[$imageTypeID]) ? $this->_imageSizes[$imageTypeID] : NULL;
-		$prefix = SYSTEM_PATH . 'public_html/' . AREA;
-		$dir    = $this->_getImageDir();
-		$file   = implode('_', array(
-					Locale::DEFAULT_LOCALE_ID,
-					$this->productID,
-					$this->versionID,
-					$imageTypeID,
-					$colourID
-			)
-		);
-
-		//$borderFlag will add a flag to the image name
-		//we are using this in the Print listings for
-		//products which a white background to add a css border
-		if($borderFlag) {
-			$file .= $borderFlag;
-		}
-
-		if ($upload->getUpload()) {
-			$img = ImageSize::init($upload->getUpload(), $prefix . $dir . $file);
-			$img->setQuality(90);
-
-			if ($path = $img->saveResized($size, $size)) {
-				$img = new Image;
-				$img->catalogue_id   = $this->catalogueID;
-				$img->image_location = str_replace($prefix, '', $path);
-				$img->locale_id      = $this->_locale->getId();
-				$img->image_id       = NULL;
-				$img->image_type_id  = $imageTypeID;
-				$img->colour_id  	 = $colourID;
-				$this->_images[]     = $img;
+	/**
+	 * Check that the image for a certain type, and options are available
+	 *
+	 * @param  string  		$type       The image type
+	 *
+	 * @return Image|false          	Image object or false if it doesn't exist
+	 */
+	public function hasImage($type = 'default', $optionName = null, $optionValue = null)
+	{
+		foreach ($this->images as $image) {
+			if ($image->type == $type
+			 && $optionName == $image->optionName
+			 && $optionValue == $image->optionValue
+			) {
+				return $image;
 			}
 		}
-	}
 
-
-	public function setImageWithoutUpload($imageTypeID, $path, $colourID = '0') {
-		$img = new Image;
-		$img->catalogue_id   = $this->catalogueID;
-		$img->image_location = $path;
-		$img->locale_id      = $this->_locale->getId();
-		$img->image_id       = NULL;
-		$img->image_type_id  = $imageTypeID;
-		$img->colour_id  	 = $colourID;
-		$this->_images[]     = $img;
-	}
-
-
-	protected function _getImageDir() {
-		$path = '/images/products/' . $this->productID;
-		if (!file_exists(SYSTEM_PATH . 'public_html/'. AREA . $path)) {
-			mkdir(SYSTEM_PATH . 'public_html/' . AREA . $path);
-		}
-		return $path . '/';
+		return false;
 	}
 }

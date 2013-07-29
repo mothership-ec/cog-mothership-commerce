@@ -6,21 +6,32 @@ use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Mothership\FileManager\File\Loader as FileLoader;
+use Message\Mothership\Commerce\Product\ImageType\Collection as ImageTypes;
 
 class Loader
 {
 	protected $_query;
 	protected $_locale;
 	protected $_entities;
+	protected $_imageTypes;
 
 	protected $_returnArray;
 
-	public function __construct(Query $query, Locale $locale, array $entities = array(), $priceTypes = array())
-	{
+	public function __construct(
+		Query $query,
+		Locale $locale,
+		FileLoader $fileLoader,
+		ImageTypes $imageTypes,
+		array $entities = array(),
+		$priceTypes = array()
+	) {
 		$this->_query = $query;
 		$this->_locale = $locale;
 		$this->_entities = $entities;
 		$this->_priceTypes = $priceTypes;
+		$this->_imageTypes = $imageTypes;
+		$this->_fileLoader = $fileLoader;
 	}
 
 	public function getByID($productID)
@@ -56,7 +67,7 @@ class Loader
 				product.updated_by   AS updatedBy,
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
-				product.brand_id     AS brandID,
+				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
 				product.tax_rate     AS taxRate,
@@ -91,7 +102,7 @@ class Loader
 
 		$prices = $this->_query->run(
 			'SELECT
-				product_price.product_id     AS id,
+				product_price.product_id  AS id,
 				product_price.type        AS type,
 				product_price.currency_id AS currencyID,
 				product_price.price       AS price
@@ -111,6 +122,21 @@ class Loader
 				product_tag
 			WHERE
 				product_tag.product_id IN (?ij)
+		', array(
+			(array) $productIDs,
+		));
+
+		$images = $this->_query->run(
+			'SELECT
+				product_image.product_id   AS id,
+				product_image.file_id      AS fileID,
+				product_image.type         AS type,
+				product_image.option_name  AS optionName,
+				product_image.option_value AS optionValue
+			FROM
+				product_image
+			WHERE
+				product_image.product_id IN (?ij)
 		', array(
 			(array) $productIDs,
 		));
@@ -138,6 +164,19 @@ class Loader
 			foreach ($tags as $k => $tag) {
 				if ($tag->id == $data->id) {
 					$products[$key]->tags[$k] = $tag->name;
+				}
+			}
+
+			foreach ($images as $image) {
+				if ($image->id == $data->id) {
+					$products[$key]->images[$image->fileID] = new Image(
+						$image->fileID,
+						$this->_imageTypes->get($image->type),
+						$this->_locale,
+						$this->_fileLoader->getByID($image->fileID),
+						$image->optionName,
+						$image->optionValue
+					);
 				}
 			}
 		}
