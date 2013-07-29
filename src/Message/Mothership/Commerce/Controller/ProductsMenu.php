@@ -8,10 +8,8 @@ class ProductsMenu extends Controller
 {
 	public function index($productID = null)
 	{
-		$loader = $this->get('product.loader');
-		$products  = $loader->getAll();
 
-		return $this->render('Message:Mothership:Commerce::productsMenu', array(
+		return $this->render('Message:Mothership:Commerce::products-menu', array(
 			'productID' => $productID,
 		));
 	}
