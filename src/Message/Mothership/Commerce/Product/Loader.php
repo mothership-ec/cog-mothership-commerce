@@ -7,21 +7,30 @@ use Message\Cog\DB\Result;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\FileManager\File\Loader as FileLoader;
+use Message\Mothership\Commerce\Product\ImageType\Collection as ImageTypes;
 
 class Loader
 {
 	protected $_query;
 	protected $_locale;
 	protected $_entities;
+	protected $_imageTypes;
 
 	protected $_returnArray;
 
-	public function __construct(Query $query, Locale $locale, FileLoader $fileLoader, array $entities = array(), $priceTypes = array())
-	{
+	public function __construct(
+		Query $query,
+		Locale $locale,
+		FileLoader $fileLoader,
+		ImageTypes $imageTypes,
+		array $entities = array(),
+		$priceTypes = array()
+	) {
 		$this->_query = $query;
 		$this->_locale = $locale;
 		$this->_entities = $entities;
 		$this->_priceTypes = $priceTypes;
+		$this->_imageTypes = $imageTypes;
 		$this->_fileLoader = $fileLoader;
 	}
 
@@ -162,7 +171,7 @@ class Loader
 				if ($image->id == $data->id) {
 					$products[$key]->images[$image->fileID] = new Image(
 						$image->fileID,
-						$image->type,
+						$this->_imageTypes->get($image->type),
 						$this->_locale,
 						$this->_fileLoader->getByID($image->fileID),
 						$image->optionName,

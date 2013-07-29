@@ -33,7 +33,6 @@ class Product
 
 	public $price = array();
 
-	public $units;
 	public $images   = array();
 	public $tags     = array();
 
@@ -41,14 +40,41 @@ class Product
 	public $exportValue;
 	public $exportManufactureCountryID;
 
-	public $unstackedExportDescription;
-	public $unstackedExportValue;
-	public $unstackedExportManufactureCountryID;
-
 	public $priceTypes;
 
 	protected $_entities = array();
 	protected $_locale;
+
+
+	/**
+	 * Magic getter. This maps to defined order entities.
+	 *
+	 * @param  string $var       Entity name
+	 *
+	 * @return Entity\Collection The entity collection instance
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
+	 */
+	public function __get($var)
+	{
+		if (!array_key_exists($var, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+		}
+
+		return $this->_entities[$var];
+	}
+
+	/**
+	 * Magic isset. This maps to defined order entities.
+	 *
+	 * @param  string  $var Entity name
+	 *
+	 * @return boolean      True if the entity exist
+	 */
+	public function __isset($var)
+	{
+		return array_key_exists($var, $this->_entities);
+	}
 
 	/**
 	 * Initiate the object and set some basic properties up
@@ -99,8 +125,8 @@ class Product
 	 * @return array                   array of Unit objects
 	 */
 	public function getUnits($showOutOfStock = true, $showInvisible = false) {
-		$this->_entities['unit']->load($this, $showOutOfStock, $showInvisible);
-		return $this->_entities['unit']->all();
+		$this->_entities['units']->load($this, $showOutOfStock, $showInvisible);
+		return $this->_entities['units']->all();
 	}
 
 	/**
@@ -129,7 +155,7 @@ class Product
 	public function getUnit($unitID)
 	{
 		try {
-			return $this->_entities['unit']->get($unitID);
+			return $this->_entities['units']->get($unitID);
 		} catch (\Exception $e) {
 			return false;
 		}
