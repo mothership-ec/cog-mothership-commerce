@@ -17,10 +17,12 @@ class Services implements ServicesInterface
 
 		$services['order.entities'] = function($c) {
 			return array(
-				'addresses' => $c['order.address.loader'],
-				'items'     => $c['order.item.loader'],
-				'payments'  => $c['order.payment.loader'],
-				'notes'     => $c['order.note.loader'],
+				'addresses'  => $c['order.address.loader'],
+				'dispatches' => $c['order.dispatch.loader'],
+				'items'      => $c['order.item.loader'],
+				'notes'      => $c['order.note.loader'],
+				'payments'   => $c['order.payment.loader'],
+				'refunds'    => $c['order.refund.loader'],
 			);
 		};
 
@@ -73,6 +75,11 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Item\Edit($c['db.transaction'], $c['event.dispatcher'], $c['order.item.statuses'], $c['user.current']);
 		};
 
+		// Order despatch entity
+		$services['order.dispatch.loader'] = function($c) {
+			return new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']);
+		};
+
 		// Order item status
 		$services['order.item.status.loader'] = function($c) {
 			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
@@ -81,6 +88,11 @@ class Services implements ServicesInterface
 		// Order payment entity
 		$services['order.payment.loader'] = function($c) {
 			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
+		};
+
+		// Order refund entity
+		$services['order.refund.loader'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods']);
 		};
 
 		// Order note entity
