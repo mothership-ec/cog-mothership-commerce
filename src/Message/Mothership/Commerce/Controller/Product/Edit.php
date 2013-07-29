@@ -21,7 +21,7 @@ class Edit extends Controller
 	public function index($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		de($this->_product->hasImage());
+
 		return $this->render('::product:edit', array(
 			'product' => $this->_product,
 			'form'    => $this->_getProductForm(),
@@ -429,6 +429,7 @@ class Edit extends Controller
 			$product->description                = $data['description'];
 			$product->fabric                     = $data['fabric'];
 			$product->category                   = $data['category'];
+			$product->brand                   	 = $data['brand'];
 			$product->features                   = $data['features'];
 			$product->careInstructions           = $data['care_instructions'];
 			$product->sizing                     = $data['sizing'];
@@ -474,6 +475,7 @@ class Edit extends Controller
 				'season'                        => $this->_product->season,
 				'description'                   => $this->_product->description,
 				'category'                   	=> $this->_product->category,
+				'brand'                   		=> $this->_product->brand,
 				'fabric'                        => $this->_product->fabric,
 				'features'                      => $this->_product->features,
 				'care_instructions'             => $this->_product->careInstructions,
@@ -493,6 +495,8 @@ class Edit extends Controller
 			->val()->maxLength(255);
 
 		$form->add('category', 'text', $this->trans('ms.commerce.product.category'))
+			->val()->maxLength(255);
+		$form->add('brand', 'text', $this->trans('ms.commerce.product.brand'))
 			->val()->maxLength(255);
 
 		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description'));
