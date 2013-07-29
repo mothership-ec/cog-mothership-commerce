@@ -54,10 +54,23 @@ class Item implements EntityInterface
 	static public function createFromUnit(Unit $unit)
 	{
 		$item = new static;
-		$item->listPrice = $unit->getPrice('retail')->getPrice($this->order->currencyID); // TODO: make this API better
-		$item->rrp = 0; // do the same as the above
-		$item->productID = $item->product->id;
-		// finish this off...
+		$item->listPrice = $unit->getPrice('retail')->getPrice($this->order->currencyID);
+		$item->rrp = $unit->getPrice('rrp')->getPrice($this->order->currencyID);
+		$item->taxRate = $unit->product->taxRate;
+		// net, discount, tax, taxRate, gross
+		$item->productID = $unit->product->id;
+		$item->productName = $unit->product->name;
+		$item->unitID = $unit->id;
+		$item->unitRevision = $unit->revisionID;
+		$item->sku = $unit->sku;
+		$item->barcode = $unit->barcode;
+		$item->options = ''; // combine all options as a string
+		$item->brandID = $unit->product->brandID;
+		$item->brandName = ''; // TODO: add this once Brand class used
+		$item->weight = $unit->weightGrams; // TODO: change this once the property name is corrected
+		// TODO: figure out how tax and tax discounts should work with countries, and WHEN? what about checkout
+
+		return $item;
 	}
 
 	public function __construct()
@@ -87,6 +100,9 @@ class Item implements EntityInterface
 	//CALCULATE THE CORRECT AMOUNT OF TAX FOR THIS ORDER
 	public function calculateTax()
 	{
+		$this->gross = round($item->listPrice - $item->discount, 2);
+		$this->tax   = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
+		$this->net   = round($item->gross - $item->tax, 2);
 		if ($this->taxable) {
 			$this->tax = (($this->getPrice() - $this->discount) / (100 + $this->taxRate)) * $this->taxRate;
 		} else {
@@ -114,42 +130,6 @@ class Item implements EntityInterface
 		return round($this->listPrice - $this->discount - $this->net, 2);
 	}
 
-	//UPDATE THE STATUS FOR THIS ORDER ITEM
-	public function updateStatus($status, $staffID = NULL, $date = NULL) {
-		$staffID = !empty($staffID) ? (int) $staffID : NULL;
-		$DB = new DBquery;
-		if (is_null($date)) {
-			$date = 'NOW()';
-		} else {
-			$date = $DB->escape($date);
-		}
-		$query = 'REPLACE INTO order_item_status SET '
-			   . 'order_id  = ' . $this->orderID . ', '
-			   . 'item_id   = ' . $this->itemID . ', '
-			   . 'status_id = ' . (int) $status . ', '
-			   . 'staff_id  = ' . $DB->null($staffID) . ', '
-			   . 'status_datetime = ' . $date;
-		$DB->query($query);
-		if ($DB->result()) {
-			$this->getStatus();
-		} else {
-			throw new OrderException('Problem updating item status');
-		}
-	}
-
-	//RELEASE HOLD STATUS
-	public function releaseHold() {
-		$DB = new DBquery;
-		$query = 'DELETE FROM order_item_status WHERE '
-			   . 'order_id  = ' . $this->orderID . ' AND '
-			   . 'item_id   = ' . $this->itemID . ' AND '
-			   . 'status_id = ' . ORDER_STATUS_ON_HOLD;
-		$DB->query($query);
-		if ($DB->error()) {
-			throw new OrderException('Problem removing on hold order status');
-		}
-	}
-
 	//FILTER OUT INCREMENTAL STATUS NAMES LEAVING ORDERED, AWAITING DESPATCH, SHIPPED
 	public function shortStatus() {
 		$status = 'Ordered';
@@ -163,13 +143,6 @@ class Item implements EntityInterface
 			$status = ucfirst($this->statusName);
 		}
 		return $status;
-	}
-
-	public function returnable() {
-		if($this->statusID < ORDER_STATUS_SHIPPED || $this->statusID >= ORDER_STATUS_RETURNED) {
-			return false;
-		}
-		return true;
 	}
 
 	public function getPrice() {

@@ -59,7 +59,7 @@ class Unit
 	public function getOption($type)
 	{
 		if (!isset($this->options[$type])) {
-			throw new Exception(sprintf('Option %s doesn\'t exist on unitID %i', $type, $this->id));
+			throw new \InvalidArgumentException(sprintf('Option %s doesn\'t exist on unitID %i', $type, $this->id));
 		}
 
 		return $this->options[$type];
