@@ -27,9 +27,15 @@ class Edit
 		$this->_locale = $locale;
 	}
 
+	/**
+	 * Handles the bulk updating of most of the product properties
+	 *
+	 * @param  Product $product Updated Product object to save
+	 *
+	 * @return Product          Saved Product object
+	 */
 	public function save(Product $product)
 	{
-
 		$result = $this->_query->run(
 			'UPDATE
 				product
@@ -93,6 +99,13 @@ class Edit
 		return $product;
 	}
 
+	/**
+	 * Updates any additions or deletions of tags for the given product
+	 *
+	 * @param  Product $product Product object to update
+	 *
+	 * @return Product          Saved Product object
+	 */
 	public function saveTags(Product $product)
 	{
 		$options = array();
@@ -103,6 +116,7 @@ class Edit
 			$inserts[] = '(?i,?s)';
 		}
 
+		// Delete any tags associated with this product
 		$this->_query->run(
 			'DELETE FROM
 				product_tag
@@ -113,6 +127,7 @@ class Edit
 			)
 		);
 
+		// Insert all the tags
 		$result = $this->_query->run(
 			'INSERT INTO
 				product_tag
@@ -128,9 +143,15 @@ class Edit
 		return $product;
 	}
 
+	/**
+	 * Update the prices for the product
+	 *
+	 * @param  Product $product Product object to update
+	 *
+	 * @return Product          Saved Product object
+	 */
 	public function savePrices(Product $product)
 	{
-
 		$options = array();
 		$inserts = array();
 
@@ -161,6 +182,14 @@ class Edit
 		return $product;
 	}
 
+	/**
+	 * Save the new image to the product object
+	 *
+	 * @param  Product 	$product 	Product object to update
+	 * @param  Image 	$image 		Image object to save
+	 *
+	 * @return Product          	Saved Product object
+	 */
 	public function saveImage(Product $product, Image $image)
 	{
 		$result = $this->_query->run(
