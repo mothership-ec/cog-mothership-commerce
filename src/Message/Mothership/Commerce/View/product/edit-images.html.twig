@@ -18,9 +18,9 @@
 		<li>
 			<img src="{{ resize(image.file.file.getPublicUrl, 200, 200) }}" />
 			<ul>
-				<li>{{ image.type }}</li>
-				<li>{{ image.optionName }}</li>
-				<li>{{ image.optionValue }}</li>
+				<li>Image type: {{ image.type }}</li>
+				<li>Option name: {{ image.optionName }}</li>
+				<li>Option value: {{ image.optionValue }}</li>
 			</ul>
 		</li>
 	{% endfor %}
