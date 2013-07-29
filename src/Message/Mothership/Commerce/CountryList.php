@@ -295,7 +295,7 @@ class CountryList  implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function getIterator()
 	{
-		return \ArrayIterator($this->_items);
+		return new \ArrayIterator($this->_items);
 	}
 
 	public function getByID($countryID)
