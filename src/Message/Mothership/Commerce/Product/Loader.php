@@ -58,7 +58,7 @@ class Loader
 				product.updated_by   AS updatedBy,
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
-				product.brand_id     AS brandID,
+				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
 				product.tax_rate     AS taxRate,
@@ -93,7 +93,7 @@ class Loader
 
 		$prices = $this->_query->run(
 			'SELECT
-				product_price.product_id     AS id,
+				product_price.product_id  AS id,
 				product_price.type        AS type,
 				product_price.currency_id AS currencyID,
 				product_price.price       AS price

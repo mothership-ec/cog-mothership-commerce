@@ -21,7 +21,7 @@ class Edit extends Controller
 	public function index($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-
+		de($this->_product->hasImage());
 		return $this->render('::product:edit', array(
 			'product' => $this->_product,
 			'form'    => $this->_getProductForm(),
