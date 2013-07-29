@@ -97,6 +97,10 @@ class Services implements ServicesInterface
 			));
 		});
 
+		$services['order.dispatch.methods'] = $services->share(function($c) {
+			return new Commerce\Order\Entity\Dispatch\MethodCollection;
+		});
+
 		// Available order & item statuses
 		$services['order.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
