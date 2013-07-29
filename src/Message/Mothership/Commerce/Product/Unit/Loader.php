@@ -286,7 +286,7 @@ class Loader implements LoaderInterface
 		return $this->_query->run(
 			'SELECT
 				product_unit.unit_id      	AS id,
-				product_unit.weight_grams 	AS weightGrams,
+				product_unit.weight_grams 	AS weight,
 				product_unit_info.sku     	AS sku,
 				product_unit.barcode      	AS barcode,
 				product_unit.visible      	AS visible,

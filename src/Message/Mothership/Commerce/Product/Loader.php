@@ -72,7 +72,7 @@ class Loader
 				product.category     AS category,
 				product.tax_rate     AS taxRate,
 				product.supplier_ref AS supplierRef,
-				product.weight_grams AS weightGrams,
+				product.weight_grams AS weight,
 
 				product_info.display_name      AS displayName,
 				product_info.season            AS season,

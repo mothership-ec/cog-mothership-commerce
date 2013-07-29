@@ -44,7 +44,7 @@ class Create
 				'visible'	=> (bool) $unit->visible,
 				'barcode'	=> $unit->barcode,
 				'sup_ref'	=> $unit->supplierRef,
-				'weight'	=> $unit->weightGrams,
+				'weight'	=> $unit->weight,
 				'createdAt' => $unit->authorship->createdAt(),
 				'createdBy' => $unit->authorship->createdBy()->id,
 				$unit->id
