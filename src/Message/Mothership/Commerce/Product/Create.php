@@ -39,7 +39,7 @@ class Create
 				product.created_by   = ?i',
 			array(
 				$product->name,
-				$product->weightGrams,
+				$product->weight,
 				$product->taxRate,
 				$product->supplierRef,
 				$product->authorship->createdAt(),

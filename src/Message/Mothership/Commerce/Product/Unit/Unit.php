@@ -15,7 +15,7 @@ class Unit
 	public $visible;
 	public $authorship;
 	public $supplierRef;
-	public $weightGrams;
+	public $weight;
 	public $revisionID;
 
 	public $stock = array(

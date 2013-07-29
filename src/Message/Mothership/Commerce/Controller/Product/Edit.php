@@ -265,7 +265,7 @@ class Edit extends Controller
 
 			// Populate the rest of the editbale unit attributes
 			$form->add('sku', 'text','', array('attr' => array('value' =>  $unit->sku)));
-			$form->add('weight', 'text','', array('attr' => array('value' =>  $unit->weightGrams)))
+			$form->add('weight', 'text','', array('attr' => array('value' =>  $unit->weight)))
 				->val()->optional();
 			$form->add('visible', 'checkbox','',array('attr' => array('value' =>  $unit->visible)))
 				->val()->optional();
@@ -355,7 +355,7 @@ class Edit extends Controller
 					continue;
 				}
 				$changedUnit->sku         = $values['sku'];
-				$changedUnit->weightGrams = (int) $values['weight'];
+				$changedUnit->weight = (int) $values['weight'];
 				$changedUnit->visible     = (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
@@ -388,7 +388,7 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
-			$unit->weightGrams = $data['weight'];
+			$unit->weight = $data['weight'];
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
@@ -427,7 +427,7 @@ class Edit extends Controller
 			$product->year                       = $data['year'];
 			$product->taxRate                    = $data['tax_rate'];
 			$product->supplierRef                = $data['supplier_ref'];
-			$product->weightGrams                = $data['weight_grams'];
+			$product->weight                	 = $data['weight_grams'];
 			$product->season                     = $data['season'];
 			$product->description                = $data['description'];
 			$product->fabric                     = $data['fabric'];
@@ -474,7 +474,7 @@ class Edit extends Controller
 				'year'                          => $this->_product->year,
 				'tax_rate'                      => $this->_product->taxRate,
 				'supplier_ref'                  => $this->_product->supplierRef,
-				'weight_grams'                  => $this->_product->weightGrams,
+				'weight_grams'                  => $this->_product->weight,
 				'season'                        => $this->_product->season,
 				'description'                   => $this->_product->description,
 				'category'                   	=> $this->_product->category,

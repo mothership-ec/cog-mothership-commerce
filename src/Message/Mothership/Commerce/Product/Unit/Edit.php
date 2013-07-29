@@ -46,7 +46,7 @@ class Edit
 			', 	array(
 					(bool) $unit->visible,
 					$unit->supplierRef,
-					$unit->weightGrams,
+					$unit->weight,
 					$unit->authorship->updatedAt(),
 					$unit->authorship->updatedBy(),
 					$unit->id

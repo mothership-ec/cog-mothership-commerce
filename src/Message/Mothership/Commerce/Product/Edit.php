@@ -77,7 +77,7 @@ class Edit
 				'name'              => $product->name,
 				'tax_rate'          => $product->taxRate,
 				'supplier_ref'      => $product->supplierRef,
-				'weight_grams'      => $product->weightGrams,
+				'weight_grams'      => $product->weight,
 				'display_name'      => $product->displayName,
 				'season'            => $product->season,
 				'description'       => $product->description,

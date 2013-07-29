@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller;
+namespace Message\Mothership\Commerce\Controller\Product;
 
 use Message\Cog\Controller\Controller;
 
@@ -15,7 +15,7 @@ class Sidebar extends Controller
 			$listing[$product->category][] = $product;
 		}
 
-		return $this->render('Message:Mothership:Commerce::sidebar', array(
+		return $this->render('Message:Mothership:Commerce::product:sidebar', array(
 			'listing'  => $listing,
 			'productID' => $productID,
 		));

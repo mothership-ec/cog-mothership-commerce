@@ -67,7 +67,7 @@ class Item implements EntityInterface
 		$item->options = ''; // combine all options as a string
 		$item->brandID = $unit->product->brandID;
 		$item->brandName = ''; // TODO: add this once Brand class used
-		$item->weight = $unit->weightGrams; // TODO: change this once the property name is corrected
+		$item->weight = $unit->weight;
 		// TODO: figure out how tax and tax discounts should work with countries, and WHEN? what about checkout
 
 		return $item;

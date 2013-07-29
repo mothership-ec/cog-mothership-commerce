@@ -18,7 +18,7 @@ class Product
 	public $name;
 	public $taxRate;
 	public $supplierRef;
-	public $weightGrams;
+	public $weight;
 
 	public $displayName;
 	public $season;
