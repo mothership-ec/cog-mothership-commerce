@@ -2,10 +2,10 @@
 
 namespace Message\Mothership\Commerce;
 
-class CountryList
+class CountryList  implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 
-	protected $_countries = array(
+	protected $_items = array(
 		'AX' => 'Åland Islands',
 		'AL' =>	'Albania',
 		'DZ' =>	'Algeria',
@@ -256,9 +256,46 @@ class CountryList
 		'ZW' =>	'Zimbabwe',
 	);
 
-	public function getAll()
+	public function exists($id)
 	{
-		return $this->_countries;
+		$this->load();
+
+		return array_key_exists($id, $this->_items);
+	}
+
+	public function all()
+	{
+		return $this->_items;
+	}
+
+	public function count()
+	{
+		return count($this->_items);
+	}
+
+	public function offsetSet($id, $value)
+	{
+		throw new \BadMethodCallException('`Entity\Collection` does not allow setting entities using array access');
+	}
+
+	public function offsetGet($id)
+	{
+		return $this->get($id);
+	}
+
+	public function offsetExists($id)
+	{
+		return $this->exists($id);
+	}
+
+	public function offsetUnset($id)
+	{
+		unset($this->_items[$id]);
+	}
+
+	public function getIterator()
+	{
+		return \ArrayIterator($this->_items);
 	}
 
 	public function getByID($countryID)
