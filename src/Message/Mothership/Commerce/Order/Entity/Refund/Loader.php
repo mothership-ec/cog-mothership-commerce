@@ -58,7 +58,7 @@ class Loader implements Order\Entity\LoaderInterface
 			FROM
 				order_refund
 			WHERE
-				refund_id IN ?ij
+				refund_id IN (?ij)
 		', array($ids));
 
 		if (0 === count($result)) {
