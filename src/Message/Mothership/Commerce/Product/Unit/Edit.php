@@ -28,7 +28,6 @@ class Edit
 
 	public function save(Unit $unit)
 	{
-
 		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
@@ -105,7 +104,6 @@ class Edit
 
 	public function savePrices(Unit $unit)
 	{
-
 		$result = $this->_query->run(
 			'DELETE FROM
 				product_unit_price
@@ -118,9 +116,8 @@ class Edit
 
 		$options = array();
 		$inserts = array();
-
 		foreach ($unit->price as $type => $price) {
-			$unitPrice = $unit->price[$type]->getPrice('GBP', $this->_locale);
+			$unitPrice    = $unit->price[$type]->getPrice('GBP', $this->_locale);
 			$productPrice = $unit->product->price[$type]->getPrice('GBP', $this->_locale);
 
 			// If the unit price is equal to the product price then we don't

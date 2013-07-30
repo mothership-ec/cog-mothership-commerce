@@ -59,7 +59,7 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), true, $product) : false;
 	}
 
-	public function getByID($unitID, Product $product = null)
+	public function getByID($unitID, Product $product = null, $revisionID = null)
 	{
 		$result = $this->_query->run('
 			SELECT
@@ -73,7 +73,7 @@ class Loader implements LoaderInterface
 			)
 		);
 
-		return count($result) ? $this->_load($result->value(), false, $product) : false;
+		return count($result) ? $this->_load($result->value(), false, $product, $revisionID) : false;
 	}
 
 	public function includeInvisible($bool)
@@ -98,16 +98,16 @@ class Loader implements LoaderInterface
 	 *
 	 * @return array|Unit 	Array of, or singular Unit object
 	 */
-	protected function _load($unitIDs, $alwaysReturnArray = false, Product $product = null)
+	protected function _load($unitIDs, $alwaysReturnArray = false, Product $product = null, $revisionID = null)
 	{
 		// Load the data for the units
-		$result = $this->_loadUnits($unitIDs);
+		$result = $this->_loadUnits($unitIDs, $revisionID);
 		// Load stock levels
 		$stock = $this->_loadStock($unitIDs);
 		// Load the prices
 		$prices = $this->_loadPrices($unitIDs);
 		// Load the options
-		$options = $this->_loadOptions($unitIDs);
+		$options = $this->_loadOptions($unitIDs, $revisionID);
 		// Bind the results to the Unit Object
 		$units = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
@@ -170,6 +170,7 @@ class Loader implements LoaderInterface
 			if (!is_null($product)) {
 				$units[$key]->product = $product;
 			}
+
 		}
 
 		// Reload the array to put the unitID as the key
@@ -188,8 +189,13 @@ class Loader implements LoaderInterface
 	 *
 	 * @return Result 			  DB Result object
 	 */
-	protected function _loadOptions($unitIDs)
+	protected function _loadOptions($unitIDs, $revisionID = null)
 	{
+		$getRevision = ' IFNULL(MAX(product_unit_info.revision_id),1) ';
+		if ($revisionID) {
+			$getRevision = $revisionID;
+		}
+
 		return $this->_query->run(
 			'SELECT
 				product_unit_option.unit_id      AS id,
@@ -202,7 +208,7 @@ class Loader implements LoaderInterface
 					product_unit_info.unit_id = product_unit_option.unit_id
 					AND product_unit_option.revision_id = (
 						SELECT
-							IFNULL(MAX(product_unit_info.revision_id),1)
+							'.$getRevision.'
 						FROM
 							product_unit_info AS info
 						WHERE
@@ -211,9 +217,10 @@ class Loader implements LoaderInterface
 					)
 				)
 			WHERE
-				product_unit_option.unit_id IN (?ij)',
+				product_unit_option.unit_id IN (:unitIDs?ij)
+				'.(!is_null($revisionID) ? ' AND product_unit_option.revision_id = '.$getRevision.' ' : ''),
 			array(
-				(array) $unitIDs,
+				'unitIDs' => (array) $unitIDs,
 			)
 		);
 	}
@@ -281,8 +288,22 @@ class Loader implements LoaderInterface
 	 *
 	 * @return Result 			  DB Result object
 	 */
-	protected function _loadUnits($unitIDs)
+	protected function _loadUnits($unitIDs, $revisionID = null)
 	{
+
+		$getRevision = '
+			SELECT
+				IFNULL(MAX(revision_id),1)
+			FROM
+				product_unit_info AS info
+			WHERE
+				info.unit_id = product_unit.unit_id
+			GROUP BY
+				unit_id';
+		if ($revisionID) {
+			$getRevision = $revisionID;
+		}
+
 		return $this->_query->run(
 			'SELECT
 				product_unit.unit_id      	AS id,
@@ -303,15 +324,7 @@ class Loader implements LoaderInterface
 			LEFT JOIN
 				product_unit_info ON (
 					product_unit_info.unit_id = product_unit.unit_id
-					AND revision_id = (
-						SELECT
-							IFNULL(MAX(revision_id),1)
-						FROM
-							product_unit_info AS info
-						WHERE
-							info.unit_id = product_unit.unit_id
-						GROUP BY unit_id
-					)
+					AND revision_id = ('.$getRevision.')
 				)
 			WHERE
 				product_unit.unit_id IN (?ij)
@@ -320,7 +333,6 @@ class Loader implements LoaderInterface
 			GROUP BY
 				product_unit.unit_id',
 			array(
-
 				(array) $unitIDs,
 			)
 		);
