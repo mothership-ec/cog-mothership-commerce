@@ -18,6 +18,7 @@ class Services implements ServicesInterface
 		$services['order.entities'] = function($c) {
 			return array(
 				'addresses'  => $c['order.address.loader'],
+				'discounts'  => $c['order.discount.loader'],
 				'dispatches' => $c['order.dispatch.loader'],
 				'items'      => $c['order.item.loader'],
 				'notes'      => $c['order.note.loader'],
@@ -39,6 +40,7 @@ class Services implements ServicesInterface
 				$c['user.current'],
 				array(
 					'addresses' => $c['order.address.create'],
+					'discounts' => $c['order.discount.create'],
 					'items'     => $c['order.item.create'],
 				)
 			);
@@ -73,6 +75,15 @@ class Services implements ServicesInterface
 
 		$services['order.item.edit'] = function($c) {
 			return new Commerce\Order\Entity\Item\Edit($c['db.transaction'], $c['event.dispatcher'], $c['order.item.statuses'], $c['user.current']);
+		};
+
+		// Order despatch entity
+		$services['order.discount.loader'] = function($c) {
+			return new Commerce\Order\Entity\Discount\Loader($c['db.query']);
+		};
+
+		$services['order.discount.create'] = function($c) {
+			return new Commerce\Order\Entity\Discount\Create($c['db.transaction'], $c['user.current']);
 		};
 
 		// Order despatch entity

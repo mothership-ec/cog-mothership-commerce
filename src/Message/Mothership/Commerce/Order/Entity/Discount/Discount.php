@@ -17,10 +17,14 @@ class Discount implements EntityInterface
 
 	public $order;
 
+	public $discount;
+
+	public $items = array();
+
 	public $id;
+	public $code;
 	public $amount;
 	public $percentage;
-	public $threshold;
 	public $name;
 	public $description;
 
