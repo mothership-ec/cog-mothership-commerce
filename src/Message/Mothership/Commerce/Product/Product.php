@@ -31,10 +31,9 @@ class Product
 	public $sizing;
 	public $notes;
 
-	public $price = array();
-
-	public $images   = array();
-	public $tags     = array();
+	public $price 	= array();
+	public $images  = array();
+	public $tags    = array();
 
 	public $exportDescription;
 	public $exportValue;
