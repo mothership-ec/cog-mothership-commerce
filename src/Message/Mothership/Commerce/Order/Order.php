@@ -199,19 +199,21 @@ class Order
 	}
 
 
-	//GET THE COUNTRY ID FOR THIS ORDER
-	public function getCountryID($addressType) {
-		if ($address = $this->getAddress($addressType)) {
-			return $address->countryID;
-		}
-		elseif($this->shopID) {
-			$DB = new DBquery;
-			$query = "SELECT country_id FROM shop JOIN lkp_address_country USING (address_id) WHERE shop_id = ".$this->shopID;
-			if ($DB->query($query)) {
-				return $DB->value();
-			}
-		}
-		return NULL;
+	/**
+	 * Get the country ID for the address for this order of a specific type.
+	 *
+	 * @see getAddress
+	 *
+	 * @param  string $type                 The address type
+	 *
+	 * @return Entity\Address\Address|false The address, or false if it was not
+	 *                                      found
+	 */
+	public function getCountryID($type)
+	{
+		$address = $this->getAddress($type);
+
+		return $address ? $address->countryID : false;
 	}
 
 	//RETURN THE DISCOUNT ITEMS
