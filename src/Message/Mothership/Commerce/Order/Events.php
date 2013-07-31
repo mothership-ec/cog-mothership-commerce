@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Order;
 
 class Events
 {
+	const CREATE_VALIDATE    = 'commerce.order.create.validate';
 	const CREATE_START       = 'commerce.order.create.start';
 	const CREATE_COMPLETE    = 'commerce.order.create.complete';
 	const EDIT               = 'commerce.order.edit';

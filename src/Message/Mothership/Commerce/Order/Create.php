@@ -64,7 +64,11 @@ class Create
 		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, new Event\Event($order))
 			->getOrder();
 
-		// validate? a status ID must be set, type must be set, etc
+		$validation = $this->_eventDispatcher->dispatch(Events::CREATE_VALIDATE, new Event\ValidateEvent($order));
+
+		if ($validation->hasErrors()) {
+			throw new \InvalidArgumentException(sprintf('Cannot create order: %s', implode(', ', $validation->getErrors())));
+		}
 
 		$order->authorship->create(
 			new DateTimeImmutable,
