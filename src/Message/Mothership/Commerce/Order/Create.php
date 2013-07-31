@@ -61,7 +61,7 @@ class Create
 
 	public function create(Order $order, array $metadata = array())
 	{
-		$order = $this->_eventDispatcher->dispatch(OrderEvents::CREATE_START, new Event\Event($order))
+		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, new Event\Event($order))
 			->getOrder();
 
 		// validate? a status ID must be set, type must be set, etc
@@ -160,7 +160,7 @@ class Create
 
 		$event = new Event\Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
 		$this->_eventDispatcher->dispatch(
-			OrderEvents::CREATE_COMPLETE,
+			Events::CREATE_COMPLETE,
 			$event
 		);
 

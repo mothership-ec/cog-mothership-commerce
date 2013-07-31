@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
-use Message\Mothership\Commerce\Order\OrderEvents;
+use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Collection as StatusCollection;
 

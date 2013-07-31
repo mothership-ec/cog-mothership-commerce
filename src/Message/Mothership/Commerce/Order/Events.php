@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-class OrderEvents
+class Events
 {
 	const CREATE_START       = 'commerce.order.create.start';
 	const CREATE_COMPLETE    = 'commerce.order.create.complete';
