@@ -78,6 +78,15 @@ class Loader implements Order\Entity\LoaderInterface
 		$return = array();
 
 		foreach ($result as $key => $row) {
+			// Cast decimals to float
+			$items[$key]->listPrice = (float) $row->listPrice;
+			$items[$key]->net       = (float) $row->net;
+			$items[$key]->discount  = (float) $row->discount;
+			$items[$key]->tax       = (float) $row->tax;
+			$items[$key]->taxRate   = (float) $row->taxRate;
+			$items[$key]->gross     = (float) $row->gross;
+			$items[$key]->rrp       = (float) $row->rrp;
+
 			$items[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by

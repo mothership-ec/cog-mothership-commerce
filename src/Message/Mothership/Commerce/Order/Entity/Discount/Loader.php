@@ -66,6 +66,10 @@ class Loader implements Order\Entity\LoaderInterface
 		$return   = array();
 
 		foreach ($result as $key => $row) {
+			// Cast decimals to float
+			$entities[$key]->amount     = (float) $row->amount;
+			$entities[$key]->percentage = (float) $row->percentage;
+
 			$entities[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
