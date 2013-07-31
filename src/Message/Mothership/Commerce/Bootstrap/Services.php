@@ -15,6 +15,18 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Order($c['order.entities']);
 		};
 
+		$services['basket'] = function($c) {
+			if (!$c['http.session']->get('basket')) {
+				$c['http.session']->set('basket',new Commerce\Order\Assembler(
+					$c['order'],
+					$c['user.current'],
+					$c['locale']
+				));
+			}
+
+			return $c['http.session']->get('basket');
+		};
+
 		$services['order.entities'] = function($c) {
 			return array(
 				'addresses'  => $c['order.address.loader'],

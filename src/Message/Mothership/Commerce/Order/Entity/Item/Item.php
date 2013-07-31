@@ -35,8 +35,7 @@ class Item implements EntityInterface
 	public $sku;
 	public $barcode;
 	public $options;
-	public $brandID;
-	public $brandName;
+	public $brand;
 
 	public $weight;
 	public $stockLocation;
@@ -54,8 +53,10 @@ class Item implements EntityInterface
 	static public function createFromUnit(Unit $unit)
 	{
 		$item = new static;
-		$item->listPrice = $unit->getPrice('retail')->getPrice($this->order->currencyID);
-		$item->rrp = $unit->getPrice('rrp')->getPrice($this->order->currencyID);
+		$currencyID = $item->order ? $item->order->currencyID : 'GBP';
+
+		$item->listPrice = $unit->getPrice('retail',$currencyID);
+		$item->rrp = $unit->getPrice('rrp',$currencyID);
 		$item->taxRate = $unit->product->taxRate;
 		// net, discount, tax, taxRate, gross
 		$item->productID = $unit->product->id;
@@ -65,8 +66,7 @@ class Item implements EntityInterface
 		$item->sku = $unit->sku;
 		$item->barcode = $unit->barcode;
 		$item->options = ''; // combine all options as a string
-		$item->brandID = $unit->product->brandID;
-		$item->brandName = ''; // TODO: add this once Brand class used
+		$item->brandName = $unit->product->brand; // TODO: add this once Brand class used
 		$item->weight = $unit->weight;
 		// TODO: figure out how tax and tax discounts should work with countries, and WHEN? what about checkout
 
