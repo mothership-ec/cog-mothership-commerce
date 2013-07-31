@@ -81,35 +81,6 @@ class Item implements EntityInterface
 		$this->stockLocation = (object) array('id' => 1);
 	}
 
-	public function price($price)
-	{
-		$this->price = $price;
-		if (!$this->originalPrice) {
-			$this->originalPrice = $price;
-		}
-	}
-
-	public function discount($amount)
-	{
-		$this->discount = round($amount, 2);
-		if (!$this->itemID) {
-			$this->calculateTax();
-		}
-	}
-
-	//CALCULATE THE CORRECT AMOUNT OF TAX FOR THIS ORDER
-	public function calculateTax()
-	{
-		$this->gross = round($item->listPrice - $item->discount, 2);
-		$this->tax   = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
-		$this->net   = round($item->gross - $item->tax, 2);
-		if ($this->taxable) {
-			$this->tax = (($this->getPrice() - $this->discount) / (100 + $this->taxRate)) * $this->taxRate;
-		} else {
-			$this->price = round(($this->originalPrice - $this->discount) / (1 + ($this->taxRate / 100)) + $this->discount, 2);
-		}
-	}
-
 	/**
 	 * Get the tax discount amount.
 	 *
@@ -129,29 +100,4 @@ class Item implements EntityInterface
 
 		return round($this->listPrice - $this->discount - $this->net, 2);
 	}
-
-	//FILTER OUT INCREMENTAL STATUS NAMES LEAVING ORDERED, AWAITING DESPATCH, SHIPPED
-	public function shortStatus() {
-		$status = 'Ordered';
-		if ($this->statusID === ORDER_STATUS_PENDING) {
-			$status = 'Pending full payment';
-		}
-		if ($this->statusID > 0) {
-			$status = 'Awaiting shipping';
-		}
-		if ($this->statusID > 5) {
-			$status = ucfirst($this->statusName);
-		}
-		return $status;
-	}
-
-	public function getPrice() {
-		return $this->originalPrice ?: $this->price;
-	}
-
-	public function isPersonalised()
-	{
-		return ($this->senderName || $this->recipientName || $this->recipientEmail || $this->recipientMessage);
-	}
-
 }
