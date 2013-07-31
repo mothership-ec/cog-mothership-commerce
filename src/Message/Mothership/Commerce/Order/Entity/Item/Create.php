@@ -59,8 +59,7 @@ class Create implements DB\TransactionalInterface
 				sku               = :sku?sn,
 				barcode           = :barcode?sn,
 				options           = :options?sn,
-				brand_id          = :brandID?in,
-				brand_name        = :brandName?sn,
+				brand             = :brand?sn,
 				weight_grams      = :weight?in,
 				stock_location_id = :stockLocation?i
 		', array(
@@ -81,8 +80,7 @@ class Create implements DB\TransactionalInterface
 			'sku'           => $item->sku,
 			'barcode'       => $item->barcode,
 			'options'       => $item->options,
-			'brandID'       => $item->brandID,
-			'brandName'     => $item->brandName,
+			'brand'         => $item->brand,
 			'weight'        => $item->weight,
 			'stockLocation' => $item->stockLocation->id,
 		));
