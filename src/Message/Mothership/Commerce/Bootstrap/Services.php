@@ -42,6 +42,7 @@ class Services implements ServicesInterface
 					'addresses' => $c['order.address.create'],
 					'discounts' => $c['order.discount.create'],
 					'items'     => $c['order.item.create'],
+					'payments'  => $c['order.payment.create'],
 				)
 			);
 		};
@@ -61,7 +62,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.address.create'] = function($c) {
-			return new Commerce\Order\Entity\Address\Create($c['db.query']);
+			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['user.current']);
 		};
 
 		// Order item entity
@@ -99,6 +100,10 @@ class Services implements ServicesInterface
 		// Order payment entity
 		$services['order.payment.loader'] = function($c) {
 			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
+		};
+
+		$services['order.payment.create'] = function($c) {
+			return new Commerce\Order\Entity\Payment\Create($c['db.transaction'], $c['user.current']);
 		};
 
 		// Order refund entity
