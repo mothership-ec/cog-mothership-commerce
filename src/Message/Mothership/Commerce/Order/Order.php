@@ -66,19 +66,15 @@ class Order
 	/**
 	 * Magic getter. This maps to defined order entities.
 	 *
+	 * @see _getEntity
+	 *
 	 * @param  string $var       Entity name
 	 *
 	 * @return Entity\Collection The entity collection instance
-	 *
-	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
 	 */
 	public function __get($var)
 	{
-		if (!array_key_exists($var, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
-		}
-
-		return $this->_entities[$var];
+		return $this->_getEntity($var);
 	}
 
 	/**
@@ -110,6 +106,12 @@ class Order
 		$this->_entities[$name] = new Entity\Collection($this, $loader);
 	}
 
+	/**
+	 * Get an array of all entities set on this order, where the value is the
+	 * instance of `Entity\Collection`.
+	 *
+	 * @return array Array of entities
+	 */
 	public function getEntities()
 	{
 		return $this->_entities;
@@ -121,48 +123,24 @@ class Order
 		return $this->getItems(); // pass whatever propetty we use for "rolling up quantities"
 	}
 
-
 	/**
 	 * Get the items for this order.
 	 *
-	 * @param  mixed $filter DEPRECATED "filter", only "SKIP_RETURNS", an item
-	 *                       ID or null can be passed
+	 * @deprecated Access the "items" property directly instead
 	 *
-	 * @return Collection    Collection of the order items
-	 */
-	public function getItems($filter = NULL)
-	{
-		// Backwards-compatibility with pre-mothership code
-		if ('SKIP_RETURNS' === $filter) {
-			return $this->getNonReturnedItems();
-		}
-
-		// Backwards-compatibility with pre-mothership code
-		if (is_int($filter) || ctype_digit($filter)) {
-			return $this->items->get($filter);
-		}
-
-		return $this->items;
-	}
-
-	/**
-	 * Get items for this order that do not have returns raised against them.
+	 * @param  mixed $filter                 Item ID if you want to get a
+	 *                                       specific item
 	 *
-	 * @return Collection Collection of order items that don't have a return
-	 *                    raised against them
+	 * @return Entity\Collection|Entity\Item Collection of all items, or a
+	 *                                       specific item
 	 */
-	public function getNonReturnedItems()
+	public function getItems($id = null)
 	{
-		$items = clone $this->items;
-
-		foreach ($items as $id => $item) {
-			// TODO: check if the item is returned here
-			if (0) {
-				$items->remove($key);
-			}
+		if ($id) {
+			return $this->_getEntity('items')->get($id);
 		}
 
-		return $items;
+		return $this->_getEntity('items');
 	}
 
 	/**
@@ -173,20 +151,12 @@ class Order
 	 * @return Entity\Address\Address|false The address, or false if it was not
 	 *                                      found
 	 *
-	 * @throws \BadMethodCallException   If the addresses entity is not set
 	 * @throws \UnexpectedValueException If more than one address of this type
 	 *                                   was found
 	 */
 	public function getAddress($type)
 	{
-		if (!array_key_exists('addresses', $this->_entites)) {
-			throw new \BadMethodCallException(sprintf(
-				'Cannot get `%s` addresses as the addresses entity is not set on this order',
-				$type
-			));
-		}
-
-		$addresses = $this->_entites['addresses']->getByProperty('type', $type);
+		$addresses = $this->_getEntity('addresses')->getByProperty('type', $type);
 
 		if (count($addresses) > 1) {
 			throw new \UnexpectedValueException(sprintf(
@@ -198,9 +168,10 @@ class Order
 		return current($addresses) ?: false;
 	}
 
-
 	/**
 	 * Get the country ID for the address for this order of a specific type.
+	 *
+	 * @deprecated Access the address using the "addresses" property instead
 	 *
 	 * @see getAddress
 	 *
@@ -216,168 +187,124 @@ class Order
 		return $address ? $address->countryID : false;
 	}
 
-	//RETURN THE DISCOUNT ITEMS
-	public function getDiscounts() {
-		return $this->_entities['discounts'];
+	/**
+	 * Get the discounts associated with this order.
+	 *
+	 * @deprecated Just use the discounts property directly instead
+	 *
+	 * @return Entity\Collection Collection of discounts
+	 */
+	public function getDiscounts()
+	{
+		return $this->_getEntity('discounts');
 	}
 
-
-	//RETURN THE DESPATCH ITEMS
-	public function getDespatches($despatchID = NULL) {
-		$this->despatches->load();
-		if ($despatchID) {
-			foreach ($this->getDespatches() as $despatch) {
-				if ($despatch->despatchID == $despatchID) {
-					return $despatch;
-				}
-			}
-			return NULL;
-		}
-		return $this->despatches->getItems();
-	}
-
-
-	//RETURN THE PAYMENT ITEMS
-	public function getPayments($id = NULL) {
-		$this->payments->load();
+	/**
+	 * Get the dispatches associated with this order.
+	 *
+	 * @deprecated Just use the dispatches property directly instead
+	 *
+	 * @param int|null $id       ID of the dispatch to get, or null to get them
+	 *                           all
+	 *
+	 * @return Entity\Collection Collection of dispatches
+	 */
+	public function getDespatches($id = null)
+	{
 		if ($id) {
-			foreach ($this->payments->getItems() as $payment) {
-				if ($payment->paymentID == $id) {
-					return $payment;
-				}
-			}
-			return NULL;
+			return $this->_getEntity('dispatches')->get($id);
 		}
-		return $this->payments->getItems();
+
+		return $this->_getEntity('dispatches');
 	}
 
-
-	//RETURN THE PAYMENT ITEMS
-	public function getRefunds($id = NULL) {
-		$this->refunds->load();
+	/**
+	 * Get the payments associated with this order.
+	 *
+	 * @deprecated Just use the payments property directly instead
+	 *
+	 * @param int|null $id       ID of the payment to get, or null to get them
+	 *                           all
+	 *
+	 * @return Entity\Collection Collection of payments
+	 */
+	public function getPayments($id = null)
+	{
 		if ($id) {
-			foreach ($this->refunds->getItems() as $refund) {
-				if ($refund->refundID == $id) {
-					return $refund;
-				}
-			}
-			return NULL;
+			return $this->_getEntity('payments')->get($id);
 		}
-		return $this->refunds->getItems();
+
+		return $this->_getEntity('payments');
 	}
 
-
-	//RETURN THE PAYMENT ITEMS
-	public function getReturns($id = NULL) {
-		$this->returns->load();
+	/**
+	 * Get the refunds associated with this order.
+	 *
+	 * @deprecated Just use the refunds property directly instead
+	 *
+	 * @param int|null $id       ID of the refund to get, or null to get them
+	 *                           all
+	 *
+	 * @return Entity\Collection Collection of refunds
+	 */
+	public function getRefunds($id = null)
+	{
 		if ($id) {
-			foreach ($this->returns->getItems() as $return) {
-				if ($return->returnID == $id) {
-					return $return;
-				}
-			}
-			return NULL;
+			return $this->_getEntity('refunds')->get($id);
 		}
-		return $this->returns->getItems();
+
+		return $this->_getEntity('refunds');
 	}
 
-
-	//RETURN AN ARRAY OF [ONLY] ACTIVE RETURNS
-	public function getReturnsByStatus($status) {
-		$returns = array();
-		switch ($status) {
-			case 'INCOMPLETE':
-				foreach ($this->getReturns() as $return) {
-					if ($return->statusID < RETURN_STATUS_COMPLETE) {
-						$returns[] = $return;
-					}
-				}
-				break;
-			default:
-				$returns[] = $return;
+	/**
+	 * Get the returns associated with this order.
+	 *
+	 * @deprecated Just use the returns property directly instead
+	 *
+	 * @param int|null $id       ID of the return to get, or null to get them
+	 *                           all
+	 *
+	 * @return Entity\Collection Collection of returns
+	 */
+	public function getReturns($id = null)
+	{
+		if ($id) {
+			return $this->_getEntity('returns')->get($id);
 		}
-		return $returns;
+
+		return $this->_getEntity('returns');
 	}
 
-
-
-	//RETURN THE RECEIPTS
-	public function getReceipts() {
-		$this->receipts->load();
-		return $this->receipts->getItems();
-	}
-
-	//DOES THE ORDER INCLUDE FREE SHIPPING?
-	public function hasFreeShipping() {
-		foreach ($this->getDiscounts() as $item) {
-			if ($item instanceof OrderDiscountFreeShipping) {
-				return true;
-			}
+	/**
+	 * Get the notes associated with this order.
+	 *
+	 * @deprecated Just use the notes property directly instead
+	 *
+	 * @param int|null $id       ID of the note to get, or null to get them
+	 *                           all
+	 *
+	 * @return Entity\Collection Collection of notes
+	 */
+	public function getNotes($raisedFrom = false)
+	{
+		if ($raisedFrom) {
+			return $this->_getEntity('notes')->getByProperty('raisedFrom', $raisedFrom);
 		}
-		return false;
+
+		return $this->_getEntity('notes');
 	}
 
-	//RETURN THE TOTAL DISCOUNT ON THIS ORDER
-	//IF A TYPE IS PASSED IN, EITHER RETURN THE DISCOUNT VALUE FOR THIS TYPE
-	//OR EXCLUDE THIS TYPE FROM THE TOTAL, DEPENDENT ON $include
-	public function getDiscount($type = NULL, $exclude = false) {
-		$discountVal  = $this->discount;
-		$typeDiscount = 0;
-		if ($type) {
-			$class = 'OrderDiscount' . $type;
-			foreach ($this->getDiscounts() as $discount) {
-				if (get_class($discount) == $class) {
-					$typeDiscount += $discount->amount;
-				}
-			}
-			if ($exclude) {
-				$discountVal -= $typeDiscount;
-			} else {
-				$discountVal = $typeDiscount;
-			}
-		}
-		return $discountVal;
+	/**
+	 * Get the grand total for this order.
+	 *
+	 * @deprecated Just use the totalGross property directly
+	 *
+	 * @return float The grand total amount
+	 */
+	public function getTotal()
+	{
+		return $this->totalGross;
 	}
-
-
-	public function getSubtotal() {
-		return $this->total;
-	}
-
-
-	//GET TOTAL FOR THIS ORDER
-	public function getTotal() {
-		return ($this->total + $this->shippingAmount) - $this->discount - $this->taxDiscount;
-	}
-
-
-	//GET THE UNPAID BALANCE ON THE ORDER
-	public function amountDue($onlyAcceptedReturns=true) {
-		//GRAB THE ORDER TOTAL
-		$due  = $this->getTotal();
-		//DECREMENT PAYMENTS RECEIVED
-		$due -= $this->paid;
-		//DECREMENT REFUNDS MADE
-		//foreach ($this->getRefunds() as $refund) {
-		//	$due -= $refund->amount;
-		//}
-
-		//LOOK FOR RETURNS WITH BALANCING PAYMENTS
-		foreach ($this->getReturns() as $return) {
-			if ($return->statusID < self::RETURN_STATUS_PAID &&
-				($return->accepted || !$onlyAcceptedReturns)) {
-				$due += $return->balancingPayment;
-			}
-		}
-		return $due;
-	}
-
-
-	//GET THE PAID BALANCE ON THE ORDER
-	public function amountPaid(){
-		return $this->paid;
-	}
-
 
 	/**
 	 * Get the "simple" currency ID for this order (the currency ID without the
@@ -386,6 +313,8 @@ class Order
 	 * This is still here for backwards-compatibility and is due to be removed
 	 * in a future version.
 	 *
+	 * @deprecated Just use the currencyID property directly instead
+	 *
 	 * @return string The currency ID
 	 */
 	public function getSimpleCurrencyID()
@@ -393,27 +322,13 @@ class Order
 		return $this->currencyID;
 	}
 
-
-	//RETURN A COMPLEX LOCALE_ID:CURRENCY_ID CURRENCY ID
-	public function getComplexCurrencyID() {
-
-		$badCurrencyID = array('AU:USD' => 'RW:USD', 'US:GBP' => 'UK:GBP');
-
-		if (!strstr($this->currencyID, ':')) {
-			//DETERMINE LOCALE BASED ON DELIVERY ADDRESS
-			$localeID = ($this->getAddress('delivery')) ? getLocaleForCountry($this->getAddress('delivery')->countryID) : Locale::DEFAULT_LOCALE_ID;
-			$complexCurrencyID = strtoupper($localeID . ':' . $this->currencyID);
-			return (isset($badCurrencyID[$complexCurrencyID])? $badCurrencyID[$complexCurrencyID] : $complexCurrencyID);
-		}
-		return (isset($badCurrencyID[$this->currencyID])? $badCurrencyID[$this->currencyID] : $this->currencyID);
-	}
-
-
 	/**
 	 * Get the metadata for this order.
 	 *
 	 * This is still here for backwards-compatibility and is due to be removed
 	 * in a future version.
+	 *
+	 * @deprecated Just use the metadata property directly instead
 	 *
 	 * @return Metadata
 	 */
@@ -422,23 +337,21 @@ class Order
 		return $this->metadata;
 	}
 
-
-	public function getNotes($raisedFrom = false) {
-		$this->notes->load();
-
-		if($raisedFrom === false) {
-			return $this->notes->getItems();
+	/**
+	 * Get a specific entity collection.
+	 *
+	 * @param  string $var       Entity name
+	 *
+	 * @return Entity\Collection The entity collection instance
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
+	 */
+	protected function _getEntity($name)
+	{
+		if (!array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
 		}
 
-		$notes = array();
-
-		foreach($this->notes->getItems() as $note) {
-			if($note->raisedFrom == $raisedFrom) {
-				$notes[] = $note;
-			}
-		}
-
-		return $notes;
+		return $this->_entities[$name];
 	}
-
 }
