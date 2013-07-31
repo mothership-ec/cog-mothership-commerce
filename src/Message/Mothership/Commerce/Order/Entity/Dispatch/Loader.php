@@ -53,7 +53,9 @@ class Loader implements Order\Entity\LoaderInterface
 		$result = $this->_query->run('
 			SELECT
 				*,
-				dispatch_id AS id
+				dispatch_id AS id,
+				shipped_at  AS shippedAt,
+				shipped_by  AS shippedBy
 			FROM
 				order_dispatch
 			WHERE
@@ -72,6 +74,10 @@ class Loader implements Order\Entity\LoaderInterface
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			if ($row->shippedAt) {
+				$entities[$key]->shippedAt = new DateTimeImmutable(date('c', $row->shippedAt));
+			}
 
 			if ($order) {
 				$entities[$key]->order = $order;

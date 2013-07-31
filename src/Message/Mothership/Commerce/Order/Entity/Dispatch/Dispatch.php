@@ -12,6 +12,8 @@ class Dispatch implements EntityInterface
 
 	public $order;
 	public $authorship;
+	public $shippedAt;
+	public $shippedBy;
 
 	public $method;
 	public $code;
