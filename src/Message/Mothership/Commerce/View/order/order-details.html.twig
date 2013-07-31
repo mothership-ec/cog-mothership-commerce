@@ -1,0 +1,88 @@
+{% extends '::order/order' %}
+
+{% block main %}
+	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
+
+
+	<section class="container-content">
+		<section class="repeatable-group">
+				<h2>Order Details</h2>
+				<div class="container">
+					<section class="group">
+						<h1 class="title">General</h1>
+						<ul class="order-details">
+							
+							<li><span>Order-Id</span>1</li>
+							<li><span>Created at </span> by </li>
+							<li><span>Updated at</span> by</li>
+							<li><span>Shipping Method </span></li>
+						</ul>
+					</section>
+
+					<section class="group">
+						<h1 class="title">Currency Details</h1>
+						<ul class="order-details">
+							<li><span>Type</span>1</li>
+							<li><span>Size</span>34389</li>
+							<li><span>Dimenions</span>260 x 300</li>
+							<li><span>Uploaded By</span>Danny Hannah at July 29, 2013 13:33</li>
+						</ul>
+					</section>
+
+					<section class="group">
+						<h1 class="title">Production Price Details</h1>
+						<ul class="order-details">
+							<li><span>Type</span>1</li>
+							<li><span>Size</span>34389</li>
+							<li><span>Dimenions</span>260 x 300</li>
+							<li><span>Uploaded By</span>Danny Hannah at July 29, 2013 13:33</li>
+						</ul>
+					</section>
+
+					<section class="group">
+						<h1 class="title">Total Price Details</h1>
+						<ul class="order-details">
+							<li><span>Type</span>1</li>
+							<li><span>Size</span>34389</li>
+							<li><span>Dimenions</span>260 x 300</li>
+							<li><span>Uploaded By</span>Danny Hannah at July 29, 2013 13:33</li>
+						</ul>
+					</section>
+				</div>
+				<div class="container">
+					<section class="group">
+						<h1 class="title">Item Summary</h1>
+						<table class="order-listing">
+							<thead>
+							<tr>
+								<th><span>Brand</span></th>
+								<th><span>Product Name</span></th>
+								<th><span>Options</span></th>
+								<th><span>SKU</span></th>
+								<th class="printed"><span><strong>Printed</strong></span></th>
+								<th class="picked"><span><strong>Picked</strong></span></th>
+								<th class="packed"><span><strong>Packed</strong></span></th>
+								<th class="postaged"><span><strong>Postaged</strong></span></th>
+								<th class="pickedup"><span><strong>Picked&nbsp;up</strong></span></th>
+							</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td> </td>
+									<td><a href="#"> </a></td>
+									<td> </td>
+									<td> </td>
+									<td>printed</td>
+									<td>picked</td>
+									<td>packed</td>
+									<td>postaged</td>
+									<td>picked up</td>
+								</tr>
+							</tbody>
+						</table>
+					</section>
+				</div>
+			</section>
+			{{ render(controller('::Controller:Order:Address#addressOverview', { 'orderId': order.id } )) }}
+	</section>
+{% endblock %}

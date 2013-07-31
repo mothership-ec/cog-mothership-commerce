@@ -9,6 +9,8 @@ class Routes implements RoutesInterface
 	public function registerRoutes($router)
 	{
 		$router['ms.product']->setParent('ms.cp')->setPrefix('/product');
+		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');	
+
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', '::Controller:Product:Dashboard#index');
 
 		$router['ms.product']->add('ms.commerce.product.create.action', 'create', '::Controller:Product:Create#process')
@@ -42,5 +44,20 @@ class Routes implements RoutesInterface
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', '::Controller:Product:Edit#images')
 			->setRequirement('productID', '\d+');
+
+
+
+		$router['ms.order']->add('ms.commerce.order.view.index', 'view/{orderId}', '::Controller:Order:Order#index')
+			->setRequirement('orderId', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.view.order-details', 'view/{orderId}/order-details', '::Controller:Order:Order#orderDetails')
+			->setRequirement('orderId', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.view.addresses', 'view/{orderId}/addresses', '::Controller:Order:Address#addresses')
+			->setRequirement('orderId', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.view.items', 'view/{orderId}/items', '::Controller:Order:Item#items')
+			->setRequirement('orderId', '\d+');
+
 	}
 }
