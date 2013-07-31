@@ -66,7 +66,7 @@ class Edit implements DB\TransactionalInterface
 		$order->status = clone $status;
 
 		return $this->_eventDispatcher->dispatch(
-			OrderEvents::EDIT,
+			Events::EDIT,
 			new Event\Event($order)
 		)->getOrder();
 	}

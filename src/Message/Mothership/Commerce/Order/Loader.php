@@ -109,8 +109,9 @@ class Loader
 				order_summary.total_tax        AS totalTax,
 				order_summary.total_gross      AS totalGross,
 				order_shipping.name            AS shippingName,
-				order_shipping.net             AS shippingNet,
 				order_shipping.list_price      AS shippingListPrice,
+				order_shipping.net             AS shippingNet,
+				order_shipping.discount        AS shippingDiscount,
 				order_shipping.tax             AS shippingTax,
 				order_shipping.tax_rate        AS shippingTaxRate,
 				order_shipping.gross           AS shippingGross
@@ -129,6 +130,23 @@ class Loader
 		$orders = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Order', array($this->_entities));
 
 		foreach ($result as $key => $row) {
+			// Cast decimals to float
+			$orders[$key]->conversionRate    = (float) $row->conversionRate;
+			$orders[$key]->productNet        = (float) $row->productNet;
+			$orders[$key]->productDiscount   = (float) $row->productDiscount;
+			$orders[$key]->productTax        = (float) $row->productTax;
+			$orders[$key]->productGross      = (float) $row->productGross;
+			$orders[$key]->totalNet          = (float) $row->totalNet;
+			$orders[$key]->totalDiscount     = (float) $row->totalDiscount;
+			$orders[$key]->totalTax          = (float) $row->totalTax;
+			$orders[$key]->totalGross        = (float) $row->totalGross;
+			$orders[$key]->shippingListPrice = (float) $row->shippingListPrice;
+			$orders[$key]->shippingNet       = (float) $row->shippingNet;
+			$orders[$key]->shippingDiscount  = (float) $row->shippingDiscount;
+			$orders[$key]->shippingTax       = (float) $row->shippingTax;
+			$orders[$key]->shippingTaxRate   = (float) $row->shippingTaxRate;
+			$orders[$key]->shippingGross     = (float) $row->shippingGross;
+
 			$orders[$key]->user = $this->_userLoader->getByID($row->user_id);
 
 			$orders[$key]->authorship->create(

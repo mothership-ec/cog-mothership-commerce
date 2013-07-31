@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\EventListener;
 
-use Message\Mothership\Commerce\Order\OrderEvents;
+use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;

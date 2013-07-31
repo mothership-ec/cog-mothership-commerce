@@ -61,10 +61,14 @@ class Create
 
 	public function create(Order $order, array $metadata = array())
 	{
-		$order = $this->_eventDispatcher->dispatch(OrderEvents::CREATE_START, new Event\Event($order))
+		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, new Event\Event($order))
 			->getOrder();
 
-		// validate? a status ID must be set, type must be set, etc
+		$validation = $this->_eventDispatcher->dispatch(Events::CREATE_VALIDATE, new Event\ValidateEvent($order));
+
+		if ($validation->hasErrors()) {
+			throw new \InvalidArgumentException(sprintf('Cannot create order: %s', implode(', ', $validation->getErrors())));
+		}
 
 		$order->authorship->create(
 			new DateTimeImmutable,
@@ -160,7 +164,7 @@ class Create
 
 		$event = new Event\Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
 		$this->_eventDispatcher->dispatch(
-			OrderEvents::CREATE_COMPLETE,
+			Events::CREATE_COMPLETE,
 			$event
 		);
 

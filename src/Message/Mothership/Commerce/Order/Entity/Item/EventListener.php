@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
-use Message\Mothership\Commerce\Order\OrderEvents;
+use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
 
@@ -22,10 +22,15 @@ class EventListener implements SubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(OrderEvents::CREATE_START => array(
-			array('calculateTax'),
-			array('setDefaultStatus'),
-		));
+		return array(
+			OrderEvents::CREATE_START => array(
+				array('calculateTax'),
+				array('setDefaultStatus'),
+			),
+			OrderEvents::CREATE_VALIDATE => array(
+				array('checkItemSet')
+			),
+		);
 	}
 
 	/**
@@ -64,6 +69,13 @@ class EventListener implements SubscriberInterface
 			$item->gross = round($item->listPrice - $item->discount, 2);
 			$item->tax   = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
 			$item->net   = round($item->gross - $item->tax, 2);
+		}
+	}
+
+	public function checkItemSet(Event\ValidateEvent $event)
+	{
+		if (count($event->getOrder()->items) < 1) {
+			$event->addError('Order must have at least one item to be created');
 		}
 	}
 }
