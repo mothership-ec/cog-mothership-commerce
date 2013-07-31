@@ -50,11 +50,12 @@ class Item implements EntityInterface
 	protected $recipientEmail;
 	protected $recipientMessage;
 
-	static public function createFromUnit(Unit $unit)
+	public function createFromUnit(Unit $unit)
 	{
 		$item = new static;
-		$currencyID = $item->order ? $item->order->currencyID : 'GBP';
+		$currencyID = $this->order->currencyID ?: 'GBP';
 
+		$item->id = $unit->id.'-'.$this->order->items->count();
 		$item->listPrice = $unit->getPrice('retail',$currencyID);
 		$item->rrp = $unit->getPrice('rrp',$currencyID);
 		$item->taxRate = $unit->product->taxRate;
@@ -65,7 +66,7 @@ class Item implements EntityInterface
 		$item->unitRevision = $unit->revisionID;
 		$item->sku = $unit->sku;
 		$item->barcode = $unit->barcode;
-		$item->options = ''; // combine all options as a string
+		$item->options = $unit->options; // combine all options as a string
 		$item->brandName = $unit->product->brand; // TODO: add this once Brand class used
 		$item->weight = $unit->weight;
 		// TODO: figure out how tax and tax discounts should work with countries, and WHEN? what about checkout

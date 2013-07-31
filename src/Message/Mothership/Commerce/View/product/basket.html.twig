@@ -1,0 +1,9 @@
+{% if basket %}
+	<h2>Basket</h2>
+	<ul>
+	{% for key,item in basket %}
+		<li>{{ item.quantity }} x {{item.item.productName}} {{item.item.options|join(' / ')}} | {{ order.currnecyID }} {{ item.item.listPrice }}</li>
+	{% endfor %}
+	<li>Total: {{ order.totalGross }}</li>
+	</ul>
+{% endif %}
