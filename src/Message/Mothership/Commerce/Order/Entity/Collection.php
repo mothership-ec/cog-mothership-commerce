@@ -79,6 +79,18 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->_items[] = $entity;
 	}
 
+	public function remove($id)
+	{
+		foreach ($this->_items as $key => $item) {
+			if ($item->id == $id) {
+				unset($this->_items[$key]);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function count()
 	{
 		$this->load();
@@ -100,7 +112,6 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		return $this->exists($id);
 	}
-
 	public function offsetUnset($id)
 	{
 		$this->load();

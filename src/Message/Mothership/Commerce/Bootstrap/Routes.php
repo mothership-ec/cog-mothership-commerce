@@ -42,5 +42,7 @@ class Routes implements RoutesInterface
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', '::Controller:Product:Edit#images')
 			->setRequirement('productID', '\d+');
+		$router['ms.product']->add('ms.commerce.product.add.basket', '/basket/add/{productID}', '::Controller:Module:ProductSelector#process')
+			->setMethod('POST');
 	}
 }

@@ -6,26 +6,7 @@ use Message\Mothership\Commerce\User\LoaderInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
-
-// $basket = $this->get('basket');
-
-// $basket->addItem($unit);
-// $basket->updateQuantity($unit, 3);
-
-// $basket->removeItem($unit);
-// $basket->empty();
-
-// $basket->addVoucher($giftVoucherCode);
-// $basket->addDiscount($discountCode);
-
-// $basket->hasAddresses();
-// $basket->updateAddress(new Address('line1'), 'delivery');
-
-// $basket->setShipping($shippingOption);
-
-// $basket->getOrder();
-
-// $basket->getOrder()->items;
+use Message\Mothership\Commerce\Order\Entity\Item\Item;
 
 /**
  *
@@ -46,11 +27,18 @@ class Assembler
 		$this->_locale = $locale;
 	}
 
-
 	public function addItem(Unit $unit)
 	{
 		$item = new Entity\Item\Item;
-		$this->_order->getItems()->append($item::createFromUnit($unit));
+		$item->order = $this->_order;
+		$this->_order->items->append($item->createFromUnit($unit));
+
+		return $this;
+	}
+
+	public function removeItem(Item $item)
+	{
+		$this->_order->items->remove($item->id);
 
 		return $this;
 	}
@@ -59,39 +47,31 @@ class Assembler
 	{
 		// Count how many times this unit is already in the basket
 		$unitCount = $this->_countForUnitID($unit);
-
-		// Remove the item if the quantity is 0
-		if ($quantity < 1) {
-			return $this->_removeItem($unit);
-		}
+		// Load the itesm from the basket which already have this unitID
+		$items = $this->_order->items->getByProperty('unitID', $unit->id);
 
 		// If the quantities are the same then return
 		if ($unitCount == $quantity) {
 			return $this;
 		}
 
-		// Add the item to the order as many times to make the count equal to
-		// the given quantity
-		if ($quantity > $unitCount) {
-			for ($i = $unitCount ; $i == $quantity; $i++) {
-				$this->addItem($unit);
-			}
-			return $this;
-		}
-
 		// Remove the item as many times needed to make the count equal the given
 		// quantity
 		if ($quantity < $unitCount) {
-			for ($i = $unitCount ; $i == $quantity; $i--) {
-				$this->removeItem($unit);
+			for ($i = $unitCount ; $i > $quantity; $i--) {
+				$this->removeItem(array_shift($items));
 			}
-			return $this;
 		}
-	}
 
-	public function removeItem(Unit $unit)
-	{
-		$this->_order->getItems()->append($item::createFromUnit($unit));
+		// Add the item to the order as many times to make the count equal to
+		// the given quantity
+		if ($quantity > $unitCount) {
+			for ($i = $unitCount; $i < $quantity; $i++) {
+				$this->addItem($unit);
+			}
+		}
+
+		return $this;
 	}
 
 	public function getItemQuantity(Unit $unit)
@@ -145,7 +125,7 @@ class Assembler
 
 	protected function _countForUnitID(Unit $unit)
 	{
-		return count($this->_order->getItems()->getByProperty('unitID', $unit->id));
+		return count($this->_order->items->getByProperty('unitID', $unit->id));
 	}
 
 }
