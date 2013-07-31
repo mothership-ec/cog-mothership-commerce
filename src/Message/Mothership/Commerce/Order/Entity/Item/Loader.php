@@ -61,8 +61,6 @@ class Loader implements Order\Entity\LoaderInterface
 				product_name  AS productName,
 				unit_id       AS unitID,
 				unit_revision AS unitRevision,
-				brand_id      AS brandID,
-				brand_name    AS brandName,
 				weight_grams  AS weight
 			FROM
 				order_item
@@ -103,7 +101,7 @@ class Loader implements Order\Entity\LoaderInterface
 
 			// TODO: set the stock location
 			// TODO: set the personalisation data
-			//
+
 			$return[$row->id] = $items[$key];
 		}
 
