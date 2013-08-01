@@ -1,0 +1,7 @@
+<ol class="menu">
+{% for item in items %}
+	<li>
+		<a href="#item{{ item.id }}">{{ item.id }}: {{ item.productName }}</a>
+	</li>
+{% endfor %}
+</ol>

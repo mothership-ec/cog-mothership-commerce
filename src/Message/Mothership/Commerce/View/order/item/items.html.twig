@@ -1,4 +1,8 @@
-{% extends '::order/order' %}
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block sidebar %}
+	{{ render(controller('::Controller:Order:Item#sidebar', { 'orderId': order.id } )) }}
+{% endblock %}
 
 {% block main %}
 	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
@@ -7,41 +11,53 @@
 		<section class="repeatable-group">
 				<h2>Items</h2>
 				{% for item in items %}
-					<div class="container">
+					<div class="container" id="item{{ item.id }}">
 						<section class="group">
 							<h1 class="title">
-								<a href="{{ url('ms.commerce.product.edit', {productID: item.projectId}) }}" data-live>{{ item.productName }}</a>
+								{# <a href="{ url('ms.commerce.product.edit', {productID: item.productID}) }}" data-live>{{ item.productName }}</a> #}
+								Product Name
 							</h1>
 							<ul class="file-details">
 								<li><span>Brand </span>{{ item.brand }}</li>
 								<li><span>Options </span>{{ item.options }}</li>
 								<li><span>Gross </span> {{ item.gross }}</li>
 								<li><span>SKU </span> {{ item.sku }}</li>
-								<li><span>Personalized </span> {{ item.isPersonalised }}</li>
-
-								<ul>
-									<li><span>List-Price </span> item.listPrice</li>
-									<li><span>Net </span> item.net</li>
-									<li><span>Discount </span> item.discount</li>
-									<li><span>Tax </span> item.tax</li>
-									<li><span>Taxrate </span> item.taxrate</li>
-									<li><span>Gross </span> item.gross</li>
-									<li><span>RRP </span> item.rrp</li>
-								</ul>
-
-								<ul>
-									<li><span>Weight</span> item.weight</li>
-									<li><span>Barcode</span> item.barcode</li>
-									<li><span>SKU</span> item.sku</li>
-								</ul>
-
-								<ul>
-									<li><span>Sender Name</span> item.senderName</li>
-									<li><span>Recipient Name</span> item.recipientName</li>
-									<li><span>Recipient E-Mail</span> item.recipientEmail</li>
-									<li><span>Message</span> item.recipientMessage</li>
-								</ul>
+								<li><span>Personalised </span> {{ item.isPersonalised }}</li>
+								<li><span>Current Status</span> {{ item.status }}</li>
 							</ul>
+							<section class="group">
+								<h2 class="title"> Price Details</h2>
+								<ul class="file-details">
+									<li><span>List-Price </span> {{ item.listPrice }}</li>
+									<li><span>Net </span> {{ item.net }}</li>
+									<li><span>Discount </span> {{ item.discount }}</li>
+									<li><span>Tax </span> {{ item.tax }}</li>
+									<li><span>Taxrate </span> {{ item.taxrate }}</li>
+									<li><span>Gross </span> {{ item.gross }}</li>
+									<li><span>RRP </span> {{ item.rrp }}</li>
+								</ul>
+							</section>
+
+							<section class="group">
+								<h2 class="title"> Stock Details</h2>
+								<ul class="file-details">
+									<li><span>Weight</span> {{ item.weight }}</li>
+									<li><span>Barcode</span> {{ item.barcode }}</li>
+									<li><span>SKU</span> {{ item.sku }}</li>
+								</ul>
+							</section>
+
+							{% if item.isPersonalised %}
+								<section class="group">
+									<h2 class="title"> Personalisation Details</h2>
+									<ul class="file-details">
+										<li><span>Sender Name</span> {{ item.senderName }}</li>
+										<li><span>Recipient Name</span> {{ item.recipientName }}</li>
+										<li><span>Recipient E-Mail</span> {{ item.recipientEmail }}</li>
+										<li><span>Message</span> {{ item.recipientMessage }}</li>
+									</ul>
+								</section>
+							{% endif %}
 						</section>
 					</div>
 				{% endfor %}

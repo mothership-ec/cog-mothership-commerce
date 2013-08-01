@@ -32,3 +32,25 @@ ms.commerce:
       rrp: RRP
     stock-location:
       1: Web Stock
+
+  order:
+    order:
+      order-details:
+        title: Order Details
+      order-summary:
+        title: Order Summmary
+    item:
+      items:
+        title: Items
+      item-summary:
+        title: Item Summmary
+    address:
+      addresses:
+        title: Addresses
+      address-summary:
+        title: Address Summmary
+    dispatch:
+      title: Dispatches
+    note:
+      notes:
+        title: Notes

@@ -1,0 +1,7 @@
+<ol class="menu">
+	{% for link, title in menu %}
+		<li>
+			<a href="#{{ link }}">{{ title|title}}</a>
+		</li>
+	{% endfor %}
+</ol>
