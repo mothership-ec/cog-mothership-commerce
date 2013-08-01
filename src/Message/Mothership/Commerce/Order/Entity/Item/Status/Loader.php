@@ -51,9 +51,26 @@ class Loader
 		return $item;
 	}
 
+	/**
+	 * Get a full history of statuses for a specific item, with the latest
+	 * status first.
+	 *
+	 * @param  Item\Item $item The item to get the status history for
+	 *
+	 * @return array[Status]   Array of statuses, latest first
+	 */
 	public function getHistory(Item\Item $item)
 	{
-		// return chronological array
+		return $this->_load($this->_query->run('
+			SELECT
+				*
+			FROM
+				order_item_status
+			WHERE
+				item_id = ?i
+			ORDER BY
+				created_at DESC
+		', $item->id));
 	}
 
 	protected function _load(DB\Result $result)

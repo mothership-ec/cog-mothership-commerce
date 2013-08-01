@@ -41,6 +41,26 @@ class Loader
 		return $this->_loadProduct($productID);
 	}
 
+	public function getByUnitID($unitID)
+	{
+		$result = $this->_query->run(
+			'SELECT
+				product_id
+			FROM
+				product_unit
+			WHERE
+				unit_id = ?i',
+			array(
+				$unitID
+			)
+		);
+
+		$this->_returnArray = false;
+
+		return count($result) ? $this->_loadProduct($result->flatten()) : false;
+
+	}
+
 	public function getAll()
 	{
 		$result = $this->_query->run(
