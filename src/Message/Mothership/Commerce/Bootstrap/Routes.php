@@ -54,14 +54,16 @@ class Routes implements RoutesInterface
 		$router['ms.order']->add('ms.commerce.order.view.index', 'view/{orderId}', '::Controller:Order:Order#index')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.order-details', 'view/{orderId}/order-details', '::Controller:Order:Order#orderDetails')
-			->setRequirement('orderId', '\d+');
-
-		$router['ms.order']->add('ms.commerce.order.view.addresses', 'view/{orderId}/addresses', '::Controller:Order:Address#addresses')
+		$router['ms.order']->add('ms.commerce.order.view.order-overview', 'view/{orderId}/order-overview', '::Controller:Order:Order#orderOverview')
 			->setRequirement('orderId', '\d+');
 
 		$router['ms.order']->add('ms.commerce.order.view.items', 'view/{orderId}/items', '::Controller:Order:Item#items')
 			->setRequirement('orderId', '\d+');
 
+		$router['ms.order']->add('ms.commerce.order.view.addresses', 'view/{orderId}/addresses', '::Controller:Order:Address#addresses')
+			->setRequirement('orderId', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.view.notes', 'view/{orderId}/notes', '::Controller:Order:Note#notes')
+			->setRequirement('orderId', '\d+');
 	}
 }

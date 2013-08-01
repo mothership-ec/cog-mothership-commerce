@@ -3,7 +3,10 @@
 	<ul>
 		<li><span>Order ID</span> {{ order.id }}</li>
 		<li>{{ order.authorship }}</li>
+		{# <li><span>User</span> {{ order.user }}</li> #}
 		<li><span>Status</span> {{ order.status }}</li>
+		<li><span>Type</span> {{ order.type }}</li>	
+		<li><span>Locale</span> {{ order.locale }}</li>
 		<li><span>Shipping Method</span> {{ order.shippingName }}</li>
 		<li><span>Product Gross</span> {{ order.productGross|number_format(2, '.', ',') }}</li>
 		<li><span>Total Gross</span> {{ order.totalGross|number_format(2, '.', ',') }}</li>

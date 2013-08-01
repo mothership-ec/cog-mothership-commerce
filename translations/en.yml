@@ -35,8 +35,8 @@ ms.commerce:
 
   order:
     order:
-      order-details:
-        title: Order Details
+      order-overview:
+        title: Order Overview
       order-summary:
         title: Order Summmary
     item:

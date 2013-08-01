@@ -1,0 +1,31 @@
+<div class="container">
+	<h1>Order Details</h1>
+	<section class="group">
+		<h2 class="title">Currency Details</h2>
+		<ul class="file-details">
+			<li><span>Value</span> 0 </li>
+			<li><span>Currency</span> {{ order.currencyId }}</li>
+			<li><span>Conversion Rate</span>{{ order.conversionRate }}</li>
+		</ul>
+	</section>
+
+	<section class="group">
+		<h2 class="title">Production Price Details</h2>
+		<ul class="file-details">
+			<li><span>Product Net</span> {{ order.productNet }} </li>
+			<li><span>Product Discount</span> {{ order.productDiscount }} </li>
+			<li><span>Product Tax</span> {{ order.productTax }} </li>
+			<li><span>Product Gross</span> {{ order.productGross }} </li>
+		</ul>
+	</section>
+
+	<section class="group">
+		<h2 class="title">Total Price Details</h2>
+		<ul class="file-details">
+			<li><span>Total Net</span> {{ order.totalNet }} </li>
+			<li><span>Total Discount</span> {{ order.totalDiscount }} </li>
+			<li><span>Total Tax</span> {{ order.totalTax }} </li>
+			<li><span>Total Gross</span> {{ order.totalGross }} </li>
+		</ul>
+	</section>
+</div>

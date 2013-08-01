@@ -1,11 +1,6 @@
 {% extends '::order:order' %}
 
-{% block main %}
-	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
-
-	<hgroup class="title">
-		<h1>Items</h1>
-	</hgroup>
+{% block order_content %}
 
 	<section class="container-content">
 		<section class="repeatable-group">

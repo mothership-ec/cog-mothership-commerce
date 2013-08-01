@@ -11,14 +11,23 @@ class Order extends Controller
 
 	public function index($orderId)
 	{
-		return $this->redirectToRoute('ms.commerce.order.view.order-details', array('orderId' => $orderId));
+		return $this->redirectToRoute('ms.commerce.order.view.order-overview', array('orderId' => $orderId));
+	}
+
+	public function orderOverview($orderId)
+	{
+		$this->_order = $this->get('order.loader')->getById($orderId);
+
+		return $this->render('Message:Mothership:Commerce::order:order-detail:order-overview', array(
+			'order' => $this->_order,
+		));
 	}
 
 	public function orderDetails($orderId)
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
 
-		return $this->render('::order:order-details:order-details', array(
+		return $this->render('Message:Mothership:Commerce::order:order-detail:order-detail', array(
 			'order' => $this->_order,
 		));
 	}

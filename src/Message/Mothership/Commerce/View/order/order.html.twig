@@ -5,4 +5,13 @@
 {% endblock %}
  
 {% block main %}
+	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
+
+	<hgroup class="title">
+		<h1>Order {{ order.id }}</h1>
+	</hgroup>
+
+	{% block order_content %}
+	{% endblock %}
+
 {% endblock %}
