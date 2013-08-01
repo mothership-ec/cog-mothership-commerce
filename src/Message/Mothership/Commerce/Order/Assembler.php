@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
 use Message\Mothership\Commerce\Order\Entity\Item\Item;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  *
@@ -20,11 +21,12 @@ class Assembler
 	protected $_locale;
 	protected $_order;
 
-	public function __construct(Order $order, UserInterface $user, Locale $locale)
+	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event)
 	{
 		$this->_order  = $order;
 		$this->_user   = $user;
 		$this->_locale = $locale;
+		$this->_events = $event;
 	}
 
 	public function addItem(Unit $unit)
