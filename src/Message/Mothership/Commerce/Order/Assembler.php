@@ -111,9 +111,9 @@ class Assembler
 
 	}
 
-	public function updateAddress(Address $address, $type = '')
+	public function updateAddress(Entity\Address\Address $address)
 	{
-
+		return $this->_order->addresses->append($address);
 	}
 
 	public function setShipping()

@@ -19,10 +19,16 @@ class TotalsListener implements SubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(OrderEvents::CREATE_START => array(
-			array('calculateShippingTax'),
-			array('setTotals', -900),
-		));
+		return array(
+			OrderEvents::CREATE_START => array(
+				array('calculateShippingTax'),
+				array('setTotals', -900),
+			),
+			OrderEvents::ASSEMBLER_UPDATE => array(
+				array('calculateShippingTax'),
+				array('setTotals', -900),
+			),
+		);
 	}
 
 	/**
