@@ -1,15 +1,13 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-
-{% block sidebar %}
-	{{ render(controller('::Controller:Order:Address#sidebar', { 'orderId': order.id } )) }}
-{% endblock %}
+{% extends '::order:order' %}
 
 {% block main %}
 	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
+	<hgroup class="title">
+		<h1>Addresses</h1>
+	</hgroup>
 
 	<section class="container-content">
 		<section class="repeatable-group">
-				<h2>Addresses</h2>
 				{% for address in addresses %}
 					<div class="container" id="address{{ address.id }}">
 						<section class="group">

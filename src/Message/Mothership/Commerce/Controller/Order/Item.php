@@ -17,24 +17,36 @@ class Item extends Controller
 
 	public function items($orderId)
 	{
-		//TODO: item status history!!
-		return $this->_loadOrderAndItemsAndRender($orderId, 'Message:Mothership:Commerce::order:item:items');
-	}
+		$this->_loadOrderAndItems($orderId);
 
-	public function sidebar($orderId)
-	{
-		return $this->_loadOrderAndItemsAndRender($orderId, 'Message:Mothership:Commerce::order:item:sidebar');
+		$statuses = array();
+
+		foreach($this->_items AS $item)
+		{
+			$statuses[$item->id] = $this->get('order.item.status.loader')->getHistory($item);
+		}
+
+		return $this->render('Message:Mothership:Commerce::order:item:items', array(
+			'items' => $this->_items,
+			'order' => $this->_order,
+			'statuses' => $statuses,
+		));
 	}
 
 	protected function _loadOrderAndItemsAndRender($orderId, $view)
 	{
-		$this->_order = $this->get('order.loader')->getById($orderId);
-		$this->_items = $this->get('order.item.loader')->getByOrder($this->_order);
+		$this->_loadOrderAndItems($orderId);
 
 		return $this->render($view, array(
 			'items' => $this->_items,
 			'order' => $this->_order,
 		));
+	}
+
+	protected function _loadOrderAndItems($orderId)
+	{
+		$this->_order = $this->get('order.loader')->getById($orderId);
+		$this->_items = $this->get('order.item.loader')->getByOrder($this->_order);
 	}
 
 }

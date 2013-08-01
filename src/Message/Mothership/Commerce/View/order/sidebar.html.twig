@@ -1,0 +1,11 @@
+<section class="menu">
+	Order {{ order.id }}
+	<ul>
+		<li><span>Order ID</span> {{ order.id }}</li>
+		<li>{{ order.authorship }}</li>
+		<li><span>Status</span> {{ order.status }}</li>
+		<li><span>Shipping Method</span> {{ order.shippingName }}</li>
+		<li><span>Product Gross</span> {{ order.productGross|number_format(2, '.', ',') }}</li>
+		<li><span>Total Gross</span> {{ order.totalGross|number_format(2, '.', ',') }}</li>
+	</ul>
+</section>

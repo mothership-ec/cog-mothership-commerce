@@ -1,6 +1,7 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
 {% block sidebar %}
+	{{ render(controller('::Controller:Order:Order#sidebar', { 'orderId': order.id } )) }}
 {% endblock %}
  
 {% block main %}

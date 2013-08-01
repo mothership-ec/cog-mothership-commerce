@@ -1,15 +1,14 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-
-{% block sidebar %}
-	{{ render(controller('::Controller:Order:Item#sidebar', { 'orderId': order.id } )) }}
-{% endblock %}
+{% extends '::order:order' %}
 
 {% block main %}
 	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
 
+	<hgroup class="title">
+		<h1>Items</h1>
+	</hgroup>
+
 	<section class="container-content">
 		<section class="repeatable-group">
-				<h2>Items</h2>
 				{% for item in items %}
 					<div class="container" id="item{{ item.id }}">
 						<section class="group">
@@ -26,7 +25,7 @@
 								<li><span>Current Status</span> {{ item.status }}</li>
 							</ul>
 							<section class="group">
-								<h2 class="title"> Price Details</h2>
+								<h2 class="title">Price Details</h2>
 								<ul class="file-details">
 									<li><span>List-Price </span> {{ item.listPrice }}</li>
 									<li><span>Net </span> {{ item.net }}</li>
@@ -39,7 +38,7 @@
 							</section>
 
 							<section class="group">
-								<h2 class="title"> Stock Details</h2>
+								<h2 class="title">Stock Details</h2>
 								<ul class="file-details">
 									<li><span>Weight</span> {{ item.weight }}</li>
 									<li><span>Barcode</span> {{ item.barcode }}</li>
@@ -49,7 +48,7 @@
 
 							{% if item.isPersonalised %}
 								<section class="group">
-									<h2 class="title"> Personalisation Details</h2>
+									<h2 class="title">Personalisation Details</h2>
 									<ul class="file-details">
 										<li><span>Sender Name</span> {{ item.senderName }}</li>
 										<li><span>Recipient Name</span> {{ item.recipientName }}</li>
@@ -58,6 +57,20 @@
 									</ul>
 								</section>
 							{% endif %}
+
+							<section class="group">
+								<h2 class="title">Status History</h2>
+
+								{% for status in statuses[item.id] %}
+								<ul class="file-details">
+									<li>
+										<span>Status</span> {{ status }}</li>
+									<li>
+										{{ status.authorship }}
+									</li>
+								</ul>
+								{% endfor %}
+							</section>
 						</section>
 					</div>
 				{% endfor %}

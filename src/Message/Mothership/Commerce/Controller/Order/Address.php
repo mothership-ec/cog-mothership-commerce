@@ -20,11 +20,6 @@ class Address extends Controller
 		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:addresses');
 	}
 
-	public function sidebar($orderId)
-	{
-		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:sidebar');
-	}
-
 	protected function _loadOrderAndAddressesAndRender($orderId, $view)
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);

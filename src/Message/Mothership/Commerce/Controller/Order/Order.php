@@ -23,16 +23,12 @@ class Order extends Controller
 		));
 	}
 
-	public function sidebar()
+	public function sidebar($orderId)
 	{
-		$menu = array(
-			'order-details' => $this->trans('ms.commerce.order.order.order-details.title'),
-			'item-summary' => $this->trans('ms.commerce.order.item.item-summary.title'),
-			'address-summary' => $this->trans('ms.commerce.order.address.address-summary.title'),
-		);
+		$this->_order = $this->get('order.loader')->getById($orderId);
 
-		return $this->render('Message:Mothership:Commerce::order:order-details:sidebar', array(
-			'menu' => $menu,
+		return $this->render('Message:Mothership:Commerce::order:sidebar', array(
+			'order' => $this->_order,
 		));
 	}
 }

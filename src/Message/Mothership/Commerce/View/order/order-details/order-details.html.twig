@@ -1,16 +1,14 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-
-{% block sidebar %}
-	{{ render(controller('::Controller:Order:Order#sidebar')) }}
-{% endblock %}
+{% extends '::order:order' %}
 
 {% block main %}
 	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
 
+	<hgroup class="title">
+		<h1>Order Details</h1>
+	</hgroup>
 
 	<section class="container-content">
 		<section class="repeatable-group" id="order-details">
-			<h2>Order Details</h2>
 			<div class="container">
 				<section class="group">
 					<h1 class="title">General</h1>
@@ -23,7 +21,7 @@
 
 
 					<section class="group">
-						<h1 class="title">Currency Details</h1>
+						<h2 class="title">Currency Details</h2>
 						<ul class="file-details">
 							<li><span>Type</span>1</li>
 							<li><span>Size</span>34389</li>
@@ -33,7 +31,7 @@
 					</section>
 
 					<section class="group">
-						<h1 class="title">Production Price Details</h1>
+						<h2 class="title">Production Price Details</h2>
 						<ul class="file-details">
 							<li><span>Type</span>1</li>
 							<li><span>Size</span>34389</li>
@@ -43,7 +41,7 @@
 					</section>
 
 					<section class="group">
-						<h1 class="title">Total Price Details</h1>
+						<h2 class="title">Total Price Details</h2>
 						<ul class="file-details">
 							<li><span>Type</span>1</li>
 							<li><span>Size</span>34389</li>
