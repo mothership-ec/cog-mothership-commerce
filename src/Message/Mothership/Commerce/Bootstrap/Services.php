@@ -21,7 +21,8 @@ class Services implements ServicesInterface
 					$c['order'],
 					$c['user.current'],
 					$c['locale'],
-					$c['event.dispatcher']
+					$c['event.dispatcher'],
+					$c['http.session']
 				));
 			}
 
