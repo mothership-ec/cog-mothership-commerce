@@ -20,6 +20,7 @@ class Assembler
 	protected $_user;
 	protected $_locale;
 	protected $_order;
+	protected $_events;
 
 	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event)
 	{
