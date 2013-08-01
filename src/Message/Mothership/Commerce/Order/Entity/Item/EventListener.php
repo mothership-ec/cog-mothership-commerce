@@ -30,6 +30,9 @@ class EventListener implements SubscriberInterface
 			OrderEvents::CREATE_VALIDATE => array(
 				array('checkItemSet')
 			),
+			OrderEvents::ASSEMBLER_UPDATE => array(
+				array('calculateTax'),
+			),
 		);
 	}
 
