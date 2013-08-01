@@ -20,7 +20,8 @@ class Services implements ServicesInterface
 				$c['http.session']->set('basket',new Commerce\Order\Assembler(
 					$c['order'],
 					$c['user.current'],
-					$c['locale']
+					$c['locale'],
+					$c['event.dispatcher']
 				));
 			}
 

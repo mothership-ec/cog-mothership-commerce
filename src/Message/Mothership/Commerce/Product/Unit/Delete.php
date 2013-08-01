@@ -5,14 +5,14 @@ namespace Message\Mothership\Commerce\Product\Unit;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 class Delete
 {
 	protected $_query;
 	protected $_user;
 
-	public function __construct(Query $query, User $user)
+	public function __construct(Query $query, UserInterface $user)
 	{
 		$this->_query 	= $query;
 		$this->_user	= $user;
