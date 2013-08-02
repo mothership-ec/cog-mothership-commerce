@@ -83,6 +83,13 @@ class Loader implements Order\Entity\LoaderInterface
 				$row->created_by
 			);
 
+			if ($row->updated_at) {
+				$items[$key]->authorship->update(
+					new DateTimeImmutable(date('c', $row->updated_by)),
+					$row->updated_by
+				);
+			}
+
 			if ($row->shippedAt) {
 				$entities[$key]->shippedAt = new DateTimeImmutable(date('c', $row->shippedAt));
 			}
