@@ -35,7 +35,7 @@ class Loader implements Order\Entity\LoaderInterface
 	{
 		$result = $this->_query->run('
 			SELECT
-				*
+				dispatch_id
 			FROM
 				order_dispatch
 			WHERE
@@ -114,7 +114,7 @@ class Loader implements Order\Entity\LoaderInterface
 			', $row->id);
 
 			foreach ($items->flatten() as $item) {
-				$entities[$key]->items = $entities[$key]->order->items->get($item);
+				$entities[$key]->items[] = $entities[$key]->order->items->get($item);
 			}
 
 			$return[$row->id] = $entities[$key];

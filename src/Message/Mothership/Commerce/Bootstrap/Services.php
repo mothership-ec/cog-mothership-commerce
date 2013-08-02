@@ -34,6 +34,7 @@ class Services implements ServicesInterface
 				'addresses'  => $c['order.address.loader'],
 				'discounts'  => $c['order.discount.loader'],
 				'dispatches' => $c['order.dispatch.loader'],
+				'documents'  => $c['order.document.loader'],
 				'items'      => $c['order.item.loader'],
 				'notes'      => $c['order.note.loader'],
 				'payments'   => $c['order.payment.loader'],
@@ -93,7 +94,7 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Item\Edit($c['db.transaction'], $c['event.dispatcher'], $c['order.item.statuses'], $c['user.current']);
 		};
 
-		// Order despatch entity
+		// Order discount entity
 		$services['order.discount.loader'] = function($c) {
 			return new Commerce\Order\Entity\Discount\Loader($c['db.query']);
 		};
@@ -102,13 +103,18 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Discount\Create($c['db.transaction'], $c['user.current']);
 		};
 
-		// Order despatch entity
+		// Order dispatch entity
 		$services['order.dispatch.loader'] = function($c) {
 			return new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']);
 		};
 
 		$services['order.dispatch.create'] = function($c) {
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
+		};
+
+		// Order document entity
+		$services['order.document.loader'] = function($c) {
+			return new Commerce\Order\Entity\Document\Loader($c['db.query']);
 		};
 
 		// Order item status

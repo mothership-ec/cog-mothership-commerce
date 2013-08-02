@@ -30,7 +30,7 @@ class Loader implements Order\Entity\LoaderInterface
 	{
 		$result = $this->_query->run('
 			SELECT
-				*
+				payment_id
 			FROM
 				order_payment
 			WHERE

@@ -1,14 +1,15 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Entity\Discount;
+namespace Message\Mothership\Commerce\Order\Entity\Document;
 
 use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
+use Message\Cog\Filesystem\File;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
- * Order discount loader.
+ * Order document loader.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
@@ -18,7 +19,12 @@ class Loader implements Order\Entity\LoaderInterface
 
 	public function __construct(DB\Query $query)
 	{
-		$this->_query   = $query;
+		$this->_query = $query;
+	}
+
+	public function getByID($id, Order\Order $order)
+	{
+		return $this->_load($id, false, $order);
 	}
 
 	/**
@@ -28,9 +34,9 @@ class Loader implements Order\Entity\LoaderInterface
 	{
 		$result = $this->_query->run('
 			SELECT
-				discount_id
+				document_id
 			FROM
-				order_discount
+				order_document
 			WHERE
 				order_id = ?i
 		', $order->id);
@@ -51,29 +57,27 @@ class Loader implements Order\Entity\LoaderInterface
 		$result = $this->_query->run('
 			SELECT
 				*,
-				discount_id AS id
+				document_id AS id
 			FROM
-				order_discount
+				order_document
 			WHERE
-				discount_id IN (?ij)
+				document_id IN (?ij)
 		', array($ids));
 
 		if (0 === count($result)) {
 			return $alwaysReturnArray ? array() : false;
 		}
 
-		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Discount\\Discount');
+		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Document\\Document');
 		$return   = array();
 
 		foreach ($result as $key => $row) {
-			// Cast decimals to float
-			$entities[$key]->amount     = (float) $row->amount;
-			$entities[$key]->percentage = (float) $row->percentage;
-
 			$entities[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			$entities[$key]->file = new File($row->url);
 
 			if ($order) {
 				$entities[$key]->order = $order;
@@ -82,25 +86,8 @@ class Loader implements Order\Entity\LoaderInterface
 				// TODO: load the order, put it in here. we need the order loader i guess
 			}
 
-			// TODO: set the campaign if there's a code we can find
-
-			// Get the items that this discount applies to
-			$items = $this->_query->run('
-				SELECT
-					item_id
-				FROM
-					order_item_discount
-				WHERE
-					discount_id = ?i
-			', $row->id);
-
-			foreach ($items->flatten() as $item) {
-				$entities[$key]->items = $entities[$key]->order->items->get($item);
-			}
-
-			// If the discount doesn't apply to specific items, it applies to all items
-			if (empty($entities[$key])) {
-				$entities[$key]->items = $entities[$key]->order->items->all();
+			if ($row->dispatch_id) {
+				$entities[$key]->dispatch = $entities[$key]->order->dispatches->get($row->dispatch_id);
 			}
 
 			$return[$row->id] = $entities[$key];
