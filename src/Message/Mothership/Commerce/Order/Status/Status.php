@@ -33,6 +33,6 @@ class Status
 	 */
 	public function __toString()
 	{
-		return sprintf('(%i) %s', $this->code, $this->name);
+		return sprintf('(%d) %s', $this->code, $this->name);
 	}
 }
