@@ -14,7 +14,7 @@ class Metadata extends Controller
 		$this->_order = $this->get('order.loader')->getById($orderId);
 
 		return $this->render('Message:Mothership:Commerce::order:metadata:summary', array(
-			'metadataSets' => $this->_order->metadata,
+			'metadata' => $this->_order->metadata,
 			'order' => $this->_order,
 		));
 	}

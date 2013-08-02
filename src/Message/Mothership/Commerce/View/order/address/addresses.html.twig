@@ -5,28 +5,7 @@
 		<section class="repeatable-group">
 				{% if not addresses is empty %}
 					{% for address in addresses %}
-						<div class="container">
-							<section class="group">
-								<h1 class="title">{{ address.type|capitalize }}, {{ address.lines[1] }}</h1>
-								<ul class="file-details">
-									<li><span>Type</span> {{ address.type|capitalize }}</li>
-									<li><span>Name</span> {{ address.name }}</li>
-									{% for key, line in address.lines %}
-										{% if not line is empty %}
-											<li><span>Line {{ key }}</span> {{ line }}</li>
-										{% endif %}
-									{% endfor %}
-									<li><span>Postcode</span> {{ address.postcode }} <span>Town </span> {{ address.town }} </li>
-									{% if not address.state is empty %}
-										<li><span>State</span> {{ address.state }}</li>
-									{% endif %}
-									<li><span>Country </span> {{ address.country }}</li>
-									{% if not address.telephone is empty %}
-										<li><span>Telephone</span> {{ address.telephone }}</li>
-									{% endif %}
-								</ul>
-							</section>
-						</div>
+						{% include '::order:address:detail' %}
 					{% endfor %}
 				{% else %}
 					<p> {{ 'ms.commerce.order.address.none'|trans }}</p>

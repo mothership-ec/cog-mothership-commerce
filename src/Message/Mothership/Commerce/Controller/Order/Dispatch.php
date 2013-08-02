@@ -19,6 +19,9 @@ class Dispatch extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
 		$this->_dispatches = $this->get('order.dispatch.loader')->getByOrder($this->_order);
+		
+		//d($this->_dispatches);
+
 
 		return $this->render($view, array(
 			'dispatches' => $this->_dispatches,

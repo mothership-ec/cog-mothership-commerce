@@ -1,0 +1,16 @@
+<div class="container">
+	<section class="group">
+		<h1 class="title">{{ dispatch.method.displayName|capitalize }}, {{ dispatch.authorship }}</h1>
+		<ul class="file-details">
+			<li><span>Shipped by</span> {{ dispatch.shippedBy }} <span>at</span> {{ dispatch.shippedAt }}</li>
+			<li><span>Code</span> {{ dispatch.code }}</li>
+			<li><span>Cost</span> {{ dispatch.cost }}</li>
+			<li><span>Weight (grams)</span> {{ dispatch.weight }}</li>
+		</ul>
+		<section>
+			{% set items = dispatch.items %}
+
+			{% include '::order:item:summary' %}
+		</section>
+	</section>
+</div>
