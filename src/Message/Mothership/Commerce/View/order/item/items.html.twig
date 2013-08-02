@@ -4,6 +4,7 @@
 
 	<section class="container-content">
 		<section class="repeatable-group">
+			{% if not items is empty %}
 				{% for item in items %}
 					<div class="container" id="item{{ item.id }}">
 						<section class="group">
@@ -57,18 +58,21 @@
 								<h2 class="title">Status History</h2>
 
 								{% for status in statuses[item.id] %}
-								<ul class="file-details">
-									<li>
-										<span>Status</span> {{ status }}</li>
-									<li>
-										{{ status.authorship }}
-									</li>
-								</ul>
+									<ul class="file-details">
+										<li>
+											<span>Status</span> {{ status }}</li>
+										<li>
+											{{ status.authorship }}
+										</li>
+									</ul>
 								{% endfor %}
 							</section>
 						</section>
 					</div>
 				{% endfor %}
-			</section>
+			{% else %}
+				<p>{{ 'ms.commerce.order.item.none'|trans }}</p>
+			{% endif %}
+		</section>
 	</section>
 {% endblock %}

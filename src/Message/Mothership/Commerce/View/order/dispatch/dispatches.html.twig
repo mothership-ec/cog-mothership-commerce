@@ -1,0 +1,30 @@
+{% extends '::order:order' %}
+
+{% block order_content %}
+
+	<section class="container-content">
+		<section class="repeatable-group">
+				{% if not dispatches is empty %}
+					{% for dispatch in dispatches %}
+						<div class="container">
+							<section class="group">
+								<h1 class="title">{{ dispatch.method|capitalize }}, {{ dispatch.authorship }}</h1>
+								<ul class="file-details">
+									<li><span>Shipped by</span> {{ dispatch.shippedBy }} <span>at</span> {{ dispatch.shippedAt }}</li>
+									<li><span>Code</span> {{ dispatch.code }}</li>
+									<li><span>Cost</span> {{ dispatch.cost }}</li>
+									<li><span>Weight (grams)</span> {{ dispatch.weight }}</li>
+								</ul>
+								<section>
+									{% set items = dispatch.items %}
+									{% include '::order:item:summary' %}
+								</section>
+							</section>
+						</div>
+					{% endfor %}
+				{% else %}
+					<p>{{ 'ms.commerce.order.dispatch.none'|trans }}</p>
+				{% endif %}
+			</section>
+	</section>
+{% endblock %}

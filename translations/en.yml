@@ -35,22 +35,50 @@ ms.commerce:
 
   order:
     order:
+      none: There are no orders to view.
+
       order-overview:
         title: Order Overview
-      order-summary:
-        title: Order Summmary
+
+      summary:
+        title: Order Summary
     item:
+      none: There are no items to view.
       items:
         title: Items
-      item-summary:
-        title: Item Summmary
+      summary:
+        title: Item Summary
     address:
+      none: There are no addresses to view.
+
       addresses:
         title: Addresses
-      address-summary:
-        title: Address Summmary
+
+      summary:
+        title: Address Summary
+
+    payment:
+      none: There are no payments to view.
+
+      payments:
+        title: Payments
+
+      summary:
+        title: Payment Summary
+
     dispatch:
-      title: Dispatches
+      none: There are no dispatches to view.
+
+      dispatches:
+        title: Dispatches
     note:
+      none: There are no notes to view.
+
       notes:
         title: Notes
+
+    metadata:
+      none: There is no metadata to view.
+
+      summary:
+        title: Metadata

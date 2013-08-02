@@ -10,7 +10,7 @@ class Address extends Controller
 	protected $_order;
 	protected $_addresses;
 
-	public function addressSummary($orderId)
+	public function summary($orderId)
 	{
 		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:summary');
 	}

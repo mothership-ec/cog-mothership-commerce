@@ -7,11 +7,15 @@
 		</section>
 
 		<section>
-			{{ render(controller('::Controller:Order:Item#itemSummary', { 'orderId': order.id } )) }}
+			{{ render(controller('::Controller:Order:Item#summary', { 'orderId': order.id } )) }}
 		</section>
 
 		<section>
-			{{ render(controller('::Controller:Order:Address#addressSummary', { 'orderId': order.id } )) }}
+			{{ render(controller('::Controller:Order:Address#summary', { 'orderId': order.id } )) }}
+		</section>
+
+		<section>
+			{{ render(controller('::Controller:Order:Metadata#summary', { 'orderId': order.id } )) }}
 		</section>
 	</div>
 {% endblock %}

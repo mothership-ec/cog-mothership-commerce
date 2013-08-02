@@ -15,7 +15,8 @@ class Tabs extends Controller
 			$this->trans('ms.commerce.order.order.order-overview.title')	=> $this->generateUrl('ms.commerce.order.view.order-overview', 	$data),
 			$this->trans('ms.commerce.order.item.items.title')   			=> $this->generateUrl('ms.commerce.order.view.items', 			$data),
 			$this->trans('ms.commerce.order.address.addresses.title')   	=> $this->generateUrl('ms.commerce.order.view.addresses', 		$data),
-			$this->trans('ms.commerce.order.dispatch.title')    			=> $this->generateUrl('ms.commerce.order.view.addresses', 		$data),
+			$this->trans('ms.commerce.order.payment.payments.title')   		=> $this->generateUrl('ms.commerce.order.view.payments', 		$data),
+			$this->trans('ms.commerce.order.dispatch.dispatches.title')    	=> $this->generateUrl('ms.commerce.order.view.dispatches', 		$data),
 			$this->trans('ms.commerce.order.note.notes.title') 				=> $this->generateUrl('ms.commerce.order.view.notes',	 		$data),
 		);
 

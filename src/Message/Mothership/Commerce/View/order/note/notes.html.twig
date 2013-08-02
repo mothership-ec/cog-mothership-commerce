@@ -1,9 +1,9 @@
 {% extends '::order:order' %}
 
 {% block order_content %}
-
 	<section class="container-content">
 		<section class="repeatable-group">
+			{% if not notes is empty %}
 				{% for note in notes %}
 					<div class="container">
 						<section class="group">
@@ -21,6 +21,9 @@
 						</section>
 					</div>
 				{% endfor %}
-			</section>
+			{% else %}
+				{{ 'ms.commerce.order.note.none'|trans }}
+			{% endif %}
+		</section>
 	</section>
 {% endblock %}

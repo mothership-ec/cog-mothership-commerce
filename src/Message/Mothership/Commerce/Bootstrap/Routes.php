@@ -63,6 +63,12 @@ class Routes implements RoutesInterface
 		$router['ms.order']->add('ms.commerce.order.view.addresses', 'view/{orderId}/addresses', '::Controller:Order:Address#addresses')
 			->setRequirement('orderId', '\d+');
 
+		$router['ms.order']->add('ms.commerce.order.view.payments', 'view/{orderId}/payments', '::Controller:Order:Payment#payments')
+			->setRequirement('orderId', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.view.dispatches', 'view/{orderId}/dispatches', '::Controller:Order:Dispatch#dispatches')
+			->setRequirement('orderId', '\d+');
+
 		$router['ms.order']->add('ms.commerce.order.view.notes', 'view/{orderId}/notes', '::Controller:Order:Note#notes')
 			->setRequirement('orderId', '\d+');
 	}

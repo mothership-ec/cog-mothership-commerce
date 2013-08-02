@@ -1,0 +1,28 @@
+{% extends '::order:order' %}
+
+{% block order_content %}
+
+	<section class="container-content">
+		<section class="repeatable-group">
+			{% if not payments is empty %}
+				{% for payment in payments %}
+					<div class="container">
+						<section class="group">
+							<h1 class="title">{{ payment.method.displayName }}, {{ payment.authorship }}</h1>
+							<ul class="file-details">
+								{% if not payment.return is empty %}
+									<li><span>Return</span> {{ payment.return }}</li>
+								{% endif %}
+								<li><span>Method</span> {{ payment.method.displayName }}</li>
+								<li><span>Amount</span> {{ payment.amount }}</li>
+								<li><span>Reference </span> {{ payment.reference }}</li>
+							</ul>
+						</section>
+					</div>
+				{% endfor %}
+			{% else %}
+				{{ 'ms.commerce.order.payment.none'|trans }}
+			{% endif %}
+		</section>
+	</section>
+{% endblock %}

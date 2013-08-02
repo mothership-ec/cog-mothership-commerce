@@ -1,5 +1,5 @@
-<h2>Adress Summary</h2>
-{% if addresses | length > 0 %}
+<h2>{{ 'ms.commerce.order.address.summary.title'|trans }}</h2>
+{% if not addresses is empty %}
 	<table class="order-listing">
 		<thead>
 		<tr>
@@ -27,5 +27,5 @@
 		</tbody>
 	</table>
 {% else %}
-	<p>Empty</p>
+	<p>{{ 'ms.commerce.order.address.none'|trans }}</p>
 {% endif %}

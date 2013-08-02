@@ -10,7 +10,7 @@ class Item extends Controller
 	protected $_order;
 	protected $_items;
 
-	public function itemSummary($orderId)
+	public function summary($orderId)
 	{
 		return $this->_loadOrderAndItemsAndRender($orderId, 'Message:Mothership:Commerce::order:item:summary');
 	}

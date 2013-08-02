@@ -5,33 +5,23 @@ namespace Message\Mothership\Commerce\Controller\Order;
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-class Address extends Controller
+class Dispatch extends Controller
 {
 	protected $_order;
-	protected $_addresses;
+	protected $_dispatches;
 
-	public function addressSummary($orderId)
+	public function dispatches($orderId)
 	{
-		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:summary');
+		return $this->_loadOrderAndDispatchesAndRender($orderId, 'Message:Mothership:Commerce::order:dispatch:dispatches');
 	}
 
-	public function addresses($orderId)
-	{
-		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:addresses');
-	}
-
-	public function sidebar($orderId)
-	{
-		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:sidebar');
-	}
-
-	protected function _loadOrderAndAddressesAndRender($orderId, $view)
+	protected function _loadOrderAndDispatchesAndRender($orderId, $view)
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
-		$this->_addresses = $this->get('order.address.loader')->getByOrder($this->_order);
+		$this->_dispatches = $this->get('order.dispatch.loader')->getByOrder($this->_order);
 
 		return $this->render($view, array(
-			'addresses' => $this->_addresses,
+			'dispatches' => $this->_dispatches,
 			'order' => $this->_order,
 		));
 	}
