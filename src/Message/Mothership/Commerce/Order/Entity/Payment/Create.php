@@ -16,11 +16,13 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
+	protected $_currentUser;
 	protected $_query;
 
 	public function __construct(DB\Transaction $query, UserInterface $currentUser)
 	{
-		$this->_query = $query;
+		$this->_query       = $query;
+		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
