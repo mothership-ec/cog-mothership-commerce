@@ -26,35 +26,4 @@ class Dispatch implements EntityInterface
 	{
 		$this->authorship = new Authorship;
 	}
-
-
-
-
-
-
-	public function addItem(OrderItem $item)
-	{
-		$this->orderItems[$item->itemID] = $item;
-		$this->itemIDs[] = $item->itemID;
-		$this->addWeight($item->weight);
-	}
-
-	public function getItemIDs() {
-		return $this->itemIDs;
-	}
-
-	public function getItems() {
-		return $this->orderItems;
-	}
-
-
-	public function getCustomsValue() {
-		$order = new Order($this->orderID);
-		$value = 0;
-		foreach ($this->getItemIDs() as $itemID) {
-			$item = $order->getItems($itemID);
-			$value += $item->price;
-		}
-		return $value - (($value / $order->getsubTotal()) * $order->getDiscount());
-	}
 }

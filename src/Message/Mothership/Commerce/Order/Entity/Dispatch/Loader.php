@@ -23,6 +23,11 @@ class Loader implements Order\Entity\LoaderInterface
 		$this->_methods = $methods;
 	}
 
+	public function getByID($id, Order\Order $order)
+	{
+		return $this->_load($id, false, $order);
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
