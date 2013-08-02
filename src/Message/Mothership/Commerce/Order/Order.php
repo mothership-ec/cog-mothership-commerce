@@ -349,7 +349,7 @@ class Order
 	protected function _getEntity($name)
 	{
 		if (!array_key_exists($name, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $name));
 		}
 
 		return $this->_entities[$name];
