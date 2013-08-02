@@ -107,6 +107,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']);
 		};
 
+		$services['order.dispatch.create'] = function($c) {
+			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
+		};
+
 		// Order item status
 		$services['order.item.status.loader'] = function($c) {
 			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
@@ -146,6 +150,11 @@ class Services implements ServicesInterface
 
 		$services['order.dispatch.methods'] = $services->share(function($c) {
 			return new Commerce\Order\Entity\Dispatch\MethodCollection;
+		});
+
+		// Dispatch method selector
+		$services['order.dispatch.method.selector'] = $services->share(function($c) {
+			return new Commerce\Order\Entity\Dispatch\MethodSelector($c['order.dispatch.methods']);
 		});
 
 		// Available order & item statuses

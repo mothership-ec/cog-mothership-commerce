@@ -13,11 +13,13 @@ use Message\Cog\DB;
  */
 class Create implements DB\TransactionalInterface
 {
+	protected $_currentUser;
 	protected $_query;
 
 	public function __construct(DB\Query $query)
 	{
-		$this->_query = $query;
+		$this->_query       = $query;
+		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
