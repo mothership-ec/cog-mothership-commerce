@@ -35,7 +35,7 @@ class Loader implements Order\Entity\LoaderInterface
 	{
 		$result = $this->_query->run('
 			SELECT
-				*
+				dispatch_id
 			FROM
 				order_dispatch
 			WHERE

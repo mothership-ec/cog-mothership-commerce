@@ -28,7 +28,7 @@ class Loader implements Order\Entity\LoaderInterface
 	{
 		$result = $this->_query->run('
 			SELECT
-				*
+				discount_id
 			FROM
 				order_discount
 			WHERE
