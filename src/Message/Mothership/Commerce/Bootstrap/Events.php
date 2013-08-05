@@ -19,6 +19,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 	public function registerEvents($dispatcher)
 	{
+		$dispatcher->addSubscriber(new Commerce\Order\EventListener\AssemblerListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\TotalsListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\StatusListener(
 			$this->_services['order.statuses'],

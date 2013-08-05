@@ -262,5 +262,13 @@ class Services implements ServicesInterface
 		$services['option.loader'] = function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
+
+		$services['commerce.user.loader'] = function($c) {
+			return new Commerce\User\Address\Loader($c['db.query']);
+		};
+
+		$services['commerce.user.collection'] = function($c) {
+			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
+		};
 	}
 }
