@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order\Details;
+namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,7 +12,7 @@ class Payment extends Controller
 
 	public function payments($orderId)
 	{
-		return $this->_loadOrderAndPaymentsAndRender($orderId, 'Message:Mothership:Commerce::order:payment:payments');
+		return $this->_loadOrderAndPaymentsAndRender($orderId, 'Message:Mothership:Commerce::order:detail:payment:payments');
 	}
 
 	protected function _loadOrderAndPaymentsAndRender($orderId, $view)

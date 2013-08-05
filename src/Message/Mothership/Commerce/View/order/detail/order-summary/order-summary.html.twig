@@ -1,0 +1,21 @@
+{% extends '::order:detail:order-detail-view' %}
+
+{% block order_content %}
+	<div class="container-content">
+		<section class="repeatable-group">
+			{{ render(controller('::Controller:Order:Order#orderDetail', {'orderId': order.id } )) }}
+		</section>
+
+		<section>
+			{{ render(controller('::Controller:Order:Item#summary', { 'orderId': order.id } )) }}
+		</section>
+
+		<section>
+			{{ render(controller('::Controller:Order:Address#summary', { 'orderId': order.id } )) }}
+		</section>
+
+		<section>
+			{{ render(controller('::Controller:Order:Metadata#summary', { 'orderId': order.id } )) }}
+		</section>
+	</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends '::order:details:order' %}
+{% extends '::order:detail:order-detail-view' %}
 
 {% block order_content %}
 
@@ -6,7 +6,7 @@
 		<section class="repeatable-group">
 				{% if not dispatches is empty %}
 					{% for dispatch in dispatches %}
-						{% include '::order:dispatch:detail' %}
+						{% include '::order:detail:dispatch:detail' %}
 					{% endfor %}
 				{% else %}
 					<p>{{ 'ms.commerce.order.dispatch.none'|trans }}</p>

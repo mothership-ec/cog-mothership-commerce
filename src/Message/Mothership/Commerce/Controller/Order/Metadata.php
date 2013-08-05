@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order\Details;
+namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -13,7 +13,7 @@ class Metadata extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
 
-		return $this->render('Message:Mothership:Commerce::order:details:metadata:summary', array(
+		return $this->render('Message:Mothership:Commerce::order:detail:metadata:summary', array(
 			'metadata' => $this->_order->metadata,
 			'order' => $this->_order,
 		));
