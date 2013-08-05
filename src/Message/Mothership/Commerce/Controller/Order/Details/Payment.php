@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Details;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;

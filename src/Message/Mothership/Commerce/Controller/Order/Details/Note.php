@@ -1,6 +1,6 @@
-<?php
+\OrderDetails;<?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Details;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,7 +12,7 @@ class Note extends Controller
 
 	public function notes($orderId)
 	{
-		return $this->_loadOrderAndNotesAndRender($orderId, 'Message:Mothership:Commerce::order:note:notes');
+		return $this->_loadOrderAndNotesAndRender($orderId, 'Message:Mothership:Commerce::order:details:note:notes');
 	}
 
 	protected function _loadOrderAndNotesAndRender($orderId, $view)

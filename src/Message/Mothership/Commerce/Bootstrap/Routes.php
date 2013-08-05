@@ -51,25 +51,25 @@ class Routes implements RoutesInterface
 
 
 
-		$router['ms.order']->add('ms.commerce.order.view.index', 'view/{orderId}', '::Controller:Order:Order#index')
+		$router['ms.order']->add('ms.commerce.order.details.view.index', 'view/{orderId}', '::Controller:Order:Details:Order#index')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.order-overview', 'view/{orderId}/order-overview', '::Controller:Order:Order#orderOverview')
+		$router['ms.order']->add('ms.commerce.order.details.view.order-summary', 'view/{orderId}/order-summary', '::Controller:Order:Details:Order#orderSummary')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.items', 'view/{orderId}/items', '::Controller:Order:Item#items')
+		$router['ms.order']->add('ms.commerce.order.details.view.items', 'view/{orderId}/items', '::Controller:Order:Details:Item#items')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.addresses', 'view/{orderId}/addresses', '::Controller:Order:Address#addresses')
+		$router['ms.order']->add('ms.commerce.order.details.view.addresses', 'view/{orderId}/addresses', '::Controller:Order:Details:Address#addresses')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.payments', 'view/{orderId}/payments', '::Controller:Order:Payment#payments')
+		$router['ms.order']->add('ms.commerce.order.details.view.payments', 'view/{orderId}/payments', '::Controller:Order:Details:Payment#payments')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.dispatches', 'view/{orderId}/dispatches', '::Controller:Order:Dispatch#dispatches')
+		$router['ms.order']->add('ms.commerce.order.details.view.dispatches', 'view/{orderId}/dispatches', '::Controller:Order:Details:Dispatch#dispatches')
 			->setRequirement('orderId', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.view.notes', 'view/{orderId}/notes', '::Controller:Order:Note#notes')
+		$router['ms.order']->add('ms.commerce.order.details.view.notes', 'view/{orderId}/notes', '::Controller:Order:Details:Note#notes')
 			->setRequirement('orderId', '\d+');
 	}
 }

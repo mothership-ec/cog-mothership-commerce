@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Details;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,12 +12,12 @@ class Address extends Controller
 
 	public function summary($orderId)
 	{
-		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:summary');
+		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:details:address:summary');
 	}
 
 	public function addresses($orderId)
 	{
-		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:address:addresses');
+		return $this->_loadOrderAndAddressesAndRender($orderId, 'Message:Mothership:Commerce::order:details:address:addresses');
 	}
 
 	protected function _loadOrderAndAddressesAndRender($orderId, $view)

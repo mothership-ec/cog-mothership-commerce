@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Details;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,7 +12,7 @@ class Item extends Controller
 
 	public function summary($orderId)
 	{
-		return $this->_loadOrderAndItemsAndRender($orderId, 'Message:Mothership:Commerce::order:item:summary');
+		return $this->_loadOrderAndItemsAndRender($orderId, 'Message:Mothership:Commerce::order:details:item:summary');
 	}
 
 	public function items($orderId)
@@ -26,7 +26,7 @@ class Item extends Controller
 			$statuses[$item->id] = $this->get('order.item.status.loader')->getHistory($item);
 		}
 
-		return $this->render('Message:Mothership:Commerce::order:item:items', array(
+		return $this->render('Message:Mothership:Commerce::order:details:item:items', array(
 			'items' => $this->_items,
 			'order' => $this->_order,
 			'statuses' => $statuses,

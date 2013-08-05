@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Details;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -11,14 +11,14 @@ class Order extends Controller
 
 	public function index($orderId)
 	{
-		return $this->redirectToRoute('ms.commerce.order.view.order-overview', array('orderId' => $orderId));
+		return $this->redirectToRoute('ms.commerce.order.details.view.order-summary', array('orderId' => $orderId));
 	}
 
-	public function orderOverview($orderId)
+	public function orderSummary($orderId)
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
 
-		return $this->render('Message:Mothership:Commerce::order:order-detail:order-overview', array(
+		return $this->render('Message:Mothership:Commerce::order:details:order-detail:order-summary', array(
 			'order' => $this->_order,
 		));
 	}
@@ -27,7 +27,7 @@ class Order extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
 
-		return $this->render('Message:Mothership:Commerce::order:order-detail:order-detail', array(
+		return $this->render('Message:Mothership:Commerce::order:details:order-detail:order-summary', array(
 			'order' => $this->_order,
 		));
 	}
@@ -36,7 +36,7 @@ class Order extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderId);
 
-		return $this->render('Message:Mothership:Commerce::order:sidebar', array(
+		return $this->render('Message:Mothership:Commerce::order:details:sidebar', array(
 			'order' => $this->_order,
 		));
 	}

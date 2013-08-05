@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Details;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,7 +12,7 @@ class Dispatch extends Controller
 
 	public function dispatches($orderId)
 	{
-		return $this->_loadOrderAndDispatchesAndRender($orderId, 'Message:Mothership:Commerce::order:dispatch:dispatches');
+		return $this->_loadOrderAndDispatchesAndRender($orderId, 'Message:Mothership:Commerce::order:details:dispatch:dispatches');
 	}
 
 	protected function _loadOrderAndDispatchesAndRender($orderId, $view)
