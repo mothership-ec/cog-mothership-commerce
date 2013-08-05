@@ -10,14 +10,14 @@ class Item extends Controller
 	protected $_order;
 	protected $_items;
 
-	public function summary($orderId)
+	public function summary($orderID)
 	{
-		return $this->_loadOrderAndItemsAndRender($orderId, 'Message:Mothership:Commerce::order:detail:item:summary');
+		return $this->_loadOrderAndItemsAndRender($orderID, 'Message:Mothership:Commerce::order:detail:item:summary');
 	}
 
-	public function items($orderId)
+	public function items($orderID)
 	{
-		$this->_loadOrderAndItems($orderId);
+		$this->_loadOrderAndItems($orderID);
 
 		$statuses = array();
 
@@ -33,9 +33,9 @@ class Item extends Controller
 		));
 	}
 
-	protected function _loadOrderAndItemsAndRender($orderId, $view)
+	protected function _loadOrderAndItemsAndRender($orderID, $view)
 	{
-		$this->_loadOrderAndItems($orderId);
+		$this->_loadOrderAndItems($orderID);
 
 		return $this->render($view, array(
 			'items' => $this->_items,
@@ -43,9 +43,9 @@ class Item extends Controller
 		));
 	}
 
-	protected function _loadOrderAndItems($orderId)
+	protected function _loadOrderAndItems($orderID)
 	{
-		$this->_order = $this->get('order.loader')->getById($orderId);
+		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_items = $this->get('order.item.loader')->getByOrder($this->_order);
 	}
 

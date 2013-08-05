@@ -1,0 +1,28 @@
+{% if not orders is empty %}
+	<table class="order-listing">
+		<thead>
+		<tr>
+			<th><span>Created at</span></th>
+			<th><span>User</span></th>
+			<th><span>Order Id</span></th>
+			<th><span>Status</span></th>
+			<th><span>Shipping Method</span></th>
+			<th><span>Value</span></th>
+		</tr>
+		</thead>
+		<tbody>
+			{% for order in orders %}
+				<tr>
+					<td>{{ order.authorship.createdAt|date("m/d/Y") }}</td>
+					<td><a href="">{{ order.user.name }}</a></td>
+					<td><a href="{{ url('ms.commerce.order.detail.view.index', {orderID: order.id}) }}">{{ order.id }}</a></td>
+					<td>{{ order.status }}</td>
+					<td>{{ order.shippingName }}</td>
+					<td>{{ order.totalGross }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	<p>{{ 'ms.commerce.order.none'|trans }}</p>
+{% endif %}

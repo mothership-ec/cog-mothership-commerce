@@ -5,7 +5,7 @@
 		<section class="repeatable-group">
 				{% if not addresses is empty %}
 					{% for address in addresses %}
-						{% include '::order:address:detail' %}
+						{% include '::order:detail:address:detail' %}
 					{% endfor %}
 				{% else %}
 					<p> {{ 'ms.commerce.order.address.none'|trans }}</p>

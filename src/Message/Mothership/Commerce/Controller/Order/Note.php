@@ -10,14 +10,14 @@ class Note extends Controller
 	protected $_order;
 	protected $_notes;
 
-	public function notes($orderId)
+	public function notes($orderID)
 	{
-		return $this->_loadOrderAndNotesAndRender($orderId, 'Message:Mothership:Commerce::order:detail:note:notes');
+		return $this->_loadOrderAndNotesAndRender($orderID, 'Message:Mothership:Commerce::order:detail:note:notes');
 	}
 
-	protected function _loadOrderAndNotesAndRender($orderId, $view)
+	protected function _loadOrderAndNotesAndRender($orderID, $view)
 	{
-		$this->_order = $this->get('order.loader')->getById($orderId);
+		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_notes = $this->get('order.note.loader')->getByOrder($this->_order);
 
 		return $this->render($view, array(

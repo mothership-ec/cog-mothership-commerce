@@ -1,11 +1,11 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
 {% block sidebar %}
-	{{ render(controller('::Controller:Order:Order#sidebar', { 'orderId': order.id } )) }}
+	{{ render(controller('::Controller:Order:Order#sidebar', { 'orderID': order.id } )) }}
 {% endblock %}
  
 {% block main %}
-	{{ render(controller('::Controller:Order:Tabs#create', { 'orderId': order.id } )) }}
+	{{ render(controller('::Controller:Order:Tabs#create', { 'orderID': order.id } )) }}
 
 	<hgroup class="title">
 		<h1>Order {{ order.id }}</h1>

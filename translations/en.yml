@@ -34,14 +34,14 @@ ms.commerce:
       1: Web Stock
 
   order:
-    order:
-      none: There are no orders to view.
+    none: There are no orders to view.
 
-      order-overview:
-        title: Order Overview
+    order-overview:
+      title: Order Overview
 
-      summary:
-        title: Order Summary
+    summary:
+      title: Order Summary
+      
     item:
       none: There are no items to view.
       items:

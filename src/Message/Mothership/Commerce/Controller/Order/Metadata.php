@@ -9,9 +9,9 @@ class Metadata extends Controller
 {
 	protected $_order;
 
-	public function summary($orderId)
+	public function summary($orderID)
 	{
-		$this->_order = $this->get('order.loader')->getById($orderId);
+		$this->_order = $this->get('order.loader')->getById($orderID);
 
 		return $this->render('Message:Mothership:Commerce::order:detail:metadata:summary', array(
 			'metadata' => $this->_order->metadata,
