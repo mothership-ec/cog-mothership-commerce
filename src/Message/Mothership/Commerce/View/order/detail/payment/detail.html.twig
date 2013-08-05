@@ -6,7 +6,7 @@
 				<li><span>Return</span> {{ payment.return }}</li>
 			{% endif %}
 			<li><span>Method</span> {{ payment.method.displayName }}</li>
-			<li><span>Amount</span> {{ payment.amount }}</li>
+			<li><span>Amount</span> {{ payment.amount|price }}</li>
 			<li><span>Reference </span> {{ payment.reference }}</li>
 		</ul>
 	</section>

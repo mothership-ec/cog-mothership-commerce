@@ -7,7 +7,7 @@
 		<ul class="file-details">
 			<li><span>Brand </span>{{ item.brand }}</li>
 			<li><span>Options </span>{{ item.options }}</li>
-			<li><span>Gross </span> {{ item.gross }}</li>
+			<li><span>Gross </span> {{ item.gross|price }}</li>
 			<li><span>SKU </span> {{ item.sku }}</li>
 			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
 			<li><span>Current Status</span> {{ item.status }}</li>
@@ -15,13 +15,13 @@
 		<section class="group">
 			<h2 class="title">Price Details</h2>
 			<ul class="file-details">
-				<li><span>List-Price </span> {{ item.listPrice }}</li>
-				<li><span>Net </span> {{ item.net }}</li>
-				<li><span>Discount </span> {{ item.discount }}</li>
-				<li><span>Tax </span> {{ item.tax }}</li>
-				<li><span>Taxrate </span> {{ item.taxrate }}</li>
-				<li><span>Gross </span> {{ item.gross }}</li>
-				<li><span>RRP </span> {{ item.rrp }}</li>
+				<li><span>List-Price </span> {{ item.listPrice|price }}</li>
+				<li><span>Net </span> {{ item.net|price }}</li>
+				<li><span>Discount </span> {{ item.discount|price }}</li>
+				<li><span>Tax </span> {{ item.tax|price }}</li>
+				<li><span>Taxrate </span> {{ item.taxrate }} %</li>
+				<li><span>Gross </span> {{ item.gross|price }}</li>
+				<li><span>RRP </span> {{ item.rrp|price }}</li>
 			</ul>
 		</section>
 
