@@ -108,6 +108,13 @@ class Assembler
 
 	}
 
+	public function addUser(\Message\User\User  $user)
+	{
+		$this->_order->user = $user;
+
+		return $this;
+	}
+
 	public function removeVoucher()
 	{
 
@@ -128,8 +135,10 @@ class Assembler
 
 	}
 
-	public function updateAddress(Entity\Address\Address $address)
+	public function addAddress(Entity\Address\Address $address)
 	{
+		$this->_order->addresses->remove($address->id);
+
 		return $this->_order->addresses->append($address);
 	}
 
