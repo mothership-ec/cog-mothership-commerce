@@ -1,16 +1,16 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
 {% block sidebar %}
-	test
+
 {% endblock %}
  
 {% block main %}
 	<hgroup class="title">
-		<h1>{{ 'ms.commerce.order.summary.title'|trans }}</h1>
+		<h1>{{ heading|title }}</h1>
 	</hgroup>
 
 	<div class="container-content">
-		{% include 'Message:Mothership:Commerce::order:all-orders:summary' %}
+		{% include 'Message:Mothership:Commerce::order:order:summary' %}
 	</div>
 
 {% endblock %}

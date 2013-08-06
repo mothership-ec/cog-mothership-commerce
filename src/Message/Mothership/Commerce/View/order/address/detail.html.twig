@@ -20,8 +20,8 @@
 			{% endfor %}
 			<li>
 				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
-				{{ address.postcode }}
-				<span>Town </span>
+				{{ address.postcode }} 
+				<span>{{ 'ms.commerce.order.address.town'|trans }}</span>
 				{{ address.town }}
 			</li>
 			{% if not address.state is empty %}

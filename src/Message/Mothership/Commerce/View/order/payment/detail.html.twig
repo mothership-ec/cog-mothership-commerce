@@ -1,6 +1,10 @@
 <div class="container">
 	<section class="group">
-		<h1 class="title">{{ payment.method.displayName }}, {{ payment.authorship }}</h1>
+		<h1 class="title">
+			{{ payment.method.displayName }},
+			Created by {{ payment.authorship.createdBy }}
+			at {{ payment.authorship.createdAt|date }}
+		</h1>
 		<ul class="file-details">
 			{% if not payment.return is empty %}
 				<li>

@@ -90,7 +90,7 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 
-		return $this->render('Message:Mothership:Commerce::order:order-details:sidebar', array(
+		return $this->render('Message:Mothership:Commerce::order:order-detail:sidebar', array(
 			'order' => $this->_order,
 		));
 	}
@@ -108,7 +108,7 @@ class OrderDetail extends Controller
 		);
 
 		$current = ucfirst(trim(strrchr($this->get('http.request.master')->get('_controller'), '::'), ':'));
-		return $this->render('Message:Mothership:Commerce::order:order-details:tabs', array(
+		return $this->render('Message:Mothership:Commerce::order:order-detail:tabs', array(
 			'tabs'    => $tabs,
 			'current' => $current,
 		));

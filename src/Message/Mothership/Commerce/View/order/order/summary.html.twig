@@ -13,7 +13,7 @@
 		<tbody>
 			{% for order in orders %}
 				<tr>
-					<td>{{ order.authorship.createdAt|date("m/d/Y") }}</td>
+					<td>{{ order.authorship.createdAt|date }}</td>
 					<td><a href="">{{ order.user.name }}</a></td>
 					<td><a href="{{ url('ms.commerce.order.detail.view.index', {orderID: order.id}) }}">{{ order.id }}</a></td>
 					<td>{{ order.status }}</td>
@@ -24,5 +24,5 @@
 		</tbody>
 	</table>
 {% else %}
-	<p>{{ 'ms.commerce.order.none'|trans }}</p>
+	<p>{{ 'ms.commerce.order.order.none'|trans }}</p>
 {% endif %}

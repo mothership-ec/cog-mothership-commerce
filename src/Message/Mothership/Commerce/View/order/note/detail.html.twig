@@ -1,6 +1,6 @@
 <div class="container">
 	<section class="group">
-		<h1 class="title">{{ note.authorship }}</h1>
+		<h1 class="title">Created by {{ note.authorship.createdBy }} at {{ note.authorship.createdAt|date }}</h1>
 		
 		<section>
 			<h2>{{ 'ms.commerce.order.note.note'|trans }}</h2>
