@@ -18,7 +18,7 @@
 
 		</ul>
 		<section class="group">
-			<h2 class="title">Price Details</h2>
+			<h2 class="title">Gross {{ item.gross|price }} - Show Price Details</h2>
 			<ul class="file-details">
 				<li><span>List-Price </span> {{ item.listPrice|price }}</li>
 				<li><span>Net </span> {{ item.net|price }}</li>
@@ -31,7 +31,7 @@
 		</section>
 
 		<section class="group">
-			<h2 class="title">Stock Details</h2>
+			<h2 class="title">SKU {{ item.sku }} - Show Stock Details</h2>
 			<ul class="file-details">
 				<li><span>Weight</span> {{ item.weight }}</li>
 				<li><span>Barcode</span> {{ item.barcode }}</li>
@@ -52,7 +52,7 @@
 		{% endif %}
 
 		<section class="group">
-			<h2 class="title">Status History</h2>
+			<h2 class="title">Current Status {{ item.status }} - Show Status History</h2>
 
 			{% for status in statuses[item.id] %}
 				<ul class="file-details">

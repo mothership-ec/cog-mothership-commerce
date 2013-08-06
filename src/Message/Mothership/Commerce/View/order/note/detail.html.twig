@@ -1,0 +1,21 @@
+<div class="container">
+	<section class="group">
+		<h1 class="title">{{ note.authorship }}</h1>
+		
+		<section>
+			<h2>{{ 'ms.commerce.order.note.note'|trans }}</h2>
+			<p>{{ note.note }}</p>
+		</section>
+
+		<ul class="file-details">
+			<li>
+				<span>{{ 'ms.commerce.order.note.customer-notified'|trans }}</span>
+				{{ note.customerNotified }}
+			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.note.raised-from'|trans }}</span>
+				{{ note.raisedFrom }}
+			</li>
+		</ul>
+	</section>
+</div>

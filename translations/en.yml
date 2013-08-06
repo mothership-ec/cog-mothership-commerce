@@ -34,51 +34,62 @@ ms.commerce:
       1: Web Stock
 
   order:
-    none: There are no orders to view.
+    order:
+      none: There are no orders to view.
 
-    order-overview:
-      title: Order Overview
+      listing-title: Order Overview
+      overview-title: Order Overview
+      summary-title: Order Summary
 
-    summary:
-      title: Order Summary
-      
     item:
       none: There are no items to view.
-      items:
-        title: Items
-      summary:
-        title: Item Summary
+
+      listing-title: Items
+      summary-title: Item Summary
+
     address:
       none: There are no addresses to view.
 
-      addresses:
-        title: Addresses
+      listing-title: Addresses
+      summary-title: Address Summary
 
-      summary:
-        title: Address Summary
+      type: Address Type
+      name: Name
+      line: "Line number"
+      postcode: Postcode
+      state: State
+      country: Country
+      telephone: Telephone
 
     payment:
       none: There are no payments to view.
 
-      payments:
-        title: Payments
+      listing-title: Payments
+      summary-title: Payment Summary
 
-      summary:
-        title: Payment Summary
+      return: Return
+      method: Method
+      amount: Amount
+      reference: Reference
 
     dispatch:
       none: There are no dispatches to view.
 
-      dispatches:
-        title: Dispatches
+      listing-title: Dispatches
+      
     note:
       none: There are no notes to view.
 
-      notes:
-        title: Notes
+      listing-title: Notes
+
+      note: Note
+      customer-notified: Customer Notified
+      raised-from: Raised From
 
     metadata:
       none: There is no metadata to view.
 
-      summary:
-        title: Metadata
+      summary-title: Metadata
+
+      key: key
+      value: Value
