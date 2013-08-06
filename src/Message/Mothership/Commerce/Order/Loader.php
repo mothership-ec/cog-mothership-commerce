@@ -9,6 +9,8 @@ use Message\Cog\DB;
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
+use Message\User\UserInterface;
+
 /**
  * Decorator for loading orders.
  *
@@ -37,6 +39,26 @@ class Loader
 	{
 		return $this->_load($id);
 	}
+
+	public function getByUser(UserInterface $user) 
+	{
+		$result = $this->_query->run(
+			'SELECT
+				order_id
+			FROM
+				order_summary
+			WHERE
+				user_id = ?i',
+			array(
+				$user->id
+		));
+
+		$orderIDs = $result->flatten();
+		
+		return count($result) ? $this->_load($orderIDs, true) : false;
+	}
+
+
 
 	/**
 	 * Get orders for items with a specific current status.
