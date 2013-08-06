@@ -24,9 +24,13 @@ interface MethodInterface
 	public function getDisplayName();
 
 	/**
-	 * Get the price for this shipping method.
+	 * Calculate the price for this shipping method.
+	 *
+	 * This will generally rely on the basket contents, or may return a flat rate.
+	 *
+	 * Use the basket to determine weight or cost based shipping methods.
 	 */
-	public function getPrice();
+	public function calculate();
 
 	/**
 	 * Determine whether the shipping method is available for an order.
