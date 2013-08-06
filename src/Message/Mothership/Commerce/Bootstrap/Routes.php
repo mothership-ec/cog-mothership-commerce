@@ -9,6 +9,8 @@ class Routes implements RoutesInterface
 	public function registerRoutes($router)
 	{
 		$router['ms.product']->setParent('ms.cp')->setPrefix('/product');
+		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');	
+
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', '::Controller:Product:Dashboard#index');
 
 		$router['ms.product']->add('ms.commerce.product.create.action', 'create', '::Controller:Product:Create#process')
@@ -42,7 +44,26 @@ class Routes implements RoutesInterface
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', '::Controller:Product:Edit#images')
 			->setRequirement('productID', '\d+');
+
+		
 		$router['ms.product']->add('ms.commerce.product.add.basket', '/basket/add/{productID}', '::Controller:Module:ProductSelector#process')
 			->setMethod('POST');
+
+
+		$router['ms.order']->add('ms.commerce.order.view.all-orders', 'view', '::Controller:Order:Order#allOrders');
+
+
+		$router['ms.order']->add('ms.commerce.order.detail.view.index', 'view/{orderID}', '::Controller:Order:OrderDetail#orderOverview')
+			->setRequirement('orderID', '\d+');
+		$router['ms.order']->add('ms.commerce.order.detail.view.items', 'view/{orderID}/item', '::Controller:Order:OrderDetail#itemListing')
+			->setRequirement('orderID', '\d+');
+		$router['ms.order']->add('ms.commerce.order.detail.view.addresses', 'view/{orderID}/address', '::Controller:Order:OrderDetail#addressListing')
+			->setRequirement('orderID', '\d+');
+		$router['ms.order']->add('ms.commerce.order.detail.view.payments', 'view/{orderID}/payment', '::Controller:Order:OrderDetail#paymentListing')
+			->setRequirement('orderID', '\d+');
+		$router['ms.order']->add('ms.commerce.order.detail.view.dispatches', 'view/{orderID}/dispatch', '::Controller:Order:OrderDetail#dispatchListing')
+			->setRequirement('orderID', '\d+');
+		$router['ms.order']->add('ms.commerce.order.detail.view.notes', 'view/{orderID}/note', '::Controller:Order:OrderDetail#noteListing')
+			->setRequirement('orderID', '\d+');
 	}
 }

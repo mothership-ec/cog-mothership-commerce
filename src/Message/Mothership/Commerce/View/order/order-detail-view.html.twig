@@ -1,0 +1,17 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block sidebar %}
+	{{ render(controller('::Controller:Order:OrderDetail#sidebar', { 'orderID': order.id } )) }}
+{% endblock %}
+ 
+{% block main %}
+	{{ render(controller('::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}
+
+	<hgroup class="title">
+		<h1>Order {{ order.id }}</h1>
+	</hgroup>
+
+	{% block order_content %}
+	{% endblock %}
+
+{% endblock %}

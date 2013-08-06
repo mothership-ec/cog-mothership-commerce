@@ -1,0 +1,15 @@
+{% extends '::order:detail:order-detail-view' %}
+
+{% block order_content %}
+	<section class="container-content">
+		<section class="repeatable-group">
+			{% if not notes is empty %}
+				{% for note in notes %}
+					{% include '::order:detail:note:detail' %}
+				{% endfor %}
+			{% else %}
+				{{ 'ms.commerce.order.note.none'|trans }}
+			{% endif %}
+		</section>
+	</section>
+{% endblock %}
