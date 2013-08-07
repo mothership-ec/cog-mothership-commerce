@@ -69,13 +69,24 @@
 					{{ form_widget(addForm.option_name_2) }}
 				</td>
 				<td>
-					{{ form_widget(addForm.option_value_1) }} <br />
-					{{ form_widget(addForm.option_value_2) }}
+					<div class="inline">
+						{{ form_widget(addForm.option_value_1) }}
+					</div>
+
+					<div class="inline">
+						{{ form_widget(addForm.option_value_2) }}
+					</div>
 				</td>
 				<td>
-					{{ form_row(addForm['price']['retail']) }}
-					{{ form_row(addForm['price']['cost']) }}
+					<div class="inline">
+						{{ form_row(addForm['price']['retail']) }}
+					</div>
+					<div class="inline">
+						{{ form_row(addForm['price']['cost']) }}
+					</div>
+					<div class="inline">
 					{{ form_row(addForm['price']['rrp']) }}
+					</div>
 				</td>
 				<td>{{ form_widget(addForm.weight) }}</td>
 
