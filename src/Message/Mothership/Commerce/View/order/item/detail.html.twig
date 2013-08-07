@@ -1,0 +1,69 @@
+<div class="container" id="item{{ item.id }}">
+	<section class="group">
+		<h1 class="title">
+			{# <a href="{ url('ms.commerce.product.edit', {productID: item.productID}) }}" data-live>{{ item.productName }}</a> #}
+			{{ item.brand }} {{ item.productName }}
+		</h1>
+		<ul class="file-details">
+			<li><span>Brand </span>{{ item.brand }}</li>
+			<li><span>Options </span>{{ item.options }}</li>
+			<li><span>Gross </span> {{ item.gross|price }}</li>
+			<li><span>SKU </span> {{ item.sku }}</li>
+			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
+			<li><span>Current Status</span> {{ item.status }}</li>
+			<li><span>Created by</span> {{ item.authorship.createdBy }} <span>at</span> {{ item.authorship.createdAt|date }}</li>
+			{% if not item.authorship.updatedAt is empty and not item.authorship.updatedBy is empty %}
+				<li><span>Updated by</span> {{ item.authorship.updatedBy }} <span>at</span> {{ item.authorship.updatedAt|date }}</li>
+			{% endif %}
+
+		</ul>
+		<section class="group">
+			<h2 class="title">Gross {{ item.gross|price }} - Show Price Details</h2>
+			<ul class="file-details">
+				<li><span>List-Price </span> {{ item.listPrice|price }}</li>
+				<li><span>Net </span> {{ item.net|price }}</li>
+				<li><span>Discount </span> {{ item.discount|price }}</li>
+				<li><span>Tax </span> {{ item.tax|price }}</li>
+				<li><span>Taxrate </span> {{ item.taxrate }} %</li>
+				<li><span>Gross </span> {{ item.gross|price }}</li>
+				<li><span>RRP </span> {{ item.rrp|price }}</li>
+			</ul>
+		</section>
+
+		<section class="group">
+			<h2 class="title">SKU {{ item.sku }} - Show Stock Details</h2>
+			<ul class="file-details">
+				<li><span>Weight</span> {{ item.weight }}</li>
+				<li><span>Barcode</span> {{ item.barcode }}</li>
+				<li><span>SKU</span> {{ item.sku }}</li>
+			</ul>
+		</section>
+
+		{% if item.isPersonalised %}
+			<section class="group">
+				<h2 class="title">Personalisation Details</h2>
+				<ul class="file-details">
+					<li><span>Sender Name</span> {{ item.senderName }}</li>
+					<li><span>Recipient Name</span> {{ item.recipientName }}</li>
+					<li><span>Recipient E-Mail</span> {{ item.recipientEmail }}</li>
+					<li><span>Message</span> {{ item.recipientMessage }}</li>
+				</ul>
+			</section>
+		{% endif %}
+
+		<section class="group">
+			<h2 class="title">Current Status {{ item.status }} - Show Status History</h2>
+
+			{% for status in statuses[item.id] %}
+				<ul class="file-details">
+					<li>
+						<span>Status</span> {{ status }}</li>
+					<li><span>Created by</span> {{ status.authorship.createdBy }} <span>at</span> {{ status.authorship.createdAt|date }}</li>
+					{% if not status.authorship.updatedAt is empty and not status.authorship.updatedBy is empty %}
+						<li><span>Updated by</span> {{ status.authorship.updatedBy }} <span>at</span> {{ status.authorship.updatedAt|date }}</li>
+					{% endif %}
+				</ul>
+			{% endfor %}
+		</section>
+	</section>
+</div>

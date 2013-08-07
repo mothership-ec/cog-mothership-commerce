@@ -1,0 +1,7 @@
+<div class="topbar">
+	<ul class="tabs">
+	{% for name, url in tabs %}
+		<li class="{{ name == current ? 'active' : '' }}"><a href="{{ url }}">{{ name }}</a></li>
+	{% endfor %}
+</ul>
+</div>

@@ -1,0 +1,27 @@
+<h2>{{ 'ms.commerce.order.item.summary.title'|trans }}</h2>
+{% if not items is empty %}
+	<table class="order-listing">
+		<thead>
+		<tr>
+			<th><span>Brand</span></th>
+			<th><span>Product</span></th>
+			<th><span>Options</span></th>
+			<th><span>SKU</span></th>
+			<th><span>Gross</span></th>
+		</tr>
+		</thead>
+		<tbody>
+			{% for item in items %}
+				<tr>
+					<td>{{ item.brand }}</td>
+					<td>{{ item.productName }}</td>
+					<td>{{ item.options }}</td>
+					<td>{{ item.sku }}</td>
+					<td>{{ item.gross }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	<p>{{ 'ms.commerce.order.item.none'|trans }}</p>
+{% endif %}
