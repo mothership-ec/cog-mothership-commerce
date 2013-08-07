@@ -1,6 +1,7 @@
 <?php
 
 namespace Message\Mothership\Commerce\Order\Entity\Shipping\Method;
+use Message\Mothership\Commerce\Order\Order;
 
 /**
  * Interface defining a shipping method.
@@ -24,18 +25,14 @@ interface MethodInterface
 	public function getDisplayName();
 
 	/**
-	 * Calculate the price for this shipping method.
-	 *
-	 * This will generally rely on the basket contents, or may return a flat rate.
-	 *
-	 * Use the basket to determine weight or cost based shipping methods.
+	 * Get price for the shipping method.
 	 */
-	public function calculate();
+	public function getPrice();
 
 	/**
 	 * Determine whether the shipping method is available for an order.
 	 *
 	 * @return bool
 	 */
-	public function isAvailable();
+	public function isAvailable(Order $order);
 }

@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Shipping\Method;
 
+use Message\Mothership\Commerce\Order\Order;
+
 /**
  * A container for all shipping methods available to the system.
  *
@@ -14,7 +16,7 @@ class MethodCollection implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 *
-	 * @param array $pageTypes An array of dispatch methods
+	 * @param array $methods An array of shipping methods
 	 */
 	public function __construct(array $methods = array())
 	{
@@ -44,17 +46,21 @@ class MethodCollection implements \IteratorAggregate, \Countable
 		return $this;
 	}
 
-	public function remove(MethodInterface $method)
+	public function getForOrder(Order $order)
 	{
-		$name = $method->getName();
-
-		if(!isset($this->methods[$name])) {
-			throw new \InvalidArgumentException(sprintf('Shipping method `%s` is not defined', $name));
+		if(!$order) {
+			//return array();
 		}
 
-		unset($this->methods[$name]);
+		$availableMethods = array();
 
-		return $this;
+		foreach($this->getIterator() as $name => $method) {
+			if($method->isAvailable($order)) {
+				$availableMethods[$name] = $method;
+			}
+		}
+
+		return $availableMethods;
 	}
 
 	/**
