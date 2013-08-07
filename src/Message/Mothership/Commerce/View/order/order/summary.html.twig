@@ -18,7 +18,7 @@
 					<td><a href="{{ url('ms.commerce.order.detail.view.index', {orderID: order.id}) }}">{{ order.id }}</a></td>
 					<td>{{ order.status }}</td>
 					<td>{{ order.shippingName }}</td>
-					<td>{{ order.totalGross|price }}</td>
+					<td>{{ order.totalGross|price(order.currencyID) }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>

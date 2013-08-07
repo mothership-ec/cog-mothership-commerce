@@ -1,4 +1,4 @@
-{% extends '::order:order-detail-view' %}
+{% extends '::order:detail:view' %}
 
 {% block order_content %}
 	<div class="container-content">
@@ -7,15 +7,15 @@
 		</section>
 
 		<section>
-			{% include '::order:item:summary' %}
+			{% include '::order:detail:item:summary' %}
 		</section>
 
 		<section>
-			{% include '::order:address:summary' %}
+			{% include '::order:detail:address:summary' %}
 		</section>
 
 		<section>
-			{% include '::order:metadata:summary' %}
+			{% include '::order:detail:metadata:summary' %}
 		</section>
 	</div>
 {% endblock %}

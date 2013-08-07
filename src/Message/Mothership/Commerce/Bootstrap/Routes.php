@@ -50,9 +50,9 @@ class Routes implements RoutesInterface
 			->setMethod('POST');
 
 
-		$router['ms.order']->add('ms.commerce.order.view.dashboard', 'view', '::Controller:Order:Dashboard#index');
-		$router['ms.order']->add('ms.commerce.order.view.all', 'view/all', '::Controller:Order:Orders#all');
-		$router['ms.order']->add('ms.commerce.order.view.shipped', 'view/shipped', '::Controller:Order:Orders#shipped');
+		$router['ms.order']->add('ms.commerce.order.view.dashboard', 'view', '::Controller:Order:Listing#dashboard');
+		$router['ms.order']->add('ms.commerce.order.view.all', 'view/all', '::Controller:Order:Listing#all');
+		$router['ms.order']->add('ms.commerce.order.view.shipped', 'view/shipped', '::Controller:Order:Listing#shipped');
 
 
 		$router['ms.order']->add('ms.commerce.order.detail.view.index', 'view/{orderID}', '::Controller:Order:OrderDetail#orderOverview')

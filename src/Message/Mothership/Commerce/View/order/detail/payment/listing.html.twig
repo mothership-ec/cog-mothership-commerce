@@ -1,4 +1,4 @@
-{% extends '::order:order-detail-view' %}
+{% extends '::order:detail:view' %}
 
 {% block order_content %}
 
@@ -6,7 +6,7 @@
 		<section class="repeatable-group">
 			{% if not payments is empty %}
 				{% for payment in payments %}
-					{% include '::order:payment:detail' %}
+					{% include '::order:detail:payment:detail' %}
 				{% endfor %}
 			{% else %}
 				{{ 'ms.commerce.order.payment.none'|trans }}

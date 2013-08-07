@@ -18,7 +18,7 @@
 			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.payment.amount'|trans }}</span>
-				{{ payment.amount|price }}
+				{{ payment.amount|price(order.currencyID) }}
 			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.payment.reference'|trans }}</span>

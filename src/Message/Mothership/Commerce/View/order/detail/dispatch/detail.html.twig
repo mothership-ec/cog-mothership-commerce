@@ -18,7 +18,7 @@
 			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.dispatch.cost'|trans }}</span>
-				{{ dispatch.cost|price }}
+				{{ dispatch.cost|price(order.currencyID) }}
 			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.dispatch.weight'|trans }}</span>
@@ -28,7 +28,7 @@
 		<section>
 			{% set items = dispatch.items %}
 
-			{% include '::order:item:summary' %}
+			{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}
 		</section>
 	</section>
 </div>

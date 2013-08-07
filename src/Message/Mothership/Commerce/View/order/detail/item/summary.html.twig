@@ -17,7 +17,7 @@
 					<td>{{ item.productName }}</td>
 					<td>{{ item.options }}</td>
 					<td>{{ item.sku }}</td>
-					<td>{{ item.gross }}</td>
+					<td>{{ item.gross|price(order.currencyID, 'de_DE') }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>

@@ -1,11 +1,11 @@
-{% extends '::order:order-detail-view' %}
+{% extends '::order:detail:view' %}
 
 {% block order_content %}
 	<section class="container-content">
 		<section class="repeatable-group">
 				{% if not addresses is empty %}
 					{% for address in addresses %}
-						{% include '::order:address:detail' %}
+						{% include '::order:detail:address:detail' %}
 					{% endfor %}
 				{% else %}
 					<p> {{ 'ms.commerce.order.address.none'|trans }}</p>

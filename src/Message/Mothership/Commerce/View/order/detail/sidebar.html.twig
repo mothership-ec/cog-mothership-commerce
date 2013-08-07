@@ -11,7 +11,7 @@
 		<li><span>Type</span> {{ order.type }}</li>	
 		<li><span>Locale</span> {{ order.locale }}</li>
 		<li><span>Shipping Method</span> {{ order.shippingName }}</li>
-		<li><span>Product Gross</span> {{ order.productGross|price }}</li>
-		<li><span>Total Gross</span> {{ order.totalGross|price }}</li>
+		<li><span>Product Gross</span> {{ order.productGross|price(order.currencyID) }}</li>
+		<li><span>Total Gross</span> {{ order.totalGross|price(order.currencyID) }}</li>
 	</ul>
 </section>

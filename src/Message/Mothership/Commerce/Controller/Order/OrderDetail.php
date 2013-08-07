@@ -21,7 +21,7 @@ class OrderDetail extends Controller
 		$this->_items = $this->get('order.item.loader')->getByOrder($this->_order);
 		$this->_metadata = $this->_order->metadata;
 
-		return $this->render('::order:order:overview', array(
+		return $this->render('::order:detail:order:overview', array(
 			"order" => $this->_order,
 			"addresses" => $this->_addresses,
 			"items" => $this->_items,
@@ -33,7 +33,7 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_addresses = $this->get('order.address.loader')->getByOrder($this->_order);
-		return $this->render('::order:address:listing', array(
+		return $this->render('::order:detail:address:listing', array(
 			'order' => $this->_order,
 			'addresses' => $this->_addresses,
 		));
@@ -49,7 +49,7 @@ class OrderDetail extends Controller
 			$statuses[$item->id] = $this->get('order.item.status.loader')->getHistory($item);
 		}
 
-		return $this->render('::order:item:listing', array(
+		return $this->render('::order:detail:item:listing', array(
 			'order' => $this->_order,
 			'items' => $this->_items,
 			'statuses' => $statuses,
@@ -60,7 +60,7 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_payments = $this->get('order.payment.loader')->getByOrder($this->_order);
-		return $this->render('::order:payment:listing', array(
+		return $this->render('::order:detail:payment:listing', array(
 			'order' => $this->_order,
 			'payments' => $this->_payments,
 		));
@@ -70,7 +70,7 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_dispatches = $this->get('order.dispatch.loader')->getByOrder($this->_order);
-		return $this->render('::order:dispatch:listing', array(
+		return $this->render('::order:detail:dispatch:listing', array(
 			'order' => $this->_order,
 			'dispatches' => $this->_dispatches,
 		));
@@ -80,7 +80,7 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_notes = $this->get('order.note.loader')->getByOrder($this->_order);
-		return $this->render('::order:note:listing', array(
+		return $this->render('::order:detail:note:listing', array(
 			'order' => $this->_order,
 			'notes' => $this->_notes,
 		));
@@ -90,7 +90,7 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 
-		return $this->render('Message:Mothership:Commerce::order:order-detail:sidebar', array(
+		return $this->render('Message:Mothership:Commerce::order:detail:sidebar', array(
 			'order' => $this->_order,
 		));
 	}
@@ -108,7 +108,7 @@ class OrderDetail extends Controller
 		);
 
 		$current = ucfirst(trim(strrchr($this->get('http.request.master')->get('_controller'), '::'), ':'));
-		return $this->render('Message:Mothership:Commerce::order:order-detail:tabs', array(
+		return $this->render('Message:Mothership:Commerce::order:detail:tabs', array(
 			'tabs'    => $tabs,
 			'current' => $current,
 		));

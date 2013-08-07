@@ -27,6 +27,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			BuildMenuEvent::BUILD_MAIN_MENU => array(
 				array('registerMainMenuItems'),
 			),
+			BuildMenuEvent::BUILD_SIDEBAR => array(
+				array('registerSidebarItems'),
+			),
 		);
 	}
 
@@ -38,5 +41,18 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function registerMainMenuItems(BuildMenuEvent $event)
 	{
 		//$event->addItem('ms.commerce.product.dashboard', 'Products', array('ms.products'));
+		$event->addItem('ms.commerce.order.view.dashboard', 'Orders', array('ms.order'));
+	}
+
+	/**
+	 * Register items to the sidebar of the orders-pages.
+	 *
+	 * @param BuildMenuEvent $event The event
+	 */
+	public function registerSidebarItems(BuildMenuEvent $event)
+	{
+		//$event->addItem('ms.commerce.product.dashboard', 'Products', array('ms.products'));
+		$event->addItem('ms.commerce.order.view.all', 'All Orders');
+		$event->addItem('ms.commerce.order.view.shipped', 'Shipped Orders');
 	}
 }

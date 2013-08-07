@@ -1,0 +1,9 @@
+<div class="search order">
+
+{{ form_start(search_form) }}
+	{{ form_row(search_form.term, { 'attr': {'placeholder': 'Search for order id...' } }) }}
+	<button type="submit">Search</button>
+{{ form_end(search_form) }}
+</div>
+
+{{ render(controller('Message:Mothership:ControlPanel::Controller:Menu#sidebar')) }}

@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Controller\Order;
 use Message\Cog\Controller\Controller;
 use Message\Mothership\Ecommerce\OrderItemStatuses;
 
-class Orders extends Controller
+class Listing extends Controller
 {
 	protected $_orders;
 
@@ -26,9 +26,10 @@ class Orders extends Controller
 
 		$heading = $this->trans('ms.commerce.order.order.all-orders-title');
 
-		return $this->render('Message:Mothership:Commerce::order:orders-view', array(
+		return $this->render('Message:Mothership:Commerce::order:listing:view', array(
 			'orders' => $this->_orders,
 			'heading' => $heading,
+			'search_form' => $this->_getSearchForm(),
 		));
 	}
 
@@ -41,9 +42,28 @@ class Orders extends Controller
 
 		$heading = $this->trans('ms.commerce.order.order.shipped-orders-title');
 
-		return $this->render('Message:Mothership:Commerce::order:orders-view', array(
+		return $this->render('Message:Mothership:Commerce::order:listing:view', array(
 			'orders' => $this->_orders,
 			'heading' => $heading,
+			'search_form' => $this->_getSearchForm(),
 		));
+	}
+
+	public function dashboard()
+	{
+		return $this->render('::order:listing:dashboard', array(
+			'search_form' => $this->_getSearchForm(),
+		));
+	}
+
+	protected function _getSearchForm()
+	{
+		$form = $this->get('form')
+			->setName('order_search')
+			->setMethod('POST')
+			->setAction($this->generateUrl('ms.cp.file_manager.search.forward'));
+		$form->add('term', 'search', 'Enter search term...');
+
+		return $form;
 	}
 }
