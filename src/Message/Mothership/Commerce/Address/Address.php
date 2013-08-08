@@ -10,7 +10,6 @@ class Address
 	const BILLING  = 'billing';
 
 	public $id;
-	public $userID;
 	public $type;
 	public $name;
 	public $lines = array(
