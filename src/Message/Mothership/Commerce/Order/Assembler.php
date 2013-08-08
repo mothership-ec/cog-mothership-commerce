@@ -57,6 +57,14 @@ class Assembler
 	{
 		$this->_order->items->remove($item->id);
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
 		return $this;
 	}
 
@@ -137,6 +145,8 @@ class Assembler
 
 	public function addAddress(Entity\Address\Address $address)
 	{
+		// ID is set as the type so this will remove all the address types from the
+		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
 
 		return $this->_order->addresses->append($address);

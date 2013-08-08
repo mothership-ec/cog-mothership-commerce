@@ -35,30 +35,71 @@ class Loader
 		$this->_entities     = $entities;
 	}
 
+	/**
+	 * Get a specific order by ID.
+	 *
+	 * @param  int $id     The order ID
+	 *
+	 * @return Order|false The order, or false if it doesn't exist
+	 */
 	public function getByID($id)
 	{
 		return $this->_load($id);
 	}
 
-	public function getByUser(UserInterface $user) 
+	/**
+	 * Get all orders placed by a specific user.
+	 *
+	 * @param  User $user   The user to get orders for
+	 *
+	 * @return array[Order] Array of orders
+	 */
+	public function getByUser(User\User $user)
 	{
-		$result = $this->_query->run(
-			'SELECT
+		$result = $this->_query->run('
+			SELECT
 				order_id
 			FROM
 				order_summary
 			WHERE
-				user_id = ?i',
-			array(
-				$user->id
-		));
+				user_id = ?i
+		', $user->id);
 
-		$orderIDs = $result->flatten();
-		
-		return count($result) ? $this->_load($orderIDs, true) : false;
+		return $this->_load($result->flatten(), true);
 	}
 
+	/**
+	 * Get orders with specific statuses.
+	 *
+	 * @param  int|array $statuses Status code or array of status codes
+	 *
+	 * @return array[Order]        Array of orders
+	 *
+	 * @throws \InvalidArgumentException If any status codes are not known
+	 */
+	public function getByStatus($statuses)
+	{
+		if (!is_array($statuses)) {
+			$statuses = (array) $statuses;
+		}
 
+		foreach ($statuses as $code) {
+			if (!$this->_statuses->exists($code)) {
+				throw new \InvalidArgumentException(sprintf('Unknown order status code: `%s`', $code));
+			}
+		}
+
+		$result = $this->_query->run('
+			SELECT
+				order_id
+			FROM
+				order_summary
+			WHERE
+				status_code IN (?ij)
+		', array($statuses));
+
+		return $this->_load($result->flatten(), true);
+	}
 
 	/**
 	 * Get orders for items with a specific current status.
@@ -69,6 +110,8 @@ class Loader
 	 * @param  int|array $statuses Status code or array of status codes
 	 *
 	 * @return array[Order]        Array of orders
+	 *
+	 * @throws \InvalidArgumentException If any item status codes are not known
 	 */
 	public function getByCurrentItemStatus($statuses)
 	{
@@ -78,7 +121,7 @@ class Loader
 
 		foreach ($statuses as $code) {
 			if (!$this->_itemStatuses->exists($code)) {
-				throw new Exception(sprintf('Order item status code `%s` not defined.', $code));
+				throw new \InvalidArgumentException(sprintf('Unkown order item status code: `%s`', $code));
 			}
 		}
 

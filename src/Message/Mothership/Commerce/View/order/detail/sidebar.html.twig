@@ -1,17 +1,51 @@
 <section class="menu">
 	Order {{ order.id }}
 	<ul>
-		<li><span>Order ID</span> {{ order.id }}</li>
-		<li><span>Created by</span> {{ order.authorship.createdBy }} <span>at</span> {{ order.authorship.createdAt|date }}</li>
+		<li>
+			<span>{{ 'ms.commerce.order.order.orderID'|trans }}</span>
+			{{ order.id }}
+		</li>
+		<li>
+			<span>{{ 'Created by'|trans }}</span>
+			{{ order.authorship.createdBy }}
+			<span>{{ 'at'|trans }}</span>
+			{{ order.authorship.createdAt|date }}
+		</li>
 		{% if not order.authorship.updatedAt is empty and not order.authorship.updatedBy is empty %}
-			<li><span>Updated by</span> {{ order.authorship.updatedBy }} <span>at</span> {{ order.authorship.updatedAt|date }}</li>
+			<li>
+				<span>Updated by</span>
+				{{ order.authorship.updatedBy }}
+				<span>at</span>
+				{{ order.authorship.updatedAt|date }}
+			</li>
 		{% endif %}
-		<li><span>User</span> {{ order.user.name }}</li>
-		<li><span>Status</span> {{ order.status }}</li>
-		<li><span>Type</span> {{ order.type }}</li>	
-		<li><span>Locale</span> {{ order.locale }}</li>
-		<li><span>Shipping Method</span> {{ order.shippingName }}</li>
-		<li><span>Product Gross</span> {{ order.productGross|price }}</li>
-		<li><span>Total Gross</span> {{ order.totalGross|price }}</li>
+		<li>
+			<span>{{ 'user'|trans|title }}</span>
+			{{ order.user.name }}
+		</li>
+		<li>
+			<span>{{ 'ms.commerce.order.order.status'|trans }}</span>
+			{{ order.status }}
+		</li>
+		<li>
+			<span>{{ 'ms.commerce.order.order.type'|trans }}</span>
+			{{ order.type }}
+		</li>	
+		<li>
+			<span>{{ 'ms.commerce.order.order.locale'|trans }}</span>
+			{{ order.locale }}
+		</li>
+		<li>
+			<span>{{ 'ms.commerce.order.order.shipping-method'|trans }}</span>
+			{{ order.shippingName }}
+		</li>
+		<li>
+			<span>{{ 'ms.commerce.order.order.product-gross'|trans }}</span>
+			{{ order.productGross|price(order.currencyID) }}
+		</li>
+		<li>
+			<span>{{ 'ms.commerce.order.order.total-gross'|trans }}</span>
+			{{ order.totalGross|price(order.currencyID) }}
+		</li>
 	</ul>
 </section>

@@ -1,16 +1,34 @@
 <div class="container">
 	<section class="group">
-		<h1 class="title">{{ dispatch.method.displayName|capitalize }}, {{ dispatch.authorship }}</h1>
+		<h1 class="title">
+			{{ dispatch.method.displayName|title }}, 
+			{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
+			{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
+		</h1>
 		<ul class="file-details">
-			<li><span>Shipped by</span> {{ dispatch.shippedBy }} <span>at</span> {{ dispatch.shippedAt|date }}</li>
-			<li><span>Code</span> {{ dispatch.code }}</li>
-			<li><span>Cost</span> {{ dispatch.cost|price }}</li>
-			<li><span>Weight (grams)</span> {{ dispatch.weight }}</li>
+			<li>
+				<span>{{ 'Shipped by'|trans }}</span>
+				{{ dispatch.shippedBy }}
+				<span>{{ 'at'|trans }}</span>
+				{{ dispatch.shippedAt|date }}
+			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.dispatch.code'|trans }}</span>
+				{{ dispatch.code }}
+			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.dispatch.cost'|trans }}</span>
+				{{ dispatch.cost|price(order.currencyID) }}
+			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.dispatch.weight'|trans }}</span>
+				{{ dispatch.weight }}
+			</li>
 		</ul>
 		<section>
 			{% set items = dispatch.items %}
 
-			{% include '::order:detail:item:summary' %}
+			{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}
 		</section>
 	</section>
 </div>

@@ -7,7 +7,7 @@
 		<ul class="file-details">
 			<li><span>Brand </span>{{ item.brand }}</li>
 			<li><span>Options </span>{{ item.options }}</li>
-			<li><span>Gross </span> {{ item.gross|price }}</li>
+			<li><span>Gross </span> {{ item.gross|price(order.currencyID) }}</li>
 			<li><span>SKU </span> {{ item.sku }}</li>
 			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
 			<li><span>Current Status</span> {{ item.status }}</li>
@@ -18,20 +18,20 @@
 
 		</ul>
 		<section class="group">
-			<h2 class="title">Price Details</h2>
+			<h2 class="title">Gross {{ item.gross|price(order.currencyID) }} - Show Price Details</h2>
 			<ul class="file-details">
-				<li><span>List-Price </span> {{ item.listPrice|price }}</li>
-				<li><span>Net </span> {{ item.net|price }}</li>
-				<li><span>Discount </span> {{ item.discount|price }}</li>
-				<li><span>Tax </span> {{ item.tax|price }}</li>
+				<li><span>List-Price </span> {{ item.listPrice|price(order.currencyID) }}</li>
+				<li><span>Net </span> {{ item.net|price(order.currencyID) }}</li>
+				<li><span>Discount </span> {{ item.discount|price(order.currencyID) }}</li>
+				<li><span>Tax </span> {{ item.tax|price(order.currencyID) }}</li>
 				<li><span>Taxrate </span> {{ item.taxrate }} %</li>
-				<li><span>Gross </span> {{ item.gross|price }}</li>
-				<li><span>RRP </span> {{ item.rrp|price }}</li>
+				<li><span>Gross </span> {{ item.gross|price(order.currencyID) }}</li>
+				<li><span>RRP </span> {{ item.rrp|price(order.currencyID) }}</li>
 			</ul>
 		</section>
 
 		<section class="group">
-			<h2 class="title">Stock Details</h2>
+			<h2 class="title">SKU {{ item.sku }} - Show Stock Details</h2>
 			<ul class="file-details">
 				<li><span>Weight</span> {{ item.weight }}</li>
 				<li><span>Barcode</span> {{ item.barcode }}</li>
@@ -52,7 +52,7 @@
 		{% endif %}
 
 		<section class="group">
-			<h2 class="title">Status History</h2>
+			<h2 class="title">Current Status {{ item.status }} - Show Status History</h2>
 
 			{% for status in statuses[item.id] %}
 				<ul class="file-details">

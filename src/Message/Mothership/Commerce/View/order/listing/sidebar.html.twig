@@ -1,0 +1,13 @@
+<div class="search order">
+{{ form_start(search_form) }}
+	{{ form_row(search_form.term, { 'attr': {'placeholder': 'Search for order id...' } }) }}
+	<button type="submit">Search</button>
+{{ form_end(search_form) }}
+</div>
+
+<ol class="menu">
+{% for item in items %}
+	<li class="{{ item.classes|join(' ') }}"><a href="{{ url(item.target) }}">{{ item.label }}</a></li>
+{% endfor %}
+</ol>
+

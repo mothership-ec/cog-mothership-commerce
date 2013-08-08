@@ -1,4 +1,4 @@
-<h2>{{ 'ms.commerce.order.item.summary.title'|trans }}</h2>
+<h2>{{ 'ms.commerce.order.item.summary-title'|trans }}</h2>
 {% if not items is empty %}
 	<table class="order-listing">
 		<thead>
@@ -17,7 +17,7 @@
 					<td>{{ item.productName }}</td>
 					<td>{{ item.options }}</td>
 					<td>{{ item.sku }}</td>
-					<td>{{ item.gross }}</td>
+					<td>{{ item.gross|price(order.currencyID) }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
