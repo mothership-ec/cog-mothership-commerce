@@ -11,7 +11,6 @@ class Address
 
 	public $id;
 	public $type;
-	public $name;
 	public $lines = array(
 		1 => null,
 		2 => null,
@@ -25,6 +24,7 @@ class Address
 	public $country;
 	public $countryID;
 	public $telephone;
+
 	public $authorship;
 
 	public function __construct()

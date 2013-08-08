@@ -25,17 +25,14 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 */
 	public function getByUser(User $user)
 	{
-		$result = $this->_query->run(
-			'SELECT
+		$result = $this->_query->run('
+			SELECT
 				address_id
 			FROM
 				user_address
 			WHERE
-				user_id = ?i',
-			array(
-				$user->id
-			)
-		);
+				user_id = ?i
+		', $user->id);
 
 		return count($result) ? $this->_loadAddresses($result->flatten()) : false;
 	}
@@ -66,7 +63,6 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				user_address.address_id AS id,
 				user_address.user_id AS userID,
 				user_address.type AS type,
-				user_address.name AS name,
 				user_address.line_1,
 				user_address.line_2,
 				user_address.line_3,

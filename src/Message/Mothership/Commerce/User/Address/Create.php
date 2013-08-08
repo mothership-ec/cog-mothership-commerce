@@ -35,7 +35,6 @@ class Create
 			'INSERT INTO
 				user_address
 			SET
-				name       = :name?s,
 				line_1     = :line_1?s,
 				line_2     = :line_2?sn,
 				line_3     = :line_3?sn,
@@ -50,8 +49,6 @@ class Create
 				user_id    = :userID?i,
 				type 	   = :type?s
 			', array(
-				'addressID'  => $address->id,
-				'name'       => $address->name,
 				'line_1'     => $address->lines[1],
 				'line_2'     => $address->lines[2] ?: null,
 				'line_3'     => $address->lines[3] ?: null,

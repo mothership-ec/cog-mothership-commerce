@@ -25,7 +25,6 @@ class Edit
 			'UPDATE
 				user_address
 			SET
-				name       = :name?s,
 				line_1     = :line_1?sn,
 				line_2     = :line_2?sn,
 				line_3     = :line_3?sn,
@@ -41,7 +40,6 @@ class Edit
 				address_id = :addressID?i
 			', array(
 				'addressID'	 => $address->id,
-				'name'       => $address->name,
 				'line_1'     => $address->lines[1],
 				'line_2'     => $address->lines[2],
 				'line_3'     => $address->lines[3],
