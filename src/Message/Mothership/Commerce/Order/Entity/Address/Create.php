@@ -33,7 +33,9 @@ class Create implements DB\TransactionalInterface
 			SET
 				order_id   = :orderID?i,
 				type       = :type?s,
-				name       = :name?sn,
+				title      = :title?sn,
+				forename   = :forename?sn,
+				surname    = :surname?sn,
 				line_1     = :line1?sn,
 				line_2     = :line2?sn,
 				line_3     = :line3?sn,
@@ -48,7 +50,9 @@ class Create implements DB\TransactionalInterface
 		', array(
 			'orderID'   => $address->order->id,
 			'type'      => $address->type,
-			'name'      => $address->name,
+			'title'     => $address->title,
+			'forename'  => $address->forename,
+			'surname'   => $address->surname,
 			'line1'     => $address->lines[1],
 			'line2'     => $address->lines[2],
 			'line3'     => $address->lines[3],
