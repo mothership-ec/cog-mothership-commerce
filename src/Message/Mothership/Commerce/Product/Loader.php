@@ -34,6 +34,17 @@ class Loader
 		$this->_fileLoader = $fileLoader;
 	}
 
+	public function getEntityLoader($name)
+	{
+		if (!array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Unknown product entity: `%s`', $name));
+		}
+
+		$this->_entities[$name]->setProductLoader($this);
+
+		return $this->_entities[$name];
+	}
+
 	public function getByID($productID)
 	{
 		$this->_returnArray = is_array($productID);

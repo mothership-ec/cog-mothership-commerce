@@ -213,7 +213,11 @@ class Services implements ServicesInterface
 
 		$services['product.entities'] = function($c) {
 			return array(
-				'units' => $c['product.unit.loader'],
+				'units' => new Commerce\Product\Unit\Loader(
+					$c['db.query'],
+					$c['locale'],
+					$c['product.price.types']
+				),
 			);
 		};
 
@@ -228,14 +232,6 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.unit.loader'] = function($c) {
-			return new Commerce\Product\Unit\Loader(
-				$c['db.query'],
-				$c['locale'],
-				$c['product.price.types']
-			);
-		};
-
 		$services['product.create'] = function($c) {
 			return new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
 		};
@@ -246,12 +242,12 @@ class Services implements ServicesInterface
 			));
 		};
 
-		$services['product.edit'] = function($c) {
-			return new Commerce\Product\Edit($c['db.query'], $c['locale'], $c['user.current']);
+		$services['product.unit.loader'] = function($c) {
+			return $c['product.loader']->getEntityLoader('units');
 		};
 
-		$services['product.unit.loader'] = function($c) {
-			return new Commerce\Product\Unit\Loader($c['db.query'], $c['locale'], $c['product.price.types']);
+		$services['product.edit'] = function($c) {
+			return new Commerce\Product\Edit($c['db.query'], $c['locale'], $c['user.current']);
 		};
 
 		$services['product.unit.edit'] = function($c) {
@@ -282,8 +278,8 @@ class Services implements ServicesInterface
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
 		};
 
-		$services['orders.entities.shipping.methods'] = $services->share(function($c) {
-			return new Commerce\Order\Entity\Shipping\Method\MethodCollection;
+		$services['shipping.methods'] = $services->share(function($c) {
+			return new Commerce\Shipping\MethodCollection;
 		});
 	}
 }

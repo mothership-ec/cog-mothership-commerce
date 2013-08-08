@@ -27,15 +27,12 @@ class Delete
 	 */
 	public function delete(Address $address)
 	{
-		$result = $this->_query->run(
-			'DELETE FROM
+		$result = $this->_query->run('
+			DELETE FROM
 				user_address
 			WHERE
 				address_id = ?i
-			', array(
-				$address->id
-			)
-		);
+		', $address->id);
 
 		return (bool) $result->affected();
 	}

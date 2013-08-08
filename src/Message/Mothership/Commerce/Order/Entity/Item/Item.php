@@ -50,28 +50,32 @@ class Item implements EntityInterface
 	protected $recipientEmail;
 	protected $recipientMessage;
 
-	public function createFromUnit(Unit $unit)
+	/**
+	 * Populate this item with the data from a specific unit.
+	 *
+	 * @param  Unit   $unit The unit to populate from
+	 *
+	 * @return Item         Returns $this for chainability
+	 */
+	public function populate(Unit $unit)
 	{
-		$item = new static;
-		$currencyID = $this->order->currencyID ?: 'GBP';
+		if ($this->order instanceof Order) {
+			$this->listPrice = $unit->getPrice('retail', $this->order->currencyID);
+			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
+		}
 
-		$item->id = $unit->id.'-'.$this->order->items->count();
-		$item->listPrice = $unit->getPrice('retail',$currencyID);
-		$item->rrp = $unit->getPrice('rrp',$currencyID);
-		$item->taxRate = $unit->product->taxRate;
-		// net, discount, tax, taxRate, gross
-		$item->productID = $unit->product->id;
-		$item->productName = $unit->product->name;
-		$item->unitID = $unit->id;
-		$item->unitRevision = $unit->revisionID;
-		$item->sku = $unit->sku;
-		$item->barcode = $unit->barcode;
-		$item->options = $unit->options; // combine all options as a string
-		$item->brandName = $unit->product->brand; // TODO: add this once Brand class used
-		$item->weight = $unit->weight;
-		// TODO: figure out how tax and tax discounts should work with countries, and WHEN? what about checkout
+		$this->taxRate      = $unit->product->taxRate;
+		$this->productID    = $unit->product->id;
+		$this->productName  = $unit->product->name;
+		$this->unitID       = $unit->id;
+		$this->unitRevision = $unit->revisionID;
+		$this->sku          = $unit->sku;
+		$this->barcode      = $unit->barcode;
+		$this->options      = implode($unit->options, ', ');
+		$this->brand        = $unit->product->brand;
+		$this->weight       = $unit->weight;
 
-		return $item;
+		return $this;
 	}
 
 	public function __construct()

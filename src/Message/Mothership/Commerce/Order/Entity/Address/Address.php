@@ -14,4 +14,8 @@ use Message\Mothership\Commerce\Address\Address as BaseAddress;
 class Address extends BaseAddress implements EntityInterface
 {
 	public $order;
+
+	public $title;
+	public $forename;
+	public $surname;
 }

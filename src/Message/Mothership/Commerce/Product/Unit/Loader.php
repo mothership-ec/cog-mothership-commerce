@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Mothership\Commerce\Product\Unit\LoaderInterface;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -35,6 +36,11 @@ class Loader implements LoaderInterface
 		$this->_prices  = $prices;
 	}
 
+	public function setProductLoader(ProductLoader $loader)
+	{
+		$this->_productLoader = $loader;
+	}
+
 	/**
 	 * Load all the units for a given Product object
 	 *
@@ -61,19 +67,7 @@ class Loader implements LoaderInterface
 
 	public function getByID($unitID, Product $product = null, $revisionID = null)
 	{
-		$result = $this->_query->run('
-			SELECT
-				unit_id
-			FROM
-				product_unit
-			WHERE
-				unit_id = ?i
-		', 	array(
-				$unitID
-			)
-		);
-
-		return count($result) ? $this->_load($result->value(), false, $product, $revisionID) : false;
+		return $this->_load($unitID, false, $product, $revisionID);
 	}
 
 	public function includeInvisible($bool)
@@ -121,7 +115,6 @@ class Loader implements LoaderInterface
 			return $alwaysReturnArray ? array() : false;
 		}
 
-
 		foreach ($result as $key => $data) {
 
 			// Hide units which are not visible
@@ -167,8 +160,15 @@ class Loader implements LoaderInterface
 				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
 			}
 
-			if (!is_null($product)) {
+			if ($product) {
 				$units[$key]->product = $product;
+			}
+			else {
+				if (!$this->_productLoader) {
+					throw new \RuntimeException('Cannot load product on unit(s) without a product loader instance');
+				}
+
+				$units[$key]->product = $this->_productLoader->getByID($data->product_id);
 			}
 
 		}
@@ -306,6 +306,7 @@ class Loader implements LoaderInterface
 
 		return $this->_query->run(
 			'SELECT
+				product_unit.product_id,
 				product_unit.unit_id      	AS id,
 				product_unit.weight_grams 	AS weight,
 				product_unit_info.sku     	AS sku,
