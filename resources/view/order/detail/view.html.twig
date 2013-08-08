@@ -5,12 +5,14 @@
 {% endblock %}
  
 {% block main %}
-	{{ render(controller('::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}
+
 
 	<hgroup class="title">
 		<h1>{{ 'Order'|trans }} {{ order.id }}</h1>
 	</hgroup>
 
+	{{ render(controller('::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}
+	
 	{% block order_content %}
 	{% endblock %}
 
