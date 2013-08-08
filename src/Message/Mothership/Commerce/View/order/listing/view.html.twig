@@ -1,16 +1,8 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
 {% block sidebar %}
-	{% include 'Message:Mothership:Commerce::order:listing:sidebar' %}
+	{{ render(controller('::Controller:Order:Listing#sidebar')) }}
 {% endblock %}
- 
+
 {% block main %}
-	<hgroup class="title">
-		<h1>{{ heading|title }}</h1>
-	</hgroup>
-
-	<div class="container-content">
-		{% include 'Message:Mothership:Commerce::order:order:summary' %}
-	</div>
-
 {% endblock %}

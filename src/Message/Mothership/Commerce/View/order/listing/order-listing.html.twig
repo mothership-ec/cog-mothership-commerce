@@ -1,0 +1,11 @@
+{% extends 'Message:Mothership:Commerce::order:listing:view' %}
+
+{% block main %}
+	<hgroup class="title">
+		<h1>{{ heading|title }}</h1>
+	</hgroup>
+
+	<div class="container-content">
+		{% include 'Message:Mothership:Commerce::order:order:summary' %}
+	</div>
+{% endblock %}

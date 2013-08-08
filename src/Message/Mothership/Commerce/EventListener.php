@@ -3,7 +3,6 @@
 namespace Message\Mothership\Commerce;
 
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
-
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\RedirectResponse;
@@ -27,9 +26,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			BuildMenuEvent::BUILD_MAIN_MENU => array(
 				array('registerMainMenuItems'),
 			),
-			BuildMenuEvent::BUILD_SIDEBAR => array(
-				array('registerSidebarItems'),
-			),
+
 		);
 	}
 
@@ -51,7 +48,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function registerSidebarItems(BuildMenuEvent $event)
 	{
-		//$event->addItem('ms.commerce.product.dashboard', 'Products', array('ms.products'));
 		$event->addItem('ms.commerce.order.view.all', 'All Orders');
 		$event->addItem('ms.commerce.order.view.shipped', 'Shipped Orders');
 	}
