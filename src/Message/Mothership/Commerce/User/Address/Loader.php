@@ -116,6 +116,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	{
 		$addresses = $result->bindTo('Message\\Mothership\\Commerce\\User\\Address\\Address');
 		foreach ($result as $key => $address) {
+
 			$addresses[$key]->lines = array(
 				1 => $address->line_1 ?: null,
 				2 => $address->line_2 ?: null,
