@@ -284,6 +284,8 @@ class Services implements ServicesInterface
 
 		$services['orders.entities.shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Order\Entity\Shipping\Method\MethodCollection;
+		$services['shipping.methods'] = $services->share(function($c) {
+			return new Commerce\Shipping\MethodCollection;
 		});
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Entity\Shipping\Method;
+namespace Message\Mothership\Commerce\Shipping;
+
 use Message\Mothership\Commerce\Order\Order;
 
 /**
