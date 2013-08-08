@@ -120,6 +120,13 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Document\Loader($c['db.query']);
 		};
 
+		$services['order.document.create'] = function($c) {
+			return new Commerce\Order\Entity\Document\Create(
+				$c['db.query'],
+				$c['order.document.loader']
+			);
+		};
+
 		// Order item status
 		$services['order.item.status.loader'] = function($c) {
 			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
