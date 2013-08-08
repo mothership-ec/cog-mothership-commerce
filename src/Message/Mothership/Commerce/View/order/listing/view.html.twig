@@ -1,7 +1,7 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
 {% block sidebar %}
-	{{ render(controller('::Controller:Order:Listing#sidebar')) }}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Order:Listing#sidebar')) }}
 {% endblock %}
 
 {% block main %}
