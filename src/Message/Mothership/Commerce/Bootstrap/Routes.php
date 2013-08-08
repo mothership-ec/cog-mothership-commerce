@@ -9,7 +9,7 @@ class Routes implements RoutesInterface
 	public function registerRoutes($router)
 	{
 		$router['ms.product']->setParent('ms.cp')->setPrefix('/product');
-		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');	
+		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');
 
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', '::Controller:Product:Dashboard#index');
 
@@ -45,8 +45,8 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', '::Controller:Product:Edit#images')
 			->setRequirement('productID', '\d+');
 
-		
-		$router['ms.product']->add('ms.commerce.product.add.basket', '/basket/add/{productID}', '::Controller:Module:ProductSelector#process')
+
+		$router['ms.product.basket']->add('ms.commerce.product.add.basket', '/basket/add/{productID}', '::Controller:Module:ProductSelector#process')
 			->setMethod('POST');
 
 

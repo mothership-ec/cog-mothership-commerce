@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order;
 
 use Message\Mothership\Commerce\User\LoaderInterface;
+use Message\Mothership\Commerce\Order\Entity\Shipping\Method\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
@@ -99,6 +100,11 @@ class Assembler
 		return $this;
 	}
 
+	public function setOrder(Order $order)
+	{
+		$this->_order = $order;
+	}
+
 	public function getItemQuantity(Unit $unit)
 	{
 		return $this->_countForUnitID($unit);
@@ -152,9 +158,12 @@ class Assembler
 		return $this->_order->addresses->append($address);
 	}
 
-	public function setShipping()
+	public function setShipping(ShippingInterface $option)
 	{
+		$this->_order->shippingName      = $option->getName();
+		$this->_order->shippingListPrice = $option->getPrice();
 
+		return $this;
 	}
 
 	public function getOrder()

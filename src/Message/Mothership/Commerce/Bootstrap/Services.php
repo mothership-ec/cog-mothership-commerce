@@ -15,18 +15,21 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Order($c['order.entities']);
 		};
 
+		$services['basket.order'] = function($c) {
+			if (!$c['http.session']->get('basket.order')) {
+				$c['http.session']->set('basket.order', $c['order']);
+			}
+
+			return $c['http.session']->get('basket.order');
+		};
+
 		$services['basket'] = function($c) {
-			if (!$c['http.session']->get('basket')) {
-				$c['http.session']->set('basket',new Commerce\Order\Assembler(
-					$c['order'],
+			return new Commerce\Order\Assembler(
+					$c['basket.order'],
 					$c['user.current'],
 					$c['locale'],
 					$c['event.dispatcher'],
-					$c['http.session']
-				));
-			}
-
-			return $c['http.session']->get('basket');
+					$c['http.session']);
 		};
 
 		$services['order.entities'] = function($c) {
