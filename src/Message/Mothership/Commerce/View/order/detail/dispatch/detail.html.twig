@@ -2,14 +2,14 @@
 	<section class="group">
 		<h1 class="title">
 			{{ dispatch.method.displayName|title }}, 
-			Created by {{ dispatch.authorship.createdBy }}
-			at {{ dispatch.authorship.createdAt|date }}
+			{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
+			{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
 		</h1>
 		<ul class="file-details">
 			<li>
-				<span>Shipped by</span>
+				<span>{{ 'Shipped by'|trans }}</span>
 				{{ dispatch.shippedBy }}
-				<span>at</span>
+				<span>{{ 'at'|trans }}</span>
 				{{ dispatch.shippedAt|date }}
 			</li>
 			<li>

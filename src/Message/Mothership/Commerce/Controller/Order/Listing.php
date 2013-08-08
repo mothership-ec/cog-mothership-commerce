@@ -3,8 +3,10 @@
 namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
+use Message\Mothership\Ecommerce\OrderItemStatuses;
 use Message\Mothership\Commerce\Order\Statuses;
-use Message\Mothership\Commerce\Order\Event\BuildOrderSidebarEvent;
+use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 
 
 
@@ -67,17 +69,18 @@ class Listing extends Controller
 	/**
 	 * Render the sidebar.
 	 *
-	 * This fires the event defined as `Event::BUILD_SIDEBAR` of type
-	 * `BuildMenuEvent`. This event allows listeners to add items to the main
-	 * menu.
+	 * This fires the event defined as `Events::BUILD_ORDER_SIDEBAR` of type
+	 * `BuildMenuEvent`. This event allows listeners to add items to order's
+	 * sidebar.
 	 *
 	 * @return \Message\Cog\HTTP\Response
 	 */
 	public function sidebar()
 	{
-		$event = new BuildOrderSidebarEvent;
+		$event = new BuildMenuEvent;
+
 		$this->get('event.dispatcher')->dispatch(
-			BuildOrderSidebarEvent::BUILD_ORDER_SIDEBAR,
+			Events::BUILD_ORDER_SIDEBAR,
 			$event
 		);
 

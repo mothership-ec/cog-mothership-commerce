@@ -2,13 +2,14 @@
 
 namespace Message\Mothership\Commerce;
 
-use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\RedirectResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -26,7 +27,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			BuildMenuEvent::BUILD_MAIN_MENU => array(
 				array('registerMainMenuItems'),
 			),
-
+			Events::BUILD_ORDER_SIDEBAR => array(
+				array('registerSidebarItems'),
+			),
 		);
 	}
 

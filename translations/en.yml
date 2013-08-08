@@ -41,6 +41,15 @@ ms.commerce:
       shipped-orders-title: Shipped Orders
       overview-title: Order Overview
       summary-title: Order Summary
+      detail-title: Order orderID
+
+      orderID: Order orderID
+      type: Order Type
+      locale: Locale
+      shipping-method: Shipping Method
+      product-gross: Product Gross
+      total-gross: Total Gross
+      status: Status
 
     item:
       none: There are no items to view.
