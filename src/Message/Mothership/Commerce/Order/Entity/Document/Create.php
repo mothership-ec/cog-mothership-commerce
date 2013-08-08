@@ -5,6 +5,9 @@ namespace Message\Mothership\Commerce\Order\Entity\Document;
 use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
+use Message\Cog\ValueObject\Authorship;
+use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\User\UserInterface;
 
 /**
  * Order document creator.
@@ -16,10 +19,11 @@ class Create implements DB\TransactionalInterface
 	protected $_query;
 	protected $_loader;
 
-	public function __construct(DB\Query $query, Loader $loader)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
 	{
-		$this->_query  = $query;
-		$this->_loader = $loader;
+		$this->_query       = $query;
+		$this->_loader      = $loader;
+		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -39,7 +43,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($document);
 
-		$this->_query->run('
+		$result = $this->_query->run('
 			INSERT INTO
 				order_document
 			SET
@@ -50,19 +54,19 @@ class Create implements DB\TransactionalInterface
 				type        = :type?s,
 				url         = :url?s
 		', array(
-			'orderID'    => $document->order->id,
-			'dispatchID' => $document->dispatch ? $address->dispatch->id : null,
+			'orderID'    => $document->order ? $document->order->id : null,
+			'dispatchID' => $document->dispatch ? $document->dispatch->id : null,
 			'createdAt'  => $document->authorship->createdAt(),
 			'createdBy'  => $document->authorship->createdBy(),
 			'type'       => $document->type,
-			'url'        => $document->file->getPath(),
+			'url'        => $document->file->getPathname(),
 		));
 
 		if ($this->_query instanceof DB\Transaction) {
 			return $document;
 		}
 
-		return $this->_loader->getByID($this->_query->id(), $document->order);
+		return $this->_loader->getByID($result->id(), $document->order);
 	}
 
 	protected function _validate()

@@ -34,7 +34,6 @@ class Create extends Controller
 
 	protected function _getForm()
 	{
-
 		$form = $this->get('form')
 			->setName('product-create')
 			->setAction($this->generateUrl('ms.commerce.product.create.action'))

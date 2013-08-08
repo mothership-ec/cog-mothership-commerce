@@ -123,7 +123,8 @@ class Services implements ServicesInterface
 		$services['order.document.create'] = function($c) {
 			return new Commerce\Order\Entity\Document\Create(
 				$c['db.query'],
-				$c['order.document.loader']
+				$c['order.document.loader'],
+				$c['user.current']
 			);
 		};
 
