@@ -112,7 +112,7 @@ class Assembler
 
 	public function emptyBasket()
 	{
-		$this->_session->remove('basket');
+		$this->_session->remove('basket.order');
 
 		return true;
 	}
