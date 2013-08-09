@@ -227,8 +227,27 @@ class Loader
 			}
 
 			$orders[$key]->status = $this->_statuses->get($row->status_code);
+
+			$this->_loadMetadata($orders[$key]);
 		}
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	protected function _loadMetadata(Order $order)
+	{
+		$result = $this->_query->run('
+			SELECT
+				`key`,
+				`value`
+			FROM
+				order_metadata
+			WHERE
+				order_id = ?i
+		', $order->id);
+
+		foreach ($result->hash('key', 'value') as $key => $value) {
+			$order->metadata->set($key, $value);
+		}
 	}
 }

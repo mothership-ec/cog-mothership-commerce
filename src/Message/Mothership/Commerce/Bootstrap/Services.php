@@ -68,7 +68,7 @@ class Services implements ServicesInterface
 
 		$services['order.edit'] = function($c) {
 			return new Commerce\Order\Edit(
-				$c['db.query'],
+				$c['db.transaction'],
 				$c['event.dispatcher'],
 				$c['order.statuses'],
 				$c['user.current']

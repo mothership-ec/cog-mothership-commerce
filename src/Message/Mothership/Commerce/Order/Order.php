@@ -57,6 +57,7 @@ class Order
 	public function __construct(array $entities = array())
 	{
 		$this->authorship = new Authorship;
+		$this->metadata   = new Metadata;
 
 		foreach ($entities as $name => $loader) {
 			$this->addEntity($name, $loader);
