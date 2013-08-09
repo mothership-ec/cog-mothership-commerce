@@ -31,6 +31,7 @@ class Assembler
 	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event,Session $session)
 	{
 		$this->_order           = $order;
+		$this->_order->currencyID = 'GBP';
 		$this->_user            = $user;
 		$this->_locale          = $locale;
 		$this->_eventDispatcher = $event;
@@ -41,7 +42,8 @@ class Assembler
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
-		$this->_order->items->populate($item->createFromUnit($unit));
+
+		$this->_order->items->append($item->populate($unit));
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event
