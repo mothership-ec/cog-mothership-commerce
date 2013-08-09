@@ -1,7 +1,7 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
 {% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Sidebar#index', {'productID':product.id}))}}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
 {% endblock %}
 
 {% block main %}
@@ -10,7 +10,7 @@
 	<h1>Create a product</h1>
 </hgroup>
 
-<div class="container-content create-product">	
+<div class="container-content create-product">
 	{{ form_start(form) }}
 		{{ form_row(form.name) }}
 		{{ form_row(form.display_name) }}
