@@ -41,7 +41,7 @@ class Assembler
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
-		$this->_order->items->append($item->createFromUnit($unit));
+		$this->_order->items->populate($item->createFromUnit($unit));
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event
