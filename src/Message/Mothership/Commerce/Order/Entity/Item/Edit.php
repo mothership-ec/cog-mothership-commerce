@@ -15,6 +15,8 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
+	protected $_transOverriden = false;
+
 	protected $_eventDispatcher;
 	protected $_statuses;
 	protected $_currentUser;
@@ -30,10 +32,11 @@ class Edit implements DB\TransactionalInterface
 
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_query          = $trans;
+		$this->_transOverriden = true;
 	}
 
-	public function updateStatus($items, $statusCode, $commitTransaction = true)
+	public function updateStatus($items, $statusCode)
 	{
 		if (!$this->_statuses->exists($statusCode)) {
 			throw new \InvalidArgumentException(sprintf('Order item status `%s` does not exist', $statusCode));
@@ -91,13 +94,9 @@ class Edit implements DB\TransactionalInterface
 			$event
 		);
 
-		if ($commitTransaction) {
+		if (!$this->_transOverriden) {
 			$this->_query->commit();
 		}
-
-		// listener to above event fires another event to determine order's status
-		// and sets it if necessary
-		// also: change above event to TransactionalEvent and pass thru transaction??
 
 		return $this;
 	}

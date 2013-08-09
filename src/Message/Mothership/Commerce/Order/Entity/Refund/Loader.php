@@ -31,7 +31,7 @@ class Loader implements Order\Entity\LoaderInterface
 	{
 		$result = $this->_query->run('
 			SELECT
-				refund_is
+				refund_id
 			FROM
 				order_refund
 			WHERE
