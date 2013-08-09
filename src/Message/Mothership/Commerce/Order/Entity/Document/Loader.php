@@ -13,7 +13,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Order\Entity\LoaderInterface
+class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 
@@ -79,12 +79,11 @@ class Loader implements Order\Entity\LoaderInterface
 
 			$entities[$key]->file = new File($row->url);
 
-			if ($order) {
-				$entities[$key]->order = $order;
+			if (!$order) {
+				$order = $this->_orderLoader->getByID($row->order_id);
 			}
-			else {
-				// TODO: load the order, put it in here. we need the order loader i guess
-			}
+
+			$entities[$key]->order = $order;
 
 			if ($row->dispatch_id) {
 				$entities[$key]->dispatch = $entities[$key]->order->dispatches->get($row->dispatch_id);

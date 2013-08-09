@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity;
 
 use Message\Mothership\Commerce\Order\Order;
+use Message\Mothership\Commerce\Order\Loader as OrderLoader;
 
 /**
  * Interface for loading decorators for order entities.
@@ -11,6 +12,8 @@ use Message\Mothership\Commerce\Order\Order;
  */
 interface LoaderInterface
 {
+	#public function setOrderLoader(OrderLoader $orderLoader);
+
 	/**
 	 * Get the entities related to a specific order.
 	 *

@@ -36,6 +36,24 @@ class Loader
 	}
 
 	/**
+	 * Get the loader for a specific entity.
+	 *
+	 * @param  string $name Entity name
+	 *
+	 * @return Entity\LoaderInterface The entity loader
+	 */
+	public function getEntityLoader($name)
+	{
+		if (!array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Unknown order entity: `%s`', $name));
+		}
+
+		$this->_entities[$name]->setOrderLoader($this);
+
+		return $this->_entities[$name];
+	}
+
+	/**
 	 * Get a specific order by ID.
 	 *
 	 * @param  int $id     The order ID
