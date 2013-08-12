@@ -8,8 +8,6 @@ use Message\Cog\ValueObject\Authorship;
 /**
  * Order model. Container for all information about an order.
  *
- * @todo currency symbol??
- *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Order
@@ -118,12 +116,6 @@ class Order
 		return $this->_entities;
 	}
 
-	public function getItemArray()
-	{
-		// TODO: dunno what's best here. some sort of niceness?
-		return $this->getItems(); // pass whatever propetty we use for "rolling up quantities"
-	}
-
 	/**
 	 * Get the items for this order.
 	 *
@@ -142,6 +134,31 @@ class Order
 		}
 
 		return $this->_getEntity('items');
+	}
+
+	/**
+	 * Get an array of item "rows". Rows are all items for a specific unit
+	 * grouped.
+	 *
+	 * This is mostly used for listings.
+	 *
+	 * @see Entity\Item\Row
+	 *
+	 * @return array[Entity\Item\Row] Array of item rows
+	 */
+	public function getItemRows()
+	{
+		$rows = array();
+
+		foreach ($this->_getEntity('items') as $item) {
+			if (!array_key_exists($item->unitID, $rows)) {
+				$rows[$item->unitID] = new Entity\Item\Row;
+			}
+
+			$rows[$item->unitID]->add($item);
+		}
+
+		return $rows;
 	}
 
 	/**
