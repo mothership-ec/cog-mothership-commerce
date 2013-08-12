@@ -76,6 +76,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function append(EntityInterface $entity)
 	{
+		if (property_exists($entity, 'order') && !$entity->order) {
+			$entity->order = $this->_order;
+		}
+
 		$this->_items[] = $entity;
 	}
 
