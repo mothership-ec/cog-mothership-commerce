@@ -23,6 +23,11 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_statusLoader = $statusLoader;
 	}
 
+	public function getByID($id)
+	{
+		return $this->_load($id, false);
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
