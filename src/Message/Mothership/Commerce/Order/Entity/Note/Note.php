@@ -24,6 +24,10 @@ class Note implements EntityInterface
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
+
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
 	}
 
 	public function sendCustomerNotification(Order $order)

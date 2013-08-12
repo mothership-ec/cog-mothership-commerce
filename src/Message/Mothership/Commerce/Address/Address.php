@@ -24,11 +24,4 @@ class Address
 	public $country;
 	public $countryID;
 	public $telephone;
-
-	public $authorship;
-
-	public function __construct()
-	{
-		$this->authorship = new Authorship;
-	}
 }

@@ -83,6 +83,10 @@ class Item implements EntityInterface
 	{
 		$this->authorship = new Authorship;
 
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
+
 		// TODO: remove the below when stock stuff is built
 		$this->stockLocation = (object) array('id' => 1);
 	}
