@@ -36,6 +36,24 @@ class Loader
 	}
 
 	/**
+	 * Get the loader for a specific entity.
+	 *
+	 * @param  string $name Entity name
+	 *
+	 * @return Entity\LoaderInterface The entity loader
+	 */
+	public function getEntityLoader($name)
+	{
+		if (!array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Unknown order entity: `%s`', $name));
+		}
+
+		$this->_entities[$name]->setOrderLoader($this);
+
+		return $this->_entities[$name];
+	}
+
+	/**
 	 * Get a specific order by ID.
 	 *
 	 * @param  int $id     The order ID
@@ -227,8 +245,27 @@ class Loader
 			}
 
 			$orders[$key]->status = $this->_statuses->get($row->status_code);
+
+			$this->_loadMetadata($orders[$key]);
 		}
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	protected function _loadMetadata(Order $order)
+	{
+		$result = $this->_query->run('
+			SELECT
+				`key`,
+				`value`
+			FROM
+				order_metadata
+			WHERE
+				order_id = ?i
+		', $order->id);
+
+		foreach ($result->hash('key', 'value') as $key => $value) {
+			$order->metadata->set($key, $value);
+		}
 	}
 }

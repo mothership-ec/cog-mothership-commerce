@@ -12,7 +12,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Order\Entity\LoaderInterface
+class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_statusLoader;
@@ -90,12 +90,11 @@ class Loader implements Order\Entity\LoaderInterface
 				$row->created_by
 			);
 
-			if ($order) {
-				$items[$key]->order = $order;
+			if (!$order) {
+				$order = $this->_orderLoader->getByID($row->order_id);
 			}
-			else {
-				// TODO: load the order, put it in here. we need the order loader i guess
-			}
+
+			$items[$key]->order = $order;
 
 			$this->_statusLoader->setLatest($items[$key]);
 

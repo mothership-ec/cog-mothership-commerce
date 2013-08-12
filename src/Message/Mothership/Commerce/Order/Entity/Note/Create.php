@@ -4,6 +4,8 @@ namespace Message\Mothership\Commerce\Order\Entity\Note;
 
 use Message\Mothership\Commerce\Order;
 
+use Message\User\UserInterface;
+
 use Message\Cog\DB;
 
 /**
@@ -16,7 +18,7 @@ class Create implements DB\TransactionalInterface
 	protected $_currentUser;
 	protected $_query;
 
-	public function __construct(DB\Query $query)
+	public function __construct(DB\Query $query, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
 		$this->_currentUser = $currentUser;

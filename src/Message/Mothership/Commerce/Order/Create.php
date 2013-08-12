@@ -140,6 +140,22 @@ class Create
 			'name'      => $order->shippingName
 		));
 
+		// Insert metadata
+		foreach ($order->metadata as $key => $value) {
+			$this->_trans->add('
+				INSERT INTO
+					order_metadata
+				SET
+					`order_id` = :orderID?i,
+					`key`      = :key?s,
+					`value`    = :value?sn
+			', array(
+				'orderID' => $order->id,
+				'key'     => $key,
+				'value'   => $value,
+			));
+		}
+
 		foreach ($order->getEntities() as $name => $collection) {
 			if (count($collection) > 0 && !array_key_exists($name, $this->_entityCreators)) {
 				throw new \LogicException(sprintf('Creator for `%s` order entity not set on order creator', $name));

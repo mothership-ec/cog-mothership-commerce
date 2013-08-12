@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Order\Order;
 
 use Message\Cog\ValueObject\Authorship;
 
@@ -81,6 +82,10 @@ class Item implements EntityInterface
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
+
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
 
 		// TODO: remove the below when stock stuff is built
 		$this->stockLocation = (object) array('id' => 1);

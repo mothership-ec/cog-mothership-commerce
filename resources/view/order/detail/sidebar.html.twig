@@ -1,21 +1,19 @@
-<section class="menu">
-	Order {{ order.id }}
+<a href="/admin/order/view" class="back">Back to orders</a>
+<section class="order-overview">	
 	<ul>
 		<li>
 			<span>{{ 'ms.commerce.order.order.orderID'|trans }}</span>
 			{{ order.id }}
 		</li>
 		<li>
-			<span>{{ 'Created by'|trans }}</span>
-			{{ order.authorship.createdBy }}
-			<span>{{ 'at'|trans }}</span>
+			<span>{{ 'Created by'|trans }} {{ order.authorship.createdBy }}</span>
+			{{ 'at'|trans }}
 			{{ order.authorship.createdAt|date }}
 		</li>
 		{% if not order.authorship.updatedAt is empty and not order.authorship.updatedBy is empty %}
 			<li>
-				<span>Updated by</span>
-				{{ order.authorship.updatedBy }}
-				<span>at</span>
+				<span>Updated by {{ order.authorship.updatedBy }}</span>				
+				at
 				{{ order.authorship.updatedAt|date }}
 			</li>
 		{% endif %}

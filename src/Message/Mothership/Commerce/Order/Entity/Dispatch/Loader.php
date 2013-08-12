@@ -12,7 +12,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Order\Entity\LoaderInterface
+class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_methods;
@@ -94,12 +94,11 @@ class Loader implements Order\Entity\LoaderInterface
 				$entities[$key]->shippedAt = new DateTimeImmutable(date('c', $row->shippedAt));
 			}
 
-			if ($order) {
-				$entities[$key]->order = $order;
+			if (!$order) {
+				$order = $this->_orderLoader->getByID($row->order_id);
 			}
-			else {
-				// TODO: load the order, put it in here. we need the order loader i guess
-			}
+
+			$entities[$key]->order = $order;
 
 			$entities[$key]->method = $this->_methods->get($row->method);
 

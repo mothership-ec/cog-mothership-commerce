@@ -12,13 +12,13 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Order\Entity\LoaderInterface
+class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 
 	public function __construct(DB\Query $query)
 	{
-		$this->_query   = $query;
+		$this->_query = $query;
 	}
 
 	/**
@@ -75,12 +75,11 @@ class Loader implements Order\Entity\LoaderInterface
 				$row->created_by
 			);
 
-			if ($order) {
-				$entities[$key]->order = $order;
+			if (!$order) {
+				$order = $this->_orderLoader->getByID($row->order_id);
 			}
-			else {
-				// TODO: load the order, put it in here. we need the order loader i guess
-			}
+
+			$entities[$key]->order = $order;
 
 			// TODO: set the campaign if there's a code we can find
 

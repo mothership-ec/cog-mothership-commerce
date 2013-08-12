@@ -31,5 +31,9 @@ class Discount implements EntityInterface
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
+
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
 	}
 }

@@ -25,23 +25,24 @@ class Services implements ServicesInterface
 
 		$services['basket'] = function($c) {
 			return new Commerce\Order\Assembler(
-					$c['basket.order'],
-					$c['user.current'],
-					$c['locale'],
-					$c['event.dispatcher'],
-					$c['http.session']);
+				$c['basket.order'],
+				$c['user.current'],
+				$c['locale'],
+				$c['event.dispatcher'],
+				$c['http.session']
+			);
 		};
 
 		$services['order.entities'] = function($c) {
 			return array(
-				'addresses'  => $c['order.address.loader'],
-				'discounts'  => $c['order.discount.loader'],
-				'dispatches' => $c['order.dispatch.loader'],
-				'documents'  => $c['order.document.loader'],
-				'items'      => $c['order.item.loader'],
-				'notes'      => $c['order.note.loader'],
-				'payments'   => $c['order.payment.loader'],
-				'refunds'    => $c['order.refund.loader'],
+				'addresses'  => new Commerce\Order\Entity\Address\Loader($c['db.query']),
+				'discounts'  => new Commerce\Order\Entity\Discount\Loader($c['db.query']),
+				'dispatches' => new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']),
+				'documents'  => new Commerce\Order\Entity\Document\Loader($c['db.query']),
+				'items'      => new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader']),
+				'notes'      => new Commerce\Order\Entity\Note\Loader($c['db.query']),
+				'payments'   => new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']),
+				'refunds'    => new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods']),
 			);
 		};
 
@@ -68,7 +69,7 @@ class Services implements ServicesInterface
 
 		$services['order.edit'] = function($c) {
 			return new Commerce\Order\Edit(
-				$c['db.query'],
+				$c['db.transaction'],
 				$c['event.dispatcher'],
 				$c['order.statuses'],
 				$c['user.current']
@@ -77,7 +78,7 @@ class Services implements ServicesInterface
 
 		// Order address entity
 		$services['order.address.loader'] = function($c) {
-			return new Commerce\Order\Entity\Address\Loader($c['db.query']);
+			return $c['order.loader']->getEntityLoader('addresses');
 		};
 
 		$services['order.address.create'] = function($c) {
@@ -86,7 +87,7 @@ class Services implements ServicesInterface
 
 		// Order item entity
 		$services['order.item.loader'] = function($c) {
-			return new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader']);
+			return $c['order.loader']->getEntityLoader('items');
 		};
 
 		$services['order.item.create'] = function($c) {
@@ -99,7 +100,7 @@ class Services implements ServicesInterface
 
 		// Order discount entity
 		$services['order.discount.loader'] = function($c) {
-			return new Commerce\Order\Entity\Discount\Loader($c['db.query']);
+			return $c['order.loader']->getEntityLoader('discount');
 		};
 
 		$services['order.discount.create'] = function($c) {
@@ -108,7 +109,7 @@ class Services implements ServicesInterface
 
 		// Order dispatch entity
 		$services['order.dispatch.loader'] = function($c) {
-			return new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']);
+			return $c['order.loader']->getEntityLoader('dispatches');
 		};
 
 		$services['order.dispatch.create'] = function($c) {
@@ -117,7 +118,7 @@ class Services implements ServicesInterface
 
 		// Order document entity
 		$services['order.document.loader'] = function($c) {
-			return new Commerce\Order\Entity\Document\Loader($c['db.query']);
+			return $c['order.loader']->getEntityLoader('documents');
 		};
 
 		$services['order.document.create'] = function($c) {
@@ -135,7 +136,7 @@ class Services implements ServicesInterface
 
 		// Order payment entity
 		$services['order.payment.loader'] = function($c) {
-			return new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']);
+			return $c['order.loader']->getEntityLoader('payments');
 		};
 
 		$services['order.payment.create'] = function($c) {
@@ -144,12 +145,12 @@ class Services implements ServicesInterface
 
 		// Order refund entity
 		$services['order.refund.loader'] = function($c) {
-			return new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods']);
+			return $c['order.loader']->getEntityLoader('refunds');
 		};
 
 		// Order note entity
 		$services['order.note.loader'] = function($c) {
-			return new Commerce\Order\Entity\Note\Loader($c['db.query']);
+			return $c['order.loader']->getEntityLoader('notes');
 		};
 
 		$services['order.note.create'] = function($c) {
