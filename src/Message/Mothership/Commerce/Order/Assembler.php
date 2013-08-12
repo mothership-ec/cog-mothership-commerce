@@ -153,6 +153,20 @@ class Assembler
 
 	public function addAddress(Entity\Address\Address $address)
 	{
+//		de(xdebug_print_function_stack());
+		if (is_null($address->forename)) {
+			$address->forename = $this->_user->forename;
+		}
+
+		if (is_null($address->surname)) {
+			$address->surname = $this->_user->surname;
+
+		}
+
+		if (is_null($address->title)) {
+			$address->title = $this->_user->title;
+		}
+
 		// ID is set as the type so this will remove all the address types from the
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
