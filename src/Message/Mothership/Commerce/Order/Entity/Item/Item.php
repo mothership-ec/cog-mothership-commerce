@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Order\Order;
 
 use Message\Cog\ValueObject\Authorship;
 
