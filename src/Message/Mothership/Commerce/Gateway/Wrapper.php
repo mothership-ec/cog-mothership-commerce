@@ -16,6 +16,7 @@ class Wrapper implements GatewayInterface
 	protected $_username;
 	protected $_redirect;
 	protected $_paymentAmount;
+	protected $_transactionID;
 	protected $_currencyID;
 	protected $_card;
 	protected $_user;
@@ -26,6 +27,11 @@ class Wrapper implements GatewayInterface
 	public function getGateway()
 	{
 		return $this->_gateway;
+	}
+
+	public function getTransactionID()
+	{
+		return $this->_transactionID;
 	}
 
 	public function setGateway($gatewayName)
@@ -106,5 +112,14 @@ class Wrapper implements GatewayInterface
 				serialize($this),
 				$data['VPSTxId']
 		));
+	}
+
+	public function getResponse($id)
+	{
+		$result = $this->_query->run('SELECT dump FROM payment_dump WHERE transaction_id = ?i', array($id));
+
+		foreach ($result as $row) {
+			return unserialize($row->dump);
+		}
 	}
 }
