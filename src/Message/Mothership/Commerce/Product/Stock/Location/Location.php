@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Stock;
+namespace Message\Mothership\Commerce\Product\Stock\Location;
 
 class Location
 {
