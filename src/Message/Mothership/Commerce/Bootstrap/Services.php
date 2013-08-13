@@ -39,7 +39,7 @@ class Services implements ServicesInterface
 				'discounts'  => new Commerce\Order\Entity\Discount\Loader($c['db.query']),
 				'dispatches' => new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']),
 				'documents'  => new Commerce\Order\Entity\Document\Loader($c['db.query']),
-				'items'      => new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader']),
+				'items'      => new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader'], $c['stock.locations']),
 				'notes'      => new Commerce\Order\Entity\Note\Loader($c['db.query']),
 				'payments'   => new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']),
 				'refunds'    => new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods']),
@@ -278,6 +278,10 @@ class Services implements ServicesInterface
 		$services['commerce.user.collection'] = function($c) {
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
 		};
+
+		$services['stock.locations'] = $services->share(function() {
+			return new Commerce\Product\Stock\Location\Collection;
+		});
 
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
