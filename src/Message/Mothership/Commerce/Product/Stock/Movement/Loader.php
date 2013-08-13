@@ -4,7 +4,9 @@ namespace Message\Mothership\Commerce\Product\Stock\Movement;
 
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Product\Product;
 
+use Message\Mothership\Commerce\Product\Stock\Movement\Adjustment\Loader;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -14,15 +16,24 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Loader
 {
 	protected $_query;
+	protected $_adjustmentLoader;
 
-	public function __construct(DB\Query $query)
+	public function __construct(DB\Query $query, Loader $adjustmentLoader)
 	{
 		$this->_query = $query;
+		$this->_adjustmentLoader = $adjustmentLoader;
 	}
 
 	public function getById($id)
 	{
-		return $this->_load($id);
+		$return = $this->_load($id);
+
+		if($return && !is_array($return)) {
+			$this->_adjustmentLoader->setMovement($return);
+			$return->adjustments = $this->_adjustmentLoader->getAll();
+		}
+
+		return $return;
 	}
 
 	public function getByUnit(Unit $unit)
@@ -37,7 +48,13 @@ class Loader
 		', $unit->id);
 
 		$return = $this->_load($result->flatten(), true, 'Message\\Mothership\\Commerce\\Product\\Stock\\PartialMovement');
-		$return->setUnit($unit);
+
+		if($return) {
+			foreach($return AS $movement) {
+				$this->_adjustmentLoader->setMovement($movement);
+				$movement->adjustments = $this->_adjustmentLoader->getByUnit($unit);
+			}
+		}
 
 		return $return;
 	}
@@ -54,12 +71,18 @@ class Loader
 		', $location);
 
 		$return = $this->_load($result->flatten(), true, 'Message\\Mothership\\Commerce\\Product\\Stock\\PartialMovement');
-		$return->setLocation($location);
+
+		if($return) {
+			foreach($return AS $movement) {
+				$this->_adjustmentLoader->setMovement($movement);
+				$movement->adjustments = $this->_adjustmentLoader->getByLocation($location);
+			}
+		}
 
 		return $return;
 	}
 
-	public function getByLocation(\Stock\Location\Location $location)
+	public function getByProduct(Product $product)
 	{
 		$result = $this->_query->run('
 			SELECT DISTINCT
@@ -75,7 +98,7 @@ class Loader
 		', $product->id);
 
 		$return = $this->_load($result->flatten(), true, 'Message\\Mothership\\Commerce\\Product\\Stock\\PartialMovement');
-		$return->setLocation($location);
+		$return->setProduct($product);
 
 		return $return;
 	}
@@ -93,13 +116,11 @@ class Loader
 		$result = $this->_query->run('
 			SELECT
 				*,
-				address_id AS id,
-				country_id AS countryID,
-				state_id   AS stateID
+				stock_movement_id AS id,
 			FROM
-				order_address
+				stock_movement
 			WHERE
-				address_id IN (?ij)
+				id IN (?ij)
 		', array($ids));
 
 		if (0 === count($result)) {
@@ -110,8 +131,7 @@ class Loader
 		$return    = array();
 
 		foreach ($result as $key => $row) {
-			$movements[$key]->authorship->create(new DateTimeImmutable(date('c', $row->createdAt)), $row->createdBy)
-
+			$movements[$key]->authorship->create(new DateTimeImmutable(date('c', $row->createdAt)), $row->createdBy);
 			$return[$row->id] = $movements[$key];
 		}
 

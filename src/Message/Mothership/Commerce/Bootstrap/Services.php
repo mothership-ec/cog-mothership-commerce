@@ -263,14 +263,6 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['product.stock.movement.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Loader($c['db.query']);
-		};
-
-		$services['product.stock.movement.adjustment.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query']);
-		};
-
 		$services['country.list'] = function($c) {
 			return new Commerce\CountryList;
 		};
@@ -290,6 +282,14 @@ class Services implements ServicesInterface
 		$services['stock.locations'] = $services->share(function() {
 			return new Commerce\Product\Stock\Location\Collection;
 		});
+
+		$services['stock.movement.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Loader($c['db.query'], $c['stock.movement.adjustment.loader']);
+		};
+
+		$services['stock.movement.adjustment.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query'], $c['product.unit.loader']);
+		};
 
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;

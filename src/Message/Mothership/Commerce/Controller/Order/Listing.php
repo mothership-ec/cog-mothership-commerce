@@ -94,6 +94,7 @@ class Listing extends Controller
 
 	public function dashboard()
 	{
+		d($this->get('stock.movement.loader')->getByID(1));
 		return $this->render('::order:listing:dashboard', array(
 		));
 	}
