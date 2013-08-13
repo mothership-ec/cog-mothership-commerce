@@ -263,6 +263,14 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
+		$services['product.stock.movement.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Loader($c['db.query']);
+		};
+
+		$services['product.stock.movement.adjustment.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query']);
+		};
+
 		$services['country.list'] = function($c) {
 			return new Commerce\CountryList;
 		};
