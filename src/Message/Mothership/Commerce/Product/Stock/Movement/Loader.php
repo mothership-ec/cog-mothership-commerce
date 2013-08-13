@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Product\Stock\Movement;
 
-use Message\Mothership\Commerce\Product\Stock\Movement;
+use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 
 use Message\Cog\DB;
@@ -36,10 +36,51 @@ class Loader
 				unit_id = ?i
 		', $unit->id);
 
-		return $this->_load($result->flatten(), true, $unit);
+		$return = $this->_load($result->flatten(), true, 'Message\\Mothership\\Commerce\\Product\\Stock\\PartialMovement');
+		$return->setUnit($unit);
+
+		return $return;
 	}
 
-	protected function _load($ids, $alwaysReturnArray = false)
+	public function getByLocation(\Stock\Location\Location $location)
+	{
+		$result = $this->_query->run('
+			SELECT DISTINCT
+				stock_movement_id
+			FROM
+				stock_movement_adjustment
+			WHERE
+				location = ?s
+		', $location);
+
+		$return = $this->_load($result->flatten(), true, 'Message\\Mothership\\Commerce\\Product\\Stock\\PartialMovement');
+		$return->setLocation($location);
+
+		return $return;
+	}
+
+	public function getByLocation(\Stock\Location\Location $location)
+	{
+		$result = $this->_query->run('
+			SELECT DISTINCT
+				adjustment.stock_movement_id
+			FROM
+				product_unit AS unit
+			INNER JOIN
+				stock_movement_adjustment AS adjustment
+			USING
+				(unit_id)
+			WHERE
+				unit.productId = ?i
+		', $product->id);
+
+		$return = $this->_load($result->flatten(), true, 'Message\\Mothership\\Commerce\\Product\\Stock\\PartialMovement');
+		$return->setLocation($location);
+
+		return $return;
+	}
+
+	protected function _load($ids, $alwaysReturnArray = false, $className = 'Message\\Mothership\\Commerce\\Product\\Stock\\Movement')
 	{
 		if (!is_array($ids)) {
 			$ids = (array) $ids;
@@ -65,7 +106,7 @@ class Loader
 			return $alwaysReturnArray ? array() : false;
 		}
 
-		$movements = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Address\\Address');
+		$movements = $result->bindTo($className);
 		$return    = array();
 
 		foreach ($result as $key => $row) {
