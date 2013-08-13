@@ -20,14 +20,16 @@ class Loader
 		$this->_query = $query;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
+	public function getById($id)
+	{
+		return $this->_load($id);
+	}
+
 	public function getByUnit(Unit $unit)
 	{
 		$result = $this->_query->run('
-			SELECT
-				adjustment_id
+			SELECT DISTINCT
+				stock_movement_id
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -37,7 +39,7 @@ class Loader
 		return $this->_load($result->flatten(), true, $unit);
 	}
 
-	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
+	protected function _load($ids, $alwaysReturnArray = false)
 	{
 		if (!is_array($ids)) {
 			$ids = (array) $ids;
@@ -63,81 +65,15 @@ class Loader
 			return $alwaysReturnArray ? array() : false;
 		}
 
-		$addresses = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Address\\Address');
+		$movements = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Address\\Address');
 		$return    = array();
 
 		foreach ($result as $key => $row) {
-			// Cast address lines to the correct structure
-			for ($i = 1; $i <= 4; $i++) {
-				$lineKey = 'line_' . $i;
+			$movements[$key]->authorship->create(new DateTimeImmutable(date('c', $row->createdAt)), $row->createdBy)
 
-				if ($row->{$lineKey}) {
-					$addresses[$key]->lines[$i] = $row->{$lineKey};
-				}
-			}
-
-			if ($order) {
-				$addresses[$key]->order = $order;
-			}
-			else {
-				// TODO: load the order, put it in here. we need the order loader i guess
-			}
-
-			$return[$row->id] = $addresses[$key];
+			$return[$row->id] = $movements[$key];
 		}
 
 		return $alwaysReturnArray || count($return) > 1 ? $return : reset($return);
-	}
-
-	protected function _loadAdjustements($ids)
-	{
-		if (!is_array($ids)) {
-			$ids = (array) $ids;
-		}
-		if(!ids) {
-			return false;
-		}
-
-		$result = $this->_query->run('
-			SELECT
-				*,
-				adjustment_id AS adjustmentID
-				stock_movement_id AS movementID,
-				unit_id AS unitID,
-			FROM
-				order_address
-			WHERE
-				address_id IN (?ij)
-		', array($ids));
-
-		if (0 === count($result)) {
-			return false;
-		}
-
-		$addresses = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Address\\Address');
-		$return    = array();
-
-		foreach ($result as $key => $row) {
-			// Cast address lines to the correct structure
-			for ($i = 1; $i <= 4; $i++) {
-				$lineKey = 'line_' . $i;
-
-				if ($row->{$lineKey}) {
-					$addresses[$key]->lines[$i] = $row->{$lineKey};
-				}
-			}
-
-			if ($order) {
-				$addresses[$key]->order = $order;
-			}
-			else {
-				// TODO: load the order, put it in here. we need the order loader i guess
-			}
-
-			$return[$row->id] = $addresses[$key];
-		}
-
-		return $alwaysReturnArray || count($return) > 1 ? $return : reset($return);
-
 	}
 }
