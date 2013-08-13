@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Product\Stock\Location\Collection as LocationCollection;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -16,11 +17,13 @@ class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_statusLoader;
+	protected $_stockLocations;
 
-	public function __construct(DB\Query $query, Status\Loader $statusLoader)
+	public function __construct(DB\Query $query, Status\Loader $statusLoader, LocationCollection $stockLocations)
 	{
-		$this->_query        = $query;
-		$this->_statusLoader = $statusLoader;
+		$this->_query          = $query;
+		$this->_statusLoader   = $statusLoader;
+		$this->_stockLocations = $stockLocations;
 	}
 
 	/**
@@ -98,7 +101,8 @@ class Loader extends Order\Entity\BaseLoader
 
 			$this->_statusLoader->setLatest($items[$key]);
 
-			// TODO: set the stock location
+			$items[$key]->stockLocation = $this->_stockLocations->get($row->stock_location);
+
 			// TODO: set the personalisation data
 
 			$return[$row->id] = $items[$key];
