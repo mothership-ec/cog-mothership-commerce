@@ -41,15 +41,7 @@ class Item implements EntityInterface
 	public $weight;
 	public $stockLocation;
 
-	public $personalisation = array(
-
-	);
-
-	// PERSONALISATION STUFF
-	protected $senderName;
-	protected $recipientName;
-	protected $recipientEmail;
-	protected $recipientMessage;
+	public $personalisation;
 
 	/**
 	 * Populate this item with the data from a specific unit.
