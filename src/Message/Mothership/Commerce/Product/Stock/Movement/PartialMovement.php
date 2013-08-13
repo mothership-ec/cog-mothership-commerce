@@ -19,6 +19,9 @@ class PartialMovement extends Movement
 
 	public function setProduct(Product $product)
 	{
+		if($_unit) {
+			throw new \LogicException('Cannot set product-requirement when unit-requirement is already set.');
+		}
 		$this->_product = product;
 
 		return $this;
@@ -31,6 +34,9 @@ class PartialMovement extends Movement
 
 	public function setUnit(Unit $unit)
 	{
+		if($_product) {
+			throw new \LogicException('Cannot set unit-requirement when product-requirement is already set.');
+		}
 		$this->_unit = $unit;
 
 		return $this;

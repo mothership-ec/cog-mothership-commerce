@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Product\Stock\Movement\Adjustment;
 
+use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -37,21 +38,7 @@ class Loader
 				stock_movement_id = ?i
 		', array($movement->id));
 
-		$adjustments = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
-		$return    = array();
-
-		foreach ($result as $key => $row) {
-			if ($unit) {
-				$adjustments[$key]->unit = $unit;
-			}
-			else {
-				// TODO: load the unit, put it in here. we need the order loader i guess
-			}
-
-			$return[$row->id] = $adjustments[$key];
-		}
-
-		return count($return) > 1 ? $return : reset($return);
+		return $this->_processResult($result);
 	}
 
 	public function getByPartialMovement(Stock\PartialMovement $movement)
@@ -59,32 +46,57 @@ class Loader
 		// check for requirements, adjust the query to only get those adjustments
 		$result = $this->_query->run('
 			SELECT
-				adjustment.adjustment_id AS id,
-				adjustment.stock_movement_id AS movementID,
-				adjustment.unit_id AS unitID,
+				adjustment.adjustment_id 		AS id,
+				adjustment.stock_movement_id 	AS movementID,
+				adjustment.unit_id 				AS unitID,
 				adjustment.location,
 				adjustment.delta
 			FROM
-				stock_movement_adjustment AS adjustment
+				stock_movement_adjustment 		AS adjustment
 			WHERE
 				adjustment.stock_movement_id = :movementID
-			' . $movement->unit ? 'AND adjustment.unitID = :unitID' : '' . '
-			' . $movement->location ?  'AND adjustment.loccation = :location' : '' . '
-			' . $movement->product ? '
+			' . $movement->unit ?: '
 			AND
-				adjustment.unitID IN (
+				adjustment.unitID = :unitID
+			' . $movement->location ?:  '
+			AND
+				adjustment.loccation = :location
+			' . $movement->product ?: '
+			AND
+				unitID IN (
 					SELECT
-						unit_id
+						unit.unit_id
 					FROM
-						product_unit
+						product_unit as unit
 					WHERE
-						product_id = :productID
-				)' . '
+						unit.product_id = :productID
+				)
 		', array(
-			'movementID' => $movement->id,
-			'unitID' => $movement->unit->id,
-			'location' => $movement->location,
-			'productID' => $movement->product->id,
+			'movementID'	=> $movement->id,
+			'unitID' 		=> $movement->unit->id,
+			'location' 		=> $movement->location,
+			'productID' 	=> $movement->product->id,
 		));
+
+		return $this->_processResult($result, $movement->unit);
+	}
+
+	protected function _processResult($result, Unit $unit = null)
+	{
+		$adjustments 	= $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
+		$return			= array();
+
+		foreach ($result as $key => $row) {
+			if ($unit) {
+				$adjustments[$key]->unit = $unit;
+			}
+			else {
+				// TODO: load the unit, put it in here
+			}
+
+			$return[$row->id] = $adjustments[$key];
+		}
+
+		return count($return) > 1 ? $return : reset($return);
 	}
 }
