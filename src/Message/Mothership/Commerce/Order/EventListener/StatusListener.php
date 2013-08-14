@@ -49,6 +49,15 @@ class StatusListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Dispatch the event to set the order's overall status. This is fired when
+	 * an item status changes.
+	 *
+	 * If the event results in a status code that is different to the order's
+	 * existing status code, it is updated.
+	 *
+	 * @param  Event\TransactionalEvent $event The event object
+	 */
 	public function dispatchSetOrderStatusEvent(Event\TransactionalEvent $event)
 	{
 		$statusEvent = $event->getDispatcher()->dispatch(
@@ -75,7 +84,12 @@ class StatusListener extends BaseListener implements SubscriberInterface
 		$edit->updateStatus($order, $orderStatus);
 	}
 
-	public function checkStatus(Event\Event $event)
+	/**
+	 * Update the order's overall status to the appropriate code.
+	 *
+	 * @param  Event\SetOrderStatusEvent $event The event object
+	 */
+	public function checkStatus(Event\SetOrderStatusEvent $event)
 	{
 		$itemStatuses = array_fill_keys(array_keys($this->get('order.item.statuses')->all()), 0);
 		$numItems     = $event->getOrder()->items->count();

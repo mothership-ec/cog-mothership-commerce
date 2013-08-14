@@ -2,9 +2,10 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
-use Message\User\UserInterface;
-
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Product\Stock;
+
+use Message\User\UserInterface;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -147,6 +148,10 @@ class Create implements DB\TransactionalInterface
 	{
 		if ($item->personalisation && !($item->personalisation instanceof Personalisation)) {
 			throw new \InvalidArgumentException('Item personalisation must be an instance of `Personalisation`');
+		}
+
+		if (!($item->stockLocation instanceof Stock\Location\Location)) {
+			throw new \InvalidArgumentException('Item must have a valid stock location');
 		}
 	}
 }
