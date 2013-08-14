@@ -86,7 +86,7 @@ class Create implements DB\TransactionalInterface
 			'options'       => $item->options,
 			'brand'         => $item->brand,
 			'weight'        => $item->weight,
-			'stockLocation' => $item->stockLocation->id,
+			'stockLocation' => 1,
 		));
 
 		$this->_query->setIDVariable('ITEM_ID');
