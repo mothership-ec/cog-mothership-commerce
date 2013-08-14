@@ -42,44 +42,19 @@ class Create implements DB\TransactionalInterface
 
 		$this->_query->add('
 			INSERT INTO
-				order_address
+				stock_movement
 			SET
-				order_id   = :orderID?i,
-				type       = :type?s,
-				title      = :title?sn,
-				forename   = :forename?sn,
-				surname    = :surname?sn,
-				line_1     = :line1?sn,
-				line_2     = :line2?sn,
-				line_3     = :line3?sn,
-				line_4     = :line4?sn,
-				postcode   = :postcode?sn,
-				country    = :country?sn,
-				country_id = :countryID?sn,
-				telephone  = :telephone?sn,
-				town       = :town?sn,
-				state_id   = :stateID?sn,
-				state      = :state?sn
+				created_at  = :createdAt?d,
+				created_by  = :createdBy?i,
+				reason   	= :reason?s,
+				note    	= :note?sn,
 		', array(
-			'orderID'   => $address->order->id,
-			'type'      => $address->type,
-			'title'     => $address->title,
-			'forename'  => $address->forename,
-			'surname'   => $address->surname,
-			'line1'     => $address->lines[1],
-			'line2'     => $address->lines[2],
-			'line3'     => $address->lines[3],
-			'line4'     => $address->lines[4],
-			'postcode'  => $address->postcode,
-			'country'   => $address->country,
-			'countryID' => $address->countryID,
-			'telephone' => $address->telephone,
-			'town'      => $address->town,
-			'stateID'   => $address->stateID,
-			'state'     => $address->state,
+			'createdAt' => $movement->authorship->createdAt(),
+			'createdBy' => $movement->authorship->createdBy(),
+			'reason'  	=> $movement->reason,
+			'note'   	=> $movement->note,
 		));
 
-		// use address loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
-		return $address;
+		return $movement;
 	}
 }
