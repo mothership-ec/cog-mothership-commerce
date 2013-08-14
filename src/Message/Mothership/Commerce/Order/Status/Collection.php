@@ -45,7 +45,7 @@ class Collection implements \IteratorAggregate, \Countable
 
 		if ($this->exists($status->code)) {
 			throw new \InvalidArgumentException(sprintf(
-				'Status code `%i` is already defined as `%s`',
+				'Status code `%d is already defined as `%s`',
 				$status->code,
 				$this->_statuses[$status->code]->name
 			));
