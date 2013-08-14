@@ -65,7 +65,7 @@ class Create implements DB\TransactionalInterface
 				options           = :options?sn,
 				brand             = :brand?sn,
 				weight_grams      = :weight?in,
-				stock_location_id = :stockLocation?i
+				stock_location    = :stockLocation?i
 		', array(
 			'orderID'       => $item->order->id,
 			'createdAt'     => $item->authorship->createdAt(),
@@ -86,7 +86,7 @@ class Create implements DB\TransactionalInterface
 			'options'       => $item->options,
 			'brand'         => $item->brand,
 			'weight'        => $item->weight,
-			'stockLocation' => $item->stockLocation->id,
+			'stockLocation' => $item->stockLocation->name,
 		));
 
 		$this->_query->setIDVariable('ITEM_ID');
