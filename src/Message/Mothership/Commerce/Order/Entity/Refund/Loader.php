@@ -41,6 +41,11 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
+	public function getByID($id, Order\Order $order = null)
+	{
+		return $this->_load($id, false, $order);
+	}
+
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		if (!is_array($ids)) {
@@ -86,6 +91,8 @@ class Loader extends Order\Entity\BaseLoader
 			if ($row->payment_id) {
 				$entities[$key]->payment = $entities[$key]->order->payments->get($row->payment_id);
 			}
+
+			// TODO: set return, if defined
 
 			$entities[$key]->method = $this->_methods->get($row->method);
 
