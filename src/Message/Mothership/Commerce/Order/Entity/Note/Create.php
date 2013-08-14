@@ -15,12 +15,14 @@ use Message\Cog\DB;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_currentUser;
+	protected $_loader;
 	protected $_query;
+	protected $_currentUser;
 
-	public function __construct(DB\Query $query, UserInterface $currentUser)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
@@ -58,7 +60,11 @@ class Create implements DB\TransactionalInterface
 			'raisedFrom'       => $note->raisedFrom,
 		));
 
-		// use note loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
+		// If the transaction was not overriden, run it & return the re-loaded note
+		if (!($this->_query instanceof DB\Transaction)) {
+			return $this->_loader->getByID($result->id(), $note->order);
+		}
+
 		return $note;
 	}
 }
