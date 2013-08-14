@@ -127,6 +127,8 @@ class Loader
 				stock_movement
 			WHERE
 				stock_movement_id IN (?ij)
+			ORDER BY
+				created_at ASC
 		', array($ids));
 
 		if (0 === count($result)) {
