@@ -25,6 +25,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->_loader = $loader;
 	}
 
+	public function __sleep()
+	{
+		return array('_items', '_loaded', '_order');
+	}
+
 	public function get($id)
 	{
 		$this->load();
