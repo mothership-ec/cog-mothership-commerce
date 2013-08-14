@@ -60,11 +60,10 @@ class Create implements DB\TransactionalInterface
 			'raisedFrom'       => $note->raisedFrom,
 		));
 
-		// If the transaction was not overriden, run it & return the re-loaded note
-		if (!($this->_query instanceof DB\Transaction)) {
-			return $this->_loader->getByID($result->id(), $note->order);
+		if ($this->_query instanceof DB\Transaction) {
+			return $note;
 		}
 
-		return $note;
+		return $this->_loader->getByID($result->id(), $note->order);
 	}
 }

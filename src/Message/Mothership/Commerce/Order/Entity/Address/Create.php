@@ -68,11 +68,10 @@ class Create implements DB\TransactionalInterface
 			'state'     => $address->state,
 		));
 
-		// If the transaction was not overriden, run it & return the re-loaded address
-		if (!($this->_query instanceof DB\Transaction)) {
-			return $this->_loader->getByID($result->id(), $address->order);
+		if ($this->_query instanceof DB\Transaction) {
+			return $address;
 		}
 
-		return $address;
+		return $this->_loader->getByID($result->id(), $address->order);
 	}
 }

@@ -63,11 +63,10 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $payment->reference,
 		));
 
-		// If the query was not in a transaction, return the re-loaded payment
 		if (!($this->_query instanceof DB\Transaction)) {
-			return $this->_loader->getByID($result->id(), $payment->order);
+			return $payment;
 		}
 
-		return $payment;
+		return $this->_loader->getByID($result->id(), $payment->order);
 	}
 }

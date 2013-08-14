@@ -145,7 +145,7 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
-		// If the transaction was not overriden, run it & return the re-loaded item
+		// If the query was not in a transaction, return the re-loaded item
 		if (!$this->_transOverriden) {
 			$this->_query->commit();
 

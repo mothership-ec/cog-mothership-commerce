@@ -65,11 +65,10 @@ class Create implements DB\TransactionalInterface
 			'description' => $discount->description,
 		));
 
-		// If the transaction was not overriden, run it & return the re-loaded discount
-		if (!($this->_query instanceof DB\Transaction)) {
-			return $this->_loader->getByID($result->id(), $discount->order);
+		if ($this->_query instanceof DB\Transaction) {
+			return $discount;
 		}
 
-		return $discount;
+		return $this->_loader->getByID($result->id(), $discount->order);
 	}
 }
