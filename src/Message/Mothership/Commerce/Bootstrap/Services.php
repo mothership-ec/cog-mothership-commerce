@@ -16,7 +16,13 @@ class Services implements ServicesInterface
 		};
 
 		$services['commerce.gateway'] = function($c) {
-			return new Commerce\Gateway\Sagepay($c['db.query'],$c['user.current']);
+			return new Commerce\Gateway\Sagepay(
+				$c['db.query'],
+				$c['user.current'],
+				$c['http.request.master'],
+				$c['cache'],
+				$c['basket.order']
+			);
 		};
 
 		$services['basket.order'] = function($c) {

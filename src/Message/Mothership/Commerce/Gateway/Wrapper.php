@@ -34,9 +34,9 @@ class Wrapper implements GatewayInterface
 		return $this->_transactionID;
 	}
 
-	public function setGateway($gatewayName)
+	public function setGateway($gatewayName, $request)
 	{
-		$this->_gateway = GatewayFactory::create($gatewayName);
+		$this->_gateway = GatewayFactory::create($gatewayName, null, $request);
 		$this->_card = new CreditCard;
 
 	}
@@ -49,6 +49,16 @@ class Wrapper implements GatewayInterface
 	public function setUsername($username)
 	{
 		$this->_gateway->setVendor($username);
+	}
+
+	public function setReference($reference)
+	{
+		$this->_gateway->setTransactionReference($reference);
+	}
+
+	public function setTransactionId($transactionID)
+	{
+		$this->_gateway->setTransactionId($transactionID);
 	}
 
 	public function setRedirectURL($redirectUrl)
@@ -99,24 +109,9 @@ class Wrapper implements GatewayInterface
 
 	}
 
-	public function saveResponse()
-	{
-		$data = $this->_response->getData();
-		$result = $this->_query->run(
-			'INSERT INTO
-				payment_dump
-			SET
-				dump = ?s,
-				transaction_id = ?s
-			', array(
-				serialize($this),
-				$data['VPSTxId']
-		));
-	}
-
 	public function getResponse($id)
 	{
-		$result = $this->_query->run('SELECT dump FROM payment_dump WHERE transaction_id = ?i', array($id));
+		$result = $this->_query->run('SELECT dump FROM payment_dump WHERE transaction_id = ?s', array($id));
 
 		foreach ($result as $row) {
 			return unserialize($row->dump);
