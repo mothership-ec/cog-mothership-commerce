@@ -17,18 +17,23 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_currentUser;
 	protected $_query;
+	protected $_transOverriden = false;
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	protected $_loader;
+	protected $_currentUser;
+
+	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_query          = $trans;
+		$this->_transOverriden = true;
 	}
 
 	public function create(Item $item)
@@ -140,7 +145,13 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
-		// TODO: use item loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
+		// If the transaction was not overriden, run it & return the re-loaded item
+		if (!$this->_transOverriden) {
+			$this->_query->commit();
+
+			return $this->_loader->getByID($this->_query->getIDVariable('ITEM_ID'), $item->order);
+		}
+
 		return $item;
 	}
 
