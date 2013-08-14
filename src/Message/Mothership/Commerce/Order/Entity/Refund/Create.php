@@ -3,6 +3,9 @@
 namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
 use InvalidArgumentException;
+use Message\Cog\DB;
+use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\User\UserInterface;
 
 /**
  * Order refund creator.
@@ -38,23 +41,23 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$this->_query->run('
+		$this->_query->add('
 			INSERT INTO
 				order_refund
 			SET
 				order_id = ?i,
-				payment_id = ?i,
-				return_id = ?i,
+				payment_id = ?in,
+				return_id = ?in,
 				created_at = ?i,
-				created_by = ?i,
+				created_by = ?in,
 				method = ?s,
 				amount = ?f,
-				reason = ?s,
-				reference = ?s
+				reason = ?sn,
+				reference = ?sn
 		', array(
 			$refund->order->id,
-			($refund->payment) ? $refund->payment->id : 0,
-			($refund->return) ? $refund->return->id : 0,
+			($refund->payment) ? $refund->payment->id : null,
+			($refund->return) ? $refund->return->id : null,
 			$refund->authorship->createdAt(),
 			$refund->authorship->createdBy(),
 			$refund->method,
@@ -62,6 +65,8 @@ class Create implements DB\TransactionalInterface
 			$refund->reason,
 			$refund->reference
 		));
+
+		$this->_query->commit();
 
 		return $refund;
 	}

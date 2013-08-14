@@ -148,6 +148,10 @@ class Services implements ServicesInterface
 			return $c['order.loader']->getEntityLoader('refunds');
 		};
 
+		$services['order.refund.create'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Create($c['db.transaction'], $c['user.current']);
+		};
+
 		// Order note entity
 		$services['order.note.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('notes');
@@ -163,6 +167,7 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Card,
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
+				new Commerce\Order\Entity\Payment\Method\Manual,
 			));
 		});
 
