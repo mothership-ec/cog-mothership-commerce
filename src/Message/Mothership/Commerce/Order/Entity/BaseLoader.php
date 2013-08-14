@@ -14,6 +14,9 @@ abstract class BaseLoader implements LoaderInterface
 {
 	protected $_orderLoader;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setOrderLoader(OrderLoader $orderLoader)
 	{
 		$this->_orderLoader = $orderLoader;
