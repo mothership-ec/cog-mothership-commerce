@@ -168,6 +168,7 @@ class Assembler
 			$address->title = $this->_user->title;
 		}
 
+		$address->authorship = new \Message\Cog\ValueObject\Authorship;
 		// ID is set as the type so this will remove all the address types from the
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
