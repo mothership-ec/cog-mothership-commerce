@@ -4,8 +4,7 @@ namespace Message\Mothership\Commerce\Product\Stock\Movement;
 
 /**
  * This stock movement iterator is used to work out the history of the
- * stock movements for a given CatalogueID
- *
+ * stock movements for a given Unit
  */
 class Iterator implements \Iterator
 {
@@ -154,7 +153,7 @@ class Iterator implements \Iterator
      */
 	protected function _loadStockLevels()
 	{
-		foreach($this->_product->getUnits(false,false) as $unit ) {
+		foreach($this->_product->getUnits() as $unit ) {
 			foreach($unit->stock as $locationID => $stock) {
 				$this->_counter[$unit->unitID][$locationID] = ($stock ? $stock : 0);
 			}

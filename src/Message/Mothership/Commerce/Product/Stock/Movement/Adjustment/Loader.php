@@ -2,9 +2,10 @@
 
 namespace Message\Mothership\Commerce\Product\Stock\Movement\Adjustment;
 
-use Message\Mothership\Commerce\Product\Unit\Unit;
-use Message\Mothership\Commerce\Product\Unit\Loader;
+use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\Unit;
 use Message\Mothership\Commerce\Product\Stock;
+use Message\Mothership\Commerce\Product\Stock\Location\Location;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -17,13 +18,13 @@ class Loader
 	protected $_unitLoader;
 	protected $_movement;
 
-	public function __construct(DB\Query $query, Loader $unitLoader)
+	public function __construct(DB\Query $query, Unit\Loader $unitLoader)
 	{
 		$this->_query = $query;
 		$this->_unitLoader = $unitLoader;
 	}
 
-	public function setMovement(Stock\Movement $movement)
+	public function setMovement(Stock\Movement\Movement $movement)
 	{
 		$this->_movement = $movement;
 	}
@@ -34,14 +35,13 @@ class Loader
 
 		$ids = $this->_query->run('
 			SELECT
-				adjustment_id AS id,
+				adjustment_id AS id
 			FROM
 				stock_movement_adjustment
 			WHERE
 				stock_movement_id = ?i
 		', array(
 			$this->_movement->id,
-			$unit->id,
 		));
 
 		return $this->_load($ids->flatten());
@@ -53,7 +53,7 @@ class Loader
 
 		$ids = $this->_query->run('
 			SELECT
-				adjustment_id AS id,
+				adjustment_id AS id
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -74,30 +74,33 @@ class Loader
 
 		$ids = $this->_query->run('
 			SELECT
-				adjustment.adjustment_id
+				adjustment.adjustment_id AS id
 			FROM
 				product_unit AS unit
-			JOIN
+			INNER JOIN
 				stock_movement_adjustment AS adjustment
-			ON
-				unit.product_id = ?i
+			USING
+				(unit_id)
 			WHERE
-				adjustment.stock_movement_id = ?i
+				stock_movement_id = ?i
+			AND
+				unit.product_id = ?i
+
 		', array(
-			$product->id,
 			$this->_movement->id,
+			$product->id,
 		));
 
 		return $this->_load($ids->flatten());
 	}
 
-	public function getByUnit(Unit $unit)
+	public function getByUnit(Unit\Unit $unit)
 	{
 		$this->_checkForMovement();
 
 		$ids = $this->_query->run('
 			SELECT
-				adjustment_id AS id,
+				adjustment_id AS id
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -112,7 +115,7 @@ class Loader
 		return $this->_load($ids->flatten(), $unit);
 	}
 
-	protected function _load($ids, Unit $unit = null)
+	protected function _load($ids, Unit\Unit $unit = null)
 	{
 		if (!is_array($ids)) {
 			$ids = (array) $ids;
@@ -132,14 +135,14 @@ class Loader
 			FROM
 				stock_movement_adjustment
 			WHERE
-				stock_movement_id IN (?ij)
+				adjustment_id IN (?ij)
 		', array($ids));
 
 		if (0 === count($result)) {
 			return array();
 		}
 
-		$Adjustments 	= $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
+		$adjustments 	= $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
 		$return 		= array();
 
 		foreach ($result as $key => $row) {
@@ -149,14 +152,15 @@ class Loader
 			} else {
 				$adjustments[$key]->unit = $this->_unitLoader->getByID($row->unit_id);
 			}
+			$adjustments[$key]->movement = $this->_movement;
 
-			$return[$row->id] = $movements[$key];
+			$return[$row->id] = $adjustments[$key];
 		}
 
 		return $return;
 	}
 
-	protected _checkForMovement()
+	protected function _checkForMovement()
 	{
 		if(!$this->_movement) {
 			throw new \Exception('Adjustments can only be returned when a movement is set!');

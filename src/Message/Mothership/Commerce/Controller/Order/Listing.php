@@ -8,6 +8,7 @@ use Message\Mothership\Commerce\Order\Statuses;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 
+use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 
 class Listing extends Controller
@@ -94,7 +95,6 @@ class Listing extends Controller
 
 	public function dashboard()
 	{
-		d($this->get('stock.movement.loader')->getByID(1));
 		return $this->render('::order:listing:dashboard', array(
 		));
 	}
