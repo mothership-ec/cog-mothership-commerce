@@ -82,7 +82,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.address.create'] = function($c) {
-			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['order.address.loader']);
 		};
 
 		// Order item entity
