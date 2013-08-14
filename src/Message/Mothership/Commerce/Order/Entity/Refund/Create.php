@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Entity\Payment;
+namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
 use Message\User\UserInterface;
 
@@ -10,7 +10,7 @@ use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
- * Order payment creator.
+ * Order refund creator.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
@@ -32,11 +32,11 @@ class Create implements DB\TransactionalInterface
 		$this->_query = $trans;
 	}
 
-	public function create(Payment $payment)
+	public function create(Refund $refund)
 	{
 		// Set create authorship data if not already set
-		if (!$payment->authorship->createdAt()) {
-			$payment->authorship->create(
+		if (!$refund->authorship->createdAt()) {
+			$refund->authorship->create(
 				new DateTimeImmutable,
 				$this->_currentUser->id
 			);
@@ -44,29 +44,33 @@ class Create implements DB\TransactionalInterface
 
 		$this->_query->run('
 			INSERT INTO
-				order_payment
+				order_refund
 			SET
 				order_id   = :orderID?i,
+				payment_id = :paymentID?in,
 				return_id  = :returnID?in,
 				created_at = :createdAt?d,
 				created_by = :createdBy?in,
 				method     = :method?sn,
 				amount     = :amount?f,
+				reason     = :reason?sn,
 				reference  = :reference?sn
 		', array(
-			'orderID'     => $payment->order->id,
-			'returnID'    => $payment->return ? $payment->return->id : null,
-			'createdAt'   => $payment->authorship->createdAt(),
-			'createdBy'   => $payment->authorship->createdBy(),
-			'method'      => $payment->method->getName(),
-			'amount'      => $payment->amount,
-			'reference'   => $payment->reference,
+			'orderID'     => $refund->order->id,
+			'paymentID'   => $refund->payment ? $payment->payment->id : null,
+			'returnID'    => $refund->return ? $payment->return->id : null,
+			'createdAt'   => $refund->authorship->createdAt(),
+			'createdBy'   => $refund->authorship->createdBy(),
+			'method'      => $refund->method->getName(),
+			'amount'      => $refund->amount,
+			'reason'      => $refund->reason,
+			'reference'   => $refund->reference,
 		));
 
 		if (!($this->_query instanceof DB\Transaction)) {
-			return $payment;
+			return $refund;
 		}
 
-		return $this->_loader->getByID($result->id(), $payment->order);
+		return $this->_loader->getByID($result->id(), $refund->order);
 	}
 }

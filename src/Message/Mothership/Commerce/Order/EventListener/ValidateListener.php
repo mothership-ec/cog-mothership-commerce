@@ -13,7 +13,7 @@ use Message\Cog\Event\SubscriberInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class TotalsListener implements SubscriberInterface
+class ValidateListener implements SubscriberInterface
 {
 	/**
 	 * {@inheritdoc}
@@ -25,6 +25,11 @@ class TotalsListener implements SubscriberInterface
 		));
 	}
 
+	/**
+	 * Run basic validation on the order before it is created.
+	 *
+	 * @param  Event\ValidateEvent $event The event object
+	 */
 	public function checkProperties(Event\ValidateEvent $event)
 	{
 		if (!$event->getOrder()->status) {

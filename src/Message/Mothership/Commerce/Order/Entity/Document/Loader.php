@@ -22,7 +22,7 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_query = $query;
 	}
 
-	public function getByID($id, Order\Order $order)
+	public function getByID($id, Order\Order $order = null)
 	{
 		return $this->_load($id, false, $order);
 	}
