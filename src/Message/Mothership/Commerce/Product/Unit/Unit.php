@@ -19,7 +19,7 @@ class Unit
 	public $revisionID;
 
 	public $stock = array(
-		1 => 0,
+		'web' => 0,
 	);
 
 	public $options = array(

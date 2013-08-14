@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Entity\Address;
+namespace Message\Mothership\Commerce\Product\Stock\Movement;
 
 use Message\Mothership\Commerce\Product\Stock\Movement\Movement;
 
@@ -10,9 +10,7 @@ use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
- * Order address creator.
- *
- * @author Joe Holdcroft <joe@message.co.uk>
+ * Stock movement creator.
  */
 class Create implements DB\TransactionalInterface
 {
@@ -47,7 +45,7 @@ class Create implements DB\TransactionalInterface
 				created_at  = :createdAt?d,
 				created_by  = :createdBy?i,
 				reason   	= :reason?s,
-				note    	= :note?sn,
+				note    	= :note?sn
 		', array(
 			'createdAt' => $movement->authorship->createdAt(),
 			'createdBy' => $movement->authorship->createdBy(),

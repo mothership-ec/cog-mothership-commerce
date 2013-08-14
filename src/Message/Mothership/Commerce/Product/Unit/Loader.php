@@ -126,7 +126,7 @@ class Loader implements LoaderInterface
 			// Save stock units
 			foreach ($stock as $values) {
 				if ($values->id == $data->id) {
-					$units[$key]->stock[$values->locationID] = $values->stock;
+					$units[$key]->stock[$values->location] = $values->stock;
 				}
 			}
 
@@ -268,9 +268,9 @@ class Loader implements LoaderInterface
 	{
 		return $this->_query->run(
 			'SELECT
-				product_unit_stock.unit_id     AS id,
-				product_unit_stock.stock       AS stock,
-				product_unit_stock.location_id AS locationID
+				product_unit_stock.unit_id     	AS id,
+				product_unit_stock.stock       	AS stock,
+				product_unit_stock.location 	AS location
 			FROM
 				product_unit_stock
 			WHERE
