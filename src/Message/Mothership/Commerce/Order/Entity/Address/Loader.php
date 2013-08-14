@@ -38,9 +38,9 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
-	public function getByID($id)
+	public function getByID($id, Order\Order $order = null)
 	{
-		return $this->_load($id);
+		return $this->_load($id, false, $order);
 	}
 
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
