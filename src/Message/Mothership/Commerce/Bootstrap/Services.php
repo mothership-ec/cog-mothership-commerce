@@ -100,11 +100,11 @@ class Services implements ServicesInterface
 
 		// Order discount entity
 		$services['order.discount.loader'] = function($c) {
-			return $c['order.loader']->getEntityLoader('discount');
+			return $c['order.loader']->getEntityLoader('discounts');
 		};
 
 		$services['order.discount.create'] = function($c) {
-			return new Commerce\Order\Entity\Discount\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Discount\Create($c['db.query'], $c['order.discount.loader'], $c['user.current']);
 		};
 
 		// Order dispatch entity
