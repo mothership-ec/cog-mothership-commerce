@@ -40,6 +40,8 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
+		$this->_validate($item);
+
 		$this->_query->add('
 			INSERT INTO
 				order_item
@@ -117,9 +119,34 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
-		// insert personalisation?
-		//
-		// use item loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
+		// Set personalisation data, if defined
+		if ($item->personalisation && !$item->personalisation->isEmpty()) {
+			$this->_query->add('
+				INSERT INTO
+					order_item_personalisation
+				SET
+					item_id         = :itemID?i,
+					sender_name     = :senderName?sn,
+					recipient_name  = :recipientName?sn,
+					recipient_email = :recipientEmail?sn,
+					message         = :message?sn
+			', array(
+				'itemID'         => $item->id,
+				'senderName'     => $item->personalisation->senderName,
+				'recipientName'  => $item->personalisation->recipientName,
+				'recipientEmail' => $item->personalisation->recipientEmail,
+				'message'        => $item->personalisation->message,
+			));
+		}
+
+		// TODO: use item loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
 		return $item;
+	}
+
+	protected function _validate(Item $item)
+	{
+		if ($item->personalisation && !($item->personalisation instanceof Personalisation)) {
+			throw new \InvalidArgumentException('Item personalisation must be an instance of `Personalisation`');
+		}
 	}
 }

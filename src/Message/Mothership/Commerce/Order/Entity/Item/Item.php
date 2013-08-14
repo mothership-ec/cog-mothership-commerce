@@ -41,15 +41,7 @@ class Item implements EntityInterface
 	public $weight;
 	public $stockLocation;
 
-	public $personalisation = array(
-
-	);
-
-	// PERSONALISATION STUFF
-	protected $senderName;
-	protected $recipientName;
-	protected $recipientEmail;
-	protected $recipientMessage;
+	public $personalisation;
 
 	/**
 	 * Populate this item with the data from a specific unit.
@@ -86,9 +78,6 @@ class Item implements EntityInterface
 		$this->authorship
 			->disableUpdate()
 			->disableDelete();
-
-		// TODO: remove the below when stock stuff is built
-		$this->stockLocation = (object) array('id' => 1);
 	}
 
 	/**
