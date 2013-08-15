@@ -73,6 +73,8 @@ class Loader extends Order\Entity\BaseLoader
 		$return = array();
 
 		foreach ($result as $key => $row) {
+			$notes[$key]->customerNotified = (bool) $row->customerNotified;
+
 			$notes[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
