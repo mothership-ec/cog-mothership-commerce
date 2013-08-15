@@ -9,7 +9,7 @@ use Message\Mothership\Commerce\Product\Image;
 class Edit extends Controller
 {
 	protected $_product;
-	protected $_units;
+	protected $_units = array();
 
 	/**
 	 * Show product edit screen
@@ -29,24 +29,17 @@ class Edit extends Controller
 	}
 
 	/**
-	 * Show product units with for for editing them
+	 * Show product units with form for editing them
 	 *
 	 * @param  int 		$productID 	ProductID to load
 	 */
 	public function units($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units = $this->_product->getUnits();
-
-		$headings = array();
-		foreach($this->_units as $unit) {
-			foreach ($unit->options as $name => $value) {
-				$headings[$name] = ucfirst($name);
-			}
-		}
+		$this->_units 	= $this->_product->getUnits();
 
 		return $this->render('::product:edit-unit', array(
-			'headings'    => $headings,
+			'headings'    => $this->_getAllOptionsAndHeadings(),
 			'locale'      => $this->get('locale'),
 			'product'     => $this->_product,
 			'units'       => $this->_units ,
@@ -68,6 +61,7 @@ class Edit extends Controller
 		$this->_units = $this->_product->getAllUnits();
 
 		return $this->render('::product:edit-stock', array(
+			'headings'  => $this->_getAllOptionsAndHeadings(),
 			'locale'  	=> $this->get('locale'),
 			'product' 	=> $this->_product,
 			'units'   	=> $this->_units,
@@ -152,6 +146,26 @@ class Edit extends Controller
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.images', array('productID' => $this->_product->id));
+	}
+
+	/**
+	 * Function iterates over units and puts all possible actions
+	 * into one array. The key is the name of the option and the
+	 * value is the name with an uppercase first letter.
+	 *
+	 * @return array of all options available with pairs of [name] => Name
+	 */
+	protected function _getAllOptionsAndHeadings()
+	{
+		$headings = array();
+
+		foreach($this->_units as $unit) {
+			foreach ($unit->options as $name => $value) {
+				$headings[$name] = ucfirst($name);
+			}
+		}
+
+		return $headings;
 	}
 
 	protected function _getImageForm()
@@ -252,7 +266,7 @@ class Edit extends Controller
 			));
 
 			// Build the options
-			foreach ($unit->options as $type => $value) {
+			foreach ($this->_getAllOptionsAndHeadings() as $type => $displayName) {
 				// populate the select menu options by getting all available options from the DB
 				$choices = array();
 				foreach ($this->get('option.loader')->getByName($type) as $choice) {
