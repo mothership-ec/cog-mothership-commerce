@@ -61,16 +61,17 @@ class Loader extends Order\Entity\BaseLoader
 		$result = $this->_query->run('
 			SELECT
 				*,
-				item_id       AS id,
-				order_id      AS orderID,
-				list_price    AS listPrice,
-				tax_rate      AS taxRate,
-				product_id    AS productID,
-				product_name  AS productName,
-				unit_id       AS unitID,
-				unit_revision AS unitRevision,
-				weight_grams  AS weight
+				item_id          AS id,
+				order_id         AS orderID,
+				list_price       AS listPrice,
+				tax_rate         AS taxRate,
 				product_tax_rate AS productTaxRate,
+				tax_strategy     AS taxStrategy,
+				product_id       AS productID,
+				product_name     AS productName,
+				unit_id          AS unitID,
+				unit_revision    AS unitRevision,
+				weight_grams     AS weight
 			FROM
 				order_item
 			LEFT JOIN

@@ -29,6 +29,7 @@ class Item implements EntityInterface
 	public $rrp             = 0;
 	public $taxRate         = 0;
 	public $productTaxRate  = 0;
+	public $taxStrategy;
 
 	public $productID;
 	public $productName;

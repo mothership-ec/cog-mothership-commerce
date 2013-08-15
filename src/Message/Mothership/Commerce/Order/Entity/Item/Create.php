@@ -17,6 +17,11 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
+	protected $_allowedTaxStrategies = array(
+		'inclusive',
+		'exclusive',
+	);
+
 	protected $_query;
 	protected $_transOverriden = false;
 
@@ -63,6 +68,7 @@ class Create implements DB\TransactionalInterface
 				product_tax_rate  = :productTaxRate?f,
 				gross             = :gross?f,
 				rrp               = :rrp?fn,
+				tax_strategy      = :taxStrategy?fn,
 				product_id        = :productID?in,
 				product_name      = :productName?sn,
 				unit_id           = :unitID?in,
@@ -85,6 +91,7 @@ class Create implements DB\TransactionalInterface
 			'productTaxRate' => $item->productTaxRate,
 			'gross'          => $item->gross,
 			'rrp'            => $item->rrp,
+			'taxStrategy'    => $item->taxStrategy,
 			'productID'      => $item->productID,
 			'productName'    => $item->productName,
 			'unitID'         => $item->unitID,
@@ -165,6 +172,13 @@ class Create implements DB\TransactionalInterface
 
 		if (!($item->stockLocation instanceof Stock\Location\Location)) {
 			throw new \InvalidArgumentException('Item must have a valid stock location');
+		}
+
+		if (!in_array($item->taxStrategy, $this->_allowedTaxStrategies) {
+			throw new \InvalidArgumentException(sprintf(
+				'Item must have a valid tax strategy (one of `%s`). `%s` given.',
+				implode('`, `', $this->_allowedTaxStrategies)
+			));
 		}
 	}
 }
