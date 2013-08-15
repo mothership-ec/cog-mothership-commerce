@@ -16,12 +16,14 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_currentUser;
 	protected $_query;
+	protected $_loader;
+	protected $_currentUser;
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
@@ -40,7 +42,7 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
-		$this->_query->add('
+		$this->_query->run('
 			INSERT INTO
 				order_payment
 			SET
@@ -61,7 +63,10 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $payment->reference,
 		));
 
-		// use loader to re-load this payment and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
-		return $payment;
+		if (!($this->_query instanceof DB\Transaction)) {
+			return $payment;
+		}
+
+		return $this->_loader->getByID($result->id(), $payment->order);
 	}
 }

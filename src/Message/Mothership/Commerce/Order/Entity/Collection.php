@@ -121,6 +121,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		return $this->exists($id);
 	}
+
 	public function offsetUnset($id)
 	{
 		$this->load();

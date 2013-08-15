@@ -23,7 +23,7 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_methods = $methods;
 	}
 
-	public function getByID($id, Order\Order $order)
+	public function getByID($id, Order\Order $order = null)
 	{
 		return $this->_load($id, false, $order);
 	}

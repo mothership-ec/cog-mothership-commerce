@@ -12,7 +12,16 @@ use Message\Mothership\Commerce\Order\Loader as OrderLoader;
  */
 interface LoaderInterface
 {
-	#public function setOrderLoader(OrderLoader $orderLoader);
+	/**
+	 * Set the order loader to use.
+	 *
+	 * Entity loaders will always need an order loader, and vica-versa. So this
+	 * approach is used to set the order loader on the entity loader from within
+	 * the order loader.
+	 *
+	 * @param OrderLoader $orderLoader The order loader to use
+	 */
+	public function setOrderLoader(OrderLoader $orderLoader);
 
 	/**
 	 * Get the entities related to a specific order.

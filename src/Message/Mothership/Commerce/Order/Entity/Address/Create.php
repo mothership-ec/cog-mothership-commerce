@@ -14,10 +14,12 @@ use Message\Cog\DB;
 class Create implements DB\TransactionalInterface
 {
 	protected $_query;
+	protected $_loader;
 
-	public function __construct(DB\Query $query)
+	public function __construct(DB\Query $query, Loader $loader)
 	{
-		$this->_query = $query;
+		$this->_query  = $query;
+		$this->_loader = $loader;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -27,7 +29,7 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Address $address)
 	{
-		$this->_query->add('
+		$result = $this->_query->run('
 			INSERT INTO
 				order_address
 			SET
@@ -66,7 +68,10 @@ class Create implements DB\TransactionalInterface
 			'state'     => $address->state,
 		));
 
-		// use address loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
-		return $address;
+		if ($this->_query instanceof DB\Transaction) {
+			return $address;
+		}
+
+		return $this->_loader->getByID($result->id(), $address->order);
 	}
 }

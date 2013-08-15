@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\User\Address;
 
-use Message\User\User;
+use Message\User\UserInterface;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -11,7 +11,7 @@ class Edit
 	protected $_query;
 	protected $_user;
 
-	public function __construct(Query $query, User $user)
+	public function __construct(Query $query, UserInterface $user)
 	{
 		$this->_query = $query;
 		$this->_user  = $user;
@@ -35,7 +35,7 @@ class Edit
 				postcode   = :postcode?s,
 				telephone  = :telephone?s,
 				updated_at = :updated_at?d,
-				updated_by  = :updated_by?i
+				updated_by = :updated_by?i
 			WHERE
 				address_id = :addressID?i
 			', array(
@@ -50,7 +50,7 @@ class Edit
 				'postcode'   => $address->postcode,
 				'telephone'  => $address->telephone,
 				'updated_at' => $address->authorship->updatedAt(),
-				'updated_by'  => $address->authorship->updatedBy(),
+				'updated_by' => $address->authorship->updatedBy(),
 			)
 		);
 

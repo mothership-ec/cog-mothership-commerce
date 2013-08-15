@@ -2,25 +2,28 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
-use InvalidArgumentException;
+use Message\User\UserInterface;
+
+use Message\Mothership\Commerce\Order;
+
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\User\UserInterface;
 
 /**
  * Order refund creator.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
- * @author Laurence Roberts <laurence@message.co.uk>
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_currentUser;
 	protected $_query;
+	protected $_loader;
+	protected $_currentUser;
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
@@ -41,34 +44,36 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$this->_query->add('
+		$this->_query->run('
 			INSERT INTO
 				order_refund
 			SET
-				order_id = ?i,
-				payment_id = ?in,
-				return_id = ?in,
-				created_at = ?i,
-				created_by = ?in,
-				method = ?s,
-				amount = ?f,
-				reason = ?sn,
-				reference = ?sn
+				order_id   = :orderID?i,
+				payment_id = :paymentID?in,
+				return_id  = :returnID?in,
+				created_at = :createdAt?d,
+				created_by = :createdBy?in,
+				method     = :method?sn,
+				amount     = :amount?f,
+				reason     = :reason?sn,
+				reference  = :reference?sn
 		', array(
-			$refund->order->id,
-			($refund->payment) ? $refund->payment->id : null,
-			($refund->return) ? $refund->return->id : null,
-			$refund->authorship->createdAt(),
-			$refund->authorship->createdBy(),
-			$refund->method,
-			$refund->amount,
-			$refund->reason,
-			$refund->reference
+			'orderID'     => $refund->order->id,
+			'paymentID'   => $refund->payment ? $payment->payment->id : null,
+			'returnID'    => $refund->return ? $payment->return->id : null,
+			'createdAt'   => $refund->authorship->createdAt(),
+			'createdBy'   => $refund->authorship->createdBy(),
+			'method'      => $refund->method->getName(),
+			'amount'      => $refund->amount,
+			'reason'      => $refund->reason,
+			'reference'   => $refund->reference,
 		));
 
-		$this->_query->commit();
+		if (!($this->_query instanceof DB\Transaction)) {
+			return $refund;
+		}
 
-		return $refund;
+		return $this->_loader->getByID($result->id(), $refund->order);
 	}
 
 	protected function _validate(Refund $refund)
@@ -81,5 +86,4 @@ class Create implements DB\TransactionalInterface
 			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0');
 		}
 	}
-
 }
