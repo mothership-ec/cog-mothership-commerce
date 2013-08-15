@@ -13,6 +13,7 @@ use Message\Cog\HTTP\Session;
 
 use Message\Mothership\Commerce\Order\Event\Event;
 use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
 
 /**
  *
@@ -30,13 +31,13 @@ class Assembler
 
 	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event,Session $session)
 	{
-		$this->_order           = $order;
+		$this->_order             = $order;
 		$this->_order->currencyID = 'GBP';
-		$this->_order->type = 'web';
-		$this->_user            = $user;
-		$this->_locale          = $locale;
-		$this->_eventDispatcher = $event;
-		$this->_session			= $session;
+		$this->_order->type       = 'web';
+		$this->_user              = $user;
+		$this->_locale            = $locale;
+		$this->_eventDispatcher   = $event;
+		$this->_session           = $session;
 	}
 
 	public function addItem(Unit $unit)
@@ -152,9 +153,20 @@ class Assembler
 
 	}
 
+	public function addPayment(MethodInterface $paymentMethod, $amount, $reference)
+	{
+		$payment            = new Entity\Payment\Payment;
+		$payment->method    = $paymentMethod;
+		$payment->amount    = $amount;
+		$payment->order     = $this->_order;
+		$payment->reference = $reference;
+
+		$this->_order->items->append($payment);
+
+	}
+
 	public function addAddress(Entity\Address\Address $address)
 	{
-//		de(xdebug_print_function_stack());
 		if (is_null($address->forename)) {
 			$address->forename = $this->_user->forename;
 		}
