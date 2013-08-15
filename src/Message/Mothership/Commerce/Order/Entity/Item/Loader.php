@@ -70,6 +70,7 @@ class Loader extends Order\Entity\BaseLoader
 				unit_id       AS unitID,
 				unit_revision AS unitRevision,
 				weight_grams  AS weight
+				product_tax_rate AS productTaxRate,
 			FROM
 				order_item
 			LEFT JOIN
@@ -87,13 +88,14 @@ class Loader extends Order\Entity\BaseLoader
 
 		foreach ($result as $key => $row) {
 			// Cast decimals to float
-			$items[$key]->listPrice = (float) $row->listPrice;
-			$items[$key]->net       = (float) $row->net;
-			$items[$key]->discount  = (float) $row->discount;
-			$items[$key]->tax       = (float) $row->tax;
-			$items[$key]->taxRate   = (float) $row->taxRate;
-			$items[$key]->gross     = (float) $row->gross;
-			$items[$key]->rrp       = (float) $row->rrp;
+			$items[$key]->listPrice      = (float) $row->listPrice;
+			$items[$key]->net            = (float) $row->net;
+			$items[$key]->discount       = (float) $row->discount;
+			$items[$key]->tax            = (float) $row->tax;
+			$items[$key]->taxRate        = (float) $row->taxRate;
+			$items[$key]->productTaxRate = (float) $row->productTaxRate;
+			$items[$key]->gross          = (float) $row->gross;
+			$items[$key]->rrp            = (float) $row->rrp;
 
 			// Set authorship data
 			$items[$key]->authorship->create(
