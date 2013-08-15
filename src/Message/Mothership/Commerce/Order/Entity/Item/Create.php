@@ -174,10 +174,11 @@ class Create implements DB\TransactionalInterface
 			throw new \InvalidArgumentException('Item must have a valid stock location');
 		}
 
-		if (!in_array($item->taxStrategy, $this->_allowedTaxStrategies) {
+		if (!in_array($item->taxStrategy, $this->_allowedTaxStrategies)) {
 			throw new \InvalidArgumentException(sprintf(
 				'Item must have a valid tax strategy (one of `%s`). `%s` given.',
-				implode('`, `', $this->_allowedTaxStrategies)
+				implode('`, `', $this->_allowedTaxStrategies),
+				$item->taxStrategy
 			));
 		}
 	}
