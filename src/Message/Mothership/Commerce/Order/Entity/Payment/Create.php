@@ -42,7 +42,7 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
-		$this->_query->run('
+		$result = $this->_query->run('
 			INSERT INTO
 				order_payment
 			SET
@@ -63,7 +63,7 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $payment->reference,
 		));
 
-		if (!($this->_query instanceof DB\Transaction)) {
+		if ($this->_query instanceof DB\Transaction) {
 			return $payment;
 		}
 
