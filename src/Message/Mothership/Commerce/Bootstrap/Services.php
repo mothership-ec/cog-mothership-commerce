@@ -177,6 +177,7 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Card,
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
+				new Commerce\Order\Entity\Payment\Method\Manual,
 			));
 		});
 
@@ -289,6 +290,10 @@ class Services implements ServicesInterface
 			return new Commerce\User\Address\Loader($c['db.query']);
 		};
 
+		$services['commerce.user.address.edit'] = function($c) {
+			return new Commerce\User\Address\Edit($c['db.query'], $c['user.current']);
+		};
+
 		$services['commerce.user.collection'] = function($c) {
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
 		};
@@ -296,6 +301,14 @@ class Services implements ServicesInterface
 		$services['stock.locations'] = $services->share(function() {
 			return new Commerce\Product\Stock\Location\Collection;
 		});
+
+		$services['stock.movement.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Loader($c['db.query'], $c['stock.movement.adjustment.loader']);
+		};
+
+		$services['stock.movement.adjustment.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query'], $c['product.unit.loader']);
+		};
 
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
