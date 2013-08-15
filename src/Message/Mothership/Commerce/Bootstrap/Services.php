@@ -82,7 +82,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.address.create'] = function($c) {
-			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['order.address.loader']);
 		};
 
 		// Order item entity
@@ -91,7 +91,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.item.create'] = function($c) {
-			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['user.current']);
 		};
 
 		$services['order.item.edit'] = function($c) {
@@ -100,11 +100,11 @@ class Services implements ServicesInterface
 
 		// Order discount entity
 		$services['order.discount.loader'] = function($c) {
-			return $c['order.loader']->getEntityLoader('discount');
+			return $c['order.loader']->getEntityLoader('discounts');
 		};
 
 		$services['order.discount.create'] = function($c) {
-			return new Commerce\Order\Entity\Discount\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Discount\Create($c['db.query'], $c['order.discount.loader'], $c['user.current']);
 		};
 
 		// Order dispatch entity
@@ -140,12 +140,16 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.payment.create'] = function($c) {
-			return new Commerce\Order\Entity\Payment\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Payment\Create($c['db.query'], $c['user.current']);
 		};
 
 		// Order refund entity
 		$services['order.refund.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('refunds');
+		};
+
+		$services['order.refund.create'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
 		};
 
 		// Order note entity
@@ -154,7 +158,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.note.create'] = function($c) {
-			return new Commerce\Order\Entity\Note\Create($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Note\Create($c['db.query'], $c['order.note.loader'], $c['user.current']);
 		};
 
 		// Available payment & despatch methods
