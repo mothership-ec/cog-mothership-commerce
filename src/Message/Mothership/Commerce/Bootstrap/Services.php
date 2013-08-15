@@ -200,6 +200,11 @@ class Services implements ServicesInterface
 			));
 		});
 
+		// Configurable/optional event listeners
+		$services['order.listener.vat'] = function() {
+			return new Commerce\Order\EventListener\VatListener;
+		};
+
 		// Product
 		$services['product'] = function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);

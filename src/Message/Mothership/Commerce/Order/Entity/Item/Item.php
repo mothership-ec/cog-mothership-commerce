@@ -60,6 +60,7 @@ class Item implements EntityInterface
 		}
 
 		$this->productTaxRate  = $unit->product->taxRate;
+		$this->taxStrategy     = 'inclusive'; // TODO: ask product for this
 		$this->productID       = $unit->product->id;
 		$this->productName     = $unit->product->name;
 		$this->unitID          = $unit->id;
