@@ -26,9 +26,9 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_stockLocations = $stockLocations;
 	}
 
-	public function getByID($id)
+	public function getByID($id, Order\Order $order = null)
 	{
-		return $this->_load($id, false);
+		return $this->_load($id, false, $order);
 	}
 
 	/**

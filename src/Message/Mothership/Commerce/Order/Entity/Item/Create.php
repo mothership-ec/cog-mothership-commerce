@@ -2,9 +2,10 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
-use Message\User\UserInterface;
-
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Product\Stock;
+
+use Message\User\UserInterface;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -16,18 +17,23 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_currentUser;
 	protected $_query;
+	protected $_transOverriden = false;
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	protected $_loader;
+	protected $_currentUser;
+
+	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_query          = $trans;
+		$this->_transOverriden = true;
 	}
 
 	public function create(Item $item)
@@ -65,7 +71,7 @@ class Create implements DB\TransactionalInterface
 				options           = :options?sn,
 				brand             = :brand?sn,
 				weight_grams      = :weight?in,
-				stock_location_id = :stockLocation?i
+				stock_location    = :stockLocation?i
 		', array(
 			'orderID'       => $item->order->id,
 			'createdAt'     => $item->authorship->createdAt(),
@@ -86,7 +92,7 @@ class Create implements DB\TransactionalInterface
 			'options'       => $item->options,
 			'brand'         => $item->brand,
 			'weight'        => $item->weight,
-			'stockLocation' => $item->stockLocation->id,
+			'stockLocation' => $item->stockLocation->name,
 		));
 
 		$this->_query->setIDVariable('ITEM_ID');
@@ -139,7 +145,13 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
-		// TODO: use item loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
+		// If the query was not in a transaction, return the re-loaded item
+		if (!$this->_transOverriden) {
+			$this->_query->commit();
+
+			return $this->_loader->getByID($this->_query->getIDVariable('ITEM_ID'), $item->order);
+		}
+
 		return $item;
 	}
 
@@ -147,6 +159,10 @@ class Create implements DB\TransactionalInterface
 	{
 		if ($item->personalisation && !($item->personalisation instanceof Personalisation)) {
 			throw new \InvalidArgumentException('Item personalisation must be an instance of `Personalisation`');
+		}
+
+		if (!($item->stockLocation instanceof Stock\Location\Location)) {
+			throw new \InvalidArgumentException('Item must have a valid stock location');
 		}
 	}
 }
