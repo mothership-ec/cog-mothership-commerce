@@ -63,14 +63,16 @@ class Edit extends Controller
 	 */
 	public function stock($productID)
 	{
+		$locations = $this->get('stock.locations')->all();
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units = $this->_product->getAllUnits();
 
 		return $this->render('::product:edit-stock', array(
-			'locale'  => $this->get('locale'),
-			'product' => $this->_product,
-			'units'   => $this->_units,
-			'form'	  => $this->_getUnitStockForm(),
+			'locale'  	=> $this->get('locale'),
+			'product' 	=> $this->_product,
+			'units'   	=> $this->_units,
+			'locations' => $locations,
+			'form'	  	=> $this->_getUnitStockForm($locations),
 		));
 	}
 
@@ -90,7 +92,7 @@ class Edit extends Controller
 	 *
 	 * @return Handler Form Handler for stock editing
 	 */
-	protected function _getUnitStockForm()
+	protected function _getUnitStockForm($locations)
 	{
 		// Make an overall form
 		$mainForm = $this->get('form')
@@ -115,13 +117,14 @@ class Edit extends Controller
 					'auto_initialize' => false,
 			));
 
-			foreach ($unit->stock as $type => $value) {
+			foreach ($locations as $location) {
 				$stockForm->add(
-					'location_'.$type,
+					'location_'.$location->name,
 					'text',
-					$this->trans('ms.commerce.product.stock-location.'.strtolower($type)),
+					// trans this!
+					$location->displayName,
 					array('attr' => array(
-							'value' =>  $value
+							'value' =>  '+ 0'
 					)))->val()->optional();
 			}
 

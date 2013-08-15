@@ -5,9 +5,12 @@ namespace Message\Mothership\Commerce\Product\Unit;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\Commerce\Product\Pricing;
+use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 class Unit
 {
+	const DEFAULT_STOCK_LEVEL = 0;
+
 	public $id;
 	public $price;
 	public $sku;
@@ -19,7 +22,7 @@ class Unit
 	public $revisionID;
 
 	public $stock = array(
-		'web' => 0,
+
 	);
 
 	public $options = array(
@@ -54,6 +57,11 @@ class Unit
 	public function getPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
+	}
+
+	public function getStockForLocation(Location $location)
+	{
+		return (isset($this->stock[$location->name]) ? $this->stock[$location->name] : self::DEFAULT_STOCK_LEVEL);
 	}
 
 	public function getOption($type)
