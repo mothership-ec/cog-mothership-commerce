@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Controller\Product;
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\Commerce\Product\Image;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 
 class Edit extends Controller
 {
@@ -81,6 +82,41 @@ class Edit extends Controller
 		));
 	}
 
+	public function processStock($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$locations 		= $this->get('stock.locations');
+		$this->_units   = $this->_product->getUnits();
+		$form           = $this->_getUnitStockForm($locations->all());
+		$stockManager 	= $this->get('stock.manager');
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			foreach ($data as $unitID => $forms) {
+				foreach($forms as $locations) {
+					foreach($locations as $location => $stock) {
+						if($stock > 0) {
+							$stockManager->increment(
+								$this->_units[$unitID],
+								$locations->get($location),
+								$stock
+							);
+						} else if($stock < 0) {
+							$stockManager->decrement(
+								$this->_units[$unitID],
+								$locations->get($location),
+								($stock * -1)
+							);
+						}
+					}
+				}
+			}
+			$stockManager->setReason(new Reason('new_order'));
+			$stockManager->commit();
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.stock', array('productID' => $this->_product->id));
+	}
+
 	/**
 	 * Return the form for editing unit stock levels
 	 *
@@ -113,7 +149,7 @@ class Edit extends Controller
 
 			foreach ($locations as $location) {
 				$stockForm->add(
-					'location_'.$location->name,
+					$location->name,
 					'text',
 					// trans this!
 					$location->displayName,
@@ -371,9 +407,9 @@ class Edit extends Controller
 
 					continue;
 				}
-				$changedUnit->sku         = $values['sku'];
-				$changedUnit->weight = (int) $values['weight'];
-				$changedUnit->visible     = (int) (bool) $values['visible'];
+				$changedUnit->sku 		= $values['sku'];
+				$changedUnit->weight 	= (int) $values['weight'];
+				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
@@ -405,7 +441,8 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
-			$unit->weight = $data['weight'];
+			$unit->weight 	   = $data['weight'];
+			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 

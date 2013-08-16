@@ -288,6 +288,19 @@ class Services implements ServicesInterface
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
 		};
 
+		$services['stock.manager'] = function($c) {
+			$trans = $c['db.transaction'];
+			return new Commerce\Product\Stock\StockManager(
+				$trans,
+				new Commerce\Product\Stock\Movement\Create(
+					$trans,
+					$c['user.current'],
+					new Commerce\Product\Stock\Movement\Adjustment\Create($trans)
+				),
+				$c['product.unit.edit']
+			);
+		};
+
 		$services['stock.locations'] = $services->share(function() {
 			return new Commerce\Product\Stock\Location\Collection;
 		});

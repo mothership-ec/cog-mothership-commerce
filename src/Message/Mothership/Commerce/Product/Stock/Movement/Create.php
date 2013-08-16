@@ -16,20 +16,27 @@ class Create implements DB\TransactionalInterface
 {
 	protected $_currentUser;
 	protected $_query;
+	protected $_adjustmentCreator;
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, UserInterface $currentUser, Adjustment\Create $adjustmentCreator)
 	{
-		$this->_query       = $query;
-		$this->_currentUser = $currentUser;
+		$this->_query       	  = $query;
+		$this->_currentUser 	  = $currentUser;
+		$this->_adjustmentCreator = $adjustmentCreator;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
+		$this->_adjustmentCreator->setTransaction($trans);
 	}
 
 	public function create(Movement $movement)
 	{
+		if(!$movement->reason) {
+			throw new \IllegalArgumentException("Cannot save a movement without reason to the database!");
+		}
+
 		// Set create authorship data if not already set
 		if (!$movement->authorship->createdAt()) {
 			$movement->authorship->create(
@@ -38,7 +45,7 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
-		$this->_query->add('
+		$result = $this->_query->add('
 			INSERT INTO
 				stock_movement
 			SET
@@ -52,6 +59,14 @@ class Create implements DB\TransactionalInterface
 			'reason'  	=> $movement->reason,
 			'note'   	=> $movement->note,
 		));
+
+		$this->_query->setIDVariable('STOCK_MOVEMENT_ID');
+		$movement->id = '@STOCK_MOVEMENT_ID';
+
+		foreach($movement->adjustments as $adjustment)
+		{
+			$adjustment = $this->_adjustmentCreator->create($adjustment);
+		}
 
 		return $movement;
 	}

@@ -19,8 +19,9 @@ class Movement
 		$this->authorship = new Authorship;
 	}
 
-	public function addAdjustment(Adjustment $adjustment)
+	public function addAdjustment(Adjustment\Adjustment $adjustment)
 	{
-		$this->_adjustments[] = $adjustment;
+		$adjustment->movement = $this;
+		$this->adjustments[] = $adjustment;
 	}
 }
