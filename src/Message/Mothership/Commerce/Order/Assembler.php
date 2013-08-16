@@ -40,13 +40,13 @@ class Assembler
 		$this->_session           = $session;
 	}
 
-	public function addItem(Unit $unit)
+	public function addItem(Unit $unit, $stockLocation)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
+		$item->stockLocation = $stockLocation;
 
 		$this->_order->items->append($item->populate($unit));
-
 		$event = new Event($this->_order);
 		// Dispatch the edit event
 
