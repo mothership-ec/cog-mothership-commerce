@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Order;
 
 use Message\Mothership\Commerce\User\LoaderInterface;
-use Message\Mothership\Commerce\Order\Entity\Shipping\Method\MethodInterface as ShippingInterface;
+use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
@@ -13,6 +13,7 @@ use Message\Cog\HTTP\Session;
 
 use Message\Mothership\Commerce\Order\Event\Event;
 use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
 
 /**
  *
@@ -30,12 +31,13 @@ class Assembler
 
 	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event,Session $session)
 	{
-		$this->_order           = $order;
+		$this->_order             = $order;
 		$this->_order->currencyID = 'GBP';
-		$this->_user            = $user;
-		$this->_locale          = $locale;
-		$this->_eventDispatcher = $event;
-		$this->_session			= $session;
+		$this->_order->type       = 'web';
+		$this->_user              = $user;
+		$this->_locale            = $locale;
+		$this->_eventDispatcher   = $event;
+		$this->_session           = $session;
 	}
 
 	public function addItem(Unit $unit)
@@ -151,8 +153,34 @@ class Assembler
 
 	}
 
+	public function addPayment(MethodInterface $paymentMethod, $amount, $reference)
+	{
+		$payment            = new Entity\Payment\Payment;
+		$payment->method    = $paymentMethod;
+		$payment->amount    = $amount;
+		$payment->order     = $this->_order;
+		$payment->reference = $reference;
+
+		$this->_order->items->append($payment);
+
+	}
+
 	public function addAddress(Entity\Address\Address $address)
 	{
+		if (is_null($address->forename)) {
+			$address->forename = $this->_user->forename;
+		}
+
+		if (is_null($address->surname)) {
+			$address->surname = $this->_user->surname;
+
+		}
+
+		if (is_null($address->title)) {
+			$address->title = $this->_user->title;
+		}
+
+		$address->authorship = new \Message\Cog\ValueObject\Authorship;
 		// ID is set as the type so this will remove all the address types from the
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
