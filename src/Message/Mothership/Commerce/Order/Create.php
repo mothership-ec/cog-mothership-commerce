@@ -85,7 +85,7 @@ class Create
 				user_id          = :userID?in,
 				type             = :type?sn,
 				locale           = :locale?s,
-				taxable          = :taxable?s,
+				taxable          = :taxable?b,
 				currency_id      = :currencyID?s,
 				conversion_rate  = :conversionRate?f,
 				product_net      = :productNet?f,
