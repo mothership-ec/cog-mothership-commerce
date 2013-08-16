@@ -7,6 +7,8 @@ use Message\Mothership\Commerce\Order\Event;
 
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
 
+use Message\Mothership\Commerce\CountryList;
+
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
@@ -17,6 +19,11 @@ use Message\Cog\Event\SubscriberInterface;
  */
 class VatListener implements SubscriberInterface
 {
+	protected $_countries;
+
+	/**
+	 * {@inheritDoc}
+	 */
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -24,6 +31,16 @@ class VatListener implements SubscriberInterface
 				array('setTaxable', 100),
 			),
 		);
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param CountryList $countries Country list class
+	 */
+	public function __construct(CountryList $countries)
+	{
+		$this->_countries = $countries;
 	}
 
 	/**
@@ -36,13 +53,6 @@ class VatListener implements SubscriberInterface
 	{
 		$order           = $event->getOrder();
 		$deliveryCountry = $order->getAddress(Address::DELIVERY)->countryID;
-
-		// TODO: make this work for countries in the EU also
-		if ('GB' === $deliveryCountry) {
-			$order->taxable = true;
-		}
-		else {
-			$order->taxable = false;
-		}
+		$order->taxable  = (bool) $this->_countries->isInEU($deliveryCountry);
 	}
 }
