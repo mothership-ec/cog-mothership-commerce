@@ -575,7 +575,6 @@ class Edit extends Controller
 			->val()->optional();
 		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.export-manufacture-country'), array(
 			'choices' => $this->get('country.list')->all(),
-			'attr' => array('data-help-key' => 'ms.cms.attributes.access.help'),
 		))->val()->optional();
 
 		return $form;
