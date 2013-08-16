@@ -131,12 +131,12 @@ class Assembler
 	{
 		$this->_session->remove('basket.order');
 
-		// $event = new Event($this->_order);
-		// // Dispatch the edit event
-		// $this->_eventDispatcher->dispatch(
-		// 	\Message\Mothership\Ecommerce\Event::EMPTY_BASKET,
-		// 	$event
-		// );
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			\Message\Mothership\Ecommerce\Event::EMPTY_BASKET,
+			$event
+		);
 
 		return true;
 	}
@@ -216,12 +216,28 @@ class Assembler
 			$address->title = $this->_user->title;
 		}
 
-		$address->authorship = new \Message\Cog\ValueObject\Authorship;
 		// ID is set as the type so this will remove all the address types from the
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
 
 		return $this->_order->addresses->append($address);
+	}
+
+	/**
+	 * This is used when the user logs out and we need to clear all the addresses
+	 * from the basket as a log out doesn't empty the basket.
+	 *
+	 * @return $this
+	 */
+	public function removeAddresses()
+	{
+		if (count($this->getOrder()->addresses)) {
+			foreach ($this->getOrder()->addresses as $address) {
+				$this->_order->addresses->remove($address->id);
+			}
+		}
+
+		return $this;
 	}
 
 	public function setShipping(ShippingInterface $option)

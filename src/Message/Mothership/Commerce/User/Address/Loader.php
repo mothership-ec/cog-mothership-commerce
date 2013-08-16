@@ -38,6 +38,29 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	}
 
 	/**
+	 * Get an address by user and by the address type
+	 *
+	 * @param  User   $user 	User to load address for
+	 * @param  string $type 	billing or delivery
+	 *
+	 * @return Address|false    Loaded address
+	 */
+	public function getByUserAndType(User $user, $type)
+	{
+		$results = $this->getByUser($user);
+
+		if ($results) {
+			foreach ($results as $address) {
+				if ($address->type == $type) {
+					return $address;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get an Address object by the address_id
 	 *
 	 * @param  int $addressID 	addressID to return
