@@ -21,7 +21,7 @@ class VatListener implements SubscriberInterface
 	{
 		return array(
 			OrderEvents::CREATE_START => array(
-				array('setTaxable', -100),
+				array('setTaxable', 100),
 			),
 		);
 	}
@@ -34,14 +34,15 @@ class VatListener implements SubscriberInterface
 	 */
 	public function setTaxable(Event\Event $event)
 	{
-		$deliveryCountry = $event->getOrder()->getAddress(Address::DELIVERY)->countryID;
+		$order           = $event->getOrder();
+		$deliveryCountry = $order->getAddress(Address::DELIVERY)->countryID;
 
 		// TODO: make this work for countries in the EU also
 		if ('GB' === $deliveryCountry) {
-			$event->getOrder()->taxable = true;
+			$order->taxable = true;
 		}
 		else {
-			$event->getOrder()->taxable = false;
+			$order->taxable = false;
 		}
 	}
 }
