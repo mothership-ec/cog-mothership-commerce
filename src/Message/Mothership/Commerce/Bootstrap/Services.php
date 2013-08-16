@@ -244,7 +244,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.create'] = function($c) {
-			return new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+
+			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
+
+			return $create;
 		};
 
 		$services['product.image.types'] = function($c) {
