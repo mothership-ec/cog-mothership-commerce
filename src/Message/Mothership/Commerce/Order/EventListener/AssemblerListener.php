@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Order\Event\ValidateEvent;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
+use \Message\Cog\Event\Event as BaseEvent;
 
 /**
  * Basket Assembler for adding addresses and users to the basket
@@ -21,18 +22,24 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(UserEvents\Event::LOGIN => array(
-			array('addUserToOrder')
-		));
+		return array(
+					UserEvents\Event::LOGIN => array(
+						array('addUserToOrder')
+					),
+					\Message\Mothership\Ecommerce\Event::EMPTY_BASKET => array(
+						array('addUserToOrder'),
+					)
+		);
 	}
 
-	public function addUserToOrder(UserEvents\Event $event)
+	public function addUserToOrder(BaseEvent $event)
 	{
 		$this->get('basket')->addUser($event->getUser());
 
 		$addressLoader = $this->get('commerce.user.collection');
 
 		if($addressLoader->load()) {
+
 			$delivery = array_pop($addressLoader->getByProperty('type', 'delivery'));
 			$billing  = array_pop($addressLoader->getByProperty('type', 'billing'));
 

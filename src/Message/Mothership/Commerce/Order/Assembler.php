@@ -64,7 +64,6 @@ class Assembler
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event
-
 		$this->_eventDispatcher->dispatch(
 			Events::ASSEMBLER_UPDATE,
 			$event
@@ -101,12 +100,26 @@ class Assembler
 			}
 		}
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
 		return $this;
 	}
 
 	public function setOrder(Order $order)
 	{
 		$this->_order = $order;
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
 	}
 
 	public function getItemQuantity(Unit $unit)
@@ -117,6 +130,13 @@ class Assembler
 	public function emptyBasket()
 	{
 		$this->_session->remove('basket.order');
+
+		// $event = new Event($this->_order);
+		// // Dispatch the edit event
+		// $this->_eventDispatcher->dispatch(
+		// 	\Message\Mothership\Ecommerce\Event::EMPTY_BASKET,
+		// 	$event
+		// );
 
 		return true;
 	}
@@ -129,6 +149,13 @@ class Assembler
 	public function addUser(\Message\User\User  $user)
 	{
 		$this->_order->user = $user;
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
 
 		return $this;
 	}
@@ -161,7 +188,16 @@ class Assembler
 		$payment->order     = $this->_order;
 		$payment->reference = $reference;
 
-		$this->_order->items->append($payment);
+		$this->_order->payments->append($payment);
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
+		return $this;
 
 	}
 
@@ -192,6 +228,13 @@ class Assembler
 	{
 		$this->_order->shippingName      = $option->getName();
 		$this->_order->shippingListPrice = $option->getPrice();
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
 
 		return $this;
 	}
