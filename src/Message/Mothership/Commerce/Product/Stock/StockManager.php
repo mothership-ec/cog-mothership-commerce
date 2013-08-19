@@ -58,6 +58,11 @@ class StockManager implements DB\TransactionalInterface
 		return $this;
 	}
 
+	public function setAutomated($bool)
+	{
+		$this->_movement->setAutomated((bool)$bool);
+	}
+
 	/**
 	 * Sets movement's note
 	 */
@@ -66,6 +71,7 @@ class StockManager implements DB\TransactionalInterface
 		$this->_movement->note = $note;
 		return $this;
 	}
+	
 	/**
 	 * Sets the movement the stock manager is working with to a given one
 	 */
@@ -74,6 +80,8 @@ class StockManager implements DB\TransactionalInterface
 		$this->movement = $movement;
 		return $this;
 	}
+
+
 	/**
 	 * Creates an adjustment for the given unit and location, with
 	 * a given increment-value.
@@ -148,7 +156,7 @@ class StockManager implements DB\TransactionalInterface
 			$this->_unitEditor->saveStockForLocation($unit, $location);
 		}
 
-		$this->_transaction->commit();
+		return $this->_transaction->commit();
 	}
 
 	protected function _getNewStockLevel($adjustment)

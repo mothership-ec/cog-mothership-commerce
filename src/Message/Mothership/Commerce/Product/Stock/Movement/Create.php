@@ -52,12 +52,14 @@ class Create implements DB\TransactionalInterface
 				created_at  = :createdAt?d,
 				created_by  = :createdBy?i,
 				reason   	= :reason?s,
-				note    	= :note?sn
+				note    	= :note?sn,
+				automated	= :automated?b
 		', array(
 			'createdAt' => $movement->authorship->createdAt(),
 			'createdBy' => $movement->authorship->createdBy(),
-			'reason'  	=> $movement->reason,
+			'reason'  	=> $movement->reason->name,
 			'note'   	=> $movement->note,
+			'automated' => $movement->automated ? true : false,
 		));
 
 		$this->_query->setIDVariable('STOCK_MOVEMENT_ID');

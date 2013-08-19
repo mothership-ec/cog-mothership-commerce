@@ -59,6 +59,29 @@ class Loader
 		return $return;
 	}
 
+	public function getByAutomated($bool)
+	{
+		$result = $this->_query->run('
+			SELECT
+				stock_movement_id
+			FROM
+				stock_movement_adjustment
+			WHERE
+				automated = ?b
+		', (bool)$bool);
+
+		$return = $this->_load($result->flatten(), true);
+
+		if($return) {
+			foreach($return AS $movement) {
+				$this->_adjustmentLoader->setMovement($movement);
+				$movement->adjustments = $this->_adjustmentLoader->getAll();
+			}
+		}
+
+		return $return;
+	}
+
 	public function getByLocation(Stock\Location\Location $location)
 	{
 		$result = $this->_query->run('
@@ -128,7 +151,7 @@ class Loader
 			WHERE
 				stock_movement_id IN (?ij)
 			ORDER BY
-				created_at ASC
+				created_at DESC
 		', array($ids));
 
 		if (0 === count($result)) {

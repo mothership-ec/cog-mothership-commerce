@@ -11,6 +11,7 @@ class Movement
 	public $authorship;
 	public $reason;
 	public $note = '';
+	public $automated;
 
 	public $adjustments = array();
 
