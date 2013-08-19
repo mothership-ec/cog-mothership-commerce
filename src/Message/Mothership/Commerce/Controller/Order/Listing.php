@@ -8,6 +8,7 @@ use Message\Mothership\Commerce\Order\Statuses;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 
+use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 
 class Listing extends Controller

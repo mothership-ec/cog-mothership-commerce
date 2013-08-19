@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Stock\Movement;
+namespace Message\Mothership\Commerce\Product\Stock\Movement\Adjustment;
 
 class Adjustment
 {

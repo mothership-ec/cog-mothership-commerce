@@ -4,8 +4,7 @@ namespace Message\Mothership\Commerce\Product\Stock\Movement;
 
 /**
  * This stock movement iterator is used to work out the history of the
- * stock movements for a given CatalogueID
- *
+ * stock movements for a given Unit
  */
 class Iterator implements \Iterator
 {
@@ -16,8 +15,9 @@ class Iterator implements \Iterator
 	public function __construct(Product $product)
 	{
 		$this->_product = $product;
+
+        $this->_movements = $this->_movementLoader->getByProduct($this->_product);
 		$this->_loadStockLevels();
-		$this->_loadMovements();
 	}
 
     /**
@@ -38,11 +38,16 @@ class Iterator implements \Iterator
      */
 	public function next()
 	{
-		foreach ($this->current()->unitDelta as $unitID => $data) {
-		    foreach ($data as $locationID => $adjustment) {
-		    	$this->_counter[$unitID][$locationID] += (int) $adjustment * -1; // flip it
-		    }
-		}
+
+		// foreach ($this->current()->unitDelta as $unitID => $data) {
+		//     foreach ($data as $locationID => $adjustment) {
+		//     	$this->_counter[$unitID][$locationID] += (int) $adjustment * -1; // flip it
+		//     }
+		// }
+
+        foreach ($this->current()->adjustments as $adjustment) {
+            this->_counter[$unitID][$locationID] += (int) $adjustment->delta * -1; // flip it
+        }
 
 		return next($this->_movements);
 	}
@@ -81,9 +86,7 @@ class Iterator implements \Iterator
     public function getStockForMovement($movementID, $unitID, $locationID) {
 
         while($movement = $this->next()) {
-
-            if($movement->stockMovementID == $movementID) {
-
+            if($movement->id == $movementID) {
                 return $this->_counter[$unitID][$locationID];
             }
         }
@@ -96,16 +99,23 @@ class Iterator implements \Iterator
      * to leave the stock level before the stock movement
      *
      * @param unknown $unitID
-     * @param unknown $locationID
+     * @param unknown $location
      * @return number
      * @access public
      */
-	public function getStockBefore($unitID, $locationID)
+	public function getStockBefore($unitID, $location)
 	{
-		$adjustment = $this->current()->unitDelta[$unitID][$locationID];
-		$after      = $this->getStockAfter($unitID, $locationID);
+        foreach($this->current()->adjustments as $adjustment) {
+            if($adjustment->unit->id == $unitID && $adjustment->location->name == $location) {
+                $after = $this->getStockAfter($unitID, $locationID);
+                return $after - $adjustment->delta;
+            }
+        }
 
-		return $after - $adjustment;
+        // old:
+		// $adjustment = $this->current()->unitDelta[$unitID][$location];
+		// $after      = $this->getStockAfter($unitID, $locationID);
+        // return $after - $adjustment;
 	}
 
     /**
@@ -126,25 +136,8 @@ class Iterator implements \Iterator
     public function valid()
     {
         $key = key($this->_movements);
-        $var = ($key !== NULL && $key !== FALSE);
-        return $var;
+        return ($key !== NULL && $key !== FALSE);
     }
-
-    /**
-     * Loads all the stock movements for the given catalogueID
-     *
-     * @access protected
-     */
-	protected function _loadMovements()
-	{
-		$stockMovementIDs = StockMovement::loadStockMovementIDsForCatalogueID($this->_product->catalogueID);
-		$stockMovement = array();
-		foreach($stockMovementIDs as $stockMovementID) {
-			$stockMovement[$stockMovementID] = new StockMovement($stockMovementID);
-		}
-		$this->_movements = $stockMovement;
-
-	}
 
     /**
      * Loads the stock to an array grouped by unitID and then by locationID
@@ -154,9 +147,9 @@ class Iterator implements \Iterator
      */
 	protected function _loadStockLevels()
 	{
-		foreach($this->_product->getUnits(false,false) as $unit ) {
-			foreach($unit->stock as $locationID => $stock) {
-				$this->_counter[$unit->unitID][$locationID] = ($stock ? $stock : 0);
+		foreach($this->_product->getUnits() as $unit ) {
+			foreach($unit->stock as $location => $stock) {
+				$this->_counter[$unit->unitID][$location] = ($stock ? $stock : 0);
 			}
 		}
 	}

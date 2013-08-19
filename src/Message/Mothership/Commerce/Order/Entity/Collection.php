@@ -25,6 +25,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 		$this->_loader = $loader;
 	}
 
+	public function __sleep()
+	{
+		return array('_items', '_loaded', '_order');
+	}
+
 	public function get($id)
 	{
 		$this->load();
@@ -116,6 +121,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		return $this->exists($id);
 	}
+
 	public function offsetUnset($id)
 	{
 		$this->load();
@@ -133,7 +139,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	public function load()
 	{
 		if (!$this->_loaded) {
-			if ($this->_order->id && $items = $this->_loader->getByOrder($this->_order)) {
+			if ($this->_order->id && is_int($this->_order->id) && $items = $this->_loader->getByOrder($this->_order)) {
 				foreach ($items as $item) {
 					$this->append($item);
 				}

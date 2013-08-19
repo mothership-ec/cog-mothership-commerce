@@ -15,6 +15,28 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Order($c['order.entities']);
 		};
 
+		$services['commerce.gateway'] = function($c) {
+			return new Commerce\Gateway\Sagepay(
+				'Sagepay_Server',
+				$c['user.current'],
+				$c['http.request.master'],
+				$c['cache'],
+				$c['basket.order'],
+				$c['cfg']
+			);
+		};
+
+		$services['commerce.gateway.refund'] = function($c) {
+			return new Commerce\Gateway\Sagepay(
+				'Sagepay_Direct',
+				$c['user.current'],
+				$c['http.request.master'],
+				$c['cache'],
+				$c['basket.order'],
+				$c['cfg']
+			);
+		};
+
 		$services['basket.order'] = function($c) {
 
 			if (!$c['http.session']->get('basket.order')) {
@@ -83,7 +105,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.address.create'] = function($c) {
-			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Address\Create($c['db.query'], $c['order.address.loader']);
 		};
 
 		// Order item entity
@@ -92,7 +114,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.item.create'] = function($c) {
-			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['user.current']);
 		};
 
 		$services['order.item.edit'] = function($c) {
@@ -101,11 +123,11 @@ class Services implements ServicesInterface
 
 		// Order discount entity
 		$services['order.discount.loader'] = function($c) {
-			return $c['order.loader']->getEntityLoader('discount');
+			return $c['order.loader']->getEntityLoader('discounts');
 		};
 
 		$services['order.discount.create'] = function($c) {
-			return new Commerce\Order\Entity\Discount\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Discount\Create($c['db.query'], $c['order.discount.loader'], $c['user.current']);
 		};
 
 		// Order dispatch entity
@@ -141,12 +163,16 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.payment.create'] = function($c) {
-			return new Commerce\Order\Entity\Payment\Create($c['db.transaction'], $c['user.current']);
+			return new Commerce\Order\Entity\Payment\Create($c['db.query'], $c['order.payment.loader'], $c['user.current']);
 		};
 
 		// Order refund entity
 		$services['order.refund.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('refunds');
+		};
+
+		$services['order.refund.create'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
 		};
 
 		// Order note entity
@@ -155,7 +181,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.note.create'] = function($c) {
-			return new Commerce\Order\Entity\Note\Create($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Note\Create($c['db.query'], $c['order.note.loader'], $c['user.current']);
 		};
 
 		// Available payment & despatch methods
@@ -164,6 +190,7 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Card,
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
+				new Commerce\Order\Entity\Payment\Method\Manual,
 			));
 		});
 
@@ -272,17 +299,29 @@ class Services implements ServicesInterface
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
 
-		$services['commerce.user.loader'] = function($c) {
+		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader($c['db.query']);
 		};
 
+		$services['commerce.user.address.edit'] = function($c) {
+			return new Commerce\User\Address\Edit($c['db.query'], $c['user.current']);
+		};
+
 		$services['commerce.user.collection'] = function($c) {
-			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
+			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
 		};
 
 		$services['stock.locations'] = $services->share(function() {
 			return new Commerce\Product\Stock\Location\Collection;
 		});
+
+		$services['stock.movement.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Loader($c['db.query'], $c['stock.movement.adjustment.loader']);
+		};
+
+		$services['stock.movement.adjustment.loader'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query'], $c['product.unit.loader']);
+		};
 
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
