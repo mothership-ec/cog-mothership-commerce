@@ -32,7 +32,7 @@ The movements which have all their adjustments set, are instances of `Product\St
 Partial movement extends movement and does not add any additional functionality, there is no difference between the two classes other than the name.
 
 ### The Stock Manager
-`Product\Stock\StockManager` is a service providing an interface to adjust stock levels.
+`Product\Stock\StockManager` is a service providing an interface to adjust stock levels. The service is called 'stock.manager'.
 It is responsible for both - saving stock movements and updating the actual stock level in the database on an transactional basis.
 The stock manager internally has a `Product\Stock\Movement\Movement` which is filled with adjustments by using the following methods:
 * `increment`: increments the stock level for given unit and location (by the provided value)
@@ -42,12 +42,12 @@ The stock manager internally has a `Product\Stock\Movement\Movement` which is fi
 Also, the stock manager has methods to set the movement's properties:
 * `setReason`: Every movement MUST have a reason, see `Product\Stock\Movement\Reason` for details.
 * `setNote`: Optional string (handy for storing e.g. order-ids on the movement)
-* `setAutomated`: Sets whether the movement was generated automatically
+* `setAutomated`: Whether the movement was generated automatically or not
 
 Once all the adjustments are added to the stock manager, the changes can be changed by calling `commit()` which will then save all changes to a transaction and commit it.
 
 ### Movement\Iterator
-The iterator is a class which iterates over stock movements for a set of given units.
+The iterator is a class which iterates over stock movements for a set of given units. It is accessible through the service 'stock.movement.iterator'.
 This allows us to go through the stock history for these units and get stock levels before and after every movement.
 To set the units, there are two methods:
 * `addUnits()`, which adds an array of units by calling
