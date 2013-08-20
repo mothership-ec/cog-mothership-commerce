@@ -372,4 +372,19 @@ class Order
 
 		return $this->_entities[$name];
 	}
+
+	/**
+	 * returns amount left to pay after current payments on the order have taken from the total
+	 *
+	 * @return float total left to pay
+	 */
+	public function getPaymentTotal()
+	{
+		$total = $this->totalGross;
+		foreach ($this->payments as $payment) {
+			$total -= $payment->amount;
+		}
+
+		return $total;
+	}
 }
