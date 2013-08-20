@@ -6,20 +6,28 @@ use Message\User\UserInterface;
 use Message\Cog\HTTP\Request;
 use Message\Cog\Cache\Instance;
 use Message\Mothership\Commerce\Order\Order;
+use Message\Mothership\Commerce\Order\Entity\Payment\Payment;
 
 class Sagepay extends Wrapper
 {
 	protected $_data;
 	protected $_request;
+	protected $_config;
 
-	public function __construct($query, UserInterface $user, Request $request, Instance $cache, Order $order)
-	{
+	public function __construct(
+		$gatewayName = 'Sagepay_Server',
+		UserInterface $user,
+		Request $request,
+		Instance $cache,
+		Order $order,
+		$config
+	) {
 		$this->_user    = $user;
-		$this->_query   = $query;
 		$this->_request = $request;
 		$this->_cache   = $cache;
 		$this->_order   = $order;
-		$this->setGateway('Sagepay_Server', $request);
+		$this->setGateway($gatewayName, $request);
+		$this->_config = $config;
 	}
 
 	public function send()
@@ -72,5 +80,33 @@ class Sagepay extends Wrapper
 		$data = $this->_cache->fetch($responseID);
 
 		return unserialize($data);
+	}
+
+	public function refund(Payment $payment, $amount)
+	{
+		$this->setUsername($this->_config->checkout->payment->username);
+		$this->_gateway->setTestMode($this->_config->checkout->payment->useTestPayments);
+
+		$reference = json_decode($payment->reference);
+		$reference->VPSTxId = str_replace(array('}','{'),'', $reference->VPSTxId);
+
+		$values = array(
+			'transactionId' => $payment->order->id.'_'.time(), // Needs to be unique
+			'Amount'        => $amount, //
+			'Currency'      => $payment->order->currencyID,
+			'Description'   => 'Refund from '.$this->_config->mothership->appName,
+		);
+
+		$values['transactionReference'] = json_encode($reference);
+		$request = $this->_gateway->refund($values);
+
+		$response = $request->send();
+
+		if ($response->isSuccessful()) {
+			return $response->getData();
+		} else {
+			$data = $response->getData();
+			throw new \Exception($data['StatusDetail']);
+		}
 	}
 }

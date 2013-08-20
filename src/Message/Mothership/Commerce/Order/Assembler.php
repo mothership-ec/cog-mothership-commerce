@@ -40,13 +40,13 @@ class Assembler
 		$this->_session           = $session;
 	}
 
-	public function addItem(Unit $unit)
+	public function addItem(Unit $unit, $stockLocation)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
+		$item->stockLocation = $stockLocation;
 
 		$this->_order->items->append($item->populate($unit));
-
 		$event = new Event($this->_order);
 		// Dispatch the edit event
 
@@ -64,7 +64,6 @@ class Assembler
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event
-
 		$this->_eventDispatcher->dispatch(
 			Events::ASSEMBLER_UPDATE,
 			$event
@@ -101,12 +100,26 @@ class Assembler
 			}
 		}
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
 		return $this;
 	}
 
 	public function setOrder(Order $order)
 	{
 		$this->_order = $order;
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
 	}
 
 	public function getItemQuantity(Unit $unit)
@@ -118,6 +131,13 @@ class Assembler
 	{
 		$this->_session->remove('basket.order');
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			\Message\Mothership\Ecommerce\Event::EMPTY_BASKET,
+			$event
+		);
+
 		return true;
 	}
 
@@ -126,9 +146,16 @@ class Assembler
 
 	}
 
-	public function addUser(\Message\User\User  $user)
+	public function addUser(\Message\User\UserInterface  $user)
 	{
 		$this->_order->user = $user;
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
 
 		return $this;
 	}
@@ -161,7 +188,16 @@ class Assembler
 		$payment->order     = $this->_order;
 		$payment->reference = $reference;
 
-		$this->_order->items->append($payment);
+		$this->_order->payments->append($payment);
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
+		return $this;
 
 	}
 
@@ -180,7 +216,6 @@ class Assembler
 			$address->title = $this->_user->title;
 		}
 
-		$address->authorship = new \Message\Cog\ValueObject\Authorship;
 		// ID is set as the type so this will remove all the address types from the
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
@@ -188,10 +223,34 @@ class Assembler
 		return $this->_order->addresses->append($address);
 	}
 
+	/**
+	 * This is used when the user logs out and we need to clear all the addresses
+	 * from the basket as a log out doesn't empty the basket.
+	 *
+	 * @return $this
+	 */
+	public function removeAddresses()
+	{
+		if (count($this->getOrder()->addresses)) {
+			foreach ($this->getOrder()->addresses as $address) {
+				$this->_order->addresses->remove($address->id);
+			}
+		}
+
+		return $this;
+	}
+
 	public function setShipping(ShippingInterface $option)
 	{
 		$this->_order->shippingName      = $option->getName();
 		$this->_order->shippingListPrice = $option->getPrice();
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
 
 		return $this;
 	}
