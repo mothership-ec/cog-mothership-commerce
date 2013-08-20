@@ -62,7 +62,8 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units = $this->_product->getAllUnits();
 
-		$movementIterator = $this->get('stock.movement.iterator')->setProduct($this->_product);
+		$movementIterator = $this->get('stock.movement.iterator');
+		$movementIterator->addUnits($this->_product->getUnits());
 
 		return $this->render('::product:edit-stock', array(
 			'headings'  	   => $this->_getAllOptionsAndHeadings(),
