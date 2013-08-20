@@ -15,6 +15,28 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Order($c['order.entities']);
 		};
 
+		$services['commerce.gateway'] = function($c) {
+			return new Commerce\Gateway\Sagepay(
+				'Sagepay_Server',
+				$c['user.current'],
+				$c['http.request.master'],
+				$c['cache'],
+				$c['basket.order'],
+				$c['cfg']
+			);
+		};
+
+		$services['commerce.gateway.refund'] = function($c) {
+			return new Commerce\Gateway\Sagepay(
+				'Sagepay_Direct',
+				$c['user.current'],
+				$c['http.request.master'],
+				$c['cache'],
+				$c['basket.order'],
+				$c['cfg']
+			);
+		};
+
 		$services['basket.order'] = function($c) {
 			if (!$c['http.session']->get('basket.order')) {
 				$c['http.session']->set('basket.order', $c['order']);
@@ -140,7 +162,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.payment.create'] = function($c) {
-			return new Commerce\Order\Entity\Payment\Create($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Entity\Payment\Create($c['db.query'], $c['order.payment.loader'], $c['user.current']);
 		};
 
 		// Order refund entity
@@ -276,7 +298,7 @@ class Services implements ServicesInterface
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
 
-		$services['commerce.user.loader'] = function($c) {
+		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader($c['db.query']);
 		};
 
@@ -285,7 +307,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['commerce.user.collection'] = function($c) {
-			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.loader']);
+			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
 		};
 
 		$services['stock.manager'] = function($c) {
