@@ -33,6 +33,7 @@ class EventListener implements SubscriberInterface
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
 				array('calculateTax'),
+				array('clearTax'),
 			),
 		);
 	}
