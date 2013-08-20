@@ -176,6 +176,12 @@ class Create
 			}
 		}
 
+		// Fire the "create end" event before committing the transaction
+		$order = $this->_eventDispatcher->dispatch(
+			Events::CREATE_END,
+			new Event\Event($order)
+		)->getOrder();
+
 		$this->_trans->commit();
 
 		$event = new Event\Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
