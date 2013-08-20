@@ -37,6 +37,38 @@ Also, the stock manager has methods to set the movement's properties:
 
 Once all the adjustments are added to the stock manager, the changes can be changed by calling `commit()` which will then save all changes to a transaction and commit it.
 
+
+This could be used like:
+
+	$stockManager = $this->get('stock.manager'); // get service
+	
+	$brownJacket = … 	// get first unit
+	$whiteJacket = … 	// get second unit
+	
+	$web = $locationCollection->get('web');
+	$reason = $reasonCollection->get('new_order');
+
+	$stockManager->increment(
+		$brownJacket,
+		$web,				
+		5
+	);
+	
+	$stockManager->set(
+		$whiteJacket,
+		$web,				
+		0
+	);
+	
+	$stockManager->setReason($reason);
+	$stockManager->setAutomated(false);
+	
+	if($stockManager->commit()) {
+		echo 'Success!';
+	}
+	
+	
+
 ## Stock Change Event
 **Doesn't exist yet, sorry!**
 
