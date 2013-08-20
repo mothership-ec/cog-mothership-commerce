@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\User\Address;
 
-use Message\User\User;
+use Message\User\UserInterface;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -23,7 +23,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return array|Address an array of, or singular Address object
 	 */
-	public function getByUser(User $user)
+	public function getByUser(UserInterface $user)
 	{
 		$result = $this->_query->run('
 			SELECT
@@ -45,7 +45,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return Address|false    Loaded address
 	 */
-	public function getByUserAndType(User $user, $type)
+	public function getByUserAndType(UserInterface $user, $type)
 	{
 		$results = $this->getByUser($user);
 

@@ -146,7 +146,7 @@ class Assembler
 
 	}
 
-	public function addUser(\Message\User\User  $user)
+	public function addUser(\Message\User\UserInterface  $user)
 	{
 		$this->_order->user = $user;
 

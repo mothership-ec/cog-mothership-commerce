@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\User;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 /**
  * Interface for loading decorators for order entities.
@@ -12,5 +12,5 @@ use Message\User\User;
 interface LoaderInterface
 {
 
-	public function getbyUser(User $user);
+	public function getbyUser(UserInterface $user);
 }
