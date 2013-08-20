@@ -306,7 +306,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['stock.movement.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Loader($c['db.query'], $c['stock.movement.adjustment.loader']);
+			return new Commerce\Product\Stock\Movement\Loader(
+				$c['db.query'],
+				$c['stock.movement.adjustment.loader'],
+				$c['stock.movement.reasons']
+			);
 		};
 
 		$services['stock.movement.reasons'] = $services->share(function() {

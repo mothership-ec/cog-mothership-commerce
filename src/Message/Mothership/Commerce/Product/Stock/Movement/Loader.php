@@ -17,11 +17,13 @@ class Loader
 {
 	protected $_query;
 	protected $_adjustmentLoader;
+	protected $_reasonCollection;
 
-	public function __construct(DB\Query $query, Adjustment\Loader $adjustmentLoader)
+	public function __construct(DB\Query $query, Adjustment\Loader $adjustmentLoader, Reason\Collection $reasonCollection)
 	{
 		$this->_query = $query;
 		$this->_adjustmentLoader = $adjustmentLoader;
+		$this->_reasonCollection = $reasonCollection;
 	}
 
 	public function getById($id)
@@ -163,6 +165,7 @@ class Loader
 
 		foreach ($result as $key => $row) {
 			$movements[$key]->authorship->create(new DateTimeImmutable(date('c', $row->created_at)), $row->created_by);
+			$movements[$key]->reason = $this->_reasonCollection->get($row->reason);
 			$return[$row->id] = $movements[$key];
 		}
 
