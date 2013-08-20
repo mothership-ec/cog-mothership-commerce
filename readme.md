@@ -34,14 +34,8 @@ Also there is an Iterator for stock movements, which allows you to iterate over 
 
 * Add `Product` field type for the CMS
 	* This will require changes to how the CMS finds fields (currently it only looks within it's own cogule)
-* Add `Product` library
-* Add `Gateway` interfaces & library
-* Add stock & stock movements stuff
 * Revisit product options storage in `order_item`
 * Add comments to all columns in database tables
-* Add all the Entities
-* Add event listener to set discount amounts on items
-* Implement stock locations on order item entity when ready
 
 ## Suggestions
 
