@@ -176,6 +176,9 @@ class Loader
 
 		foreach ($result as $key => $data) {
 
+			$data->taxRate     = (float) $data->taxRate;
+			$data->exportValue = (float) $data->exportValue;
+
 			$products[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
 
 			if ($data->updatedAt) {
@@ -188,7 +191,7 @@ class Loader
 
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$products[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+					$products[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
 				}
 			}
 

@@ -145,7 +145,7 @@ class Loader implements LoaderInterface
 			// Save prices to unit
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$units[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+					$units[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
 				}
 			}
 
