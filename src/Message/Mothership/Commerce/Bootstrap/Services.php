@@ -330,7 +330,11 @@ class Services implements ServicesInterface
 		$services['stock.movement.loader'] = function($c) {
 			return new Commerce\Product\Stock\Movement\Loader(
 				$c['db.query'],
-				$c['stock.movement.adjustment.loader'],
+				new Commerce\Product\Stock\Movement\Adjustment\Loader(
+					$c['db.query'],
+					$c['product.unit.loader'],
+					$c['stock.locations']
+				),
 				$c['stock.movement.reasons']
 			);
 		};
@@ -344,14 +348,6 @@ class Services implements ServicesInterface
 		$services['stock.movement.iterator'] = function($c) {
 			return new Commerce\Product\Stock\Movement\Iterator(
 				$c['stock.movement.loader'],
-				$c['stock.locations']
-			);
-		};
-
-		$services['stock.movement.adjustment.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Adjustment\Loader(
-				$c['db.query'],
-				$c['product.unit.loader'],
 				$c['stock.locations']
 			);
 		};
