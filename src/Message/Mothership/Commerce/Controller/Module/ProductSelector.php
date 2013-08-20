@@ -61,8 +61,8 @@ class ProductSelector extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$unit = $this->_product->getUnit($data['unit_id']);
 			$basket = $this->get('basket');
-
-			if ($basket->addItem($unit)) {
+			$location = $this->get('stock.locations')->get('web');
+			if ($basket->addItem($unit, $location)) {
 				$this->addFlash('success', 'The item has been added to your basket');
 			}
 		}
