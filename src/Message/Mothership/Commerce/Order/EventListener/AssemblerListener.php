@@ -61,9 +61,6 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 			}
 			// Map the addresses to the Order Address object
 			$deliveryAddress = new Address;
-			$deliveryAddress->id = 'delivery';
-			$deliveryAddress->order = $this->get('basket')->getOrder();
-
 			foreach ($delivery as $property => $value) {
 				if ($property == 'authorship') {
 					continue;
@@ -71,12 +68,13 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 
 				$deliveryAddress->{$property} = $value;
 			}
+			$deliveryAddress->id = 'delivery';
+			$deliveryAddress->order = $this->get('basket')->getOrder();
+
 			// Save the delivery address
 			$this->get('basket')->addAddress($deliveryAddress);
 
 			$billingAddress = new Address;
-			$billingAddress->id = 'billing';
-			$billingAddress->order = $this->get('basket')->getOrder();
 			// Save the billing address
 			foreach ($billing as $property => $value) {
 				if ($property == 'authorship') {
@@ -85,7 +83,8 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 
 				$billingAddress->{$property} = $value;
 			}
-
+			$billingAddress->id = 'billing';
+			$billingAddress->order = $this->get('basket')->getOrder();
 			$this->get('basket')->addAddress($billingAddress);
 		} else {
 			$this->get('basket')->removeAddresses();
