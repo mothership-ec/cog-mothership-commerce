@@ -96,7 +96,7 @@
 									{% if movementIterator.hasStock(adjustment.unit, location) %}
 										{{ movementIterator.getStockBefore(adjustment.unit, location) }}
 										<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
-											{{ adjustment.delta }}
+											{{ '%+d'|format(adjustment.delta) }}
 										</span>
 										{{ movementIterator.getStockAfter(adjustment.unit, location) }}
 									{% else %}
