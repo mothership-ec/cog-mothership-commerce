@@ -5,25 +5,30 @@ namespace Message\Mothership\Commerce\Product\Unit;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\Commerce\Product\Pricing;
+use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
-use Message\Cog\DB\Query;
-use Message\Cog\DB\Result;
+use Message\Cog\DB;
 
 use Message\User\UserInterface;
 
-class Edit
+class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_loader;
 	protected $_user;
 	protected $_locale;
 
-	public function __construct(Query $query, Loader $loader, UserInterface $user, Locale $locale)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $user, Locale $locale)
 	{
 		$this->_query  = $query;
 		$this->_loader = $loader;
 		$this->_user   = $user;
 		$this->_locale = $locale;
+	}
+
+	public function setTransaction(DB\Transaction $trans)
+	{
+		$this->_query = $trans;
 	}
 
 	public function save(Unit $unit)
@@ -152,5 +157,46 @@ class Edit
 		}
 
 		return $unit;
+	}
+
+	public function saveStock(Unit $unit)
+	{
+		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
+
+		foreach($unit->stock as $location => $stock) {
+			// just update it if the stock-level has actually changed
+			if(!array_key_exists($location, $unit->stock) || $stock != $unit->stock[$location]) {
+				$this->_saveStockLevel($unit->id, $location, $stock);
+			}
+		}
+	}
+
+	public function saveStockForLocation(Unit $unit, Location $location)
+	{
+		return $this->_saveStockLevel($unit->id, $location->name, $unit->getStockForLocation($location));
+	}
+
+	protected function _saveStockLevel($unit_id, $location, $stock)
+	{
+		$result = $this->_query->run(
+			'REPLACE INTO
+				product_unit_stock
+				(
+					unit_id,
+					location,
+					stock
+				)
+			VALUES
+				(
+					?i,
+					?s,
+					?i
+				)',
+			array(
+				$unit_id,
+				$location,
+				$stock,
+			)
+		);
 	}
 }

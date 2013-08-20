@@ -17,7 +17,7 @@ class Create implements DB\TransactionalInterface
 
 	public function __construct(DB\Transaction $query)
 	{
-		$this->_query       = $query;
+		$this->_query = $query;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -27,7 +27,7 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Adjustment $adjustment)
 	{
-		$this->_query->add('
+		$result = $this->_query->add('
 			INSERT INTO
 				stock_movement_adjustment
 			SET
@@ -41,6 +41,9 @@ class Create implements DB\TransactionalInterface
 			'location'   => $adjustment->location->name,
 			'delta'   	 => $adjustment->delta,
 		));
+
+		$this->_query->setIDVariable('ADJUSTMENT_ID');
+		$adjustment->id = '@ADJUSTMENT_ID';
 
 		return $adjustment;
 	}

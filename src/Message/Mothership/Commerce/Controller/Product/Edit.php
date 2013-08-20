@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Controller\Product;
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\Commerce\Product\Image;
+use Message\Mothership\Commerce\Product\Stock;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 
 class Edit extends Controller
 {
@@ -60,13 +62,17 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units = $this->_product->getAllUnits();
 
+		$movementIterator = $this->get('stock.movement.iterator');
+		$movementIterator->addUnits($this->_product->getUnits());
+
 		return $this->render('::product:edit-stock', array(
-			'headings'  => $this->_getAllOptionsAndHeadings(),
-			'locale'  	=> $this->get('locale'),
-			'product' 	=> $this->_product,
-			'units'   	=> $this->_units,
-			'locations' => $locations,
-			'form'	  	=> $this->_getUnitStockForm($locations),
+			'headings'  	   => $this->_getAllOptionsAndHeadings(),
+			'locale'  		   => $this->get('locale'),
+			'product' 		   => $this->_product,
+			'units'   		   => $this->_units,
+			'locations' 	   => $locations,
+			'form'	  		   => $this->_getUnitStockForm($locations),
+			'movementIterator' => $movementIterator,
 		));
 	}
 
@@ -79,6 +85,54 @@ class Edit extends Controller
 			'product' => $this->_product,
 			'form'	  => $this->_getImageForm(),
 		));
+	}
+
+	public function processStock($productID)
+	{
+		$this->_product 	= $this->get('product.loader')->getByID($productID);
+		$locationCollection = $this->get('stock.locations');
+		$this->_units   	= $this->_product->getUnits();
+		$form           	= $this->_getUnitStockForm($locationCollection->all());
+		$stockManager 		= $this->get('stock.manager');
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			foreach ($data['units'] as $unitID => $locationArray) {
+				foreach($locationArray as $location => $stock) {
+
+					// remove all spaces and tabs and cast stock to int
+					$stock = (int)(preg_replace('/\s+/','',$stock));
+					
+					if($stock > 0) {
+						$stockManager->increment(
+							$this->_units[$unitID],
+							$locationCollection->get($location),
+							$stock
+						);
+					} else if($stock < 0) {
+						$stockManager->decrement(
+							$this->_units[$unitID],
+							$locationCollection->get($location),
+							($stock * -1)
+						);
+					}
+				}
+			}
+
+			$note = $data['note'];
+			$reason = $this->get('stock.movement.reasons')->get($data['reason']);
+
+			if($note) {
+				$stockManager->setNote($note);
+			}
+
+			$stockManager->setReason($reason);
+
+			if($stockManager->commit()) {
+				$this->addFlash('success', 'Successfully adjusted stock levels');
+			}
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.stock', array('productID' => $this->_product->id));
 	}
 
 	/**
@@ -97,34 +151,56 @@ class Edit extends Controller
 						'productID' => $this->_product->id
 					))
 			);
+
+		$units = $this->get('form')
+			->setName('units')
+			->addOptions(array(
+				'auto_initialize' => false,
+		));
+
 		// Create a nested form for each unit
 		foreach ($this->_units as $id => $unit) {
-			$form = $this->get('form')
+			$stockForm = $this->get('form')
 				->setName($id)
 				->addOptions(array(
 					'auto_initialize' => false,
 			));
 
-			$stockForm = $this->get('form')
-				->setName('stock')
-				->addOptions(array(
-					'auto_initialize' => false,
-			));
-
 			foreach ($locations as $location) {
-				$stockForm->add(
-					'location_'.$location->name,
-					'text',
-					// trans this!
-					$location->displayName,
-					array('attr' => array(
-							'value' =>  '+ 0'
-					)))->val()->optional();
+				$stockForm
+					->add(
+						$location->name,
+						'text',
+						// trans this!
+						$location->displayName,
+						array('attr' =>
+							array('value' =>  '+0')
+						)
+					)
+					->val()
+					->optional();
 			}
 
-			$form->add($stockForm->getForm(), 'form');
-			$mainForm->add($form->getForm(), 'form');
+			$units->add($stockForm->getForm(), 'form');
 		}
+
+		$mainForm->add($units->getForm(), 'form');
+
+		$mainForm
+			->add(
+				'reason',
+				'choice',
+				'Reason',
+				array(
+					'choices' 	=> $this->get('stock.movement.reasons')->all(),
+					'required' 	=> true,
+				)
+			);
+
+		$mainForm
+			->add('note', 'textarea', 'Note')
+			->val()
+			->optional();
 
 		return $mainForm;
 	}
@@ -371,9 +447,9 @@ class Edit extends Controller
 
 					continue;
 				}
-				$changedUnit->sku         = $values['sku'];
-				$changedUnit->weight = (int) $values['weight'];
-				$changedUnit->visible     = (int) (bool) $values['visible'];
+				$changedUnit->sku 		= $values['sku'];
+				$changedUnit->weight 	= (int) $values['weight'];
+				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
@@ -405,7 +481,8 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
-			$unit->weight = $data['weight'];
+			$unit->weight 	   = $data['weight'];
+			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 

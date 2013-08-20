@@ -13,33 +13,114 @@
 {{ render(controller('Message:Mothership:Commerce::Controller:Product:ProductsMenu#index', {'productID':product.id}))}}
 
 <section class="container-content">
-	{{ form_start(form) }}
-	<table>
-		<thead>
-			<tr>
-				<th>SKU - Barcode</th>
-				{% for location in locations %}
-					<th>{{ location.displayName }}</th>
-				{% endfor %}
-			</tr>
-		</thead>
-		<tbody>
-			{% for unit in units %}
+	<section>
+		{{ form_start(form) }}
+		<table>
+			<thead>
 				<tr>
-					<td><span>{{ unit.sku }}</span> - <span>{{ unit.barcode }}</span></td>
+					<th>SKU - Barcode</th>
+					{% for heading in headings %}
+						<th>{{ heading }}</th>
+					{% endfor %}
 					{% for location in locations %}
-						<div class="inline">
-							{% set locationName = ('location_'~location.name) %}
-							<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form[unit.id]['stock'][locationName]) }}</td>
-						</div>
+						<th>{{ location.displayName }}</th>
 					{% endfor %}
 				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-	<button type="submit" class="button small save" id="save-content">Update</button>
-	{{ form_end(form) }}
+			</thead>
+			<tbody>
+				{% for unit in units %}
+					<tr>
+						<td><span>{{ unit.sku }}</span> - <span>{{ unit.barcode }}</span></td>
+						{% for key, name in headings %}
+							<td>
+							{% if key in unit.options|keys %}
+								{{ unit.getOption(key) }}
+							{% endif %}
+							</td>
+						{% endfor %}
+						{% for location in locations %}
+							<div class="inline">
+								<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
+							</div>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{{ form_row(form['reason']) }}
+		{{ form_row(form['note']) }}
+		<button type="submit" class="button small save" id="save-content">Update</button>
+		{{ form_end(form) }}
+	</section>
+	<section class="repeatable-group">
+		<h1>Stock Movements</h1>
 
+		{% for movement in movementIterator %}
+		<div class="container">
+			<section class="group">
+				<h2>
+					Stock Movement #{{ movement.id }}
+					- {{ movement.authorship.createdAt|date }}
+					{% if movement.automated %}
+						- Automated Movement
+					{% else %}
+						by {{ movement.authorship.createdBy }}
+					{% endif %}
+				</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>SKU - Barcode</th>
+							{% for heading in headings %}
+								<th>{{ heading }}</th>
+							{% endfor %}
+							{% for location in locations %}
+								<th>{{ location.displayName }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for adjustment in movement.adjustments %}
+						<tr>
+							<td><span>{{ adjustment.unit.sku }}</span> - <span>{{ adjustment.unit.barcode }}</span></td>
+							{% for key, name in headings %}
+								<td>
+								{% if key in adjustment.unit.options|keys %}
+									{{ adjustment.unit.getOption(key) }}
+								{% endif %}
+								</td>
+							{% endfor %}
+							{% for location in locations %}
+								<div class="inline">
+									<td>
+									{% if movementIterator.hasStock(adjustment.unit, location) %}
+										{{ movementIterator.getStockBefore(adjustment.unit, location) }}
+										<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
+											{{ '%+d'|format(adjustment.delta) }}
+										</span>
+										{{ movementIterator.getStockAfter(adjustment.unit, location) }}
+									{% else %}
+										{{ movementIterator.getLastStock(adjustment.unit, location) }}
+									{% endif %}
+									</td>
+								</div>
+							{% endfor %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<div>
+					<h2>Reason</h2>
+					<p>{{ movement.reason }}
+				</div>
+				<div>
+					<h2>Note</h2>
+					<p>{{ movement.note }}
+				</div>
+			</section>
+		</div>
+		{% endfor %}
+	</section>
 </section>
 
 {% endblock %}

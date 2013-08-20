@@ -11,6 +11,7 @@ class Movement
 	public $authorship;
 	public $reason;
 	public $note = '';
+	public $automated;
 
 	public $adjustments = array();
 
@@ -19,8 +20,9 @@ class Movement
 		$this->authorship = new Authorship;
 	}
 
-	public function addAdjustment(Adjustment $adjustment)
+	public function addAdjustment(Adjustment\Adjustment $adjustment)
 	{
-		$this->_adjustments[] = $adjustment;
+		$adjustment->movement = $this;
+		$this->adjustments[] = $adjustment;
 	}
 }
