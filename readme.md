@@ -20,6 +20,28 @@ You will need to add Message's private package server to the `repositories` key 
 		}
 	}
 
+## Product\Stock
+The `Product\Stock` is responsible for handling stock changes.
+Every change in stock level is documented as a stock movement(`Product\Stock\Movement\Movement`), which consits of stock adjustments(`Product\Stock\Movement\Adjustment\Adjustment`).
+These adjustments hold a unit, stock location and the change in stock level (the difference and not the new value).
+Every stock movement can have any amount of stock adjustments in any unit and stock location.
+
+### The Stock Manager
+`Product\Stock\StockManager` is a service providing an interface to adjust stock levels.
+It is responsible for both - saving stock movements and updating the actual stock level in the database on an transactional basis.
+The stock manager internally has a `Product\Stock\Movement\Movement` which is filled with adjustments by using the following methods:
+* `increment`: increments the stock level for given unit and location (by the provided value)
+* `decrement`: decrements the stock level for given unit and location (by the provided value)
+* `set`: sets the stock level for given unit and location to a specified value
+
+Also, the stock manager has methods to set the movement's properties:
+* `setReason`
+* `setNote`
+* `setAutomated`
+
+Once all the adjustments are added to the stock manager, the changes can be changed by calling `commit()` which will then save all changes to a transaction and commit it.
+
+
 ## Todo
 
 * Add `Product` field type for the CMS
