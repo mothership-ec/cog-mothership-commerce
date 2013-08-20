@@ -16,20 +16,27 @@ class Create implements DB\TransactionalInterface
 {
 	protected $_currentUser;
 	protected $_query;
+	protected $_adjustmentCreator;
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, UserInterface $currentUser, Adjustment\Create $adjustmentCreator)
 	{
-		$this->_query       = $query;
-		$this->_currentUser = $currentUser;
+		$this->_query       	  = $query;
+		$this->_currentUser 	  = $currentUser;
+		$this->_adjustmentCreator = $adjustmentCreator;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
+		$this->_adjustmentCreator->setTransaction($trans);
 	}
 
 	public function create(Movement $movement)
 	{
+		if(!$movement->reason) {
+			throw new \IllegalArgumentException("Cannot save a movement without reason to the database!");
+		}
+
 		// Set create authorship data if not already set
 		if (!$movement->authorship->createdAt()) {
 			$movement->authorship->create(
@@ -38,20 +45,30 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
-		$this->_query->add('
+		$result = $this->_query->add('
 			INSERT INTO
 				stock_movement
 			SET
 				created_at  = :createdAt?d,
 				created_by  = :createdBy?i,
 				reason   	= :reason?s,
-				note    	= :note?sn
+				note    	= :note?sn,
+				automated	= :automated?b
 		', array(
 			'createdAt' => $movement->authorship->createdAt(),
 			'createdBy' => $movement->authorship->createdBy(),
-			'reason'  	=> $movement->reason,
+			'reason'  	=> $movement->reason->name,
 			'note'   	=> $movement->note,
+			'automated' => $movement->automated ? true : false,
 		));
+
+		$this->_query->setIDVariable('STOCK_MOVEMENT_ID');
+		$movement->id = '@STOCK_MOVEMENT_ID';
+
+		foreach($movement->adjustments as $adjustment)
+		{
+			$adjustment = $this->_adjustmentCreator->create($adjustment);
+		}
 
 		return $movement;
 	}

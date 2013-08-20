@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Product\Stock\Movement\Adjustment;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Mothership\Commerce\Product\Unit;
 use Message\Mothership\Commerce\Product\Stock;
-use Message\Mothership\Commerce\Product\Stock\Location\Location;
+use Message\Mothership\Commerce\Product\Stock\Location;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -17,11 +17,16 @@ class Loader
 	protected $_query;
 	protected $_unitLoader;
 	protected $_movement;
+	protected $_locationCollection;
 
-	public function __construct(DB\Query $query, Unit\Loader $unitLoader)
+	public function __construct(DB\Query $query, Unit\Loader $unitLoader, Location\Collection $locationCollection)
 	{
 		$this->_query = $query;
+		$this->_locationCollection = $locationCollection;
+
 		$this->_unitLoader = $unitLoader;
+		$this->_unitLoader->includeInvisible(true);
+		$this->_unitLoader->includeOutOfStock(true);
 	}
 
 	public function setMovement(Stock\Movement\Movement $movement)
@@ -47,7 +52,7 @@ class Loader
 		return $this->_load($ids->flatten());
 	}
 
-	public function getByLocation(Location $location)
+	public function getByLocation(Location\Location $location)
 	{
 		$this->_checkForMovement();
 
@@ -152,6 +157,7 @@ class Loader
 			} else {
 				$adjustments[$key]->unit = $this->_unitLoader->getByID($row->unit_id);
 			}
+			$adjustments[$key]->location = $this->_locationCollection->get($row->location);
 			$adjustments[$key]->movement = $this->_movement;
 
 			$return[$row->id] = $adjustments[$key];

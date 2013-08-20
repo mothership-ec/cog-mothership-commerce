@@ -64,6 +64,12 @@ class Unit
 		return (isset($this->stock[$location->name]) ? $this->stock[$location->name] : self::DEFAULT_STOCK_LEVEL);
 	}
 
+	public function setStockForLocation($value, Location $location)
+	{
+		$this->stock[$location->name] = (int) $value;
+		return $this;
+	}
+
 	public function getOption($type)
 	{
 		if (!isset($this->options[$type])) {

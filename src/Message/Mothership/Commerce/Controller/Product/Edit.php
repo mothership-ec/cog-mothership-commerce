@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Controller\Product;
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\Commerce\Product\Image;
+use Message\Mothership\Commerce\Product\Stock;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 
 class Edit extends Controller
 {
@@ -60,13 +62,17 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units = $this->_product->getAllUnits();
 
+		$movementIterator = $this->get('stock.movement.iterator');
+		$movementIterator->addUnits($this->_product->getUnits());
+
 		return $this->render('::product:edit-stock', array(
-			'headings'  => $this->_getAllOptionsAndHeadings(),
-			'locale'  	=> $this->get('locale'),
-			'product' 	=> $this->_product,
-			'units'   	=> $this->_units,
-			'locations' => $locations,
-			'form'	  	=> $this->_getUnitStockForm($locations),
+			'headings'  	   => $this->_getAllOptionsAndHeadings(),
+			'locale'  		   => $this->get('locale'),
+			'product' 		   => $this->_product,
+			'units'   		   => $this->_units,
+			'locations' 	   => $locations,
+			'form'	  		   => $this->_getUnitStockForm($locations),
+			'movementIterator' => $movementIterator,
 		));
 	}
 
@@ -79,6 +85,54 @@ class Edit extends Controller
 			'product' => $this->_product,
 			'form'	  => $this->_getImageForm(),
 		));
+	}
+
+	public function processStock($productID)
+	{
+		$this->_product 	= $this->get('product.loader')->getByID($productID);
+		$locationCollection = $this->get('stock.locations');
+		$this->_units   	= $this->_product->getUnits();
+		$form           	= $this->_getUnitStockForm($locationCollection->all());
+		$stockManager 		= $this->get('stock.manager');
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			foreach ($data['units'] as $unitID => $locationArray) {
+				foreach($locationArray as $location => $stock) {
+
+					// remove all spaces and tabs and cast stock to int
+					$stock = (int)(preg_replace('/\s+/','',$stock));
+
+					if($stock > 0) {
+						$stockManager->increment(
+							$this->_units[$unitID],
+							$locationCollection->get($location),
+							$stock
+						);
+					} else if($stock < 0) {
+						$stockManager->decrement(
+							$this->_units[$unitID],
+							$locationCollection->get($location),
+							($stock * -1)
+						);
+					}
+				}
+			}
+
+			$note = $data['note'];
+			$reason = $this->get('stock.movement.reasons')->get($data['reason']);
+
+			if($note) {
+				$stockManager->setNote($note);
+			}
+
+			$stockManager->setReason($reason);
+
+			if($stockManager->commit()) {
+				$this->addFlash('success', 'Successfully adjusted stock levels');
+			}
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.stock', array('productID' => $this->_product->id));
 	}
 
 	/**
@@ -97,34 +151,56 @@ class Edit extends Controller
 						'productID' => $this->_product->id
 					))
 			);
+
+		$units = $this->get('form')
+			->setName('units')
+			->addOptions(array(
+				'auto_initialize' => false,
+		));
+
 		// Create a nested form for each unit
 		foreach ($this->_units as $id => $unit) {
-			$form = $this->get('form')
+			$stockForm = $this->get('form')
 				->setName($id)
 				->addOptions(array(
 					'auto_initialize' => false,
 			));
 
-			$stockForm = $this->get('form')
-				->setName('stock')
-				->addOptions(array(
-					'auto_initialize' => false,
-			));
-
 			foreach ($locations as $location) {
-				$stockForm->add(
-					'location_'.$location->name,
-					'text',
-					// trans this!
-					$location->displayName,
-					array('attr' => array(
-							'value' =>  '+ 0'
-					)))->val()->optional();
+				$stockForm
+					->add(
+						$location->name,
+						'text',
+						// trans this!
+						$location->displayName,
+						array('attr' =>
+							array('value' =>  '+0')
+						)
+					)
+					->val()
+					->optional();
 			}
 
-			$form->add($stockForm->getForm(), 'form');
-			$mainForm->add($form->getForm(), 'form');
+			$units->add($stockForm->getForm(), 'form');
 		}
+
+		$mainForm->add($units->getForm(), 'form');
+
+		$mainForm
+			->add(
+				'reason',
+				'choice',
+				'Reason',
+				array(
+					'choices' 	=> $this->get('stock.movement.reasons')->all(),
+					'required' 	=> true,
+				)
+			);
+
+		$mainForm
+			->add('note', 'textarea', 'Note')
+			->val()
+			->optional();
 
 		return $mainForm;
 	}
@@ -244,7 +320,7 @@ class Edit extends Controller
 			));
 
 			foreach ($unit->price as $type => $value) {
-				$priceForm->add($type, 'text',$this->trans('ms.commerce.product.price-sans.'.strtolower($type)), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
+				$priceForm->add($type, 'text',$this->trans('ms.commerce.product.label.price-sans.'.strtolower($type)), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
 					->val()->optional();
 			}
 
@@ -339,7 +415,7 @@ class Edit extends Controller
 		));
 
 		foreach ($this->get('product.price.types') as $type) {
-			$priceForm->add($type, 'text', $this->trans('ms.commerce.product.price-sans.'.strtolower($type)))
+			$priceForm->add($type, 'text', $this->trans('ms.commerce.product.label.price-sans.'.strtolower($type)))
 				->val()->optional();
 		}
 
@@ -371,9 +447,9 @@ class Edit extends Controller
 
 					continue;
 				}
-				$changedUnit->sku         = $values['sku'];
-				$changedUnit->weight = (int) $values['weight'];
-				$changedUnit->visible     = (int) (bool) $values['visible'];
+				$changedUnit->sku 		= $values['sku'];
+				$changedUnit->weight 	= (int) $values['weight'];
+				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
@@ -405,7 +481,8 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
-			$unit->weight = $data['weight'];
+			$unit->weight 	   = $data['weight'];
+			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
@@ -510,39 +587,39 @@ class Edit extends Controller
 			))
 			->setMethod('post');
 
-		$form->add('name', 'text', $this->trans('ms.commerce.product.name'))
+		$form->add('name', 'text', $this->trans('ms.commerce.product.label.name'))
 			->val()->maxLength(255);
 
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.display-name'))
+		$form->add('display_name', 'text', $this->trans('ms.commerce.product.label.display-name'))
 			->val()->maxLength(255);
 
-		$form->add('category', 'text', $this->trans('ms.commerce.product.category'))
+		$form->add('category', 'text', $this->trans('ms.commerce.product.label.category'))
 			->val()->maxLength(255);
-		$form->add('brand', 'text', $this->trans('ms.commerce.product.brand'))
+		$form->add('brand', 'text', $this->trans('ms.commerce.product.label.brand'))
 			->val()->maxLength(255);
 
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description'));
-		$form->add('description', 'textarea', $this->trans('ms.commerce.product.description'))
+		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.label.short-description'));
+		$form->add('description', 'textarea', $this->trans('ms.commerce.product.label.description'))
 			->val()->optional();
-		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.fabric'))
+		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.label.fabric'))
 			->val()->optional();
-		$form->add('features', 'textarea', $this->trans('ms.commerce.product.features'))
+		$form->add('features', 'textarea', $this->trans('ms.commerce.product.label.features'))
 			->val()->optional();
-		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.care-instructions'))
+		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.label.care-instructions'))
 			->val()->optional();
-		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.sizing'))
+		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.label.sizing'))
 			->val()->optional();
-		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.notes'))
+		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.label.notes'))
 			->val()->optional();
-		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.tags'))
+		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.label.tags'))
 			->val()->optional();
 
-		$form->add('year', 'text', $this->trans('ms.commerce.product.year'))
+		$form->add('year', 'text', $this->trans('ms.commerce.product.label.year'))
 			->val()
 				->maxLength(4)
 				->optional();
 
-		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.tax-rate'))
+		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.label.tax-rate'))
 			->val()->maxLength(255);
 
 		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.tax-strategy'), array(
@@ -553,27 +630,27 @@ class Edit extends Controller
 			'empty_value' => false,
 		));
 
-		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.supplier-ref'))
+		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.label.supplier-ref'))
 			->val()
 				->maxLength(255)
 				->optional();
 
 		foreach ($this->_product->price as $type => $value) {
-			$form->add('price_'.$type, 'text', $this->trans('ms.commerce.product.price.'.$type),array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))));
+			$form->add('price_'.$type, 'text', $this->trans('ms.commerce.product.label.price.'.$type),array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))));
 		}
 
-		$form->add('weight_grams', 'number', $this->trans('ms.commerce.product.weight-grams'))
+		$form->add('weight_grams', 'number', $this->trans('ms.commerce.product.label.weight-grams'))
 			->val()->maxLength(255);
-		$form->add('season', 'text', $this->trans('ms.commerce.product.season'))
+		$form->add('season', 'text', $this->trans('ms.commerce.product.label.season'))
 			->val()
 				->maxLength(255)
 				->optional();
 
-		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.export-description'))
+		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.label.export-description'))
 			->val()->optional();
-		$form->add('export_value', 'text', $this->trans('ms.commerce.product.export-value'))
+		$form->add('export_value', 'text', $this->trans('ms.commerce.product.label.export-value'))
 			->val()->optional();
-		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.export-manufacture-country'), array(
+		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.label.export-manufacture-country'), array(
 			'choices' => $this->get('country.list')->all(),
 		))->val()->optional();
 

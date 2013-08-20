@@ -319,16 +319,50 @@ class Services implements ServicesInterface
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
 		};
 
+		$services['stock.manager'] = function($c) {
+			$trans = $c['db.transaction'];
+			return new Commerce\Product\Stock\StockManager(
+				$trans,
+				new Commerce\Product\Stock\Movement\Create(
+					$trans,
+					$c['user.current'],
+					new Commerce\Product\Stock\Movement\Adjustment\Create($trans)
+				),
+				$c['product.unit.edit']
+			);
+		};
+
 		$services['stock.locations'] = $services->share(function() {
 			return new Commerce\Product\Stock\Location\Collection;
 		});
 
 		$services['stock.movement.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Loader($c['db.query'], $c['stock.movement.adjustment.loader']);
+			return new Commerce\Product\Stock\Movement\Loader(
+				$c['db.query'],
+				$c['stock.movement.adjustment.loader'],
+				$c['stock.movement.reasons']
+			);
+		};
+
+		$services['stock.movement.reasons'] = $services->share(function() {
+			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
+				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
+			));
+		});
+
+		$services['stock.movement.iterator'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Iterator(
+				$c['stock.movement.loader'],
+				$c['stock.locations']
+			);
 		};
 
 		$services['stock.movement.adjustment.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query'], $c['product.unit.loader']);
+			return new Commerce\Product\Stock\Movement\Adjustment\Loader(
+				$c['db.query'],
+				$c['product.unit.loader'],
+				$c['stock.locations']
+			);
 		};
 
 		$services['shipping.methods'] = $services->share(function($c) {
