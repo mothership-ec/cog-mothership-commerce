@@ -12,6 +12,13 @@ The container which holds adjustment is the stock movement(`Movement\Movement`).
 
 Both movements and adjustments have a create-decorator and a class to load them, altough only the `Movement\Loader` has its own a service: `stock.movement.loader`.
 
+The loader has methods to get movements by product, unit, movement-id and by location.
+From inside a controller, you could for example get all movements for a certain unit like this:
+
+	$brownJacket = … // get unit
+	$movementLoader = $this->get('stock.movement.loader);
+	$movements = $movementLoader->getByUnit($brownJacket);
+
 ## Movements and Partial Movements
 When loading movements using `Movement\Loader`, Movements can either have all adjustments(for example when you load a movement by ID) or just a selection of adjustments which match a certain criteria (for example when loading all movements and adjustments for a certain unit).
 
@@ -22,6 +29,9 @@ PartialMovement extends Movement and does not add any additional functionality, 
 
 ## The Stock Manager
 `StockManager` is a service providing an interface to adjust stock levels. The service is called 'stock.manager'.
+
+	$stockManager = $this->get('stock.manager'); // get service
+	
 It is responsible for both - saving stock movements and updating the actual stock level in the database on an transactional basis.
 The stock manager internally has a `Movement\Movement` which is filled with adjustments by using the following methods:
 
@@ -73,7 +83,7 @@ This could be used like:
 **Doesn't exist yet, sorry!**
 
 ## Movement\Iterator
-The iterator is a class which iterates over stock movements for a set of given units. It is accessible through the service 'stock.movement.iterator'.
+The iterator is a class which iterates over stock movements for a set of given units. It is accessible through the service `stock.movement.iterator`.
 This allows us to go through the stock history for these units and get stock levels before and after every movement.
 To set the units, there are two methods:
 
@@ -88,7 +98,50 @@ The most important methods for displaying the stock changes when iterating over 
 * `getStockAfter(unit, location)`: returns the stock after the adjustments for the specified unit and location in the current movement
 * `getLastStock(unit, location)`: returns the last stock saved in the iterators internal counter or - if there has not been an adjustment for that unit and location yet - returns the current stock level
 
-Moreover there is the `getStockForMovement(movement, unit, location)` method, which returns the stock level at the time of the given movement
+Moreover there is the `getStockForMovement(movement, unit, location)` method, which returns the stock level at the time of the given movement.
+
+Inside a controller you could use the movement iterator to render the history:
+
+	$movementIterator = $this->get('stock.movement.iterator);
+	$movementIterator
+		->addUnits($arrayOfUnits)
+		->addUnit($anotherUnit);
+		
+	$this->render('template', array(
+		'iterator' => $movementIterator
+	));
+		
+Your template then could look something like:
+
+	{% for movement in movementIterator %} // iterate over all movements
+		<h1>Movement #{{ movement.id }}</h1>
+		<p>
+			<strong>Reason:</strong> {{ movement.reason }}
+		</p>
+		<p>
+			<strong>Note:</strong> {{ movement.note }}
+		</p>
+		
+		{% for adjustment in movement.adjustments %}
+			<section>
+				<h1>
+					{{ adjustment.unit.barcode }}  // 
+					change in {{ adjustment.location }}
+				</h1>
+				<ul>
+					<li>
+						{{ iterator.getStockBefore }} // stock before
+					</li>
+					<li>
+						{{ '%+d'|format(adjustment.delta) }} // add plus-sign
+					</li>
+					<li>
+						{{ iterator.getStockAfter }} // stock after
+					</li>
+				</ul>
+			</section>
+		{% endfor %}
+	{% endfor %}
 
 ## Location
 A stock location basically only has a short name(e.g. 'web') to identify it by and a display name(e.g. 'Web Stock').
@@ -103,5 +156,12 @@ To load a location by the name just call `$locationCollection->get('name');` for
 As with the location, `Movement\Reason` also consists of two classes: The actual entity `Movement\Reason\Reason` and the Collection `Movement\Reason\Collection`.
 
 The reason entity also only consists of a unique name(e.g. 'new_order') and a description(e.g. 'New Order').
-The Collection offers methods for getting all set reasons(`$reasonCollection->all()`) and getting them by name (`$reasonCollection->get('name');`).
+The Collection offers methods for getting all set reasons:
+
+	$reasons = $reasonCollection->all();
+
+And there is a method for getting them by name:
+
+	$newOrderReason = reasonCollection->get('new_order');
+	
 To add reasons, there is a method called `add(reason);`, moreover the constructor accepts an array of reasons to add.
