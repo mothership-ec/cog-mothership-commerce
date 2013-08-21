@@ -319,7 +319,9 @@ class Services implements ServicesInterface
 					$c['user.current'],
 					new Commerce\Product\Stock\Movement\Adjustment\Create($trans)
 				),
-				$c['product.unit.edit']
+				new Commerce\Product\Stock\Movement\Adjustment\Create($trans),
+				$c['product.unit.edit'],
+				$c['event.dispatcher']
 			);
 		};
 

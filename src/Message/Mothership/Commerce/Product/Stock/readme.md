@@ -33,7 +33,13 @@ PartialMovement extends Movement and does not add any additional functionality, 
 	$stockManager = $this->get('stock.manager'); // get service
 	
 It is responsible for both - saving stock movements and updating the actual stock level in the database on an transactional basis.
-The stock manager internally has a `Movement\Movement` which is filled with adjustments by using the following methods:
+The stock manager internally has a `Movement\Movement`, which you can manipulate using:
+
+* `setReason`: Every movement **must** have a reason, see `Movement\Reason` for details.
+* `setNote`: Optional string (handy for storing e.g. order-ids on the movement)
+* `setAutomated`: Whether the movement was generated automatically or not
+
+**These methods have to be called before the first adjustments are made**, because the movement-object is added to the transaction as soon as one of the methods for adjusting stock is called. The methods for adding adjustments are:
 
 * `increment`: increments the stock level for given unit and location (by the provided value, defaults to 1)
 * `decrement`: decrements the stock level for given unit and location (by the provided value, defaults to 1)
@@ -42,16 +48,9 @@ The stock manager internally has a `Movement\Movement` which is filled with adju
 With `increment` this could look like this:
 
 	$stockManager->increment($unit, $location, 5);
-	
 
-Also, the stock manager has methods to set the movement's properties:
 
-* `setReason`: Every movement **must** have a reason, see `Movement\Reason` for details.
-* `setNote`: Optional string (handy for storing e.g. order-ids on the movement)
-* `setAutomated`: Whether the movement was generated automatically or not
-
-Once all the adjustments are added to the stock manager, the changes can be changed by calling `commit()` which will then save all changes to a transaction, commit it and return the result of the commit.
-
+Once all the adjustments are added to the stock manager, the changes can be committed by calling `commit()`.
 
 In a complete example you could use the stock manager in your controller like this:
 
@@ -59,21 +58,33 @@ In a complete example you could use the stock manager in your controller like th
 	
 	$brownJacket = … 	// get first unit
 	$whiteJacket = … 	// get second unit
+		
+	$stockManager->setReason($newOrderReason);
+	$stockManager->setAutomated(false);
 
 	$stockManager->increment($brownJacket,	$webLocation); // will increment by 1
 	$stockManager->set($whiteJacket, $webLocation, 0);
-	
-	$stockManager->setReason($newOrderReason);
-	$stockManager->setAutomated(false);
 	
 	if($stockManager->commit()) {
 		echo 'Success!';
 	}
 	
+As the saving-process of stock level changes to the transaction already takes place when you call `increment`, `decrement` or `set`, you can also pass in your own transaction:
+
+	$stockManager->setTransaction($transaction);
+	$stockManager->increment($unit, $location, 3);
+	
+	// do other stuff with the transaction
+	
+	$transaction->commit();
 	
 
-## Stock Change Event
-**Doesn't exist yet, sorry!**
+## Movement Event
+The `Movement\MovementEvent` has a movement which is accessible via a getter:
+
+	$movement = $movementEvent->getMovement();
+
+The movement event is fired automatically, when committing a movement using the stock manager, **if you wish to commit the stock changes without the stock manager, you have to fire the event yourself**.
 
 ## Movement\Iterator
 The iterator is a class which iterates over stock movements for a set of given units. It is accessible through the service `stock.movement.iterator`.

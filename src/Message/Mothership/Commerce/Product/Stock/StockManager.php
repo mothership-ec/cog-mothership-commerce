@@ -2,9 +2,8 @@
 
 namespace Message\Mothership\Commerce\Product\Stock;
 
-use Message\Mothership\Commerce\Product\Stock\Movement\Movement;
-use Message\Mothership\Commerce\Product\Stock\Movement\Create;
-use Message\Mothership\Commerce\Product\Stock\Movement\Adjustment\Adjustment;
+use Message\Mothership\Commerce\Product\Stock\Movement;
+use Message\Mothership\Commerce\Product\Stock\Movement\Adjustment;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 
@@ -13,6 +12,7 @@ use Message\Mothership\Commerce\Product\Events;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Unit\Edit;
 
+use Message\Cog\Event\Dispatcher;
 use Message\Cog\DB;
 
 /**
@@ -27,6 +27,11 @@ class StockManager implements DB\TransactionalInterface
 	 * @var Create
 	 */
 	protected $_movementCreator;
+
+	/**
+	 * Adjustment create-decorator for creating adjustments
+	 */
+	protected $_adjustmentCreator;
 
 	/**
 	 * Unit Editor used for updating unit-stock-levels
@@ -47,6 +52,18 @@ class StockManager implements DB\TransactionalInterface
 	protected $_movement;
 
 	/**
+	 * Flag giving information about whether the insert-row for the movement
+	 * was already added to the transaction or not
+	 * @var bool
+	 */
+	protected $_movementInTransaction = false;
+
+	/**
+	 * Event Dispatcher Object
+	 */
+	protected $_eventDispatcher;
+
+	/**
 	 * Load dependencies
 	 *
 	 * @param  Query  	$query  			DB\Transaction Object
@@ -55,13 +72,16 @@ class StockManager implements DB\TransactionalInterface
 	 *
 	 * @return $this	for chainability
 	 */
-	public function __construct(DB\Transaction $transaction, Create $movementCreator, Edit $unitEditor)
+	public function __construct(DB\Transaction $transaction, Movement\Create $movementCreator,
+		Adjustment\Create $adjustmentCreator, Edit $unitEditor, Dispatcher $eventDispatcher)
 	{
 		$this->_transaction = $transaction;
 		$this->_movementCreator = $movementCreator;
+		$this->_adjustmentCreator = $adjustmentCreator;
 		$this->_unitEditor = $unitEditor;
+		$this->_eventDispatcher = $eventDispatcher;
 
-		$this->_movement = new Movement;
+		$this->_movement = new Movement\Movement;
 
 		return $this;
 	}
@@ -71,8 +91,13 @@ class StockManager implements DB\TransactionalInterface
 	 */
 	public function setTransaction(DB\Transaction $transaction)
 	{
+		$this->_checkMovementNotInTransaction();
+
 		$this->_transaction = $transaction;
-	
+		$this->_adjustmentCreator->setTransaction($transaction);
+		$this->_movementCreator->setTransaction($transaction);
+		$this->_unitEditor->setTransaction($transaction);
+
 		return $this;
 	}
 
@@ -82,9 +107,9 @@ class StockManager implements DB\TransactionalInterface
 	 * @return StockManager $this for chainability
 	 */
 	public function setReason(Reason $reason)
-	{
+	{	
+		$this->_checkMovementNotInTransaction();
 		$this->_movement->reason = $reason;
-
 		return $this;
 	}
 
@@ -95,6 +120,7 @@ class StockManager implements DB\TransactionalInterface
 	 */
 	public function setAutomated($bool)
 	{
+		$this->_checkMovementNotInTransaction();
 		$this->_movement->automated = (bool)$bool;
 		return $this;
 	}
@@ -106,6 +132,7 @@ class StockManager implements DB\TransactionalInterface
 	 */
 	public function setNote($note)
 	{
+		$this->_checkMovementNotInTransaction();
 		$this->_movement->note = $note;
 		return $this;
 	}
@@ -118,8 +145,9 @@ class StockManager implements DB\TransactionalInterface
 	 * @param Movement $movement the movement to use from now on.
 	 * @return StockManager $this for chainability
 	 */
-	public function setMovement(Movement $movement)
+	public function setMovement(Movement\Movement $movement)
 	{
+		$this->_checkMovementNotInTransaction();
 		$this->movement = $movement;
 		return $this;
 	}
@@ -138,14 +166,14 @@ class StockManager implements DB\TransactionalInterface
 	 */
 	public function increment(Unit $unit, Location $location, $increment = 1)
 	{
-		$adjustment = new Adjustment;
+		$adjustment = new Adjustment\Adjustment;
 
 		$adjustment->unit 		= $unit;
 		$adjustment->location 	= $location;
 		$adjustment->delta 		= abs((int)$increment);
 
-		$this->_movement->addAdjustment($adjustment);
-
+		$this->_saveNewAdjustment($adjustment);
+		
 		return $this;
 	}
 
@@ -161,14 +189,14 @@ class StockManager implements DB\TransactionalInterface
 	 * @return StockManager $this for chainability
 	 */
 	public function decrement(Unit $unit, Location $location, $decrement = 1)
-	{
-		$adjustment = new Adjustment;
+	{		
+		$adjustment = new Adjustment\Adjustment;
 
 		$adjustment->unit 		= $unit;
 		$adjustment->location 	= $location;
 		$adjustment->delta 		= abs((int)$decrement) * -1;
 
-		$this->_movement->addAdjustment($adjustment);
+		$this->_saveNewAdjustment($adjustment);
 
 		return $this;
 	}
@@ -192,49 +220,35 @@ class StockManager implements DB\TransactionalInterface
 			throw new \IllegalArgumentException("Value set for stock adjustment must be positive!");
 		}
 
-		$adjustment 	= new Adjustment;
+		$adjustment 	= new Adjustment\Adjustment;
 		$curStockLevel 	= $unit->getStockForLocation($location);
 
 		$adjustment->unit 		= $unit;
 		$adjustment->location 	= $location;
 		$adjustment->delta 		= $value - $curStockLevel;
 
-		$this->_movement->addAdjustment($adjustment);
-
+		$this->_saveNewAdjustment($adjustment);
+		
 		return $this;
 	}
 
 	/**
-	 * This method saves the created movement.
-	 * It tells the $_movementCreator to save the movement and the
-	 * $_unitEditor to update the stock according to the movement's adjustments.
-	 * Also makes sure everything happens within one transaction.
-	 *
-	 * @return 	result of $_transaction->commit()
-	 * @throws  \LogicException	if no reason is set on the movement
+	 * Commits transaction and (if successful) fires stock movement event
+	 * @return 	bool true if commit was successful
 	 */
 	public function commit()
 	{
-		if(!$this->_movement->reason) {
-			throw new \LogicException('Cannot save movement without reason!');
+		$commit = $this->_transaction->commit();
+
+		if($commit) {
+			$this->_eventDispatcher->dispatch(
+				Events::STOCK_MOVEMENT,
+				new Movement\MovementEvent($this->_movement)
+			);
+			return true;
 		}
 
-		$this->_movementCreator->setTransaction($this->_transaction);
-		$this->_unitEditor->setTransaction($this->_transaction);
-
-		$this->_movement = $this->_movementCreator->create($this->_movement);
-
-		foreach($this->_movement->adjustments as $adjustment) {
-			$unit 	  = $adjustment->unit;
-			$location = $adjustment->location;
-
-			// set stock to adjusted level
-			$unit->setStockForLocation($this->_getNewStockLevel($adjustment), $location);
-
-			$this->_unitEditor->saveStockForLocation($unit, $location);
-		}
-
-		return $this->_transaction->commit();
+		return false;
 	}
 
 	/**
@@ -243,9 +257,74 @@ class StockManager implements DB\TransactionalInterface
 	 * @return 	returns the new total stock level for the adjustment's
 	 *			unit and location, after applying adjustment's delta.
 	 */
-	protected function _getNewStockLevel($adjustment)
+	protected function _getAdjustedStockLevel($adjustment)
 	{
 		$curLevel = $adjustment->unit->getStockForLocation($adjustment->location);
 		return $curLevel + $adjustment->delta;
+	}
+
+	/**
+	 * Checks whether movement has not yet been added to transaction
+	 * @throws \LogicException if movement was already added
+	 */
+	protected function _checkMovementNotInTransaction()
+	{
+		if($this->_movementInTransaction) {
+			throw new \LogicException('You can only change the movement before adding adjustments to it!');
+		}		
+	}
+
+	/**
+	 * Just checks whether a reason is already set on the movement
+	 * @throws \LogicException if no reason is set
+	 */
+	protected function _checkReasonSet()
+	{
+		if(!$this->_movement->reason) {
+			throw new \LogicException('Cannot save movement without reason!');
+		}
+	}
+
+	/**
+	 * Just whether movement has already been added to transaction
+	 * and adds it, if not.
+	 */
+	protected function _addMovementToTransactionIfNeeded()
+	{
+		if(!$this->_movementInTransaction) {
+			$this->_movementCreator->setTransaction($this->_transaction);
+			$this->_movementCreator->createWithoutAdjustments($this->_movement);
+
+			$this->_movementInTransaction = true;
+		}
+	}
+
+	/**
+	 * Saves new adjustment (and if needed) the movement to the transaction
+	 * and adds the adjustment to the movement. The method then saves the
+	 * stock level-update to the transaction.
+	 *
+	 * @param  Adjustment\Adjustment $adjustment the new adjustment
+	 * @return Adjustment\Adjustment the adjustment
+	 */
+	protected function _saveNewAdjustment(Adjustment\Adjustment $adjustment)
+	{
+		$this->_checkReasonSet();
+		$this->_addMovementToTransactionIfNeeded();
+
+		$this->_movement->addAdjustment($adjustment);
+
+		$this->_adjustmentCreator->setTransaction($this->_transaction);
+		$adjustment = $this->_adjustmentCreator->create($adjustment);
+
+		$unit 	  = $adjustment->unit;
+		$location = $adjustment->location;
+
+		// set stock to adjusted level
+		$unit->setStockForLocation($this->_getAdjustedStockLevel($adjustment), $location);
+		$this->_unitEditor->setTransaction($this->_transaction);
+		$this->_unitEditor->saveStockForLocation($unit, $location);
+
+		return $adjustment;
 	}
 }
