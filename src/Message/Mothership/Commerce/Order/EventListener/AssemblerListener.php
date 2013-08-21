@@ -7,8 +7,9 @@ use Message\Mothership\Commerce\Order\Event\ValidateEvent;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
-use \Message\Cog\Event\Event as BaseEvent;
-use \Message\Mothership\Ecommerce;
+use Message\Cog\Event\Event as BaseEvent;
+use Message\Mothership\Ecommerce;
+use Message\User\User;
 
 /**
  * Basket Assembler for adding addresses and users to the basket
@@ -46,6 +47,10 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 		// Add the logged in user to the basket order
 		$user = $this->get('user.current');
 		$this->get('basket')->addUser($user);
+
+		if (!$user instanceof User) {
+			return false;
+		}
 
 		$addressLoader = $this->get('commerce.user.address.loader');
 		// Try and load their addresses
