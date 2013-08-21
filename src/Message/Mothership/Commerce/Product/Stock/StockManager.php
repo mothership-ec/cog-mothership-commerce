@@ -93,7 +93,7 @@ class StockManager implements DB\TransactionalInterface
 	 */
 	public function setAutomated($bool)
 	{
-		$this->_movement->automated((bool)$bool);
+		$this->_movement->automated = (bool)$bool;
 	}
 
 	/**
