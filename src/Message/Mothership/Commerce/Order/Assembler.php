@@ -188,6 +188,12 @@ class Assembler
 		$payment->order     = $this->_order;
 		$payment->reference = $reference;
 
+		foreach ($this->_order->payments->all() as $checkPayment) {
+			if ($checkPayment->reference == $payment->reference) {
+				return false;
+			}
+		}
+
 		$this->_order->payments->append($payment);
 
 		$event = new Event($this->_order);
