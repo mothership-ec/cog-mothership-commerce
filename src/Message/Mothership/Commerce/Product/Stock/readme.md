@@ -35,9 +35,14 @@ PartialMovement extends Movement and does not add any additional functionality, 
 It is responsible for both - saving stock movements and updating the actual stock level in the database on an transactional basis.
 The stock manager internally has a `Movement\Movement` which is filled with adjustments by using the following methods:
 
-* `increment`: increments the stock level for given unit and location (by the provided value)
-* `decrement`: decrements the stock level for given unit and location (by the provided value)
+* `increment`: increments the stock level for given unit and location (by the provided value, defaults to 1)
+* `decrement`: decrements the stock level for given unit and location (by the provided value, defaults to 1)
 * `set`: sets the stock level for given unit and location to a specified value
+
+With `increment` this could look like this:
+
+	$stockManager->increment($unit, $location, 5);
+	
 
 Also, the stock manager has methods to set the movement's properties:
 
@@ -45,32 +50,20 @@ Also, the stock manager has methods to set the movement's properties:
 * `setNote`: Optional string (handy for storing e.g. order-ids on the movement)
 * `setAutomated`: Whether the movement was generated automatically or not
 
-Once all the adjustments are added to the stock manager, the changes can be changed by calling `commit()` which will then save all changes to a transaction and commit it.
+Once all the adjustments are added to the stock manager, the changes can be changed by calling `commit()` which will then save all changes to a transaction, commit it and return the result of the commit.
 
 
-This could be used like:
+In a complete example you could use the stock manager in your controller like this:
 
 	$stockManager = $this->get('stock.manager'); // get service
 	
 	$brownJacket = … 	// get first unit
 	$whiteJacket = … 	// get second unit
-	
-	$web = $locationCollection->get('web');
-	$reason = $reasonCollection->get('new_order');
 
-	$stockManager->increment(
-		$brownJacket,
-		$web,				
-		5
-	);
+	$stockManager->increment($brownJacket,	$webLocation); // will increment by 1
+	$stockManager->set($whiteJacket, $webLocation, 0);
 	
-	$stockManager->set(
-		$whiteJacket,
-		$web,				
-		0
-	);
-	
-	$stockManager->setReason($reason);
+	$stockManager->setReason($newOrderReason);
 	$stockManager->setAutomated(false);
 	
 	if($stockManager->commit()) {
@@ -90,6 +83,14 @@ To set the units, there are two methods:
 * `addUnits()`, which adds an array of units by calling
 * `addUnit()`, which adds one unit and loads all movements of that unit
 
+Inside your controller you can get the service and add units like this:
+
+	$movementIterator = $this->get('stock.movement.iterator);
+	$movementIterator
+		->addUnits($arrayOfUnits)
+		->addUnit($anotherUnit);
+
+
 As the `Movement\Iterator` implements `\Iterator`, it can be iterated through with foreach-loops.
 The most important methods for displaying the stock changes when iterating over them are:
 
@@ -99,19 +100,8 @@ The most important methods for displaying the stock changes when iterating over 
 * `getLastStock(unit, location)`: returns the last stock saved in the iterators internal counter or - if there has not been an adjustment for that unit and location yet - returns the current stock level
 
 Moreover there is the `getStockForMovement(movement, unit, location)` method, which returns the stock level at the time of the given movement.
-
-Inside a controller you could use the movement iterator to render the history:
-
-	$movementIterator = $this->get('stock.movement.iterator);
-	$movementIterator
-		->addUnits($arrayOfUnits)
-		->addUnit($anotherUnit);
 		
-	$this->render('template', array(
-		'iterator' => $movementIterator
-	));
-		
-Your template then could look something like:
+If you use the above code in your controller and pass the $movementIterator-object to your template, your template could then look something like:
 
 	{% for movement in movementIterator %} // iterate over all movements
 		<h1>Movement #{{ movement.id }}</h1>
@@ -151,6 +141,13 @@ New locations can be added in the general configurations for the specific client
 
 The location name should preferably be short and has to be unique, as they are used as keys in the collection and as identifiers in the database.
 To load a location by the name just call `$locationCollection->get('name');` for getting an array of all locations, use `$locationCollection->all();`.
+
+	$locationCollection = $this->get('stock.locations');
+	$allLocations = $locationCollection->all();
+	
+	foreach($allLocations as $location) {
+		echo $location->name . ': ' . $location->displayName;
+	}
 
 ## Movement\Reason
 As with the location, `Movement\Reason` also consists of two classes: The actual entity `Movement\Reason\Reason` and the Collection `Movement\Reason\Collection`.
