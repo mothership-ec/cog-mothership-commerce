@@ -8,6 +8,8 @@ use Message\Mothership\Commerce\Product\Stock\Movement\Adjustment\Adjustment;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 
+use Message\Mothership\Commerce\Product\Events;
+
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Unit\Edit;
 
@@ -94,6 +96,7 @@ class StockManager implements DB\TransactionalInterface
 	public function setAutomated($bool)
 	{
 		$this->_movement->automated = (bool)$bool;
+		return $this;
 	}
 
 	/**
@@ -219,7 +222,7 @@ class StockManager implements DB\TransactionalInterface
 		$this->_movementCreator->setTransaction($this->_transaction);
 		$this->_unitEditor->setTransaction($this->_transaction);
 
-		$this->_movementCreator->create($this->_movement);
+		$this->_movement = $this->_movementCreator->create($this->_movement);
 
 		foreach($this->_movement->adjustments as $adjustment) {
 			$unit 	  = $adjustment->unit;
