@@ -68,7 +68,7 @@ class Create implements DB\TransactionalInterface
 				product_tax_rate  = :productTaxRate?f,
 				gross             = :gross?f,
 				rrp               = :rrp?fn,
-				tax_strategy      = :taxStrategy?fn,
+				tax_strategy      = :taxStrategy?sn,
 				product_id        = :productID?in,
 				product_name      = :productName?sn,
 				unit_id           = :unitID?in,
