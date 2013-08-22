@@ -34,7 +34,8 @@ class Iterator implements \Iterator
 
     /**
      * Adds a whole array of units.
-     * @param array $units the units to be added
+     * @param  array $units the units to be added
+     * @return $this for chainability
      */
     public function addUnits($units)
     {
@@ -44,13 +45,16 @@ class Iterator implements \Iterator
         foreach($units as $unit) {
             $this->addUnit($unit);
         }
+
+        return $this;
     }
 
     /**
      * Adds a new unit to the units-array, adds the movements for this
      * unit to the movements-array and sorts it using the createdAt-date.
      *
-     * @param Unit $unit unit to be added
+     * @param  Unit $unit unit to be added
+     * @return $this for chainability
      */
     public function addUnit(Unit $unit)
     {
@@ -68,6 +72,8 @@ class Iterator implements \Iterator
         });
 
         $this->_loadStockLevels();
+
+        return $this;
     }
 
     /**

@@ -96,9 +96,18 @@ class Edit extends Controller
 		$stockManager 		= $this->get('stock.manager');
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$note = $data['note'];
+			$reason = $this->get('stock.movement.reasons')->get($data['reason']);
+
+			if($note) {
+				$stockManager->setNote($note);
+			}
+
+			$stockManager->setReason($reason);
+			$stockManager->setAutomated(false);
+
 			foreach ($data['units'] as $unitID => $locationArray) {
 				foreach($locationArray as $location => $stock) {
-
 					// remove all spaces and tabs and cast stock to int
 					$stock = (int)(preg_replace('/\s+/','',$stock));
 
@@ -117,15 +126,6 @@ class Edit extends Controller
 					}
 				}
 			}
-
-			$note = $data['note'];
-			$reason = $this->get('stock.movement.reasons')->get($data['reason']);
-
-			if($note) {
-				$stockManager->setNote($note);
-			}
-
-			$stockManager->setReason($reason);
 
 			if($stockManager->commit()) {
 				$this->addFlash('success', 'Successfully adjusted stock levels');

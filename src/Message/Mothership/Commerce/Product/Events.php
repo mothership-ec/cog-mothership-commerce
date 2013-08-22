@@ -4,5 +4,5 @@ namespace Message\Mothership\Commerce\Product;
 
 class Events
 {
-	const STOCK_CHANGE = 'commerce.product.stock.change';
+	const STOCK_MOVEMENT = 'commerce.product.stock.movement';
 }

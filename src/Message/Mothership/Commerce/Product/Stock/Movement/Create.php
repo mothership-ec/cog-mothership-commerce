@@ -33,6 +33,18 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Movement $movement)
 	{
+		$movement = $this->createWithoutAdjustments($movement);
+
+		foreach($movement->adjustments as $adjustment)
+		{
+			$adjustment = $this->_adjustmentCreator->create($adjustment);
+		}
+
+		return $movement;
+	}
+
+	public function createWithoutAdjustments(Movement $movement)
+	{
 		if(!$movement->reason) {
 			throw new \IllegalArgumentException("Cannot save a movement without reason to the database!");
 		}
@@ -64,11 +76,6 @@ class Create implements DB\TransactionalInterface
 
 		$this->_query->setIDVariable('STOCK_MOVEMENT_ID');
 		$movement->id = '@STOCK_MOVEMENT_ID';
-
-		foreach($movement->adjustments as $adjustment)
-		{
-			$adjustment = $this->_adjustmentCreator->create($adjustment);
-		}
 
 		return $movement;
 	}

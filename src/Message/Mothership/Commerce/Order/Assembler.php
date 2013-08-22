@@ -76,7 +76,7 @@ class Assembler
 	{
 		// Count how many times this unit is already in the basket
 		$unitCount = $this->_countForUnitID($unit);
-		// Load the itesm from the basket which already have this unitID
+		// Load the items from the basket which already have this unitID
 		$items = $this->_order->items->getByProperty('unitID', $unit->id);
 
 		// If the quantities are the same then return
@@ -95,8 +95,9 @@ class Assembler
 		// Add the item to the order as many times to make the count equal to
 		// the given quantity
 		if ($quantity > $unitCount) {
+			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addItem($unit);
+				$this->addItem($unit, $item->stockLocation);
 			}
 		}
 
@@ -141,11 +142,6 @@ class Assembler
 		return true;
 	}
 
-	public function addVoucher()
-	{
-
-	}
-
 	public function addUser(\Message\User\UserInterface  $user)
 	{
 		$this->_order->user = $user;
@@ -180,22 +176,31 @@ class Assembler
 
 	}
 
-	public function addPayment(MethodInterface $paymentMethod, $amount, $reference)
+	public function addPayment(MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
 	{
 		$payment            = new Entity\Payment\Payment;
 		$payment->method    = $paymentMethod;
 		$payment->amount    = $amount;
 		$payment->order     = $this->_order;
 		$payment->reference = $reference;
+		$payment->id 		= $reference;
+
+		foreach ($this->_order->payments->all() as $checkPayment) {
+			if ($checkPayment->reference == $payment->reference) {
+				return false;
+			}
+		}
 
 		$this->_order->payments->append($payment);
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
+		if (!$silenceEvent) {
+			$event = new Event($this->_order);
+			// Dispatch the edit event
+			$this->_eventDispatcher->dispatch(
+				Events::ASSEMBLER_UPDATE,
+				$event
+			);
+		}
 
 		return $this;
 
