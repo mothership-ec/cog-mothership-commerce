@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
+use Message\Mothership\Commerce\Order\Event;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -29,6 +30,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			Events::BUILD_ORDER_SIDEBAR => array(
 				array('registerSidebarItems'),
+			),
+			Events::BUILD_ORDER_TABS => array(
+				array('registerTabItems'),
 			),
 		);
 	}
@@ -53,5 +57,20 @@ class EventListener extends BaseListener implements SubscriberInterface
 	{
 		$event->addItem('ms.commerce.order.view.all', 'All Orders');
 		$event->addItem('ms.commerce.order.view.shipped', 'Shipped Orders');
+	}
+
+	/**
+	 * Register items to the sidebar of the orders-pages.
+	 *
+	 * @param BuildMenuEvent $event The event
+	 */
+	public function registerTabItems(Event\BuildOrderTabsEvent $event)
+	{
+		$event->addItem('ms.commerce.order.detail.view.index', 		'ms.commerce.order.order.overview-title');
+		$event->addItem('ms.commerce.order.detail.view.items', 		'ms.commerce.order.item.listing-title');
+		$event->addItem('ms.commerce.order.detail.view.addresses', 	'ms.commerce.order.address.listing-title');
+		$event->addItem('ms.commerce.order.detail.view.payments', 	'ms.commerce.order.payment.listing-title');
+		$event->addItem('ms.commerce.order.detail.view.dispatches', 'ms.commerce.order.dispatch.listing-title');
+		$event->addItem('ms.commerce.order.detail.view.notes', 		'ms.commerce.order.note.listing-title');
 	}
 }
