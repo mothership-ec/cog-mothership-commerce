@@ -35,15 +35,16 @@ class Create implements DB\TransactionalInterface
 				unit_id  			= :unitID?i,
 				location 			= :location?s,
 				delta    			= :delta?i
+				
+			ON DUPLICATE KEY UPDATE
+				delta = delta + :delta?i
+
 		', array(
 			'movementID' => $adjustment->movement->id,
 			'unitID' 	 => $adjustment->unit->id,
 			'location'   => $adjustment->location->name,
 			'delta'   	 => $adjustment->delta,
 		));
-
-		$this->_query->setIDVariable('ADJUSTMENT_ID');
-		$adjustment->id = '@ADJUSTMENT_ID';
 
 		return $adjustment;
 	}

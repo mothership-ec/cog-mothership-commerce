@@ -38,9 +38,12 @@ class Loader
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment_id AS id
+				stock_movement_id,
+				unit_id,
+				location,
+				delta
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -49,16 +52,19 @@ class Loader
 			$this->_movement->id,
 		));
 
-		return $this->_load($ids->flatten());
+		return $this->_processResult($result);
 	}
 
 	public function getByLocation(Location\Location $location)
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment_id AS id
+				stock_movement_id,
+				unit_id,
+				location,
+				delta
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -70,16 +76,19 @@ class Loader
 			$location->name,
 		));
 
-		return $this->_load($ids->flatten());
+		return $this->_processResult($result);
 	}
 
 	public function getByProduct(Product $product)
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment.adjustment_id AS id
+				adjustment.stock_movement_id,
+				adjustment.unit_id,
+				adjustment.location,
+				adjustment.delta
 			FROM
 				product_unit AS unit
 			INNER JOIN
@@ -96,16 +105,19 @@ class Loader
 			$product->id,
 		));
 
-		return $this->_load($ids->flatten());
+		return $this->_processResult($result);
 	}
 
 	public function getByUnit(Unit\Unit $unit)
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment_id AS id
+				stock_movement_id,
+				unit_id,
+				location,
+				delta
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -117,38 +129,17 @@ class Loader
 			$unit->id,
 		));
 
-		return $this->_load($ids->flatten(), $unit);
+		return $this->_processResult($result, $unit);
 	}
 
-	protected function _load($ids, Unit\Unit $unit = null)
+	protected function _processResult($result, Unit\Unit $unit = null)
 	{
-		if (!is_array($ids)) {
-			$ids = (array) $ids;
-		}
-
-		if (!$ids) {
-			return array();
-		}
-
-		$result = $this->_query->run('
-			SELECT
-				adjustment_id AS id,
-				stock_movement_id,
-				unit_id,
-				location,
-				delta
-			FROM
-				stock_movement_adjustment
-			WHERE
-				adjustment_id IN (?ij)
-		', array($ids));
-
 		if (0 === count($result)) {
 			return array();
 		}
 
-		$adjustments 	= $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
-		$return 		= array();
+		$adjustments = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
+		$return 	 = array();
 
 		foreach ($result as $key => $row) {
 			// add unit to adjustments
@@ -160,7 +151,7 @@ class Loader
 			$adjustments[$key]->location = $this->_locationCollection->get($row->location);
 			$adjustments[$key]->movement = $this->_movement;
 
-			$return[$row->id] = $adjustments[$key];
+			$return[] = $adjustments[$key];
 		}
 
 		return $return;
