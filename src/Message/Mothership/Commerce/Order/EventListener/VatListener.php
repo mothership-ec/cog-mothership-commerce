@@ -30,7 +30,7 @@ class VatListener implements SubscriberInterface
 			OrderEvents::CREATE_START => array(
 				array('setTaxable', 100),
 			),
-			OrderEvents::ASSEMBLER_UPDATE => array(
+			OrderEvents::ASSEMBLER_ADDRESS_UPDATE => array(
 				array('setTaxable', 100),
 			),
 		);
