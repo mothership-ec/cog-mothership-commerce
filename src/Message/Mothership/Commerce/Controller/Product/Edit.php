@@ -117,11 +117,6 @@ class Edit extends Controller
 							$locationCollection->get($location),
 							$stock
 						);
-						$stockManager->increment(
-							$this->_units[$unitID],
-							$locationCollection->get($location),
-							$stock
-						);
 					} else if($stock < 0) {
 						$stockManager->decrement(
 							$this->_units[$unitID],
