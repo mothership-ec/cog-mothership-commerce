@@ -65,6 +65,7 @@ class OrderShipping extends BaseTask
 
 		$result = $old->run($sql);
 		$output= '';
+		$new->add('TRUNCATE order_shipping');
 		foreach($result as $row) {
 			$new->add('
 				INSERT INTO
