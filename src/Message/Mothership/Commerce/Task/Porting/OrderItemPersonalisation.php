@@ -2,29 +2,13 @@
 
 namespace Message\Mothership\Commerce\Task\Porting;
 
-use Message\Cog\Console\Task\Task as BaseTask;
-
-class OrderItemPersonalisation extends BaseTask
+class OrderItemPersonalisation extends Porting
 {
 
     public function process()
     {
-        $uwOld = new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-				'host'		=> '127.0.0.1',
-				'user'		=> 'root',
-				'password' 	=> 'chelsea',
-				'db'		=> 'uniform_wares',
-				'charset'	=> 'utf-8',
-		));
-
-
-		$uwNew = new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-				'host'		=> '127.0.0.1',
-				'user'		=> 'root',
-				'password' 	=> 'chelsea',
-				'db'		=> 'mothership_cms',
-				'charset'	=> 'utf-8',
-		));
+        $uwOld = $this->getFromConnection();
+		$uwNew = $this->getToCOnnection();
 
 		$new = new \Message\Cog\DB\Transaction($uwNew);
 		$old = new \Message\Cog\DB\Query($uwOld);
