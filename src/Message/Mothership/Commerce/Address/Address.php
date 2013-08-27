@@ -24,4 +24,19 @@ class Address
 	public $country;
 	public $countryID;
 	public $telephone;
+
+	public function setLines(array $lines)
+	{
+		if (count($lines) > 4) {
+			throw new \InvalidArgumentException(sprintf('An Address can only have 4 lines, `%s` passed', count($lines)));
+		}
+
+		$i = 1;
+
+		foreach ($lines as $line) {
+			$this->lines[$i] = $line;
+
+			$i++;
+		}
+	}
 }
