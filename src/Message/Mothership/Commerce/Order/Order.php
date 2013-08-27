@@ -166,16 +166,7 @@ class Order
 	 */
 	public function getAddress($type)
 	{
-		$addresses = $this->_getEntity('addresses')->getByProperty('type', $type);
-
-		if (count($addresses) > 1) {
-			throw new \UnexpectedValueException(sprintf(
-				'Order has more than one `%s` address',
-				$type
-			));
-		}
-
-		return current($addresses) ?: false;
+		return $this->_getEntity('addresses')->getByType($type);
 	}
 
 	/**
