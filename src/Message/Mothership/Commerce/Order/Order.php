@@ -379,7 +379,7 @@ class Order
 	 *
 	 * @return float total left to pay
 	 */
-	public function getPaymentTotal()
+	public function getAmountDue()
 	{
 		$total = $this->totalGross;
 		foreach ($this->payments as $payment) {
