@@ -58,10 +58,11 @@ In a complete example you could use the stock manager in your controller like th
 	
 	$brownJacket = … 	// get first unit
 	$whiteJacket = … 	// get second unit
-		
-	$stockManager->setReason($newOrderReason);
-	$stockManager->setAutomated(false);
+	
+	// set movement-details
+	$stockManager->setReason($newOrderReason);		$stockManager->setAutomated(false);
 
+	// then add adjustments
 	$stockManager->increment($brownJacket,	$webLocation); // will increment by 1
 	$stockManager->set($whiteJacket, $webLocation, 0);
 	

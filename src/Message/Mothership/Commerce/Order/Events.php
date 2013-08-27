@@ -14,4 +14,5 @@ class Events
 	const ITEM_STATUS_CHANGE  = 'commerce.order.item.status.change';
 
 	const BUILD_ORDER_SIDEBAR = 'commerce.order.sidebar.create';
+	const BUILD_ORDER_TABS	  = 'commerce.order.tabs.create';
 }

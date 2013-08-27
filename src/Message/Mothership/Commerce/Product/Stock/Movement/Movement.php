@@ -23,6 +23,17 @@ class Movement
 	public function addAdjustment(Adjustment\Adjustment $adjustment)
 	{
 		$adjustment->movement = $this;
+
+		foreach($this->adjustments as $curAdjustment)
+		{
+			if($curAdjustment->unit === $adjustment->unit && $curAdjustment->location === $adjustment->location) {
+				$curAdjustment->delta = $curAdjustment->delta + $adjustment->delta;
+
+				return $this;
+			}
+		}
+
 		$this->adjustments[] = $adjustment;
+		return $this;
 	}
 }
