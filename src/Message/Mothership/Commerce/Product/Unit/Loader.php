@@ -65,7 +65,7 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), true, $product) : false;
 	}
 
-	public function getByID($unitID, Product $product = null, $revisionID = null)
+	public function getByID($unitID, $revisionID = null, Product $product = null)
 	{
 		return $this->_load($unitID, false, $product, $revisionID);
 	}
