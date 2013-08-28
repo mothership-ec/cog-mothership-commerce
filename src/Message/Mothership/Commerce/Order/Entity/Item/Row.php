@@ -40,18 +40,18 @@ class Row implements \IteratorAggregate, \Countable
 	}
 
 	/**
-	 * Get the sum of the values of a particular property on all the items in
-	 * this row.
+	 * Get the sum of the values of a particular property or the return values
+	 * of a particular method on all the items in this row.
 	 *
-	 * @param  string $property The property name to sum
+	 * @param  string $name     The property/method name to sum
 	 *
-	 * @return float|int        The sum of the property values in this row.
+	 * @return float|int        The sum of the values in this row
 	 *
 	 * @throws \BadMethodCallException   If no items have been set on this row yet
-	 * @throws \InvalidArgumentException If the property does not exist on any
-	 *                                   of the items
+	 * @throws \InvalidArgumentException If neither a property nor a method of
+	 *                                   that name exists on any of the items
 	 */
-	public function sum($property)
+	public function sum($name)
 	{
 		if ($this->count() < 1) {
 			throw new \BadMethodCallException(sprintf(
@@ -63,57 +63,70 @@ class Row implements \IteratorAggregate, \Countable
 		$return = 0;
 
 		foreach ($this->_items as $item) {
-			if (!property_exists($item, $property)) {
+			if (property_exists($item, $name)) {
+				$value = $item->{$name};
+			}
+			else if (method_exists($item, $name)) {
+				$value = $item->{$name}();
+			}
+			else {
 				throw new \InvalidArgumentException(sprintf(
-					'Cannot sum `%s` property for item row: property does not exist',
-					$property
+					'Cannot sum `%s` property/method for item row: neither property nor method of that name exists',
+					$name
 				));
 			}
 
-			$return += $item->{$property};
+			$return += $value;
 		}
 
 		return $return;
 	}
 
 	/**
-	 * Collapse the values of a particular property on all the items in this row
-	 * into a comma-separated string.
+	 * Collapse the values of a particular property or the return values of a
+	 * particular method on all the items in this row into a comma-separated
+	 * string.
 	 *
 	 * Duplicates are removed unless the second argument is passed as `true`.
 	 *
-	 * @param  string  $property        The property name to collapse
+	 * @param  string  $name            The property/method name to collapse
 	 * @param  boolean $allowDuplicates True to allow duplicate values, false
 	 *                                  otherwise
 	 *
 	 * @return string                   The values collapsed as a string
 	 *
 	 * @throws \BadMethodCallException   If no items have been set on this row yet
-	 * @throws \InvalidArgumentException If the property does not exist on any
-	 *                                   of the items
+	 * @throws \InvalidArgumentException If neither a property nor a method of
+	 *                                   that name exists on any of the items
 	 */
-	public function collapse($property, $allowDuplicates = false)
+	public function collapse($name, $allowDuplicates = false)
 	{
 		if ($this->count() < 1) {
 			throw new \BadMethodCallException(sprintf(
-				'Cannot sum `%s` property for item row: no items have been set',
-				$property
+				'Cannot collapse `%s` property/method for item row: no items have been set',
+				$name
 			));
 		}
 
 		$return = array();
 
 		foreach ($this->_items as $item) {
-			if (!property_exists($item, $property)) {
+			if (property_exists($item, $name)) {
+				$value = $item->{$name};
+			}
+			else if (method_exists($item, $name)) {
+				$value = $item->{$name}();
+			}
+			else {
 				throw new \InvalidArgumentException(sprintf(
-					'Cannot sum `%s` property for item row: property does not exist',
-					$property
+					'Cannot collapse `%s` property/method for item row: neither property nor method of that name exists',
+					$name
 				));
 			}
 
 			// Only add the value if it's unique or duplicates are allowed
-			if ($allowDuplicates || !in_array($item->{$property}, $return)) {
-				$return[] = $item->{$property};
+			if ($allowDuplicates || !in_array($value, $return)) {
+				$return[] = $value;
 			}
 		}
 

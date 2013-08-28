@@ -45,6 +45,15 @@ class Item implements EntityInterface
 
 	public $personalisation;
 
+	public function __construct()
+	{
+		$this->authorship = new Authorship;
+
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
+	}
+
 	/**
 	 * Populate this item with the data from a specific unit.
 	 *
@@ -74,13 +83,13 @@ class Item implements EntityInterface
 		return $this;
 	}
 
-	public function __construct()
+	public function getDescription()
 	{
-		$this->authorship = new Authorship;
-
-		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+		return implode(', ', array_filter(array(
+			$this->brand,
+			$this->productName,
+			$this->options,
+		)));
 	}
 
 	/**
