@@ -87,6 +87,14 @@ class Loader
 
 	protected function _loadProduct($productIDs)
 	{
+		if (!is_array($productIDs)) {
+			$productIDs = (array) $productIDs;
+		}
+
+		if (!$productIDs) {
+			return $this->_returnArray ? array() : false;
+		}
+
 		$result = $this->_query->run(
 			'SELECT
 				product.product_id   AS id,
