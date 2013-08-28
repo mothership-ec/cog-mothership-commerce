@@ -52,6 +52,11 @@ class CollectionOrderLoader implements CollectionInterface
 		$this->_order = $order;
 	}
 
+	public function getLoader()
+	{
+		return $this->_loader;
+	}
+
 	public function get($id)
 	{
 		$this->load();
