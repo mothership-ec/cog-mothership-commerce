@@ -18,4 +18,9 @@ class Address extends BaseAddress implements EntityInterface
 	public $title;
 	public $forename;
 	public $surname;
+
+	public function getName()
+	{
+		return $this->forename . ($this->surname ? ' ' . $this->surname : '');
+	}
 }
