@@ -58,7 +58,7 @@ class Services implements ServicesInterface
 		$services['order.entities'] = function($c) {
 			return array(
 				'addresses'  => new Commerce\Order\Entity\CollectionOrderLoader(
-					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Address\Collection,
 					new Commerce\Order\Entity\Address\Loader($c['db.query'])
 				),
 				'discounts'  => new Commerce\Order\Entity\CollectionOrderLoader(
