@@ -148,6 +148,14 @@ class Services implements ServicesInterface
 			return $c['order.loader']->getEntityLoader('refunds');
 		};
 
+		$services['order.refund.create'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
+		};
+
+		$services['order.refund.edit'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Edit($c['db.query'], $c['order.refund.loader'], $c['user.current']);
+		};
+
 		// Order note entity
 		$services['order.note.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('notes');
