@@ -139,7 +139,6 @@ class Item implements EntityInterface
 	 */
 	public function getProduct($reload = false)
 	{
-		de($this);
 		if (!$this->_product || $reload) {
 			$this->_product = Container::get('product.loader')->getByID($this->productID);
 		}
