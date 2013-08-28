@@ -83,6 +83,15 @@ class Item implements EntityInterface
 		return $this;
 	}
 
+	/**
+	 * Get the item description.
+	 *
+	 * The item description is made up of the brand name; the product name and
+	 * the list of options. They are comma-separated, and if any of them are
+	 * not set or blank they are excluded.
+	 *
+	 * @return string The item description
+	 */
 	public function getDescription()
 	{
 		return implode(', ', array_filter(array(
@@ -110,5 +119,10 @@ class Item implements EntityInterface
 		}
 
 		return round($this->listPrice - $this->discount - $this->net, 2);
+	}
+
+	public function getProduct()
+	{
+		return Container::get('product.loader')->getByID($this->productID);
 	}
 }
