@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Order\Order;
 
+use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
 
 /**
@@ -44,6 +45,9 @@ class Item implements EntityInterface
 	public $stockLocation;
 
 	public $personalisation;
+
+	protected $_product;
+	protected $_unit;
 
 	public function __construct()
 	{
@@ -121,8 +125,49 @@ class Item implements EntityInterface
 		return round($this->listPrice - $this->discount - $this->net, 2);
 	}
 
-	public function getProduct()
+	/**
+	 * Get the product associated with this order.
+	 *
+	 * The product is only loaded once per Item instance, unless `$reload` is
+	 * passed as true.
+	 *
+	 * @todo Make this not access the service container statically!
+	 *
+	 * @param  boolean $reload True to force a reload of the Product instance
+	 *
+	 * @return \Message\Mothership\Commerce\Product\Product
+	 */
+	public function getProduct($reload = false)
 	{
-		return Container::get('product.loader')->getByID($this->productID);
+		de($this);
+		if (!$this->_product || $reload) {
+			$this->_product = Container::get('product.loader')->getByID($this->productID);
+		}
+
+		return $this->_product;
+	}
+
+	/**
+	 * Get the unit associated with this order.
+	 *
+	 * The unit is loaded with the revision ID stored on this item, so the
+	 * options should match.
+	 *
+	 * The unit is only loaded once per Item instance, unless `$reload` is
+	 * passed as true.
+	 *
+	 * @todo Make this not access the service container statically!
+	 *
+	 * @param  boolean $reload True to force a reload of the Unit instance
+	 *
+	 * @return \Message\Mothership\Commerce\Product\Unit\Unit
+	 */
+	public function getUnit($reload = false)
+	{
+		if (!$this->_unit || $reload) {
+			$this->_unit = Container::get('product.unit.loader')->getByID($this->productID, $this->revisionID);
+		}
+
+		return $this->_unit;
 	}
 }
