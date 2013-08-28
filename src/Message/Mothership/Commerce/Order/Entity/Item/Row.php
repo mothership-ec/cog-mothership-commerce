@@ -40,6 +40,16 @@ class Row implements \IteratorAggregate, \Countable
 	}
 
 	/**
+	 * Get the first item in this row of items.
+	 *
+	 * @return Item
+	 */
+	public function first()
+	{
+		return reset($this->_items);
+	}
+
+	/**
 	 * Get the sum of the values of a particular property or the return values
 	 * of a particular method on all the items in this row.
 	 *
