@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Entity\Collection as BaseCollection;
+use Message\Mothership\Commerce\Order\Status\Status;
 
 class Collection extends BaseCollection
 {
@@ -19,5 +20,23 @@ class Collection extends BaseCollection
 		}
 
 		return $rows;
+	}
+
+	public function getByCurrentStatus(Status $status)
+	{
+		return $this->getByCurrentStatusCode($status->code);
+	}
+
+	public function getByCurrentStatusCode($code)
+	{
+		$return = array();
+
+		foreach ($this->all() as $item) {
+			if ($code === $item->status->code) {
+				$return[] = $item;
+			}
+		}
+
+		return $return;
 	}
 }
