@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Dispatch;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+use Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Cog\ValueObject\Authorship;
 
@@ -20,7 +21,7 @@ class Dispatch implements EntityInterface
 	public $cost;
 	public $weight;
 
-	public $items = array();
+	public $items;
 
 	public function __construct()
 	{
@@ -28,5 +29,7 @@ class Dispatch implements EntityInterface
 
 		$this->authorship
 			->disableUpdate();
+
+		$this->items = new Item\Collection;
 	}
 }
