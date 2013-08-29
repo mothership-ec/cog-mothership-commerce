@@ -28,6 +28,9 @@ class OrderRepair extends Porting
 
 		$result = $old->run($sql);
 		$output= '';
+
+		$new->add('TRUNCATE order_repair');
+
 		foreach($result as $row) {
 			$new->add('
 				INSERT INTO
