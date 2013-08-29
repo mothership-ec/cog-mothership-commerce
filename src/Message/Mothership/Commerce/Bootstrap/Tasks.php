@@ -33,6 +33,8 @@ class Tasks implements TasksInterface
         $tasks->add(new Task\Porting\ProductExport('commerce:porting:port_product_export'), 'Ports catalogue_export and catalogue_info prices from pre mothership');
         $tasks->add(new Task\Porting\ProductTags('commerce:porting:port_product_tag'), 'Ports product_tag from catalogue_range from pre mothership');
         $tasks->add(new Task\Porting\ProductUnit('commerce:porting:port_product_unit'), 'Ports product_unit from catalogue_unit from pre mothership');
+        $tasks->add(new Task\Porting\ProductOptions('commerce:porting:port_product_unit_options'), 'Ports sizes and colours from pre mothership');
+        $tasks->add(new Task\Porting\ProductUnitStock('commerce:porting:port_product_unit_stock'), 'Ports catalogue_unit_stock from pre mothership');
 
     }
 }
