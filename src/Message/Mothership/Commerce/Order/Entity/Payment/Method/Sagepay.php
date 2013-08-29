@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Payment\Method;
 use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
 
 /**
- * Card payment method.
+ * Sagepay payment method.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
