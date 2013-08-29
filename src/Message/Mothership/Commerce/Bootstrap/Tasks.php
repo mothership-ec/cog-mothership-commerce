@@ -27,6 +27,7 @@ class Tasks implements TasksInterface
         $tasks->add(new Task\Porting\OrderDiscount('commerce:porting:port_order_discount'), 'Ports order_discount from pre mothership');
 
         $tasks->add(new Task\Porting\Products('commerce:porting:port_products'), 'Ports catalogue and catalogue_info from pre mothership');
+        $tasks->add(new Task\Porting\ProductsPricing('commerce:porting:port_products_pricing'), 'Ports catalogue_unit_price and catalogue_info prices from pre mothership');
 
     }
 }
