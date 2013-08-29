@@ -39,8 +39,7 @@ class User extends Porting
 					att_user_password USING (user_id)';
 
 		$result = $old->run($sql);
-		$new->add('TRUNCATE product_unit_stock');
-		$new->add('TRUNCATE product_unit_stock_snapshot');
+		$new->add('TRUNCATE user');
 
 		$output= '';
 		foreach($result as $row) {
@@ -78,6 +77,84 @@ class User extends Porting
 					:surname?,
 					:last_login_at?,
 					:password_request_at?
+				)', (array) $row);
+		}
+
+		$sql ='SELECT
+				val_address.address_id,
+				user_id,
+				\'delivery\' AS type,
+				address_name_1 AS line_1,
+				address_name_2 AS line_2,
+				NULL AS line_3,
+				NULL AS line_4,
+				address_town AS town,
+				postcode AS postcode,
+				address_state_id AS state_id,
+				country_id,
+				telephone_name AS telephone,
+				NULL AS created_at,
+				NULL AS created_by,
+				NULL AS updated_at,
+				NULL AS updated_by
+			FROM
+				val_address
+			JOIN
+				att_address_postcode USING (address_id)
+			JOIN
+				lkp_address_country USING (address_id)
+			JOIN
+				lkp_user_address ON (lkp_user_address.address_id = val_address.address_id AND lkp_user_address.delivery = \'Y\')
+			LEFT JOIN
+				lkp_user_telephone USING (user_id)
+			LEFT JOIN
+				val_telephone USING (telephone_id)
+			GROUP BY
+				address_id';
+		$result = $old->run($sql);
+		$new->add('TRUNCATE user_address');
+
+		foreach($result as $row) {
+
+			$new->add('
+				INSERT INTO
+					user_address
+				(
+					address_id,
+					user_id,
+					type,
+					line_1,
+					line_2,
+					line_3,
+					line_4,
+					town,
+					postcode,
+					state_id,
+					country_id,
+					telephone,
+					created_at,
+					created_by,
+					updated_at,
+					updated_by
+				)
+				VALUES
+				(
+					:address_id?,
+					:user_id?,
+					:type?,
+					:line_1?,
+					:line_2?,
+					:line_3?,
+					:line_4?,
+					:town?,
+					:postcode?,
+					:state_id?,
+					:country_id?,
+					:telephone?,
+					:created_at?,
+					:created_by?,
+					:updated_at?,
+					:updated_by?
 				)', (array) $row);
 		}
 
