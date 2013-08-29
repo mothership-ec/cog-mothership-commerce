@@ -23,6 +23,10 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} (Tax: {{ order.productTax|price(order.currencyID) }} ) </li>
+			<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
+			<li><span>Shipping ({{ order.shippingName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
+			<li><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
 {% else %}
 	<p>{{ 'ms.commerce.order.order.none'|trans }}</p>
 {% endif %}
