@@ -15,7 +15,7 @@ class ProductUnitStock extends Porting
 
 		$sql = 'SELECT
 					unit_id,
-					LCASE(name) AS location,
+					name AS location,
 					stock
 				FROM
 					catalogue_unit_stock
@@ -23,6 +23,8 @@ class ProductUnitStock extends Porting
 
 		$result = $old->run($sql);
 		$new->add('TRUNCATE product_unit_stock');
+		$new->add('TRUNCATE product_unit_stock_snapshot');
+
 		$output= '';
 		foreach($result as $row) {
 
@@ -37,6 +39,33 @@ class ProductUnitStock extends Porting
 				VALUES
 				(
 					?,?,?
+				)', (array) $row);
+		}
+
+		$sql = 'SELECT
+					unit_id,
+					LCASE(name) AS location,
+					stock,
+					UNIX_TIMESTAMP(snapshot_date)
+				FROM
+					catalogue_unit_stock_snapshot
+				JOIN location USING (location_id)';
+
+		$result = $old->run($sql);
+		foreach($result as $row) {
+
+			$new->add('
+				INSERT INTO
+					product_unit_stock_snapshot
+				(
+					unit_id,
+					location,
+					stock,
+					created_at
+				)
+				VALUES
+				(
+					?,?,?,?
 				)', (array) $row);
 		}
 
