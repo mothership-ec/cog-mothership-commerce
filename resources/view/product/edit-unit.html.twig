@@ -31,16 +31,18 @@
 			{% for unit in units %}
 				<tr>
 					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
-					{% for name, value in unit.options %}
-						<td>{{ form_widget(form[unit.id]['options'][name]) }}</td>
-					{% endfor %}
+					{% for name, title in headings %}
 						<td>
-						{% for name, value in unit.price %}
-							<div class="inline">
-								{{ form_row(form[unit.id]['price'][name]) }}
-							</div>
-						{% endfor %}
+							{{ form_widget(form[unit.id]['options'][name]) }}
 						</td>
+					{% endfor %}
+					<td>
+					{% for name, value in unit.price %}
+						<div class="inline">
+							{{ form_row(form[unit.id]['price'][name]) }}
+						</div>
+					{% endfor %}
+					</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
 					<td>{{ form_widget(form[unit.id]['visible']) }}</td>
 					<td>{{ form_widget(form[unit.id]['delete']) }}</td>

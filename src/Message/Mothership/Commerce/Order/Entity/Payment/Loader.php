@@ -40,6 +40,41 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
+	/**
+	 * Get payments for a particular method with a particular payment reference.
+	 *
+	 * @param  string|MethodInterface $method The payment method or method name
+	 * @param  string              $reference The payment reference
+	 *
+	 * @return Payment|array[Payment]         Payment(s) for this method & reference
+	 */
+	public function getByMethodAndReference($method, $reference)
+	{
+		if ($method instanceof MethodInterface) {
+			$method = $method->getName();
+		}
+
+		$result = $this->_query->run('
+			SELECT
+				payment_id
+			FROM
+				order_payment
+			WHERE
+				method    = :method?s
+			AND reference = :reference?s
+		', array(
+			'method'    => $method,
+			'reference' => $reference,
+		));
+
+		return $this->_load($result->flatten(), false);
+	}
+
+	public function getByID($id, Order\Order $order = null)
+	{
+		return $this->_load($id, false, $order);
+	}
+
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		if (!is_array($ids)) {

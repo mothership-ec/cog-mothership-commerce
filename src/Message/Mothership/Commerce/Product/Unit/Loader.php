@@ -65,7 +65,7 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), true, $product) : false;
 	}
 
-	public function getByID($unitID, Product $product = null, $revisionID = null)
+	public function getByID($unitID, $revisionID = null, Product $product = null)
 	{
 		return $this->_load($unitID, false, $product, $revisionID);
 	}
@@ -126,7 +126,7 @@ class Loader implements LoaderInterface
 			// Save stock units
 			foreach ($stock as $values) {
 				if ($values->id == $data->id) {
-					$units[$key]->stock[$values->locationID] = $values->stock;
+					$units[$key]->stock[$values->location] = $values->stock;
 				}
 			}
 
@@ -145,7 +145,7 @@ class Loader implements LoaderInterface
 			// Save prices to unit
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$units[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+					$units[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
 				}
 			}
 
@@ -268,9 +268,9 @@ class Loader implements LoaderInterface
 	{
 		return $this->_query->run(
 			'SELECT
-				product_unit_stock.unit_id     AS id,
-				product_unit_stock.stock       AS stock,
-				product_unit_stock.location_id AS locationID
+				product_unit_stock.unit_id     	AS id,
+				product_unit_stock.stock       	AS stock,
+				product_unit_stock.location 	AS location
 			FROM
 				product_unit_stock
 			WHERE

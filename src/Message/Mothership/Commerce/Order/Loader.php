@@ -48,9 +48,10 @@ class Loader
 			throw new \InvalidArgumentException(sprintf('Unknown order entity: `%s`', $name));
 		}
 
-		$this->_entities[$name]->setOrderLoader($this);
+		$loader = $this->_entities[$name]->getLoader();
+		$loader->setOrderLoader($this);
 
-		return $this->_entities[$name];
+		return $loader;
 	}
 
 	/**
@@ -229,6 +230,8 @@ class Loader
 			$orders[$key]->shippingTax       = (float) $row->shippingTax;
 			$orders[$key]->shippingTaxRate   = (float) $row->shippingTaxRate;
 			$orders[$key]->shippingGross     = (float) $row->shippingGross;
+
+			$orders[$key]->taxable = (bool) $row->taxable;
 
 			$orders[$key]->user = $this->_userLoader->getByID($row->user_id);
 

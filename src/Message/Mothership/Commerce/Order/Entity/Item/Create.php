@@ -2,9 +2,10 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
-use Message\User\UserInterface;
-
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Product\Stock;
+
+use Message\User\UserInterface;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -16,18 +17,28 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_currentUser;
-	protected $_query;
+	protected $_allowedTaxStrategies = array(
+		'inclusive',
+		'exclusive',
+	);
 
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	protected $_query;
+	protected $_transOverriden = false;
+
+	protected $_loader;
+	protected $_currentUser;
+
+	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_query          = $trans;
+		$this->_transOverriden = true;
 	}
 
 	public function create(Item $item)
@@ -39,6 +50,8 @@ class Create implements DB\TransactionalInterface
 				$this->_currentUser->id
 			);
 		}
+
+		$this->_validate($item);
 
 		$this->_query->add('
 			INSERT INTO
@@ -52,8 +65,10 @@ class Create implements DB\TransactionalInterface
 				discount          = :discount?f,
 				tax               = :tax?f,
 				tax_rate          = :taxRate?f,
+				product_tax_rate  = :productTaxRate?f,
 				gross             = :gross?f,
 				rrp               = :rrp?fn,
+				tax_strategy      = :taxStrategy?sn,
 				product_id        = :productID?in,
 				product_name      = :productName?sn,
 				unit_id           = :unitID?in,
@@ -63,28 +78,30 @@ class Create implements DB\TransactionalInterface
 				options           = :options?sn,
 				brand             = :brand?sn,
 				weight_grams      = :weight?in,
-				stock_location_id = :stockLocation?i
+				stock_location    = :stockLocation?s
 		', array(
-			'orderID'       => $item->order->id,
-			'createdAt'     => $item->authorship->createdAt(),
-			'createdBy'     => $item->authorship->createdBy(),
-			'listPrice'     => $item->listPrice,
-			'net'           => $item->net,
-			'discount'      => $item->discount,
-			'tax'           => $item->tax,
-			'taxRate'       => $item->taxRate,
-			'gross'         => $item->gross,
-			'rrp'           => $item->rrp,
-			'productID'     => $item->productID,
-			'productName'   => $item->productName,
-			'unitID'        => $item->unitID,
-			'unitRevision'  => $item->unitRevision,
-			'sku'           => $item->sku,
-			'barcode'       => $item->barcode,
-			'options'       => $item->options,
-			'brand'         => $item->brand,
-			'weight'        => $item->weight,
-			'stockLocation' => $item->stockLocation->id,
+			'orderID'        => $item->order->id,
+			'createdAt'      => $item->authorship->createdAt(),
+			'createdBy'      => $item->authorship->createdBy(),
+			'listPrice'      => $item->listPrice,
+			'net'            => $item->net,
+			'discount'       => $item->discount,
+			'tax'            => $item->tax,
+			'taxRate'        => $item->taxRate,
+			'productTaxRate' => $item->productTaxRate,
+			'gross'          => $item->gross,
+			'rrp'            => $item->rrp,
+			'taxStrategy'    => $item->taxStrategy,
+			'productID'      => $item->productID,
+			'productName'    => $item->productName,
+			'unitID'         => $item->unitID,
+			'unitRevision'   => $item->unitRevision,
+			'sku'            => $item->sku,
+			'barcode'        => $item->barcode,
+			'options'        => $item->options,
+			'brand'          => $item->brand,
+			'weight'         => $item->weight,
+			'stockLocation'  => $item->stockLocation->name,
 		));
 
 		$this->_query->setIDVariable('ITEM_ID');
@@ -117,9 +134,52 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
-		// insert personalisation?
-		//
-		// use item loader to re-load this item and return it ONLY IF NOT IN ORDER CREATION TRANSACTION
+		// Set personalisation data, if defined
+		if ($item->personalisation && !$item->personalisation->isEmpty()) {
+			$this->_query->add('
+				INSERT INTO
+					order_item_personalisation
+				SET
+					item_id         = :itemID?i,
+					sender_name     = :senderName?sn,
+					recipient_name  = :recipientName?sn,
+					recipient_email = :recipientEmail?sn,
+					message         = :message?sn
+			', array(
+				'itemID'         => $item->id,
+				'senderName'     => $item->personalisation->senderName,
+				'recipientName'  => $item->personalisation->recipientName,
+				'recipientEmail' => $item->personalisation->recipientEmail,
+				'message'        => $item->personalisation->message,
+			));
+		}
+
+		// If the query was not in a transaction, return the re-loaded item
+		if (!$this->_transOverriden) {
+			$this->_query->commit();
+
+			return $this->_loader->getByID($this->_query->getIDVariable('ITEM_ID'), $item->order);
+		}
+
 		return $item;
+	}
+
+	protected function _validate(Item $item)
+	{
+		if ($item->personalisation && !($item->personalisation instanceof Personalisation)) {
+			throw new \InvalidArgumentException('Item personalisation must be an instance of `Personalisation`');
+		}
+
+		if (!($item->stockLocation instanceof Stock\Location\Location)) {
+			throw new \InvalidArgumentException('Item must have a valid stock location');
+		}
+
+		if (!in_array($item->taxStrategy, $this->_allowedTaxStrategies)) {
+			throw new \InvalidArgumentException(sprintf(
+				'Item must have a valid tax strategy (one of `%s`). `%s` given.',
+				implode('`, `', $this->_allowedTaxStrategies),
+				$item->taxStrategy
+			));
+		}
 	}
 }

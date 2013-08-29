@@ -87,6 +87,14 @@ class Loader
 
 	protected function _loadProduct($productIDs)
 	{
+		if (!is_array($productIDs)) {
+			$productIDs = (array) $productIDs;
+		}
+
+		if (!$productIDs) {
+			return $this->_returnArray ? array() : false;
+		}
+
 		$result = $this->_query->run(
 			'SELECT
 				product.product_id   AS id,
@@ -101,6 +109,7 @@ class Loader
 				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
+				product.tax_strategy AS taxStrategy,
 				product.tax_rate     AS taxRate,
 				product.supplier_ref AS supplierRef,
 				product.weight_grams AS weight,
@@ -176,6 +185,9 @@ class Loader
 
 		foreach ($result as $key => $data) {
 
+			$data->taxRate     = (float) $data->taxRate;
+			$data->exportValue = (float) $data->exportValue;
+
 			$products[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
 
 			if ($data->updatedAt) {
@@ -188,7 +200,7 @@ class Loader
 
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$products[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+					$products[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
 				}
 			}
 

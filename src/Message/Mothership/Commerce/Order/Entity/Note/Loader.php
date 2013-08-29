@@ -38,6 +38,11 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
+	public function getByID($id, Order\Order $order = null)
+	{
+		return $this->_load($id, false, $order);
+	}
+
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		if (!is_array($ids)) {
@@ -68,6 +73,8 @@ class Loader extends Order\Entity\BaseLoader
 		$return = array();
 
 		foreach ($result as $key => $row) {
+			$notes[$key]->customerNotified = (bool) $row->customerNotified;
+
 			$notes[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by

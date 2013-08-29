@@ -11,24 +11,17 @@ use Message\Mothership\Commerce\Order\Order;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
+class Collection implements CollectionInterface
 {
-	protected $_order;
-	protected $_loader;
+	protected $_items = array();
 
-	protected $_loaded = false;
-	protected $_items  = array();
-
-	public function __construct(Order $order, LoaderInterface $loader)
+	public function __sleep()
 	{
-		$this->_order  = $order;
-		$this->_loader = $loader;
+		return array('_items');
 	}
 
 	public function get($id)
 	{
-		$this->load();
-
 		foreach ($this->_items as $item) {
 			if ($id === $item->id) {
 				return $item;
@@ -40,8 +33,6 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function getByProperty($property, $value)
 	{
-		$this->load();
-
 		$return = array();
 
 		foreach ($this->_items as $id => $item) {
@@ -55,8 +46,6 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function exists($id)
 	{
-		$this->load();
-
 		try {
 			$this->get($id);
 		}
@@ -69,17 +58,11 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function all()
 	{
-		$this->load();
-
 		return $this->_items;
 	}
 
 	public function append(EntityInterface $entity)
 	{
-		if (property_exists($entity, 'order') && !$entity->order) {
-			$entity->order = $this->_order;
-		}
-
 		$this->_items[] = $entity;
 	}
 
@@ -97,8 +80,6 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function count()
 	{
-		$this->load();
-
 		return count($this->_items);
 	}
 
@@ -116,32 +97,14 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		return $this->exists($id);
 	}
+
 	public function offsetUnset($id)
 	{
-		$this->load();
-
 		unset($this->_items[$id]);
 	}
 
 	public function getIterator()
 	{
-		$this->load();
-
 		return new \ArrayIterator($this->_items);
-	}
-
-	public function load()
-	{
-		if (!$this->_loaded) {
-			if ($this->_order->id && $items = $this->_loader->getByOrder($this->_order)) {
-				foreach ($items as $item) {
-					$this->append($item);
-				}
-			}
-
-			return $this->_loaded = true;
-		}
-
-		return false;
 	}
 }

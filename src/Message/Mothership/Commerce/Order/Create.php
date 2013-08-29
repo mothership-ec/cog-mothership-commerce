@@ -85,6 +85,7 @@ class Create
 				user_id          = :userID?in,
 				type             = :type?sn,
 				locale           = :locale?s,
+				taxable          = :taxable?b,
 				currency_id      = :currencyID?s,
 				conversion_rate  = :conversionRate?f,
 				product_net      = :productNet?f,
@@ -102,6 +103,7 @@ class Create
 			'status'          => $order->status->code,
 			'type'            => $order->type,
 			'locale'          => $order->locale,
+			'taxable'         => $order->taxable,
 			'currencyID'      => $order->currencyID,
 			'conversionRate'  => $order->conversionRate,
 			'productNet'      => $order->productNet,
@@ -176,9 +178,20 @@ class Create
 			}
 		}
 
-		$this->_trans->commit();
+		// Fire the "create end" event before committing the transaction
+		$event = new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_trans);
+		$this->_eventDispatcher->dispatch(
+			Events::CREATE_END,
+			$event
+		);
 
-		$event = new Event\Event($this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID')));
+		$order = $event->getOrder();
+		$trans = $event->getTransaction();
+
+		$trans->commit();
+
+		$event = new Event\Event($this->_loader->getByID($trans->getIDVariable('ORDER_ID')));
 		$this->_eventDispatcher->dispatch(
 			Events::CREATE_COMPLETE,
 			$event

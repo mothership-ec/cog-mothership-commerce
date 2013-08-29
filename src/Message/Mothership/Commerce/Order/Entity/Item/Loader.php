@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Product\Stock\Location\Collection as LocationCollection;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -16,16 +17,18 @@ class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_statusLoader;
+	protected $_stockLocations;
 
-	public function __construct(DB\Query $query, Status\Loader $statusLoader)
+	public function __construct(DB\Query $query, Status\Loader $statusLoader, LocationCollection $stockLocations)
 	{
-		$this->_query        = $query;
-		$this->_statusLoader = $statusLoader;
+		$this->_query          = $query;
+		$this->_statusLoader   = $statusLoader;
+		$this->_stockLocations = $stockLocations;
 	}
 
-	public function getByID($id)
+	public function getByID($id, Order\Order $order = null)
 	{
-		return $this->_load($id, false);
+		return $this->_load($id, false, $order);
 	}
 
 	/**
@@ -58,17 +61,21 @@ class Loader extends Order\Entity\BaseLoader
 		$result = $this->_query->run('
 			SELECT
 				*,
-				item_id       AS id,
-				order_id      AS orderID,
-				list_price    AS listPrice,
-				tax_rate      AS taxRate,
-				product_id    AS productID,
-				product_name  AS productName,
-				unit_id       AS unitID,
-				unit_revision AS unitRevision,
-				weight_grams  AS weight
+				item_id          AS id,
+				order_id         AS orderID,
+				list_price       AS listPrice,
+				tax_rate         AS taxRate,
+				product_tax_rate AS productTaxRate,
+				tax_strategy     AS taxStrategy,
+				product_id       AS productID,
+				product_name     AS productName,
+				unit_id          AS unitID,
+				unit_revision    AS unitRevision,
+				weight_grams     AS weight
 			FROM
 				order_item
+			LEFT JOIN
+				order_item_personalisation USING (item_id)
 			WHERE
 				item_id IN (?ij)
 		', array($ids));
@@ -82,29 +89,43 @@ class Loader extends Order\Entity\BaseLoader
 
 		foreach ($result as $key => $row) {
 			// Cast decimals to float
-			$items[$key]->listPrice = (float) $row->listPrice;
-			$items[$key]->net       = (float) $row->net;
-			$items[$key]->discount  = (float) $row->discount;
-			$items[$key]->tax       = (float) $row->tax;
-			$items[$key]->taxRate   = (float) $row->taxRate;
-			$items[$key]->gross     = (float) $row->gross;
-			$items[$key]->rrp       = (float) $row->rrp;
+			$items[$key]->listPrice      = (float) $row->listPrice;
+			$items[$key]->net            = (float) $row->net;
+			$items[$key]->discount       = (float) $row->discount;
+			$items[$key]->tax            = (float) $row->tax;
+			$items[$key]->taxRate        = (float) $row->taxRate;
+			$items[$key]->productTaxRate = (float) $row->productTaxRate;
+			$items[$key]->gross          = (float) $row->gross;
+			$items[$key]->rrp            = (float) $row->rrp;
 
+			// Set authorship data
 			$items[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
 
+			// Load the order if we don't have it already
 			if (!$order) {
 				$order = $this->_orderLoader->getByID($row->order_id);
 			}
 
+			// Set the order on the item
 			$items[$key]->order = $order;
 
+			// Set the current status
 			$this->_statusLoader->setLatest($items[$key]);
 
-			// TODO: set the stock location
-			// TODO: set the personalisation data
+			// Set the stock location
+			$items[$key]->stockLocation = $this->_stockLocations->get($row->stock_location);
+
+			// Add personalisation data, if set
+			if ($row->sender_name || $row->recipient_name || $row->recipient_email || $row->message) {
+				$items[$key]->personalisation = new Personalisation;
+				$items[$key]->personalisation->senderName     = $row->sender_name;
+				$items[$key]->personalisation->recipientName  = $row->recipient_name;
+				$items[$key]->personalisation->recipientEmail = $row->recipient_email;
+				$items[$key]->personalisation->message        = $row->message;
+			}
 
 			$return[$row->id] = $items[$key];
 		}

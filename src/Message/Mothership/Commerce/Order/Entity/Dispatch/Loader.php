@@ -23,7 +23,7 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_methods = $methods;
 	}
 
-	public function getByID($id, Order\Order $order)
+	public function getByID($id, Order\Order $order = null)
 	{
 		return $this->_load($id, false, $order);
 	}
@@ -113,7 +113,7 @@ class Loader extends Order\Entity\BaseLoader
 			', $row->id);
 
 			foreach ($items->flatten() as $item) {
-				$entities[$key]->items[] = $entities[$key]->order->items->get($item);
+				$entities[$key]->items->append($entities[$key]->order->items->get($item));
 			}
 
 			$return[$row->id] = $entities[$key];
