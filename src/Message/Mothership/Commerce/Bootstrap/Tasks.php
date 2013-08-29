@@ -9,6 +9,7 @@ class Tasks implements TasksInterface
 {
     public function registerTasks($tasks)
     {
+        // Order related ports
         $tasks->add(new Task\Porting\OrderSummary('commerce:porting:port_order_summary'), 'Ports order_summary from pre mothership');
         $tasks->add(new Task\Porting\OrderShipping('commerce:porting:port_shipping'), 'Ports order_shipping from pre mothership');
         $tasks->add(new Task\Porting\OrderAddress('commerce:porting:port_order_address'), 'Ports order_address from pre mothership');
@@ -26,7 +27,16 @@ class Tasks implements TasksInterface
         $tasks->add(new Task\Porting\OrderDispatch('commerce:porting:port_order_dispatch'), 'Ports order_dispatch from pre mothership');
         $tasks->add(new Task\Porting\OrderDiscount('commerce:porting:port_order_discount'), 'Ports order_discount from pre mothership');
 
+        // Product related ports
         $tasks->add(new Task\Porting\Products('commerce:porting:port_products'), 'Ports catalogue and catalogue_info from pre mothership');
+        $tasks->add(new Task\Porting\ProductsPricing('commerce:porting:port_products_pricing'), 'Ports catalogue_unit_price and catalogue_info prices from pre mothership');
+        $tasks->add(new Task\Porting\ProductExport('commerce:porting:port_product_export'), 'Ports catalogue_export and catalogue_info prices from pre mothership');
+        $tasks->add(new Task\Porting\ProductTags('commerce:porting:port_product_tag'), 'Ports product_tag from catalogue_range from pre mothership');
+        $tasks->add(new Task\Porting\ProductUnit('commerce:porting:port_product_unit'), 'Ports product_unit from catalogue_unit from pre mothership');
+        $tasks->add(new Task\Porting\ProductOptions('commerce:porting:port_product_unit_options'), 'Ports sizes and colours from pre mothership');
+        $tasks->add(new Task\Porting\ProductUnitStock('commerce:porting:port_product_unit_stock'), 'Ports catalogue_unit_stock from pre mothership');
+
+        $tasks->add(new Task\Porting\User('commerce:porting:port_user'), 'Ports users and user addresses from pre mothership');
 
     }
 }
