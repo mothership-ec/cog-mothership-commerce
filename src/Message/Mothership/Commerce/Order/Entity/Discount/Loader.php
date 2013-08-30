@@ -94,7 +94,7 @@ class Loader extends Order\Entity\BaseLoader
 				$row->created_by
 			);
 
-			if (!$order) {
+			if (!$order || $row->order_id != $order->id) {
 				$order = $this->_orderLoader->getByID($row->order_id);
 			}
 
