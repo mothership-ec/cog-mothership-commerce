@@ -8,7 +8,7 @@
 
 
 	<hgroup class="title">
-		<h1>{{ 'Order'|trans }} {{ order.id }}</h1>
+		<h1>{{ 'Order'|trans }} {{ order.id }}: {{ order.status }} <span class="updated-date">(Last updated: {{ order.authorship.updatedAt|date }})</span></h1>
 	</hgroup>
 
 	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}

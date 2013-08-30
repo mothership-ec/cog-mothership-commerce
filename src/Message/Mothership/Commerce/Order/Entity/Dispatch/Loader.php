@@ -45,6 +45,40 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
+	public function getUnpostaged($method = null)
+	{
+		if ($method instanceof MethodInterface) {
+			$method = $method->getName();
+		}
+
+		if ($method) {
+			$result = $this->_query->run('
+				SELECT
+					dispatch_id
+				FROM
+					order_dispatch
+				WHERE
+					code IS NULL
+				AND shipped_at IS NULL
+				AND method = ?s
+			', array($method));
+		}
+		else {
+			$result = $this->_query->run('
+				SELECT
+					dispatch_id
+				FROM
+					order_dispatch
+				WHERE
+					code IS NULL
+				AND shipped_at IS NULL
+				AND method = ?s
+			');
+		}
+
+		return $this->_load($result->flatten(), true);
+	}
+
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		if (!is_array($ids)) {
