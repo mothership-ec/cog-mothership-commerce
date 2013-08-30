@@ -1,15 +1,6 @@
 <div class="container">
 	<h1>Order Details</h1>
 	<section class="group">
-		<h2 class="title">Value {{ order.value|price(order.currencyID) }} - Show Currency Details</h2>
-		<ul class="order-details">
-			<li><span>Value</span> {{ order.value|price(order.currencyID) }} </li>
-			<li><span>Currency</span> {{ order.currencyID }}</li>
-			<li><span>Conversion Rate</span>{{ order.conversionRate }}</li>
-		</ul>
-	</section>
-
-	<section class="group">
 		<h2 class="title">Product Gross {{ order.productGross|price(order.currencyID) }} - Show Product Price Details</h2>
 		<ul class="order-details">
 			<li><span>Product Net</span> {{ order.productNet|price(order.currencyID) }} </li>
@@ -39,6 +30,14 @@
 			<li><span>Shipping Tax</span> {{ order.shippingTax|price(order.currencyID) }} </li>
 			<li><span>Shipping Tax Rate</span> {{ order.shippingTaxRate|price(order.currencyID) }} </li>
 			<li><span>Shipping Gross</span> {{ order.shippingGross|price(order.currencyID) }} </li>
+		</ul>
+	</section>
+
+	<section class="group">
+		<h2 class="title">Currency {{ order.currencyID }} - Show Currency Details</h2>
+		<ul class="order-details">
+			<li><span>Currency</span> {{ order.currencyID }}</li>
+			<li><span>Conversion Rate</span>{{ order.conversionRate }}</li>
 		</ul>
 	</section>
 </div>
