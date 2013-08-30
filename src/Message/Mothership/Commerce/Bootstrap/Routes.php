@@ -57,7 +57,7 @@ class Routes implements RoutesInterface
 		$router['ms.order']->add('ms.commerce.order.search.action', 'search', '::Controller:Order:Listing#searchAction')
 			->setMethod('POST');
 
-		$router['ms.order']->add('ms.commerce.order.detail.view.index', 'view/{orderID}', '::Controller:Order:OrderDetail#orderOverview')
+		$router['ms.order']->add('ms.commerce.order.detail.view', 'view/{orderID}', '::Controller:Order:OrderDetail#orderOverview')
 			->setRequirement('orderID', '\d+');
 		$router['ms.order']->add('ms.commerce.order.detail.view.items', 'view/{orderID}/item', '::Controller:Order:OrderDetail#itemListing')
 			->setRequirement('orderID', '\d+');

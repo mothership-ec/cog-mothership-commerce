@@ -13,7 +13,7 @@
 		<tbody>
 			{% for order in orders %}
 				<tr>
-					<td><a href="{{ url('ms.commerce.order.detail.view.index', {orderID: order.id}) }}">{{ order.id }}</a></td>
+					<td><a href="{{ url('ms.commerce.order.detail.view', {orderID: order.id}) }}">{{ order.id }}</a></td>
 					<td>{{ order.authorship.createdAt|date }}</td>
 					<td><a href="">{{ order.user.name }}</a></td>
 					<td>{{ order.status }}</td>
