@@ -30,7 +30,7 @@ class OrderDispatchFiles extends Porting
 			);
 			// Create the directory
 			$fileDestination = array_pop($dirs);
-			$this->get('filesystem')->mkdir($dirs);
+			$this->get('filesystem')->mkdir($dirs,0777);
 			// Set the details for the packing slip
 			$filename = $row->order_id . '_packing-slip';
 			$contents = (string) $this->getHtml($row->slip);
