@@ -1,6 +1,6 @@
 
-	<h1>Order Details</h1>
 
+<div class="small-box-row">
 	<section class="group small-box">
 		<h2 class="title">Billing Total</h2>
 		<ul class="order-details">
@@ -29,12 +29,13 @@
 					</li>
 				{% endif %}
 			{% endfor %}
-			<li>
-				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
-				{{ address.postcode }} </li>
+		
 				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
 				{{ address.town }}
 			</li>
+				<li>
+				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
+				{{ address.postcode }} </li>
 			{% if not address.state is empty %}
 				<li>
 					<span>{{ 'ms.commerce.order.address.state'|trans }}</span>
@@ -62,7 +63,7 @@
 		</ul>
 		
 		</section>
-
+</div>
 
 	<!-- <section class="group">
 		<h2 class="title">Value {{ order.value|price(order.currencyID) }} - Show Currency Details</h2>
