@@ -43,6 +43,20 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($id, false, $order);
 	}
 
+	public function getByCode($code)
+	{
+		$result = $this->_query->run('
+			SELECT
+				discount_id
+			FROM
+				order_discount
+			WHERE
+				code = ?s
+		', $code);
+
+		return $this->_load($result->flatten(), true);
+	}
+
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		if (!is_array($ids)) {
