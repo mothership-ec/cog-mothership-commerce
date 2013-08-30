@@ -37,6 +37,7 @@ class Tasks implements TasksInterface
         $tasks->add(new Task\Porting\ProductUnitStock('commerce:porting:port_product_unit_stock'), 'Ports catalogue_unit_stock from pre mothership');
 
         $tasks->add(new Task\Porting\User('commerce:porting:port_user'), 'Ports users and user addresses from pre mothership');
+        $tasks->add(new Task\Porting\OrderDispatchFiles('commerce:porting:port_dispatch_files'), 'Ports dispatch files to the file syetem from pre mothership');
 
     }
 }
