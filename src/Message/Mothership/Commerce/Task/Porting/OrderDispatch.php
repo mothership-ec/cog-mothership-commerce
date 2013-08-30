@@ -39,6 +39,13 @@ class OrderDispatch extends Porting
 		$new->add('TRUNCATE order_dispatch');
 
 		foreach($result as $row) {
+
+			if ($row->method == 'fedex uk') {
+				$row->method = 'fedex-uk';
+			} else {
+				$row->method = 'fedex-express';
+			}
+
 			$new->add('
 				INSERT INTO
 					order_dispatch
