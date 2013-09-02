@@ -161,14 +161,34 @@ class Assembler
 
 	}
 
-	public function addDiscount()
+	public function addDiscount(Order\Entity\Discount\Discount $discount)
 	{
+		$discount->order = $this->_order;
+		$this->_order->discounts->append($discount);
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
+		return $this;
 	}
 
-	public function removeDiscount()
+	public function removeDiscount(Order\Entity\Discount\Discount $discount)
 	{
+		$this->_order->discounts->remove($discount->id);
 
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
+		return $this;
 	}
 
 	public function hasAddress()
