@@ -1,28 +1,62 @@
 <div class="container" id="item{{ item.id }}">
 
 
-<table class="order-listing">
+
+
+	<section class="group">
+		<h1 class="title">{{ item.brand }} {{ item.productName }}  &mdash; {{ item.options }}</h1>
+
+	
+		<ul class="order-details col">
+			<li><span>Net</span> {{ item.net|price(order.currencyID) }}</li>
+			<li><span>Discount</span> {{ item.discount|price(order.currencyID) }}</li>
+			<li><span>Tax</span> {{ item.tax|price(order.currencyID) }}</li>
+			<li><span>Product Gross</span> {{ order.productGross|price(order.currencyID) }} </li>
+			<li><span>Shipping Type</span> ({{ order.shippingName }})</li>
+
+		</ul>
+
+
+		<ul class="order-details col">
+			<li><span>SKU</span> {{ item.sku }}</li>
+			<li><span>Barcode</span> {{ item.barcode }}</li>
+			<li><span>Weight</span> {{ item.weight }}</li>
+			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
+		</ul>
+
+		<ul class="order-details col">
+			<li><span>Created by</span> {{ item.authorship.createdBy }}</li>
+			<li><span>Current Staus</span> {{ item.status }}</li>
+		</ul>
+
+	</section>
+
+	<section class="group">
+
+		<h1 class="title">Status History</h1>
+		<table class="order-listing progress">
 		<thead>
 		<tr>
-			<th><span>Product</span></th>
-			<th><span>Net</span></th>
-			<th><span>Discount</span></th>
-			<th><span>Tax</span></th>
-			<th><span>Gross</span></th>
+			<th><span>Date / Time</span></th>
+			<th><span>Status</span></th>
+			<th><span>Updated By</span></th>
+			
 		</tr>
 		</thead>
-		<tbody>
-			{% for item in items %}
-				<tr>
-					<td>{{ item.brand }} {{ item.productName }} (SKU: {{ item.sku }}) &mdash; {{ item.options }}</td>
-					<td>{{ item.net|price(order.currencyID) }}</td>
-					<td>{{ item.discount|price(order.currencyID) }}</td>
-					<td>{{ item.tax|price(order.currencyID) }}</td>
-					<td>{{ item.gross|price(order.currencyID) }}</td>
-				</tr>
-			{% endfor %}
-		</tbody>
+		{% for status in statuses[item.id] %}
+		<tr>
+			<td>{{ status.authorship.createdAt|date }}</td>
+			<td>{{ status }}</td>
+			<td>{{ status.authorship.createdBy }}</td>
+				
+		</tr>
+		{% endfor %}
 	</table>
+
+
+</section>
+</div>
+
 
 	<!-- <section class="group">
 		<h1 class="title">Product Information</h1>
@@ -46,29 +80,7 @@
 			{% endif %}
 	</section>	 -->
 
-	<section class="group">
-		<h1 class="title">Order Progress</h1>
-		<table class="order-listing progress">
-		<thead>
-		<tr>
-			<th><span>Date / Time</span></th>
-			<th><span>Status</span></th>
-			<th><span>Updated By</span></th>
-			
-		</tr>
-		</thead>
-		{% for status in statuses[item.id] %}
-		<tr>
-			<td>{{ status.authorship.createdAt|date }}</td>
-			<td>{{ status }}</td>
-			<td>{{ status.authorship.createdBy }}</td>
-				
-		</tr>
-		{% endfor %}
-	</table>
-
-</div>
-
+	
 
 
 
@@ -142,4 +154,3 @@
 		{% endfor %}
 
 	</section>  -->
-</div>

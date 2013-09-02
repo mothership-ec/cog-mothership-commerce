@@ -1,6 +1,6 @@
 <h2>{{ 'ms.commerce.order.item.summary-title'|trans }}</h2>
 {% if not items is empty %}
-	<table class="order-listing">
+	<table class="order-listing-overview">
 		<thead>
 		<tr>
 			<th><span>Product</span></th>
@@ -13,7 +13,7 @@
 		<tbody>
 			{% for item in items %}
 				<tr>
-					<td>{{ item.brand }} {{ item.productName }} (SKU: {{ item.sku }}) &mdash; {{ item.options }}  </td>
+					<td class="left">{{ item.brand }} {{ item.productName }} (SKU: {{ item.sku }}) &mdash; {{ item.options }}  </td>
 					<td>{{ item.net|price(order.currencyID) }}</td>
 					<td>{{ item.discount|price(order.currencyID) }}</td>
 					<td>{{ item.tax|price(order.currencyID) }}</td>

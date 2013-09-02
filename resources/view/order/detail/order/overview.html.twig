@@ -23,66 +23,10 @@
 
 		</section>
 
-		<!-- <section class="summary">
-			{% include '::order:detail:address:summary' %}
-		</section>
-
-		<section class="summary">
-			{% include '::order:detail:metadata:summary' %}
-		</section> -->
+	
 	</div>	
 
-<!-- <div class="widget-sidebar">
-	<div class="widget">
-		<h3>Additional Information</h3>
-		<table>
-			<tr>
-				<td>{{ 'ms.commerce.order.order.orderID'|trans }}</td>
-				<td>{{ order.id }}</td>
-			</tr>
-			<tr>
-				<td>{{ 'Created by'|trans }} {{ order.authorship.createdBy }}</td>
-				<td>{{ 'at'|trans }}
-				{{ order.authorship.createdAt|date }}</td>
-			</tr>
-			{% if not order.authorship.updatedAt is empty and not order.authorship.updatedBy is empty %}
-				<tr>
-					<td>Updated by {{ order.authorship.updatedBy }}</td>			
-					<td>at
-					{{ order.authorship.updatedAt|date }}</td>
-				</tr>
-			{% endif %}
-			<tr>
-				<td>{{ 'user'|trans|title }}</td>
-				<td>{{ order.user.name }}</td>
-			</tr>
-			<tr>
-				<td>{{ 'ms.commerce.order.order.status'|trans }}</td>
-				<td>{{ order.status }}</td>
-			</tr>
-			<tr>
-				<td>{{ 'ms.commerce.order.order.type'|trans }}</td>
-				<td>{{ order.type }}</td>
-			</tr>	
-			<tr>
-				<td>{{ 'ms.commerce.order.order.locale'|trans }}</td>
-				<td>{{ order.locale }}</td>
-			</tr>
-			<tr>
-				<td>{{ 'ms.commerce.order.order.shipping-method'|trans }}</td>
-				<td>{{ order.shippingName }}</td>
-			</tr>
-			<tr>
-				<td>{{ 'ms.commerce.order.order.product-gross'|trans }}</td>
-				<td>{{ order.productGross|price(order.currencyID) }}</td>
-			</tr>
-			<tr>
-				<td>{{ 'ms.commerce.order.order.total-gross'|trans }}</td>
-				<td>{{ order.totalGross|price(order.currencyID) }}</td>
-			</tr>
-		</table>
-	</div>
-	</div> -->
+
 
 	</div>
 
