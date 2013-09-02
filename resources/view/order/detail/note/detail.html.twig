@@ -1,13 +1,12 @@
 <div class="container">
+
+
 	<section class="group">
 		<h1 class="title">Created by {{ note.authorship.createdBy }} at {{ note.authorship.createdAt|date }}</h1>
 		
-		<section>
-			<h2>{{ 'ms.commerce.order.note.note'|trans }}</h2>
-			<p>{{ note.note }}</p>
-		</section>
 
 		<ul class="order-details">
+			<li><span>Note</span>{{ note.note }}</li>
 			<li>
 				<span>{{ 'ms.commerce.order.note.customer-notified'|trans }}</span>
 				{{ note.customerNotified }}

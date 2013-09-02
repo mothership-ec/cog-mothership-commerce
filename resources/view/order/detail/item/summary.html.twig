@@ -1,22 +1,22 @@
 <h2>{{ 'ms.commerce.order.item.summary-title'|trans }}</h2>
 {% if not items is empty %}
-	<table class="order-listing">
+	<table class="order-listing-overview">
 		<thead>
 		<tr>
-			<th><span>Brand</span></th>
 			<th><span>Product</span></th>
-			<th><span>Options</span></th>
-			<th><span>SKU</span></th>
+			<th><span>Net</span></th>
+			<th><span>Discount</span></th>
+			<th><span>Tax</span></th>
 			<th><span>Gross</span></th>
 		</tr>
 		</thead>
 		<tbody>
 			{% for item in items %}
 				<tr>
-					<td>{{ item.brand }}</td>
-					<td>{{ item.productName }}</td>
-					<td>{{ item.options }}</td>
-					<td>{{ item.sku }}</td>
+					<td class="left">{{ item.brand }} {{ item.productName }} (SKU: {{ item.sku }}) &mdash; {{ item.options }}  </td>
+					<td>{{ item.net|price(order.currencyID) }}</td>
+					<td>{{ item.discount|price(order.currencyID) }}</td>
+					<td>{{ item.tax|price(order.currencyID) }}</td>
 					<td>{{ item.gross|price(order.currencyID) }}</td>
 				</tr>
 			{% endfor %}

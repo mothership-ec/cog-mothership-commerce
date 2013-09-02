@@ -59,7 +59,7 @@ class Listing extends Controller
 			$order = $this->get('order.loader')->getById($orderID);
 
 			if ($order) {
-				return $this->redirectToRoute('ms.commerce.order.detail.view.index', array('orderID' => $order->id));
+				return $this->redirectToRoute('ms.commerce.order.detail.view', array('orderID' => $order->id));
 			} else {
 				$this->addFlash('warning', sprintf('No search results were found for "%s"', $orderID));
 				return $this->redirectToReferer();
