@@ -67,7 +67,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return Address|false    Address object or false if not found
 	 */
-	public function getByAddressID($addressID)
+	public function getByID($addressID)
 	{
 		return $this->_loadAddresses($addressID);
 	}

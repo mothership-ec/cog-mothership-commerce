@@ -7,6 +7,7 @@ use Message\Cog\ValueObject\Authorship;
 
 class Address extends BaseAddress
 {
+	public $id;
 	public $authorship;
 
 	public function __construct()
