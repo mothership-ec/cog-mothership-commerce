@@ -137,7 +137,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.item.create'] = function($c) {
-			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['event.dispatcher'], $c['user.current']);
 		};
 
 		$services['order.item.edit'] = function($c) {
