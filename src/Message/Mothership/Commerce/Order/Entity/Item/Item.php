@@ -164,7 +164,10 @@ class Item implements EntityInterface
 	public function getUnit($reload = false)
 	{
 		if (!$this->_unit || $reload) {
-			$this->_unit = Container::get('product.unit.loader')->getByID($this->productID, $this->revisionID);
+			$this->_unit = Container::get('product.unit.loader')
+				->includeInvisible(true)
+				->includeOutOfStock(true)
+				->getByID($this->unitID, $this->unitRevision);
 		}
 
 		return $this->_unit;

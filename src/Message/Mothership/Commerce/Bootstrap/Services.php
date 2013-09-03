@@ -162,6 +162,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		};
 
+		$services['order.dispatch.edit'] = function($c) {
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current']);
+		};
+
 		// Order document entity
 		$services['order.document.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('documents');
@@ -306,7 +310,7 @@ class Services implements ServicesInterface
 
 		$services['product.image.types'] = function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				new Commerce\Product\ImageType\ImageType('default'),
+				'default',
 			));
 		};
 
@@ -340,6 +344,10 @@ class Services implements ServicesInterface
 
 		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader($c['db.query']);
+		};
+
+		$services['commerce.user.address.create'] = function($c) {
+			return new Commerce\User\Address\Create($c['db.query'], $c['commerce.user.address.loader'], $c['user.current']);
 		};
 
 		$services['commerce.user.address.edit'] = function($c) {

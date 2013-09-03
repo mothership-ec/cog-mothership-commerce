@@ -9,9 +9,11 @@
 			<li>
 				<span>{{ 'Shipped by'|trans }}</span>
 				{{ dispatch.shippedBy }}
-				<span>{{ 'at'|trans }}</span>
-				{{ dispatch.shippedAt|date }}
 			</li>
+			<li>
+				<span>{{ 'Shipped on'|trans }}</span>
+				{{ dispatch.shippedAt|date }}
+			</li>	
 			<li>
 				<span>{{ 'ms.commerce.order.dispatch.code'|trans }}</span>
 				{{ dispatch.code }}
@@ -25,7 +27,7 @@
 				{{ dispatch.weight }}
 			</li>
 		</ul>
-		<section>
+		<section class="order-summary">
 			{% set items = dispatch.items %}
 
 			{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}

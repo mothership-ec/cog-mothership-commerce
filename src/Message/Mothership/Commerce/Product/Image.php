@@ -2,25 +2,25 @@
 
 namespace Message\Mothership\Commerce\Product;
 
-use Message\Mothership\FileManager\File\File;
-use Message\Cog\Localisation\Locale;
+use Message\Cog\ValueObject\Authorship;
 
 class Image
 {
-	public $fileID;
+	public $id;
+	public $authorship;
 	public $type;
 	public $locale;
-	public $optionName;
-	public $optionValue;
 	public $file;
+	public $options = array();
 
-	public function __construct($fileID, $type, Locale $locale, File $file = null, $optionName = null, $optionValue = null)
+	public $product;
+
+	public function __construct()
 	{
-		$this->fileID = $fileID;
-		$this->type = $type;
-		$this->locale = $locale;
-		$this->file = $file;
-		$this->optionName =$optionName;
-		$this->optionValue =$optionValue;
+		$this->authorship = new Authorship;
+
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
 	}
 }
