@@ -238,7 +238,7 @@ class Product
 	 *
 	 * @return Image|false          	Image object or false if it doesn't exist
 	 */
-	public function hasImage($type = 'default', $optionName = null, $optionValue = null)
+	public function hasImage($type = 'default', $options = null)
 	{
 		foreach ($this->images as $image) {
 			if ($image->type == $type
