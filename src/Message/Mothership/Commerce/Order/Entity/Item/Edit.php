@@ -36,6 +36,15 @@ class Edit implements DB\TransactionalInterface
 		$this->_transOverriden = true;
 	}
 
+	/**
+	 * Update the status of an item or items.
+	 *
+	 * @param  Item|Collection|array $items Item, array of items or collection
+	 *                                      of items
+	 * @param  int              $statusCode Status code to set
+	 *
+	 * @return Edit                         Returns $this for chainability
+	 */
 	public function updateStatus($items, $statusCode)
 	{
 		if (!$this->_statuses->exists($statusCode)) {
@@ -44,7 +53,7 @@ class Edit implements DB\TransactionalInterface
 
 		$status = $this->_statuses->get($statusCode);
 
-		if (!is_array($items)) {
+		if (!is_array($items) && !($items instanceof Collection)) {
 			$items = array($items);
 		}
 
