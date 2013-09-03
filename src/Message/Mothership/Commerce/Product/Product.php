@@ -218,37 +218,74 @@ class Product
 	}
 
 	/**
-	 * Return an image for a certain type and optional optionName nad optionValue
+	 * Get one image of a specific type for this product.
 	 *
-	 * @param  string  $type        Image type
-	 * @param  string  $optionName  Optional option name
-	 * @param  string  $optionValue Optional option value
+	 * An associative array of options criteria can also be passed. If this is
+	 * set, only images matching the option criteria will be returned.
 	 *
-	 * @return Image|false          Image object or false if it doesn't exist
+	 * If multiple images are found that match this criteria, only the first
+	 * will be returned.
+	 *
+	 * @param  string     $type    The image type to get images for
+	 * @param  array|null $options Associative array of options, or null for all
+	 *
+	 * @return Image|false         Image matching the criteria, or false if none
+	 *                             found
 	 */
-	public function getImage($type = 'default', $optionName = null, $optionValue = null)
+	public function getImage($type = 'default', array $options = null)
 	{
-		return $this->hasImage($type, $optionName, $optionValue);
+		$images = $this->getImages($type, $options);
+
+		return count($images) > 0 ? array_shift($images) : false;
 	}
 
 	/**
-	 * Check that the image for a certain type, and options are available
+	 * Get images of a specific type for this product.
 	 *
-	 * @param  string  		$type       The image type
+	 * An associative array of options criteria can also be passed. If this is
+	 * set, only images matching the option criteria will be returned.
 	 *
-	 * @return Image|false          	Image object or false if it doesn't exist
+	 * @param  string     $type    The image type to get images for
+	 * @param  array|null $options Associative array of options, or null for all
+	 *
+	 * @return array               Array of images matching the criteria
 	 */
-	public function hasImage($type = 'default', $options = null)
+	public function getImages($type = 'default', array $options = null)
 	{
+		$return = array();
+
 		foreach ($this->images as $image) {
-			if ($image->type == $type
-			 && $optionName == $image->optionName
-			 && $optionValue == $image->optionValue
-			) {
-				return $image;
+			if ($image->type !== $type) {
+				continue;
 			}
+
+			if (!is_null($options)) {
+				$intersect = array_intersect_assoc($options, $image->options);
+
+				if ($intersect !== $options) {
+					continue;
+				}
+			}
+
+			$return[] = $image;
 		}
 
-		return false;
+		return $return;
+	}
+
+	/**
+	 * Check if an image of a specific type exists.
+	 *
+	 * An associative array of options criteria can also be passed. If this is
+	 * set, only images matching the option criteria will be returned.
+	 *
+	 * @param  string     $type    The image type to get images for
+	 * @param  array|null $options Associative array of options, or null for all
+	 *
+	 * @return boolean
+	 */
+	public function hasImage($type = 'default', array $options = null)
+	{
+		return false !== $this->getImage($type, $options);
 	}
 }
