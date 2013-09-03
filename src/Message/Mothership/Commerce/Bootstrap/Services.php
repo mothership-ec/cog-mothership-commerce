@@ -162,6 +162,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		};
 
+		$services['order.dispatch.edit'] = function($c) {
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current']);
+		};
+
 		// Order document entity
 		$services['order.document.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('documents');
