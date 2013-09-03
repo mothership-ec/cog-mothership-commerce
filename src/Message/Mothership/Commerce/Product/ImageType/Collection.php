@@ -33,27 +33,20 @@ class Collection implements \IteratorAggregate, \Countable
 	 *
 	 * @return Collection    Returns $this for chainability
 	 *
-	 * @throws \InvalidArgumentException If the type has no type set
 	 * @throws \InvalidArgumentException If a type with the same type has
 	 *                                   already been set on this collection
 	 */
-	public function add(ImageType $type)
+	public function add($type)
 	{
-		if (!$type->type && 0 !== $type->type) {
-			throw new \InvalidArgumentException(sprintf('type `%s` has no type', $type->type));
-		}
-
-		if ($this->exists($type->type)) {
+		if ($this->exists($type)) {
 			throw new \InvalidArgumentException(sprintf(
 				'type type `%i` is already defined as `%s`',
-				$type->type,
-				$this->_types[$type->type]->type
+				$type,
+				$this->_types[$type]
 			));
 		}
 
-		$this->_types[$type->type] = $type;
-
-		ksort($this->_types);
+		$this->_types[$type] = $type;
 
 		return $this;
 	}
@@ -70,7 +63,7 @@ class Collection implements \IteratorAggregate, \Countable
 	public function get($type)
 	{
 		if (!$this->exists($type)) {
-			throw new \InvalidArgumentException(sprintf('type type `%i` not set on collection', $type));
+			throw new \InvalidArgumentException(sprintf('type `%i` not set on collection', $type));
 		}
 
 		return $this->_types[$type];
