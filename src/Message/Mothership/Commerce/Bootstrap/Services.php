@@ -308,7 +308,7 @@ class Services implements ServicesInterface
 
 		$services['product.image.types'] = function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				new Commerce\Product\ImageType\ImageType('default'),
+				'default',
 			));
 		};
 

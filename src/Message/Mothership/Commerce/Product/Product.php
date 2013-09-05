@@ -267,10 +267,42 @@ class Product
 				}
 			}
 
-			$return[] = $image;
+			$return[$image->id] = $image;
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Get the image most appropriate for a particular unit.
+	 *
+	 * Currently this just checks for an image with all of the options set to
+	 * all of the options of this unit. If this doesn't return an image, it will
+	 * just return the image of this type for the product with no option
+	 * criteria.
+	 *
+	 * @todo Make this somehow prefer an image if it matches MORE option criteria
+	 *       than another (i.e. unit is Red/Small/Velvet), it will prefer an
+	 *       image for Red/Velvet than just Red.
+	 *
+	 * @param  Unit\Unit $unit The unit to get an image for
+	 * @param  string    $type The image type to get
+	 *
+	 * @return Image|false
+	 */
+	public function getUnitImage(Unit\Unit $unit, $type = 'default')
+	{
+		if ($image = $this->getImage($type, $unit->options)) {
+			return $image;
+		}
+
+		foreach ($unit->options as $name => $value) {
+			if ($image = $this->getImage($type, array($name => $value))) {
+				return $image;
+			}
+		}
+
+		return $this->getImage($type);
 	}
 
 	/**
