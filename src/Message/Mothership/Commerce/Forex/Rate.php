@@ -20,8 +20,11 @@ class Rate {
 	/**
 	 * $rate->convert(12.50, 'USD', 'GBP')
 	 *
-	 * or?
 	 * $rate->from('GBP')->to('USD')->convert(12.50)
+	 *
+	 * $base = $rate->from('GBP')->convert(12.50);
+	 * $usd = $base->to('USD');
+	 * $eur = $base->to('EUR');
 	 * 
 	 * @param  [type] $amount [description]
 	 * @return [type]         [description]

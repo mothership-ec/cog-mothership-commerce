@@ -32,9 +32,4 @@ class Feed implements FeedInterface {
         }
 	}
 
-	public function getRates()
-	{
-
-	}
-
 }
