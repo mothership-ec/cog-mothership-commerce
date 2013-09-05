@@ -11,7 +11,7 @@
 			<li><span>Net</span> {{ item.net|price(order.currencyID) }}</li>
 			<li><span>Discount</span> {{ item.discount|price(order.currencyID) }}</li>
 			<li><span>Tax</span> {{ item.tax|price(order.currencyID) }}</li>
-			<li><span>Product Gross</span> {{ order.productGross|price(order.currencyID) }} </li>
+			<li><span>Item Gross</span> {{ item.gross|price(order.currencyID) }} </li>
 			<li><span>Shipping Type</span> ({{ order.shippingName }})</li>
 
 		</ul>
