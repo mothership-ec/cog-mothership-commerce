@@ -29,7 +29,7 @@ class Assembler
 	protected $_eventDispatcher;
 	protected $_session;
 
-	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event,Session $session)
+	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event, Session $session)
 	{
 		$this->_order             = $order;
 		$this->_order->currencyID = 'GBP';
@@ -161,13 +161,12 @@ class Assembler
 
 	}
 
-	public function addDiscount(Order\Entity\Discount\Discount $discount)
+	public function addDiscount(Entity\Discount\Discount $discount)
 	{
 		$discount->order = $this->_order;
 		$this->_order->discounts->append($discount);
 
 		$event = new Event($this->_order);
-		// Dispatch the edit event
 
 		$this->_eventDispatcher->dispatch(
 			Events::ASSEMBLER_UPDATE,
@@ -177,9 +176,9 @@ class Assembler
 		return $this;
 	}
 
-	public function removeDiscount(Order\Entity\Discount\Discount $discount)
+	public function removeDiscount(Entity\Discount\Discount $discount)
 	{
-		$this->_order->discounts->remove($discount->id);
+		$this->_order->discounts->removeByCode($discount->code);
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event

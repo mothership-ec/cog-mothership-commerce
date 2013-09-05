@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Discount;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Cog\ValueObject\Authorship;
-use Message\Mothership\Commerce\Order\Entity\Item\Item;
+use Message\Mothership\Commerce\Order\Entity\Item;
 
 /**
  * Represents a discount for an order.
