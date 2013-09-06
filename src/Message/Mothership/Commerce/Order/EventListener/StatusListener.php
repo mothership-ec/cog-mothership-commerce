@@ -103,6 +103,11 @@ class StatusListener extends BaseListener implements SubscriberInterface
 			$itemStatuses[$item->status->code]++;
 		}
 
+		// All items cancelled
+		if ($numItems === $itemStatuses[Statuses::CANCELLED]) {
+			return $event->setStatus(Statuses::CANCELLED);
+		}
+
 		// All items awaiting dispatch
 		if ($numItems === $itemStatuses[Statuses::AWAITING_DISPATCH]) {
 			return $event->setStatus(Statuses::AWAITING_DISPATCH);

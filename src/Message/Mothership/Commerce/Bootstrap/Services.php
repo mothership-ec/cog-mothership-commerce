@@ -39,7 +39,9 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$c['http.session']->set('basket.order', $c['order']);
+				$order = $c['order'];
+				$order->locale = $c['locale']->getId();
+				$c['http.session']->set('basket.order', $order);
 			}
 
 			return $c['http.session']->get('basket.order');
@@ -62,7 +64,7 @@ class Services implements ServicesInterface
 					new Commerce\Order\Entity\Address\Loader($c['db.query'])
 				),
 				'discounts'  => new Commerce\Order\Entity\CollectionOrderLoader(
-					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Discount\Collection,
 					new Commerce\Order\Entity\Discount\Loader($c['db.query'])
 				),
 				'dispatches' => new Commerce\Order\Entity\CollectionOrderLoader(
@@ -162,6 +164,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		};
 
+		$services['order.dispatch.edit'] = function($c) {
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current']);
+		};
+
 		// Order document entity
 		$services['order.document.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('documents');
@@ -214,6 +220,7 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
+				new Commerce\Order\Entity\Payment\Method\Sagepay,
 			));
 		});
 
@@ -229,17 +236,19 @@ class Services implements ServicesInterface
 		// Available order & item statuses
 		$services['order.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
-				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,     'Awaiting Dispatch'),
-				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,            'Processing'),
-				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED,  'Partially Dispatched'),
-				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED,    'Partially Received'),
-				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,            'Dispatched'),
-				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,              'Received'),
+				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,            'Cancelled'),
+				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,    'Awaiting Dispatch'),
+				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,           'Processing'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED, 'Partially Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED,   'Partially Received'),
+				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,           'Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,             'Received'),
 			));
 		});
 
 		$services['order.item.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,         'Cancelled'),
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH, 'Awaiting Dispatch'),
 				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,        'Dispatched'),
 				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,          'Received'),
@@ -299,7 +308,7 @@ class Services implements ServicesInterface
 
 		$services['product.image.types'] = function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				new Commerce\Product\ImageType\ImageType('default'),
+				'default',
 			));
 		};
 
@@ -333,6 +342,10 @@ class Services implements ServicesInterface
 
 		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader($c['db.query']);
+		};
+
+		$services['commerce.user.address.create'] = function($c) {
+			return new Commerce\User\Address\Create($c['db.query'], $c['commerce.user.address.loader'], $c['user.current']);
 		};
 
 		$services['commerce.user.address.edit'] = function($c) {

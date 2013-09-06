@@ -45,6 +45,15 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
+		// If no dispatch weight is already set, set it to the sum of the item weights
+		if (!$dispatch->weight) {
+			$dispatch->weight = 0;
+
+			foreach ($dispatch->items as $item) {
+				$dispatch->weight += $item->weight;
+			}
+		}
+
 		$this->_validate($dispatch);
 
 		$this->_query->add('

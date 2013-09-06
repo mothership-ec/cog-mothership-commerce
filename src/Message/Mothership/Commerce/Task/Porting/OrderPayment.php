@@ -28,6 +28,8 @@ class OrderPayment extends Porting
 
 		$result = $old->run($sql);
 		$output= '';
+		$new->add('TRUNCATE order_payment');
+
 		foreach($result as $row) {
 			$new->add('
 				INSERT INTO

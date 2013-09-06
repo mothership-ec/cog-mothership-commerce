@@ -14,8 +14,8 @@ abstract class Porting extends BaseTask
 	public function getFromConnection()
 	{
         return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-				'host'		=> '127.0.0.1',
-				'user'		=> 'root',
+				'host'		=> '192.168.201.99',
+				'user'		=> 'danny',
 				'password' 	=> 'chelsea',
 				'db'		=> 'uniform_wares',
 				'charset'	=> 'utf-8',
@@ -31,8 +31,8 @@ abstract class Porting extends BaseTask
 	{
 
 		return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-				'host'		=> '127.0.0.1',
-				'user'		=> 'root',
+				'host'		=> '192.168.201.99',
+				'user'		=> 'danny',
 				'password' 	=> 'chelsea',
 				'db'		=> 'mothership_cms',
 				'charset'	=> 'utf-8',

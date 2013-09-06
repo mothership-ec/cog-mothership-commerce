@@ -7,10 +7,10 @@
 {% block main %}
 
 <hgroup class="title">
-		<h1>Editing Stock'</h1>
+		<h1>Editing 'Stock'</h1>
 </hgroup>
 
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:ProductsMenu#index', {'productID':product.id}))}}
+{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
 
 <section class="container-content">
 	<section>

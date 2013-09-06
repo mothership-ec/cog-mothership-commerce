@@ -45,6 +45,72 @@ class Loader extends Order\Entity\BaseLoader
 		return $this->_load($result->flatten(), true, $order);
 	}
 
+	public function getUnpostaged($method = null)
+	{
+		if ($method instanceof MethodInterface) {
+			$method = $method->getName();
+		}
+
+		if ($method) {
+			$result = $this->_query->run('
+				SELECT
+					dispatch_id
+				FROM
+					order_dispatch
+				WHERE
+					code IS NULL
+				AND shipped_at IS NULL
+				AND method = ?s
+			', array($method));
+		}
+		else {
+			$result = $this->_query->run('
+				SELECT
+					dispatch_id
+				FROM
+					order_dispatch
+				WHERE
+					code IS NULL
+				AND shipped_at IS NULL
+			');
+		}
+
+		return $this->_load($result->flatten(), true);
+	}
+
+	public function getPostagedUnshipped($method = null)
+	{
+		if ($method instanceof MethodInterface) {
+			$method = $method->getName();
+		}
+
+		if ($method) {
+			$result = $this->_query->run('
+				SELECT
+					dispatch_id
+				FROM
+					order_dispatch
+				WHERE
+					code IS NOT NULL
+				AND shipped_at IS NULL
+				AND method = ?s
+			', array($method));
+		}
+		else {
+			$result = $this->_query->run('
+				SELECT
+					dispatch_id
+				FROM
+					order_dispatch
+				WHERE
+					code IS NOT NULL
+				AND shipped_at IS NULL
+			');
+		}
+
+		return $this->_load($result->flatten(), true);
+	}
+
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		if (!is_array($ids)) {
@@ -94,7 +160,7 @@ class Loader extends Order\Entity\BaseLoader
 				$entities[$key]->shippedAt = new DateTimeImmutable(date('c', $row->shippedAt));
 			}
 
-			if (!$order) {
+			if (!$order || $row->order_id != $order->id) {
 				$order = $this->_orderLoader->getByID($row->order_id);
 			}
 

@@ -1,44 +1,67 @@
-<div class="container">
-	<h1>Order Details</h1>
-	<section class="group">
-		<h2 class="title">Value {{ order.value|price(order.currencyID) }} - Show Currency Details</h2>
+
+
+<div class="small-box-row">
+	<section class="group small-box">
+		<h2 class="title">Billing Total</h2>
 		<ul class="order-details">
-			<li><span>Value</span> {{ order.value|price(order.currencyID) }} </li>
-			<li><span>Currency</span> {{ order.currencyID }}</li>
-			<li><span>Conversion Rate</span>{{ order.conversionRate }}</li>
+			<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} (Tax: {{ order.productTax|price(order.currencyID) }} ) </li>
+			<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
+			<li><span>Shipping ({{ order.shippingName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
+			<li class="grand-total"><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
+			<li><span>Currency</span> {{ order.currencyID }} (Conversion Rate: {{ order.conversionRate }})</li>
+
 		</ul>
 	</section>
 
-	<section class="group">
-		<h2 class="title">Product Gross {{ order.productGross|price(order.currencyID) }} - Show Product Price Details</h2>
+		<section class="group small-box">
+		<h2 class="title">Delivery Address</h2>
+		{% set address = order.addresses.getByType('delivery') %}
 		<ul class="order-details">
-			<li><span>Product Net</span> {{ order.productNet|price(order.currencyID) }} </li>
-			<li><span>Product Discount</span> {{ order.productDiscount|price(order.currencyID) }} </li>
-			<li><span>Product Tax</span> {{ order.productTax|price(order.currencyID) }} </li>
-			<li><span>Product Gross</span> {{ order.productGross|price(order.currencyID) }} </li>
+			<li>
+				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
+				{{ address.title }} {{ address.forename }} {{ address.surname }}
+			</li>
+			{% for key, line in address.lines %}
+				{% if not line is empty %}
+					<li>
+						<span>{{ 'ms.commerce.order.address.line'|trans({'number': key}) }}</span>
+						{{ line }}
+					</li>
+				{% endif %}
+			{% endfor %}
+		
+				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
+				{{ address.town }}
+			</li>
+				<li>
+				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
+				{{ address.postcode }} </li>
+			{% if not address.state is empty %}
+				<li>
+					<span>{{ 'ms.commerce.order.address.state'|trans }}</span>
+					{{ address.state }}
+				</li>
+			{% endif %}
+			<li>
+				<span>{{ 'ms.commerce.order.address.country'|trans }}</span>
+				{{ address.country }}
+			</li>
+			{% if not address.telephone is empty %}
+				<li>
+					<span>{{ 'ms.commerce.order.address.telephone'|trans }}</span>
+					{{ address.telephone }}
+				</li>
+			{% endif %}
 		</ul>
-	</section>
+		</section>
 
-	<section class="group">
-		<h2 class="title">Total Gross {{ order.totalGross|price(order.currencyID) }} - Show Total Price Details</h2>
+		<section class="group small-box">
+		<h2 class="title">Information</h2>
 		<ul class="order-details">
-			<li><span>Total Net</span> {{ order.totalNet|price(order.currencyID) }} </li>
-			<li><span>Total Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
-			<li><span>Total Tax</span> {{ order.totalTax|price(order.currencyID) }} </li>
-			<li><span>Total Gross</span> {{ order.totalGross|price(order.currencyID) }} </li>
+		<li><span>{{ 'Created by'|trans }}</span> {{ order.authorship.createdBy }}</li>
+		<li><span>Created on</span> {{ order.authorship.createdAt|date }}</li>
 		</ul>
-	</section>
-
-	<section class="group">
-		<h2 class="title">Shipping Gross {{ order.shippingGross|price(order.currencyID) }} - Show Shipping Details</h2>
-		<ul class="order-details">
-			<li><span>Shipping Name</span> {{ order.shippingName }} </li>
-			<li><span>Shipping List Price</span> {{ order.shippingListPrice|price(order.currencyID) }} </li>
-			<li><span>Shipping Net</span> {{ order.shippingNet|price(order.currencyID) }} </li>
-			<li><span>Shipping Discount</span> {{ order.shippingDiscount|price(order.currencyID) }} </li>
-			<li><span>Shipping Tax</span> {{ order.shippingTax|price(order.currencyID) }} </li>
-			<li><span>Shipping Tax Rate</span> {{ order.shippingTaxRate|price(order.currencyID) }} </li>
-			<li><span>Shipping Gross</span> {{ order.shippingGross|price(order.currencyID) }} </li>
-		</ul>
-	</section>
+		
+		</section>
 </div>
+

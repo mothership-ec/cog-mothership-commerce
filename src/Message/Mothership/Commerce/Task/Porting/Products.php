@@ -27,13 +27,16 @@ class Products extends Porting
 					catalogue_product.product_name AS name,
 					order_tax.tax_rate,
 					catalogue_product.supplier_ref,
-					catalogue_product.weight
+					catalogue_product.weight,
+					category_name AS category
 				FROM
 					catalogue
 				JOIN
 					catalogue_product USING (product_id)
 				JOIN
 					brand_info USING (brand_id)
+				JOIN
+					category_info USING (category_id)
 				JOIN
 					order_tax USING (tax_code)';
 
@@ -58,7 +61,8 @@ class Products extends Porting
 					name,
 					tax_rate,
 					supplier_ref,
-					weight_grams
+					weight_grams,
+					category
 				)
 				VALUES
 				(
@@ -74,7 +78,8 @@ class Products extends Porting
 					:name?,
 					:tax_rate?,
 					:supplier_ref?,
-					:weight_grams?
+					:weight_grams?,
+					:category?
 				)', (array) $row);
 		}
 

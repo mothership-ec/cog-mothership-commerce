@@ -66,7 +66,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function registerTabItems(Event\BuildOrderTabsEvent $event)
 	{
-		$event->addItem('ms.commerce.order.detail.view.index', 		'ms.commerce.order.order.overview-title');
+		$event->addItem('ms.commerce.order.detail.view', 			'ms.commerce.order.order.overview-title');
 		$event->addItem('ms.commerce.order.detail.view.items', 		'ms.commerce.order.item.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.addresses', 	'ms.commerce.order.address.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.payments', 	'ms.commerce.order.payment.listing-title');

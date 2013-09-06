@@ -14,6 +14,37 @@ class OrderAddress extends Porting
 		$newQuery = new \Message\Cog\DB\Query($uwNew);
 		$old = new \Message\Cog\DB\Query($uwOld);
 
+		// Check that the function doesn't exist, if not then create it
+		$checkFunction = $newQuery->run('SHOW FUNCTION STATUS WHERE name = \'SPLIT_STR\'');
+
+		if (count($checkFunction) == 0) {
+
+			$newQuery->run('CREATE FUNCTION SPLIT_STR(
+			  x VARCHAR(255),
+			  delim VARCHAR(12),
+			  pos INT
+			)
+			RETURNS VARCHAR(255)
+			RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
+			       LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
+			       delim, "")');
+		}
+
+		$checkFunction = $old->run('SHOW FUNCTION STATUS WHERE name = \'SPLIT_STR\'');
+
+		if (count($checkFunction) == 0) {
+
+			$old->run('CREATE FUNCTION SPLIT_STR(
+			  x VARCHAR(255),
+			  delim VARCHAR(12),
+			  pos INT
+			)
+			RETURNS VARCHAR(255)
+			RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
+			       LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
+			       delim, "")');
+		}
+
 		$sql = 'SELECT
 					NULL AS address_id,
 					order_id,
@@ -40,21 +71,6 @@ class OrderAddress extends Porting
 
 		$result = $old->run($sql);
 		$output= '';
-
-		// Check that the function doesn't exist, if not then create it
-		$checkFunction = $newQuery->run('SHOW FUNCTION STATUS WHERE name = \'SPLIT_STR\'');
-
-		if (count($newQuery) == 0) {
-		$new->add('CREATE FUNCTION SPLIT_STR(
-			  x VARCHAR(255),
-			  delim VARCHAR(12),
-			  pos INT
-			)
-			RETURNS VARCHAR(255)
-			RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
-			       LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
-			       delim, "")');
-		}
 
 		$new->add('TRUNCATE order_address');
 
