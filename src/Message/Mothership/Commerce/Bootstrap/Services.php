@@ -390,5 +390,13 @@ class Services implements ServicesInterface
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
 		});
+
+		$services['forex'] = $services->share(function($c) {
+			return new Commerce\Forex\Forex(
+				$c['db.query'],
+				'GBP',
+				array('GBP', 'USD', 'EUR', 'JPY')
+			);
+		});
 	}
 }
