@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Forex;
 
+use Exception;
 use Feeds\FeedInterface;
 
 /**
@@ -46,7 +47,7 @@ class Forex {
 			$from = $this->_baseCurrency;
 		}
 
-		$converter = new Converter($this->getRates(), $amount, $to, $from);
+		$converter = new Converter($this->getRates(), $amount, $from, $to);
 
 		try {
 			return $converter->get();

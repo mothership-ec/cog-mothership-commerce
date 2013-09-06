@@ -94,7 +94,7 @@ class Converter {
 
 		$rate = $this->_getRate($this->from, $this->to);
 
-		return $this->amount * $rate;
+		return number_format($this->amount * $rate, 2, '.', '');
 	}
 
 	/**
@@ -130,7 +130,7 @@ class Converter {
 
 		if ($base != 1.00) {
 			foreach ($rates as $c => $r) {
-				$rates[$c] = 1 / ($r / $base);
+				$rates[$c] = ($r / $base);
 			}
 		}
 
