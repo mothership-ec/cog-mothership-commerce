@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothershipo\Commerce\Forex\Feeds;
+namespace Message\Mothership\Commerce\Forex\Feed;
 
 class ECB implements FeedInterface {
 

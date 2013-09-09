@@ -70,7 +70,7 @@ class Converter {
 	public function to($currency)
 	{
 		$this->_to = $currency;
-		
+
 		return $this;
 	}
 

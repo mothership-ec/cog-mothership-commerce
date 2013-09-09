@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Forex;
+namespace Message\Mothership\Commerce\Forex\Feed;
 
 interface FeedInterface {
 
