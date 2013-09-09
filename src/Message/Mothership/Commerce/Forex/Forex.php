@@ -8,7 +8,7 @@ use Feeds\FeedInterface;
 /**
  * Provides foreign exchange currency conversions.
  *
- * @author Laurence Roberts <lsjroberts@gmail.com>
+ * @author Laurence Roberts <laurence@message.co.uk>
  */
 class Forex {
 

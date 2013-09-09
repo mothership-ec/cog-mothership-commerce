@@ -7,7 +7,7 @@ use Exception;
 /**
  * Provides an interface to converting prices between currencies.
  *
- * @author Laurence Roberts <lsjroberts@gmail.com>
+ * @author Laurence Roberts <laurence@message.co.uk>
  */
 class Converter {
 
