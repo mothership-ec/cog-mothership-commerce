@@ -11,10 +11,9 @@ use Exception;
  */
 class Converter {
 
-	public $amount;
-	public $from;
-	public $to;
-	
+	protected $_amount;
+	protected $_from;
+	protected $_to;
 	protected $_rates;
 
 	/**
@@ -28,10 +27,9 @@ class Converter {
 	public function __construct($rates, $amount = null, $from = null, $to = null)
 	{
 		$this->_rates = $rates;
-
-		$this->amount = $amount;
-		$this->from   = $from;
-		$this->to     = $to;
+		$this->_amount = $amount;
+		$this->_from   = $from;
+		$this->_to     = $to;
 	}
 
 	/**
@@ -43,7 +41,7 @@ class Converter {
 	 */
 	public function amount($amount)
 	{
-		$this->amount = $amount;
+		$this->_amount = (float) $amount;
 		return $this;
 	}
 
@@ -56,7 +54,7 @@ class Converter {
 	 */
 	public function from($currency)
 	{
-		$this->from = $currency;
+		$this->_from = $currency;
 		return $this;
 	}
 
@@ -69,7 +67,7 @@ class Converter {
 	 */
 	public function to($currency)
 	{
-		$this->to = $currency;
+		$this->_to = $currency;
 		return $this;
 	}
 
@@ -80,21 +78,21 @@ class Converter {
 	 */
 	public function get()
 	{
-		if ($this->amount === null) {
+		if ($this->_amount === null) {
 			throw new Exception("No amount set to convert.");
 		}
 
-		if ($this->from === null) {
+		if ($this->_from === null) {
 			throw new Exception("No currency set to convert from.");
 		}
 
-		if ($this->to === null) {
+		if ($this->_to === null) {
 			throw new Exception("No currency set to convert to.");
 		}
 
-		$rate = $this->_getRate($this->from, $this->to);
+		$rate = $this->_getRate($this->_from, $this->_to);
 
-		return number_format($this->amount * $rate, 2, '.', '');
+		return (float) $this->amount * $rate;
 	}
 
 	/**
@@ -126,6 +124,11 @@ class Converter {
 	protected function _convertRates($from)
 	{
 		$rates = $this->_rates;
+
+		if (! isset($rates[$from])) {
+			throw new Exception(sprintf("The currency '%' is not valid", $from));
+		}
+
 		$base  = $rates[$from];
 
 		if ($base != 1.00) {
