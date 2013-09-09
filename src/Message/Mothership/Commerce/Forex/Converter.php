@@ -93,7 +93,7 @@ class Converter {
 			throw new Exception("No currency set to convert to.");
 		}
 
-		$rate = $this->_getRate($this->_from, $this->_to);
+		$rate = $this->getRate($this->_from, $this->_to);
 
 		return (float) $this->_amount * $rate;
 	}
@@ -106,7 +106,7 @@ class Converter {
 	 * 
 	 * @return float        Exchange rate
 	 */
-	protected function _getRate($from, $to)
+	public function getRate($from, $to)
 	{
 		$rates = $this->_convertRates($from);
 
