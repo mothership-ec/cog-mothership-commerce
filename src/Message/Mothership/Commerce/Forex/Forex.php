@@ -72,7 +72,7 @@ class Forex {
 					currency,
 					rate
 				FROM
-					forex_rates
+					forex_rate
 			');
 
 			foreach ($results as $row) {
