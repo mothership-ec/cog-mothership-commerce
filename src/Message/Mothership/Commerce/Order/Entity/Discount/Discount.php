@@ -3,8 +3,8 @@
 namespace Message\Mothership\Commerce\Order\Entity\Discount;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
-
 use Message\Cog\ValueObject\Authorship;
+use Message\Mothership\Commerce\Order\Entity\Item;
 
 /**
  * Represents a discount for an order.
@@ -19,7 +19,7 @@ class Discount implements EntityInterface
 
 	public $discount;
 
-	public $items = array();
+	public $items;
 
 	public $id;
 	public $code;
@@ -35,5 +35,7 @@ class Discount implements EntityInterface
 		$this->authorship
 			->disableUpdate()
 			->disableDelete();
+
+		$this->items = new Item\Collection;
 	}
 }

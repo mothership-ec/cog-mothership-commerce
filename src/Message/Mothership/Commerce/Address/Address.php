@@ -8,15 +8,11 @@ class Address
 {
 	const DELIVERY = 'delivery';
 	const BILLING  = 'billing';
+	const AMOUNT_LINES = 4;
 
 	public $id;
 	public $type;
-	public $lines = array(
-		1 => null,
-		2 => null,
-		3 => null,
-		4 => null,
-	);
+	public $lines;
 	public $town;
 	public $stateID;
 	public $state;
@@ -25,10 +21,17 @@ class Address
 	public $countryID;
 	public $telephone;
 
+	public function __construct()
+	{
+		for($i = 1; $i <= self::AMOUNT_LINES; ++$i) {
+			$lines[$i] = null;
+		}
+	}
+
 	public function setLines(array $lines)
 	{
-		if (count($lines) > 4) {
-			throw new \InvalidArgumentException(sprintf('An Address can only have 4 lines, `%s` passed', count($lines)));
+		if (count($lines) > AMOUNT_LINES) {
+			throw new \InvalidArgumentException(sprintf('An Address can only have %d lines, `%s` passed', self::AMOUNT_LINES, count($lines)));
 		}
 
 		$i = 1;

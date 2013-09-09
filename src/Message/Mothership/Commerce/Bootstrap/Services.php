@@ -39,7 +39,9 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$c['http.session']->set('basket.order', $c['order']);
+				$order = $c['order'];
+				$order->locale = $c['locale']->getId();
+				$c['http.session']->set('basket.order', $order);
 			}
 
 			return $c['http.session']->get('basket.order');
@@ -62,7 +64,7 @@ class Services implements ServicesInterface
 					new Commerce\Order\Entity\Address\Loader($c['db.query'])
 				),
 				'discounts'  => new Commerce\Order\Entity\CollectionOrderLoader(
-					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Discount\Collection,
 					new Commerce\Order\Entity\Discount\Loader($c['db.query'])
 				),
 				'dispatches' => new Commerce\Order\Entity\CollectionOrderLoader(
@@ -219,6 +221,10 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
 				new Commerce\Order\Entity\Payment\Method\Sagepay,
+
+				new Commerce\Order\Entity\Payment\Method\Paypal,
+				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
+				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
 			));
 		});
 
