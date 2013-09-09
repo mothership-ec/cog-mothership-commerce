@@ -30,7 +30,7 @@ class Address
 
 	public function setLines(array $lines)
 	{
-		if (count($lines) > AMOUNT_LINES) {
+		if (count($lines) > self::AMOUNT_LINES) {
 			throw new \InvalidArgumentException(sprintf('An Address can only have %d lines, `%s` passed', self::AMOUNT_LINES, count($lines)));
 		}
 

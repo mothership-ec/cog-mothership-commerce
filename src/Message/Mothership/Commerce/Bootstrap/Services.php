@@ -221,6 +221,10 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
 				new Commerce\Order\Entity\Payment\Method\Sagepay,
+
+				new Commerce\Order\Entity\Payment\Method\Paypal,
+				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
+				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
 			));
 		});
 
