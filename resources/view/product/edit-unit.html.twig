@@ -17,14 +17,14 @@
 	<table>
 		<thead>
 			<tr>
-				<th>SKU</th>
+				<th>{{ 'ms.commerce.product.label.units.sku'|trans }}</th>
 				{% for heading in headings %}
 					<th>{{heading}}</th>
 				{% endfor %}
-				<th>Prices</th>
-				<th>Weight (grams)</th>
-				<th>Visible</th>
-				<th>Delete</th>
+				<th>{{ 'ms.commerce.product.label.units.prices'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.weight-grams'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.units.visible'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.units.delete'|trans }}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -50,17 +50,17 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<button type="submit" class="button small save" id="save-content">Update</button>
+	<button type="submit" class="button small save" id="save-content">{{ 'ms.commerce.product.label.button'|trans }}</button>
 	{{ form_end(form) }}
 	{{ form_start(addForm) }}
 	<table>
 		<thead>
 			<tr>
-				<th>SKU</th>
-				<th>Type</th>
-				<th>Value</th>
-				<th>Prices</th>
-				<th>Weight (grams)</th>
+				<th>{{ 'ms.commerce.product.label.units.sku'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.units.type'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.units.value'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.units.prices'|trans }}</th>
+				<th>{{ 'ms.commerce.product.label.weight-grams'|trans }}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -95,7 +95,9 @@
 			</tr>
 		</tbody>
 	</table>
-		<button type="submit" class="button small submit">Add new</button>
+		<button type="submit" class="button small submit">
+			{{ 'ms.commerce.product.label.units.button'|trans }}
+		</button>
 		<datalist id="option_value">
 			{% for option in optionValue %}
 				<option value="{{ option }}">{{option}}</option>

@@ -23,6 +23,7 @@ ms.commerce:
       description: Description
       category: Category
       brand: Brand
+      button: Save Changes
       price:
         retail: Retail Price
         cost: Cost Price
@@ -32,7 +33,21 @@ ms.commerce:
         cost: Cost
         rrp: RRP
       stock-location:
-        1: Web Stock
+        web: Web Stock
+      image:
+        file: Image
+        type: Image Type
+        option-name: Option Name
+        option-value: Option Value
+      units:
+        sku: SKU
+        prices: Prices
+        visible: Visible
+        delete: Delete
+        type: Option Type
+        value: Option Value
+        option-empty-value: Select Option
+        button: Add New
 
   order:
     order:

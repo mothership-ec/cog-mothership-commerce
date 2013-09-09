@@ -171,8 +171,7 @@ class Edit extends Controller
 					->add(
 						$location->name,
 						'text',
-						// trans this!
-						$location->displayName,
+						$this->trans('ms.commerce.product.label.stock-location.'.$location->name),
 						array('attr' =>
 							array('value' =>  '+0')
 						)
@@ -271,18 +270,18 @@ class Edit extends Controller
 			$imageTypes[$image->type] = ucfirst($image->type);
 		}
 
-		$form->add('image', 'ms_file', 'image', array('choices' => $choices));
-		$form->add('type', 'choice', 'image type', array(
+		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.label.image.file'), array('choices' => $choices));
+		$form->add('type', 'choice',  $this->trans('ms.commerce.product.label.image.type'), array(
 			'choices' => $imageTypes
 		));
 
 		$optionNames = array();
 
-		$form->add('option_name', 'choice', 'Option name', array(
+		$form->add('option_name', 'choice',  $this->trans('ms.commerce.product.label.image.option-name'), array(
 			'choices' => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
 		))->val()->optional();
 
-		$form->add('option_value', 'choice', 'Option Value', array(
+		$form->add('option_value', 'choice', $this->trans('ms.commerce.product.label.image.option-value'), array(
 			'choices' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
 
 		))->val()->optional();
@@ -320,7 +319,7 @@ class Edit extends Controller
 			));
 
 			foreach ($unit->price as $type => $value) {
-				$priceForm->add($type, 'text',$this->trans('ms.commerce.product.label.price-sans.'.strtolower($type)), array('attr' => array('value' =>  $value->getPrice('GBP', $this->get('locale')))))
+				$priceForm->add($type, 'text', $this->trans('ms.commerce.product.label.price-sans.'.strtolower($type)), array('attr' => array('value' => $value->getPrice('GBP', $this->get('locale')))))
 					->val()->optional();
 			}
 
@@ -389,25 +388,37 @@ class Edit extends Controller
 				'visible' => false,
 		));
 
-		$form->add('sku', 'text','',array('attr' => array('list' => 'option_value', 'placeholder' => 'SKU')));
+		$form->add('sku', 'text','',array('attr' => array(
+			'list' => 'option_value',
+			'placeholder' => $this->trans('ms.commerce.product.label.units.sku'),
+		)));
 		$form->add('weight', 'text','');
 
-		$form->add('option_name_1', 'choice','Option name 1',
+		$form->add('option_name_1', 'choice', 'Option name 1',
 			array(
 				'choices' => $headings,
-				'empty_value' => 'Select option',
+				'empty_value' => $this->trans('ms.commerce.product.label.units.option-empty-value'),
 			)
 		);
-		$form->add('option_value_1', 'text','Option value', array('attr' => array('list' => 'option_value', 'placeholder' => 'Value')));
+		$form->add('option_value_1', 'text','Option value', array(
+			'attr' => array(
+				'list' => 'option_value',
+				'placeholder' => $this->trans('ms.commerce.product.label.units.value'),
+			)
+		));
 
 		$form->add('option_name_2', 'choice','Option name 2',
 			array(
 				'choices' => $headings,
-				'empty_value' => 'Select option',
+				'empty_value' => $this->trans('ms.commerce.product.label.units.option-empty-value'),
 			)
 		);
-		$form->add('option_value_2', 'text','Option value', array('attr' => array('list' => 'option_value', 'placeholder' => 'Value')));
-
+		$form->add('option_value_2', 'text','Option value', array(
+			'attr' => array(
+				'list' => 'option_value',
+				'placeholder' => $this->trans('ms.commerce.product.label.units.value'),
+			)
+		));
 		$priceForm = $this->get('form')
 			->setName('price')
 			->addOptions(array(
