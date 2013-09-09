@@ -42,6 +42,7 @@ class Converter {
 	public function amount($amount)
 	{
 		$this->_amount = (float) $amount;
+
 		return $this;
 	}
 
@@ -55,6 +56,7 @@ class Converter {
 	public function from($currency)
 	{
 		$this->_from = $currency;
+
 		return $this;
 	}
 
@@ -68,6 +70,7 @@ class Converter {
 	public function to($currency)
 	{
 		$this->_to = $currency;
+		
 		return $this;
 	}
 
@@ -92,7 +95,7 @@ class Converter {
 
 		$rate = $this->_getRate($this->_from, $this->_to);
 
-		return (float) $this->amount * $rate;
+		return (float) $this->_amount * $rate;
 	}
 
 	/**
