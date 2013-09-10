@@ -2,7 +2,8 @@
 
 namespace Message\Mothership\Commerce\Forex;
 
-use Exception;
+use LogicException;
+use InvalidArgumentException;
 
 /**
  * Provides an interface to converting prices between currencies.
@@ -18,7 +19,7 @@ class Converter {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param array       $rates  Conversion rates
 	 * @param int|null    $amount Amount to convert
 	 * @param string|null $from   Currency to convert from
@@ -34,9 +35,9 @@ class Converter {
 
 	/**
 	 * Set the amount to convert.
-	 * 
+	 *
 	 * @param  int $amount Amount to convert
-	 * 
+	 *
 	 * @return Converter
 	 */
 	public function amount($amount)
@@ -48,9 +49,9 @@ class Converter {
 
 	/**
 	 * Set the currency to convert from.
-	 * 
+	 *
 	 * @param  string $currency Currency to convert from
-	 * 
+	 *
 	 * @return Converter
 	 */
 	public function from($currency)
@@ -62,9 +63,9 @@ class Converter {
 
 	/**
 	 * Set the currency to convert to.
-	 * 
+	 *
 	 * @param  string $currency Currency to convert to
-	 * 
+	 *
 	 * @return Converter
 	 */
 	public function to($currency)
@@ -76,21 +77,21 @@ class Converter {
 
 	/**
 	 * Get the converted amount.
-	 * 
+	 *
 	 * @return float Converted amount
 	 */
 	public function get()
 	{
 		if ($this->_amount === null) {
-			throw new Exception("No amount set to convert.");
+			throw new LogicException("No amount set to convert.");
 		}
 
 		if ($this->_from === null) {
-			throw new Exception("No currency set to convert from.");
+			throw new LogicException("No currency set to convert from.");
 		}
 
 		if ($this->_to === null) {
-			throw new Exception("No currency set to convert to.");
+			throw new LogicException("No currency set to convert to.");
 		}
 
 		$rate = $this->getRate($this->_from, $this->_to);
@@ -100,10 +101,10 @@ class Converter {
 
 	/**
 	 * Get the rate of conversion between two currencies.
-	 * 
+	 *
 	 * @param  string $from Currency to convert from
 	 * @param  string $to   Currency to convert to
-	 * 
+	 *
 	 * @return float        Exchange rate
 	 */
 	public function getRate($from, $to)
@@ -111,7 +112,7 @@ class Converter {
 		$rates = $this->_convertRates($from);
 
 		if (! isset($rates[$to])) {
-			throw new Exception(sprintf("The currency '%' is not valid", $to));
+			throw new InvalidArgumentException(sprintf("The currency '%' is not valid", $to));
 		}
 
 		return $rates[$to];
@@ -119,9 +120,9 @@ class Converter {
 
 	/**
 	 * Get the exchange rates from a currency.
-	 * 
+	 *
 	 * @param  string $from Currency to set as the base for conversion
-	 * 
+	 *
 	 * @return array        List of exchange rates
 	 */
 	protected function _convertRates($from)
@@ -129,7 +130,7 @@ class Converter {
 		$rates = $this->_rates;
 
 		if (! isset($rates[$from])) {
-			throw new Exception(sprintf("The currency '%' is not valid", $from));
+			throw new InvalidArgumentException(sprintf("The currency '%' is not valid", $from));
 		}
 
 		$base  = $rates[$from];
