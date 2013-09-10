@@ -39,13 +39,19 @@ class Create extends Controller
 			->setAction($this->generateUrl('ms.commerce.product.create.action'))
 			->setMethod('post');
 
-		$form->add('name', 'text', $this->trans('ms.commerce.product.label.name'))
+		$form->add('name', 'text', $this->trans('ms.commerce.product.name.label'), array('attr' => array(
+			'data-help-key' => 'ms.commerce.product.name.help'
+		)))
 			->val()->maxLength(255);
 
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.label.display-name'))
+		$form->add('display_name', 'text', $this->trans('ms.commerce.product.display-name.label'), array('attr' => array(
+			'data-help-key' => 'ms.commerce.product.name.help'
+		)))
 			->val()->maxLength(255);
 
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.label.short-description'));
+		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description.label'), array('attr' => array(
+			'data-help-key' => 'ms.commerce.product.name.help'
+		)));
 
 		return $form;
 	}
