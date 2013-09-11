@@ -21,6 +21,10 @@
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
 				{{ address.title }} {{ address.forename }} {{ address.surname }}
 			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>
+				{{ order.userEmail }}
+			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
 					<li>
@@ -29,7 +33,7 @@
 					</li>
 				{% endif %}
 			{% endfor %}
-		
+
 				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
 				{{ address.town }}
 			</li>
@@ -59,9 +63,9 @@
 		<h2 class="title">Information</h2>
 		<ul class="order-details">
 		<li><span>{{ 'Created by'|trans }}</span> {{ order.authorship.createdBy }}</li>
-		<li><span>Created on</span> {{ order.authorship.createdAt|date }}</li>
+		<li><span>{{ 'Created at'|trans }}</span> {{ order.authorship.createdAt|date }}</li>
 		</ul>
-		
+
 		</section>
 </div>
 

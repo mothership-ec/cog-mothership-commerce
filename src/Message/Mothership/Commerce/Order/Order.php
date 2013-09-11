@@ -16,6 +16,7 @@ class Order
 	public $orderID; // alias of $id for BC
 
 	public $user;
+	public $userEmail;
 	public $authorship;
 	public $status;
 

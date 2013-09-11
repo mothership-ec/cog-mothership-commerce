@@ -83,6 +83,7 @@ class Create
 				created_by       = :createdBy?in,
 				status_code      = :status?i,
 				user_id          = :userID?in,
+				user_email		 = :userEmail?sn
 				type             = :type?sn,
 				locale           = :locale?s,
 				taxable          = :taxable?b,
@@ -100,6 +101,7 @@ class Create
 			'createdAt'       => $order->authorship->createdAt(),
 			'createdBy'       => $order->authorship->createdBy(),
 			'userID'          => $order->user ? $order->user->id : null,
+			'userEmail'		  => $order->user ? $order->user->email : null,
 			'status'          => $order->status->code,
 			'type'            => $order->type,
 			'locale'          => $order->locale,

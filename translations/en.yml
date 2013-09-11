@@ -5,258 +5,141 @@ ms.commerce:
       create: Create product
     name:
       label: Name
-      help:
-        short: -
-        long:
-        example:
+      help: -
     display-name:
       label: Display Name
       help:
-        short: -
-        long:
-        example:
     short-description:
       label: Short Description
       help:
-        short: -
-        long:
-        example:
     year:
       label: Year
       help:
-        short: -
-        long:
-        example:
     tax-rate:
       label: Tax Rate
       help:
-        short: -
-        long:
-        example:
     tax-strategy:
       label: Tax Strategy
       help:
-        short: -
-        long:
-        example:
       choices:
         inclusive: Inclusive
         exclusive: Exclusive
     supplier-ref:
       label: Supplier Reference
       help:
-        short: -
-        long:
-        example:
     weight-grams:
       label: Weight Grams
       help:
-        short: -
-        long:
-        example:
     season:
       label: Season
       help:
-        short: -
-        long:
-        example:
     description:
       label: Description
       help:
-        short: -
-        long:
-        example:
     fabric:
       label: Fabric
       help:
-        short: -
-        long:
-        example:
     export-manufacture-country:
       label: Manufacture Country Name
       help:
-        short: -
-        long:
-        example:
     export-value:
       label: Export value
       help:
-        short: -
-        long:
-        example:
     export-description:
       label: Export Description
       help:
-        short: -
-        long:
-        example:
     tags:
       label: Tags
       help:
-        short: -
-        long:
-        example:
     notes:
       label: Notes
       help:
-        short: -
-        long:
-        example:
     sizing:
       label: Sizing
       help:
-        short: -
-        long:
-        example:
     care-instructions:
       label: Care Instructions
       help:
-        short: -
-        long:
-        example:
     features:
       label: Features
       help:
-        short: -
-        long:
-        example:
     fabric:
       label: Fabric
       help:
-        short: -
-        long:
-        example:
     description:
       label: Description
       help:
-        short: -
-        long:
-        example:
     category:
       label: Category
       help:
-        short: -
-        long:
-        example:
     brand:
       label: Brand
       help:
-        short: -
-        long:
-        example:
     price:
       retail:
         label: Retail Price
         label-sans: Retail
         help:
-          short: -
-          long:
-          example:
       cost:
         label: Cost Price
         label-sans: Cost
         help:
-          short: -
-          long:
-          example:
       rrp:
         label: RRP Price
         label-sans: RRP
         help:
-          short: -
-          long:
-          example:
     image:
       file:
         label: Image
         help:
-          short: -
-          long:
-          example:
       type:
         label: Image Type
         help:
-          short: -
-          long:
-          example:
       option:
         name:
           label: Option Name
           help:
-            short: -
-            long:
-            example:
         value:
           label: Option Value
           help:
-            short: -
-            long:
-            example:
     units:
       sku:
         label: SKU
         placeholder: SKU
         help:
-          short: -
-          long:
-          example:
       prices:
         label: Prices
         help:
-          short: -
-          long:
-          example:
       visible:
         label: Visible
         help:
-          short: -
-          long:
-          example:
       delete:
         label: Delete
         help:
-          short: -
-          long:
-          example:
       option:
         type:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
           help:
-            short: -
-            long:
-            example:
         value:
           label: Option Value
           placeholder: Option Value
           help:
-            short: -
-            long:
-            example:
         button:
           create: Add unit
     stock:
       reason:
         label: Reason
         help:
-          short: -
-          long:
-          example:
       note:
         label: Note
         help:
-          short: -
-          long:
-          example:
       location:
         web: Web Stock
       level:
         label: Adjust stock level
-        help:
-          short: The first figure gives information about the current stock level. Put the change in stock in the input-field.
-          long: E.g. when you put "2", it will increase the stock level by 2.
-          example: stock level before: 4, input: "-3", stock level after: 1
+        help: The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
   order:
     order:
       none: There are no orders to view.
@@ -274,6 +157,7 @@ ms.commerce:
       product-gross: Product Gross
       total-gross: Total Gross
       status: Status
+      user-email: E-Mail
 
     item:
       none: There are no items to view.

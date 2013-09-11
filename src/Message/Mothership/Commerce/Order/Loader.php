@@ -182,6 +182,7 @@ class Loader
 				order_summary.*,
 				order_summary.order_id         AS id,
 				order_summary.order_id         AS orderID,
+				order_summary.user_email	   AS userEmail,
 				order_summary.currency_id      AS currencyID,
 				order_summary.conversion_rate  AS conversionRate,
 				order_summary.product_net      AS productNet,
