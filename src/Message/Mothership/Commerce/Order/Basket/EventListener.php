@@ -15,12 +15,13 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-				KernelEvents::REQUEST => array(
-					array('getBasket')
-				),
-				KernelEvents::RESPONSE => array(
-					array('saveBasket'),
-		));
+			KernelEvents::REQUEST => array(
+				array('getBasket')
+			),
+			KernelEvents::RESPONSE => array(
+				array('saveBasket'),
+			),
+		);
 	}
 
 	public function saveBasket(Event\FilterResponseEvent $event)
