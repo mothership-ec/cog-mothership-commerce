@@ -3,143 +3,143 @@ ms.commerce:
     button:
       save: Save product
       create: Create product
-    name:
-      label: Name
-      help: -
-    display-name:
-      label: Display Name
-      help:
-    short-description:
-      label: Short Description
-      help:
-    year:
-      label: Year
-      help:
-    tax-rate:
-      label: Tax Rate
-      help:
-    tax-strategy:
-      label: Tax Strategy
-      help:
-      choices:
-        inclusive: Inclusive
-        exclusive: Exclusive
-    supplier-ref:
-      label: Supplier Reference
-      help:
-    weight-grams:
-      label: Weight Grams
-      help:
-    season:
-      label: Season
-      help:
-    description:
-      label: Description
-      help:
-    fabric:
-      label: Fabric
-      help:
-    export-manufacture-country:
-      label: Manufacture Country Name
-      help:
-    export-value:
-      label: Export value
-      help:
-    export-description:
-      label: Export Description
-      help:
-    tags:
-      label: Tags
-      help:
-    notes:
-      label: Notes
-      help:
-    sizing:
-      label: Sizing
-      help:
-    care-instructions:
-      label: Care Instructions
-      help:
-    features:
-      label: Features
-      help:
-    fabric:
-      label: Fabric
-      help:
-    description:
-      label: Description
-      help:
-    category:
-      label: Category
-      help:
-    brand:
-      label: Brand
-      help:
-    price:
+    attributes:
+      name:
+        label: Name
+        help: -
+      display-name:
+        label: Display Name
+        help: -
+      category:
+        label: Category
+        help: -
+      brand:
+        label: Brand
+        help: -
+      season:
+        label: Season
+        help: -
+      year:
+        label: Year
+        help: -
+      short-description:
+        label: Short Description
+        help: -
+      description:
+        label: Description
+        help: -
+      export-description:
+        label: Export Description
+        help: -
+    pricing:
+      tax-rate:
+        label: Tax Rate
+        help: -
       retail:
         label: Retail Price
         label-sans: Retail
-        help:
+        help: -
       cost:
         label: Cost Price
         label-sans: Cost
-        help:
+        help: -
       rrp:
         label: RRP Price
         label-sans: RRP
-        help:
+        help: -
+      tax-strategy:
+          label: Tax Strategy
+          help: -
+          choices:
+            inclusive: Inclusive
+            exclusive: Exclusive
+      export-value:
+        label: Export value
+        help: -
+    details:
+      supplier-ref:
+        label: Supplier Reference
+        help: -
+      weight-grams:
+        label: Weight Grams
+        help: -
+      fabric:
+        label: Fabric
+        help: -
+      export-manufacture-country:
+        label: Manufacture Country Name
+        help: -
+      tags:
+        label: Tags
+        help: -
+      notes:
+        label: Notes
+        help: -
+      sizing:
+        label: Sizing
+        help: -
+      care-instructions:
+        label: Care Instructions
+        help: -
+      features:
+        label: Features
+        help: -
+      fabric:
+        label: Fabric
+        help: -
     image:
       file:
         label: Image
-        help:
+        help: -
       type:
         label: Image Type
-        help:
+        help: -
       option:
         name:
           label: Option Name
-          help:
+          help: -
         value:
           label: Option Value
-          help:
+          help: -
     units:
       sku:
         label: SKU
         placeholder: SKU
-        help:
+        help: -
       prices:
         label: Prices
-        help:
+        help: -
       visible:
         label: Visible
-        help:
+        help: -
       delete:
         label: Delete
-        help:
+        help: -
       option:
         type:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
-          help:
+          help: -
         value:
           label: Option Value
           placeholder: Option Value
-          help:
+          help: -
         button:
           create: Add unit
     stock:
+      page-title: Stock Movements
       reason:
         label: Reason
-        help:
+        help: -
       note:
         label: Note
-        help:
+        help: -
       location:
         web: Web Stock
       level:
         label: Adjust stock level
-        help: The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
+        help: - The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
   order:
     order:
       none: There are no orders to view.

@@ -20,13 +20,33 @@ class Edit extends Controller
 	 *
 	 * @return Response 			Output for view
 	 */
-	public function index($productID)
+	public function productAttributes($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		return $this->render('::product:edit', array(
 			'product' => $this->_product,
-			'form'    => $this->_getProductForm(),
+			'form'    => $this->_getProductAttributesForm(),
+		));
+	}
+
+	public function productDetails($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+
+		return $this->render('::product:edit', array(
+			'product' => $this->_product,
+			'form'    => $this->_getProductDetailsForm(),
+		));
+	}
+
+	public function productPricing($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+
+		return $this->render('::product:edit', array(
+			'product' => $this->_product,
+			'form'    => $this->_getProductPricingForm(),
 		));
 	}
 
@@ -87,6 +107,198 @@ class Edit extends Controller
 		));
 	}
 
+		/**
+	 * Process the updating of the units data
+	 *
+	 * @param  int 		$productID ProductID to load
+	 */
+	public function processUnit($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$this->_units   = $this->_product->getUnits();
+		$form           = $this->_getUnitForm();
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			foreach ($data as $unitID => $values) {
+				// original unit
+				$unit = clone $this->_units[$unitID];
+				// unit to update
+				$changedUnit = clone $unit;
+
+				if ($values['delete']) {
+					$this->get('product.unit.delete')->delete($unit);
+
+					continue;
+				}
+
+				$changedUnit->sku 		= $values['sku'];
+				$changedUnit->weight 	= (int) $values['weight'];
+				$changedUnit->visible 	= (int) (bool) $values['visible'];
+
+				foreach ($values['price'] as $type => $value) {
+					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+				}
+
+				foreach ($values['options'] as $type => $value) {
+					$changedUnit->options[$type] = $value;
+				}
+
+				if ($changedUnit != $unit) {
+					$changedUnit = $this->get('product.unit.edit')->save($changedUnit);
+				}
+
+				if ($changedUnit->price !== $unit->price) {
+					$changedUnit = $this->get('product.unit.edit')->savePrices($changedUnit);
+				}
+			}
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
+	}
+
+	public function processAddUnit($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$form = $this->_addNewUnitForm();
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$unit              = $this->get('product.unit');
+			$unit->sku         = $data['sku'];
+			$unit->weight 	   = $data['weight'];
+			// TODO: Where does that 1 come from? -> constant??
+			$unit->revisionID  = 1;
+			$unit->product     = $this->_product;
+
+			foreach ($data['price'] as $type => $value) {
+				$unit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+			}
+
+			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
+			$unit->setOption($data['option_name_1'], $data['option_value_1']);
+
+			if (!empty($data['option_name_2']) && !empty($data['option_value_2'])) {
+				$unit->setOption($data['option_name_2'], $data['option_value_2']);
+			}
+
+			$unit = $this->get('product.unit.create')->save($unit);
+			$unit = $this->get('product.unit.create')->savePrices($unit);
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
+
+	}
+
+	public function processProductAttributes($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+
+		$form = $this->_getProductAttributesForm();
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$product = $this->_product;
+
+			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
+
+			$product->name                       = $data['name'];
+			$product->shortDescription           = $data['short_description'];
+			$product->displayName                = $data['display_name'];
+			$product->year                       = $data['year'];
+			$product->season                     = $data['season'];
+			$product->description                = $data['description'];
+			$product->category                   = $data['category'];
+			$product->brand                   	 = $data['brand'];
+			$product->exportDescription          = $data['export_description'];
+
+			$product = $this->get('product.edit')->save($product);
+
+			if ($product->id) {
+				$this->addFlash('success', 'Product updated successfully');
+				return $this->redirectToReferer();
+			} else {
+				$this->addFlash('error', 'Unable to updated product');
+			}
+		}
+
+		return $this->render('::product:edit', array(
+			'product' => $this->_product,
+			'form'    => $form,
+		));
+	}
+
+	public function processProductDetails($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+
+		$form = $this->_getProductDetailsForm();
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$product = $this->_product;
+
+			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
+
+			$product->supplierRef                = $data['supplier_ref'];
+			$product->weight                	 = $data['weight_grams'];
+			$product->fabric                     = $data['fabric'];
+			$product->features                   = $data['features'];
+			$product->careInstructions           = $data['care_instructions'];
+			$product->sizing                     = $data['sizing'];
+			$product->notes                      = $data['notes'];
+			$product->tags                       = explode(',',$data['tags']);
+			$product->exportManufactureCountryID = $data['export_manufacture_country_id'];
+
+			$product = $this->get('product.edit')->save($product);
+			$product = $this->get('product.edit')->saveTags($product);
+
+			if ($product->id) {
+				$this->addFlash('success', 'Product updated successfully');
+				return $this->redirectToReferer();
+			} else {
+				$this->addFlash('error', 'Unable to updated product');
+			}
+		}
+
+		return $this->render('::product:edit', array(
+			'product' => $this->_product,
+			'form'    => $form,
+		));
+	}
+
+	public function processProductPricing($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+
+		$form = $this->_getProductPricingForm();
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$product = $this->_product;
+
+			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
+
+			$product->taxRate                    = $data['tax_rate'];
+			$product->taxStrategy                = $data['tax_strategy'];
+			$product->exportValue                = $data['export_value'];
+
+			foreach ($data as $key => $value) {
+				if (preg_match("/^price/us", $key)) {
+					$type = str_replace('price_', '', $key);
+					$product->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+				}
+			}
+
+			$product = $this->get('product.edit')->save($product);
+			$product = $this->get('product.edit')->savePrices($product);
+
+			if ($product->id) {
+				$this->addFlash('success', 'Product updated successfully');
+				return $this->redirectToReferer();
+			} else {
+				$this->addFlash('error', 'Unable to updated product');
+			}
+		}
+
+		return $this->render('::product:edit', array(
+			'product' => $this->_product,
+			'form'    => $form,
+		));
+	}
+
 	public function processStock($productID)
 	{
 		$this->_product 	= $this->get('product.loader')->getByID($productID);
@@ -133,6 +345,27 @@ class Edit extends Controller
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.stock', array('productID' => $this->_product->id));
+	}
+
+
+	public function processImage($productID)
+	{
+		$this->_product = $this->get('product.loader')->getByID($productID);
+		$form = $this->_getImageForm();
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$image = new Image(
+				$data['image'],
+				$this->get('product.image.types')->get($data['type']),
+				$this->get('locale'),
+				null,
+				$data['option_name'],
+				$data['option_value']
+			);
+
+			$this->get('product.edit')->saveImage($this->_product, $image);
+		}
+
+		return $this->redirectToRoute('ms.commerce.product.edit.images', array('productID' => $this->_product->id));
 	}
 
 	/**
@@ -206,26 +439,6 @@ class Edit extends Controller
 			->optional();
 
 		return $mainForm;
-	}
-
-	public function imagesProcess($productID)
-	{
-		$this->_product = $this->get('product.loader')->getByID($productID);
-		$form = $this->_getImageForm();
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$image = new Image(
-				$data['image'],
-				$this->get('product.image.types')->get($data['type']),
-				$this->get('locale'),
-				null,
-				$data['option_name'],
-				$data['option_value']
-			);
-
-			$this->get('product.edit')->saveImage($this->_product, $image);
-		}
-
-		return $this->redirectToRoute('ms.commerce.product.edit.images', array('productID' => $this->_product->id));
 	}
 
 	/**
@@ -335,11 +548,11 @@ class Edit extends Controller
 				$priceForm->add(
 					$type,
 					'text',
-					$this->trans('ms.commerce.product.price.'.strtolower($type).'.label-sans'),
+					$this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
 					array(
 						'attr' => array(
 							'value' 		=> $value->getPrice('GBP', $this->get('locale')),
-							'data-help-key' => 'ms.commerce.product.price.'.strtolower($type).'.help',
+							'data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help',
 						)
 					)
 				)
@@ -388,7 +601,7 @@ class Edit extends Controller
 			$form->add('weight', 'text','', array(
 				'attr' => array(
 					'value' =>  $unit->weight,
-					'data-help-key' => 'ms.commerce.product.weight-grams.help'
+					'data-help-key' => 'ms.commerce.product.details.weight-grams.help'
 				)
 			))
 				->val()->optional();
@@ -437,7 +650,7 @@ class Edit extends Controller
 		));
 
 		$form->add('weight', 'text','',  array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.units.weight-grams.help',
+			'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
 		)));
 
 		$form->add('option_name_1', 'choice', $this->trans('ms.commerce.product.units.option.type.label'),
@@ -479,8 +692,8 @@ class Edit extends Controller
 		);
 
 		foreach ($this->get('product.price.types') as $type) {
-			$priceForm->add($type, 'text', $this->trans('ms.commerce.product.price.'.strtolower($type).'.label-sans'),
-				array('attr' => array('data-help-key' => 'ms.commerce.product.price.'.strtolower($type).'.help')))
+			$priceForm->add($type, 'text', $this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
+				array('attr' => array('data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help')))
 				->val()->optional();
 		}
 
@@ -489,296 +702,201 @@ class Edit extends Controller
 		return $form;
 	}
 
-	/**
-	 * Process the updating of the units data
-	 *
-	 * @param  int 		$productID ProductID to load
-	 */
-	public function unitProcess($productID)
-	{
-		$this->_product = $this->get('product.loader')->getByID($productID);
-		$this->_units   = $this->_product->getUnits();
-		$form           = $this->_getUnitForm();
-
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			foreach ($data as $unitID => $values) {
-				// original unit
-				$unit = clone $this->_units[$unitID];
-				// unit to update
-				$changedUnit = clone $unit;
-
-				if ($values['delete']) {
-					$this->get('product.unit.delete')->delete($unit);
-
-					continue;
-				}
-				$changedUnit->sku 		= $values['sku'];
-				$changedUnit->weight 	= (int) $values['weight'];
-				$changedUnit->visible 	= (int) (bool) $values['visible'];
-
-				foreach ($values['price'] as $type => $value) {
-					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
-				}
-
-				foreach ($values['options'] as $type => $value) {
-					$changedUnit->options[$type] = $value;
-				}
-
-				if ($changedUnit != $unit) {
-					$changedUnit = $this->get('product.unit.edit')->save($changedUnit);
-				}
-
-				if ($changedUnit->price !== $unit->price) {
-					$changedUnit = $this->get('product.unit.edit')->savePrices($changedUnit);
-				}
-
-			}
-		}
-
-		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
-	}
-
-	public function addUnitProccess($productID)
-	{
-		$this->_product = $this->get('product.loader')->getByID($productID);
-		$form = $this->_addNewUnitForm();
-
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$unit              = $this->get('product.unit');
-			$unit->sku         = $data['sku'];
-			$unit->weight 	   = $data['weight'];
-			// TODO: Where does that 1 come from? -> constant??
-			$unit->revisionID  = 1;
-			$unit->product     = $this->_product;
-
-			foreach ($data['price'] as $type => $value) {
-				$unit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
-			}
-
-			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
-			$unit->setOption($data['option_name_1'], $data['option_value_1']);
-
-			if (!empty($data['option_name_2']) && !empty($data['option_value_2'])) {
-				$unit->setOption($data['option_name_2'], $data['option_value_2']);
-			}
-
-			$unit = $this->get('product.unit.create')->save($unit);
-			$unit = $this->get('product.unit.create')->savePrices($unit);
-		}
-
-		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
-
-	}
-
-	public function process($productID)
-	{
-		$this->_product = $this->get('product.loader')->getByID($productID);
-
-		$form = $this->_getProductForm();
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$product = $this->_product;
-
-			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
-
-			$product->name                       = $data['name'];
-			$product->shortDescription           = $data['short_description'];
-			$product->displayName                = $data['display_name'];
-			$product->year                       = $data['year'];
-			$product->taxRate                    = $data['tax_rate'];
-			$product->taxStrategy                = $data['tax_strategy'];
-			$product->supplierRef                = $data['supplier_ref'];
-			$product->weight                	 = $data['weight_grams'];
-			$product->season                     = $data['season'];
-			$product->description                = $data['description'];
-			$product->fabric                     = $data['fabric'];
-			$product->category                   = $data['category'];
-			$product->brand                   	 = $data['brand'];
-			$product->features                   = $data['features'];
-			$product->careInstructions           = $data['care_instructions'];
-			$product->sizing                     = $data['sizing'];
-			$product->notes                      = $data['notes'];
-			$product->tags                       = explode(',',$data['tags']);
-			$product->exportDescription          = $data['export_description'];
-			$product->exportValue                = $data['export_value'];
-			$product->exportManufactureCountryID = $data['export_manufacture_country_id'];
-
-			foreach ($data as $key => $value) {
-				if (preg_match("/^price/us", $key)) {
-					$type = str_replace('price_', '', $key);
-					$product->price[$type]->setPrice('GBP', $value, $this->get('locale'));
-				}
-			}
-
-			$product = $this->get('product.edit')->save($product);
-			$product = $this->get('product.edit')->saveTags($product);
-			$product = $this->get('product.edit')->savePrices($product);
-
-			if ($product->id) {
-				$this->addFlash('success', 'Product updated successfully');
-			}
-		}
-
-		return $this->redirectToRoute('ms.commerce.product.edit', array('productID' => $this->_product->id));
-
-	}
-
-	protected function _getProductForm()
+	protected function _getProductAttributesForm()
 	{
 		$form = $this->get('form')
-			->setName('product-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.action', array('productID' => $this->_product->id)))
+			->setName('product-attributes-edit')
+			->setAction($this->generateUrl('ms.commerce.product.edit.attributes.action', array('productID' => $this->_product->id)))
 			->setDefaultValues(array(
-				'name'                          => $this->_product->name,
-				'short_description'             => $this->_product->shortDescription,
-				'display_name'                  => $this->_product->displayName,
-				'year'                          => $this->_product->year,
-				'tax_rate'                      => $this->_product->taxRate,
-				'tax_strategy'                  => $this->_product->taxStrategy,
-				'supplier_ref'                  => $this->_product->supplierRef,
-				'weight_grams'                  => $this->_product->weight,
-				'season'                        => $this->_product->season,
-				'description'                   => $this->_product->description,
-				'category'                   	=> $this->_product->category,
-				'brand'                   		=> $this->_product->brand,
-				'fabric'                        => $this->_product->fabric,
-				'features'                      => $this->_product->features,
-				'care_instructions'             => $this->_product->careInstructions,
-				'sizing'                        => $this->_product->sizing,
-				'notes'                         => $this->_product->notes,
-				'tags'                          => implode(',',$this->_product->tags),
-				'export_description'            => $this->_product->exportDescription,
-				'export_value'                  => $this->_product->exportValue,
-				'export_manufacture_country_id' => $this->_product->exportManufactureCountryID,
+				'name' 				 => $this->_product->name,
+				'short_description'  => $this->_product->shortDescription,
+				'display_name'		 => $this->_product->displayName,
+				'year'				 => $this->_product->year,
+				'season'			 => $this->_product->season,
+				'description'		 => $this->_product->description,
+				'category'			 => $this->_product->category,
+				'brand'				 => $this->_product->brand,
+				'export_description' => $this->_product->exportDescription,
 			))
 			->setMethod('post');
 
-		$form->add('name', 'text', $this->trans('ms.commerce.product.name.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.name.help')
+		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.name.help')
 		))
 			->val()->maxLength(255);
 
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.display-name.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.display-name.help')
+		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
 		))
 			->val()->maxLength(255);
 
-		$form->add('category', 'text', $this->trans('ms.commerce.product.category.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.category.help')
+		$form->add('category', 'text', $this->trans('ms.commerce.product.attributes.category.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.category.help')
 		))
 			->val()->maxLength(255);
 
-		$form->add('brand', 'text', $this->trans('ms.commerce.product.brand.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.brand.help')
+		$form->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
 		))
 			->val()->maxLength(255);
 
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.short-description.help')
-		));
 
-		$form->add('description', 'textarea', $this->trans('ms.commerce.product.description.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.description.help')
-		))
-			->val()->optional();
-
-		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.fabric.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.fabric.help')
-		))
-			->val()->optional();
-
-		$form->add('features', 'textarea', $this->trans('ms.commerce.product.features.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.features.help')
-		))
-			->val()->optional();
-
-		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.care-instructions.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.care-instructions.help')
-		))
-			->val()->optional();
-
-		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.sizing.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.sizing.help')
-		))
-			->val()->optional();
-
-		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.notes.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.notes.help')
-		))
-			->val()->optional();
-
-		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.tags.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.tags.help')
-		))
-			->val()->optional();
-
-		$form->add('year', 'text', $this->trans('ms.commerce.product.year.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.year.help')
-		))
-			->val()
-				->maxLength(4)
-				->optional();
-
-		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.tax-rate.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.tax-rate.help')
-		))
-			->val()->maxLength(255);
-
-		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.tax-strategy.label'), array(
-			'choices' => array(
-				'inclusive' => $this->trans('ms.commerce.product.tax-strategy.choices.inclusive'),
-				'exclusive' => $this->trans('ms.commerce.product.tax-strategy.choices.exclusive'),
-			),
-			'required' => true,
-			'attr' 	   => array('data-help-key' => 'ms.commerce.product.name.help'),
-		));
-
-		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.supplier-ref.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.supplier-ref.help')
+		$form->add('season', 'text', $this->trans('ms.commerce.product.attributes.season.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.season.help')
 		))
 			->val()
 				->maxLength(255)
 				->optional();
+
+
+		$form->add('year', 'text', $this->trans('ms.commerce.product.attributes.year.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.year.help')
+		))
+			->val()
+				->maxLength(4)
+				->digit()
+				->optional();
+
+		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.short-description.help')
+		));
+
+		$form->add('description', 'textarea', $this->trans('ms.commerce.product.attributes.description.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
+		))
+			->val()->optional();
+
+		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.attributes.export-description.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
+		))
+			->val()->optional();
+
+		return $form;
+	}
+
+	protected function _getProductDetailsForm()
+	{
+		$form = $this->get('form')
+			->setName('product-details-edit')
+			->setAction($this->generateUrl('ms.commerce.product.edit.details.action', array('productID' => $this->_product->id)))
+			->setDefaultValues(array(
+				'features'                      => $this->_product->features,
+				'sizing'                        => $this->_product->sizing,
+				'fabric'                        => $this->_product->fabric,
+				'weight_grams'                  => $this->_product->weight,
+				'care_instructions' 			=> $this->_product->careInstructions,
+				'tags'							=> implode(',', $this->_product->tags),
+				'supplier_ref'                  => $this->_product->supplierRef,
+				'export_manufacture_country_id' => $this->_product->exportManufactureCountryID,
+				'notes'                         => $this->_product->notes,
+			))
+			->setMethod('post');
+
+		$form->add('features', 'textarea', $this->trans('ms.commerce.product.details.features.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.features.help')
+		))
+			->val()->optional();
+
+
+		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.details.sizing.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.sizing.help')
+		))
+			->val()->optional();
+
+		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.details.fabric.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.fabric.help')
+		))
+			->val()->optional();
+
+		$form->add('weight_grams', 'integer', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.weight-grams.help')
+		))
+			->val()
+				->maxLength(11)
+				->optional();
+
+		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')
+		))
+			->val()->optional();
+
+
+		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.details.tags.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
+		))
+			->val()->optional();
+
+		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
+		))
+			->val()
+			->maxLength(255)
+			->optional();
+
+		$form->add(
+			'export_manufacture_country_id',
+			'choice',
+			$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
+			array(
+				'choices' => $this->get('country.list')->all(),
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
+			)
+		)->val()->optional();
+
+		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.details.notes.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
+		))
+			->val()->optional();
+
+		return $form;
+	}
+
+	protected function _getProductPricingForm()
+	{
+		$form = $this->get('form')
+			->setName('product-pricing-edit')
+			->setAction($this->generateUrl('ms.commerce.product.edit.pricing.action', array('productID' => $this->_product->id)))
+			->setDefaultValues(array(
+				'tax_rate' 		=> $this->_product->taxRate,
+				'tax_strategy' 	=> $this->_product->taxStrategy,
+				'export_value' 	=> $this->_product->exportValue,
+			))
+			->setMethod('post');
 
 		foreach ($this->_product->price as $type => $value) {
 			$form->add(
 				'price_'.$type,
 				'text',
-				$this->trans('ms.commerce.product.price.'.$type.'.label'),
+				$this->trans('ms.commerce.product.pricing.'.$type.'.label'),
 				array(
+					'data' =>  $value->getPrice('GBP', $this->get('locale')),
 					'attr' => array(
-						'value' =>  $value->getPrice('GBP', $this->get('locale')),
-						'data-help-key' => 'ms.commerce.product.price.'.$type.'.help',
+						'data-help-key' => 'ms.commerce.product.pricing.'.$type.'.help',
 					)
 				)
 			);
 		}
 
-		$form->add('weight_grams', 'number', $this->trans('ms.commerce.product.weight-grams.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.weight-grams.help')
-		))
-			->val()->maxLength(255);
-
-		$form->add('season', 'text', $this->trans('ms.commerce.product.season.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.season.help')
+		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help')
 		))
 			->val()
-				->maxLength(255)
-				->optional();
+			->maxLength(255);
 
-		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.export-description.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.export-description.help')
+		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.pricing.tax-strategy.label'), array(
+			'choices' => array(
+				'inclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.inclusive'),
+				'exclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.exclusive'),
+			),
+			'required' => true, // will remove the empty value from the choice-list
+			'attr' 	   => array('data-help-key' => 'ms.commerce.product.pricing.tax-strategy.help'),
+		));
+
+		$form->add('export_value', 'text', $this->trans('ms.commerce.product.pricing.export-value.label'), array(
+			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.export-value.help')
 		))
-			->val()->optional();
-
-		$form->add('export_value', 'text', $this->trans('ms.commerce.product.export-value.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.export-value.help')
-		))
-			->val()->optional();
-
-		$form->add('export_manufacture_country_id', 'choice', $this->trans('ms.commerce.product.export-manufacture-country.label'), array(
-			'choices' => $this->get('country.list')->all(),
-			'attr' => array('data-help-key' => 'ms.commerce.product.name.help'),
-		))->val()->optional();
+			->val()
+			->optional();
 
 		return $form;
 	}
