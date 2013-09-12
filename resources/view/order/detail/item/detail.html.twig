@@ -1,38 +1,32 @@
-<div class="container" id="item{{ item.id }}">
+<div class="container-detail dual-column" id="item{{ item.id }}">
 
 
-
-
-	<section class="group">
+<div class="box">
 		<h1 class="title">{{ item.brand }} {{ item.productName }}  &mdash; {{ item.options }}</h1>
 
-	
-		<ul class="order-details col">
+
+<div class="column">
+
+
+
+		<ul class="order-details ">
 			<li><span>Net</span> {{ item.net|price(order.currencyID) }}</li>
 			<li><span>Discount</span> {{ item.discount|price(order.currencyID) }}</li>
 			<li><span>Tax</span> {{ item.tax|price(order.currencyID) }}</li>
 			<li><span>Item Gross</span> {{ item.gross|price(order.currencyID) }} </li>
 			<li><span>Shipping Type</span> ({{ order.shippingName }})</li>
-
-		</ul>
-
-
-		<ul class="order-details col">
 			<li><span>SKU</span> {{ item.sku }}</li>
 			<li><span>Barcode</span> {{ item.barcode }}</li>
 			<li><span>Weight</span> {{ item.weight }}</li>
 			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
-		</ul>
-
-		<ul class="order-details col">
 			<li><span>Created by</span> {{ item.authorship.createdBy }}</li>
 			<li><span>Current Staus</span> {{ item.status }}</li>
 		</ul>
 
-	</section>
 </div>
 
 
+<div class="column">
 		<h2>Status History</h2>
 		<table class="order-listing progress">
 		<thead>
@@ -40,7 +34,7 @@
 			<th><span>Date / Time</span></th>
 			<th><span>Status</span></th>
 			<th><span>Updated By</span></th>
-			
+
 		</tr>
 		</thead>
 		{% for status in statuses[item.id] %}
@@ -48,11 +42,13 @@
 			<td>{{ status.authorship.createdAt|date }}</td>
 			<td>{{ status }}</td>
 			<td>{{ status.authorship.createdBy }}</td>
-				
+
 		</tr>
 		{% endfor %}
 	</table>
 
 
 
-
+</div>
+</div>
+</div>
