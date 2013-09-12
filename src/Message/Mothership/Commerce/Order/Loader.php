@@ -55,14 +55,18 @@ class Loader
 	}
 
 	/**
-	 * Get a specific order by ID.
+	 * Get a specific order or orders by ID.
 	 *
-	 * @param  int $id     The order ID
+	 * @param  int|array $id            The order ID, or array of order IDs
 	 *
-	 * @return Order|false The order, or false if it doesn't exist
+	 * @return Order|array[Order]|false The order, or false if it doesn't exist
 	 */
 	public function getByID($id)
 	{
+		if (is_array($id)) {
+			return $this->_load($id, true);
+		}
+
 		return $this->_load($id);
 	}
 
