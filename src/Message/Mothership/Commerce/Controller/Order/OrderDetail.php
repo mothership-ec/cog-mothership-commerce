@@ -3,6 +3,8 @@
 namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
+use Message\Mothership\Commerce\Order\Event\BuildOrderTabsEvent;
+use Message\Mothership\Commerce\Order\Events;
 
 class OrderDetail extends Controller
 {
@@ -97,20 +99,20 @@ class OrderDetail extends Controller
 
 	public function tabs($orderID)
 	{
-		$data = array('orderID' => $orderID);
-		$tabs = array(
-			$this->trans('ms.commerce.order.order.overview-title')		=> 	$this->generateUrl('ms.commerce.order.detail.view.index', 		$data),
-			$this->trans('ms.commerce.order.item.listing-title')		=>	$this->generateUrl('ms.commerce.order.detail.view.items', 		$data),
-			$this->trans('ms.commerce.order.address.listing-title')		=>	$this->generateUrl('ms.commerce.order.detail.view.addresses', 	$data),
-			$this->trans('ms.commerce.order.payment.listing-title')   	=>	$this->generateUrl('ms.commerce.order.detail.view.payments', 	$data),
-			$this->trans('ms.commerce.order.dispatch.listing-title')	=>	$this->generateUrl('ms.commerce.order.detail.view.dispatches', 	$data),
-			$this->trans('ms.commerce.order.note.listing-title') 		=>	$this->generateUrl('ms.commerce.order.detail.view.notes',	 	$data),
+		$this->_order = $this->get('order.loader')->getById($orderID);
+
+		$event = new BuildOrderTabsEvent($this->_order);
+
+		$this->get('event.dispatcher')->dispatch(
+			Events::BUILD_ORDER_TABS,
+			$event
 		);
 
-		$current = ucfirst(trim(strrchr($this->get('http.request.master')->get('_controller'), '::'), ':'));
+		$event->setClassOnCurrent($this->get('http.request.master'), 'active');
+
 		return $this->render('Message:Mothership:Commerce::order:detail:tabs', array(
-			'tabs'    => $tabs,
-			'current' => $current,
+			'orderID' => $event->getOrder()->id,
+			'items' => $event->getItems(),
 		));
 	}
 }

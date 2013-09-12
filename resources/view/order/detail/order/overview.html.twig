@@ -1,21 +1,33 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
+
+
+
 	<div class="container-content">
-		<section class="repeatable-group">
+
+
+
+		<section class="box">
 			{% include '::order:order:detail' %}
 		</section>
 
 		<section class="summary">
 			{% include '::order:detail:item:summary' %}
+
+			<ul class="summary-totals"><li>Subtotal <span>{{ order.productGross|price(order.currencyID) }}</span></li>
+			<li>Shipping ({{ order.shippingName }} ) <span>{{ order.shippingGross|price(order.currencyID) }}</span></li>
+			<li>Grand Total <span>{{ order.totalGross|price(order.currencyID) }}</span> </li></ul>
+
+
 		</section>
 
-		<section class="summary">
-			{% include '::order:detail:address:summary' %}
-		</section>
 
-		<section class="summary">
-			{% include '::order:detail:metadata:summary' %}
-		</section>
+
+
+
+
 	</div>
+
+
 {% endblock %}

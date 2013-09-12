@@ -87,6 +87,14 @@ class Loader
 
 	protected function _loadProduct($productIDs)
 	{
+		if (!is_array($productIDs)) {
+			$productIDs = (array) $productIDs;
+		}
+
+		if (!$productIDs) {
+			return $this->_returnArray ? array() : false;
+		}
+
 		$result = $this->_query->run(
 			'SELECT
 				product.product_id   AS id,
@@ -101,6 +109,7 @@ class Loader
 				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
+				product.tax_strategy AS taxStrategy,
 				product.tax_rate     AS taxRate,
 				product.supplier_ref AS supplierRef,
 				product.weight_grams AS weight,
@@ -159,11 +168,13 @@ class Loader
 
 		$images = $this->_query->run(
 			'SELECT
-				product_image.product_id   AS id,
+				product_image.product_id   AS productID,
+				product_image.image_id     AS id,
 				product_image.file_id      AS fileID,
 				product_image.type         AS type,
-				product_image.option_name  AS optionName,
-				product_image.option_value AS optionValue
+				product_image.created_at   AS createdAt,
+				product_image.created_by   AS createdBy,
+				product_image.locale       AS locale
 			FROM
 				product_image
 			WHERE
@@ -175,6 +186,9 @@ class Loader
 		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_locale, $this->_entities, $this->_priceTypes));
 
 		foreach ($result as $key => $data) {
+
+			$data->taxRate     = (float) $data->taxRate;
+			$data->exportValue = (float) $data->exportValue;
 
 			$products[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
 
@@ -188,7 +202,7 @@ class Loader
 
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$products[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+					$products[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
 				}
 			}
 
@@ -198,17 +212,38 @@ class Loader
 				}
 			}
 
-			foreach ($images as $image) {
-				if ($image->id == $data->id) {
-					$products[$key]->images[$image->fileID] = new Image(
-						$image->fileID,
-						$this->_imageTypes->get($image->type),
-						$this->_locale,
-						$this->_fileLoader->getByID($image->fileID),
-						$image->optionName,
-						$image->optionValue
-					);
+			foreach ($images as $imageData) {
+				if ($imageData->productID != $data->id) {
+					continue;
 				}
+
+				$image          = new Image;
+				$image->id      = $imageData->id;
+				$image->type    = $this->_imageTypes->get($imageData->type);
+				$image->product = $products[$key];
+				$image->locale  = $imageData->locale;
+				$image->file    = $this->_fileLoader->getByID($imageData->fileID);
+
+				$image->authorship->create(
+					new DateTimeImmutable(date('c', $imageData->createdAt)),
+					$imageData->createdBy
+				);
+
+				// Look for image options
+				$opts = $this->_query->run('
+					SELECT
+						*
+					FROM
+						product_image_option
+					WHERE
+						image_id = ?i
+				', $image->id);
+
+				foreach ($opts->hash('name', 'value') as $name => $value) {
+					$image->options[$name] = $value;
+				}
+
+				$products[$key]->images[$image->id] = $image;
 			}
 		}
 

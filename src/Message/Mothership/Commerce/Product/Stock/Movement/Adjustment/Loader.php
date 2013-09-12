@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Product\Stock\Movement\Adjustment;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Mothership\Commerce\Product\Unit;
 use Message\Mothership\Commerce\Product\Stock;
-use Message\Mothership\Commerce\Product\Stock\Location\Location;
+use Message\Mothership\Commerce\Product\Stock\Location;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -17,11 +17,16 @@ class Loader
 	protected $_query;
 	protected $_unitLoader;
 	protected $_movement;
+	protected $_locationCollection;
 
-	public function __construct(DB\Query $query, Unit\Loader $unitLoader)
+	public function __construct(DB\Query $query, Unit\Loader $unitLoader, Location\Collection $locationCollection)
 	{
 		$this->_query = $query;
+		$this->_locationCollection = $locationCollection;
+
 		$this->_unitLoader = $unitLoader;
+		$this->_unitLoader->includeInvisible(true);
+		$this->_unitLoader->includeOutOfStock(true);
 	}
 
 	public function setMovement(Stock\Movement\Movement $movement)
@@ -33,9 +38,12 @@ class Loader
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment_id AS id
+				stock_movement_id,
+				unit_id,
+				location,
+				delta
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -44,16 +52,19 @@ class Loader
 			$this->_movement->id,
 		));
 
-		return $this->_load($ids->flatten());
+		return $this->_processResult($result);
 	}
 
-	public function getByLocation(Location $location)
+	public function getByLocation(Location\Location $location)
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment_id AS id
+				stock_movement_id,
+				unit_id,
+				location,
+				delta
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -65,16 +76,19 @@ class Loader
 			$location->name,
 		));
 
-		return $this->_load($ids->flatten());
+		return $this->_processResult($result);
 	}
 
 	public function getByProduct(Product $product)
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment.adjustment_id AS id
+				adjustment.stock_movement_id,
+				adjustment.unit_id,
+				adjustment.location,
+				adjustment.delta
 			FROM
 				product_unit AS unit
 			INNER JOIN
@@ -91,16 +105,19 @@ class Loader
 			$product->id,
 		));
 
-		return $this->_load($ids->flatten());
+		return $this->_processResult($result);
 	}
 
 	public function getByUnit(Unit\Unit $unit)
 	{
 		$this->_checkForMovement();
 
-		$ids = $this->_query->run('
+		$result = $this->_query->run('
 			SELECT
-				adjustment_id AS id
+				stock_movement_id,
+				unit_id,
+				location,
+				delta
 			FROM
 				stock_movement_adjustment
 			WHERE
@@ -112,38 +129,17 @@ class Loader
 			$unit->id,
 		));
 
-		return $this->_load($ids->flatten(), $unit);
+		return $this->_processResult($result, $unit);
 	}
 
-	protected function _load($ids, Unit\Unit $unit = null)
+	protected function _processResult($result, Unit\Unit $unit = null)
 	{
-		if (!is_array($ids)) {
-			$ids = (array) $ids;
-		}
-
-		if (!$ids) {
-			return array();
-		}
-
-		$result = $this->_query->run('
-			SELECT
-				adjustment_id AS id,
-				stock_movement_id,
-				unit_id,
-				location,
-				delta
-			FROM
-				stock_movement_adjustment
-			WHERE
-				adjustment_id IN (?ij)
-		', array($ids));
-
 		if (0 === count($result)) {
 			return array();
 		}
 
-		$adjustments 	= $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
-		$return 		= array();
+		$adjustments = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Stock\\Movement\\Adjustment\\Adjustment');
+		$return 	 = array();
 
 		foreach ($result as $key => $row) {
 			// add unit to adjustments
@@ -152,9 +148,10 @@ class Loader
 			} else {
 				$adjustments[$key]->unit = $this->_unitLoader->getByID($row->unit_id);
 			}
+			$adjustments[$key]->location = $this->_locationCollection->get($row->location);
 			$adjustments[$key]->movement = $this->_movement;
 
-			$return[$row->id] = $adjustments[$key];
+			$return[] = $adjustments[$key];
 		}
 
 		return $return;

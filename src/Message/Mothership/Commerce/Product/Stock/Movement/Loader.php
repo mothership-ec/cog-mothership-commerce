@@ -17,11 +17,13 @@ class Loader
 {
 	protected $_query;
 	protected $_adjustmentLoader;
+	protected $_reasonCollection;
 
-	public function __construct(DB\Query $query, Adjustment\Loader $adjustmentLoader)
+	public function __construct(DB\Query $query, Adjustment\Loader $adjustmentLoader, Reason\Collection $reasonCollection)
 	{
 		$this->_query = $query;
 		$this->_adjustmentLoader = $adjustmentLoader;
+		$this->_reasonCollection = $reasonCollection;
 	}
 
 	public function getById($id)
@@ -53,6 +55,29 @@ class Loader
 			foreach($return AS $movement) {
 				$this->_adjustmentLoader->setMovement($movement);
 				$movement->adjustments = $this->_adjustmentLoader->getByUnit($unit);
+			}
+		}
+
+		return $return;
+	}
+
+	public function getByAutomated($bool)
+	{
+		$result = $this->_query->run('
+			SELECT
+				stock_movement_id
+			FROM
+				stock_movement_adjustment
+			WHERE
+				automated = ?b
+		', (bool)$bool);
+
+		$return = $this->_load($result->flatten(), true);
+
+		if($return) {
+			foreach($return AS $movement) {
+				$this->_adjustmentLoader->setMovement($movement);
+				$movement->adjustments = $this->_adjustmentLoader->getAll();
 			}
 		}
 
@@ -128,7 +153,7 @@ class Loader
 			WHERE
 				stock_movement_id IN (?ij)
 			ORDER BY
-				created_at ASC
+				created_at DESC
 		', array($ids));
 
 		if (0 === count($result)) {
@@ -140,6 +165,7 @@ class Loader
 
 		foreach ($result as $key => $row) {
 			$movements[$key]->authorship->create(new DateTimeImmutable(date('c', $row->created_at)), $row->created_by);
+			$movements[$key]->reason = $this->_reasonCollection->get($row->reason);
 			$return[$row->id] = $movements[$key];
 		}
 

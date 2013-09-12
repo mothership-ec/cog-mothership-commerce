@@ -7,8 +7,9 @@ use Message\Mothership\Commerce\Order\Event\ValidateEvent;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
-use \Message\Cog\Event\Event as BaseEvent;
-use \Message\Mothership\Ecommerce;
+use Message\Cog\Event\Event as BaseEvent;
+use Message\Mothership\Ecommerce;
+use Message\User\User;
 
 /**
  * Basket Assembler for adding addresses and users to the basket
@@ -47,6 +48,10 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 		$user = $this->get('user.current');
 		$this->get('basket')->addUser($user);
 
+		if (!$user instanceof User) {
+			return false;
+		}
+
 		$addressLoader = $this->get('commerce.user.address.loader');
 		// Try and load their addresses
 		$delivery = $addressLoader->getByUserAndType($user, 'delivery');
@@ -61,9 +66,6 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 			}
 			// Map the addresses to the Order Address object
 			$deliveryAddress = new Address;
-			$deliveryAddress->id = 'delivery';
-			$deliveryAddress->order = $this->get('basket')->getOrder();
-
 			foreach ($delivery as $property => $value) {
 				if ($property == 'authorship') {
 					continue;
@@ -71,12 +73,13 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 
 				$deliveryAddress->{$property} = $value;
 			}
+			$deliveryAddress->id = 'delivery';
+			$deliveryAddress->order = $this->get('basket')->getOrder();
+
 			// Save the delivery address
 			$this->get('basket')->addAddress($deliveryAddress);
 
 			$billingAddress = new Address;
-			$billingAddress->id = 'billing';
-			$billingAddress->order = $this->get('basket')->getOrder();
 			// Save the billing address
 			foreach ($billing as $property => $value) {
 				if ($property == 'authorship') {
@@ -85,7 +88,8 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 
 				$billingAddress->{$property} = $value;
 			}
-
+			$billingAddress->id = 'billing';
+			$billingAddress->order = $this->get('basket')->getOrder();
 			$this->get('basket')->addAddress($billingAddress);
 		} else {
 			$this->get('basket')->removeAddresses();

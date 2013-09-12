@@ -9,18 +9,18 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit
 {
 	protected $_query;
-	protected $_user;
+	protected $_currentUser;
 
 	public function __construct(Query $query, UserInterface $user)
 	{
 		$this->_query = $query;
-		$this->_user  = $user;
+		$this->_currentUser  = $user;
 	}
 
 	public function save(Address $address)
 	{
-		$date = new DateTimeImmutable;
-		$address->authorship->update($date, $this->_user->id);
+		$address->authorship->update(new DateTimeImmutable, $this->_currentUser->id);
+
 		$result = $this->_query->run(
 			'UPDATE
 				user_address

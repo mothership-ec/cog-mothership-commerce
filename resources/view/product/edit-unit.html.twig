@@ -10,21 +10,21 @@
 		<h1>Editing Units of '{{ product.name }}'</h1>
 </hgroup>
 
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:ProductsMenu#index', {'productID':product.id}))}}
+{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
 
 <section class="container-content">
 	{{ form_start(form) }}
 	<table>
 		<thead>
 			<tr>
-				<th>SKU</th>
+				<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
 				{% for heading in headings %}
 					<th>{{heading}}</th>
 				{% endfor %}
-				<th>Prices</th>
-				<th>Weight (grams)</th>
-				<th>Visible</th>
-				<th>Delete</th>
+				<th>{{ 'ms.commerce.product.units.prices.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.details.weight-grams.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.units.visible.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.units.delete.label'|trans }}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -50,17 +50,20 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<button type="submit" class="button small save" id="save-content">Update</button>
+	<button type="submit" class="button small save" id="save-content">
+		{{ 'ms.commerce.product.button.save'|trans }}
+	</button>
 	{{ form_end(form) }}
+
 	{{ form_start(addForm) }}
 	<table>
 		<thead>
 			<tr>
-				<th>SKU</th>
-				<th>Type</th>
-				<th>Value</th>
-				<th>Prices</th>
-				<th>Weight (grams)</th>
+				<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.units.option.type.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.units.option.value.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.units.prices.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.details.weight-grams.label'|trans }}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -95,7 +98,9 @@
 			</tr>
 		</tbody>
 	</table>
-		<button type="submit" class="button small submit">Add new</button>
+		<button type="submit" class="button small submit">
+			{{ 'ms.commerce.product.button.save'|trans }}
+		</button>
 		<datalist id="option_value">
 			{% for option in optionValue %}
 				<option value="{{ option }}">{{option}}</option>

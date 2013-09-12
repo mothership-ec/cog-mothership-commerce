@@ -40,7 +40,9 @@ class Services implements ServicesInterface
 		$services['basket.order'] = function($c) {
 
 			if (!$c['http.session']->get('basket.order')) {
-				$c['http.session']->set('basket.order', $c['order']);
+				$order = $c['order'];
+				$order->locale = $c['locale']->getId();
+				$c['http.session']->set('basket.order', $order);
 			}
 
 			return $c['http.session']->get('basket.order');
@@ -58,14 +60,38 @@ class Services implements ServicesInterface
 
 		$services['order.entities'] = function($c) {
 			return array(
-				'addresses'  => new Commerce\Order\Entity\Address\Loader($c['db.query']),
-				'discounts'  => new Commerce\Order\Entity\Discount\Loader($c['db.query']),
-				'dispatches' => new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods']),
-				'documents'  => new Commerce\Order\Entity\Document\Loader($c['db.query']),
-				'items'      => new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader'], $c['stock.locations']),
-				'notes'      => new Commerce\Order\Entity\Note\Loader($c['db.query']),
-				'payments'   => new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods']),
-				'refunds'    => new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods']),
+				'addresses'  => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Address\Collection,
+					new Commerce\Order\Entity\Address\Loader($c['db.query'])
+				),
+				'discounts'  => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Discount\Collection,
+					new Commerce\Order\Entity\Discount\Loader($c['db.query'])
+				),
+				'dispatches' => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Dispatch\Loader($c['db.query'], $c['order.dispatch.methods'])
+				),
+				'documents'  => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Document\Loader($c['db.query'])
+				),
+				'items'      => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Item\Collection,
+					new Commerce\Order\Entity\Item\Loader($c['db.query'], $c['order.item.status.loader'], $c['stock.locations'])
+				),
+				'notes'      => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Note\Loader($c['db.query'])
+				),
+				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods'])
+				),
+				'refunds'    => new Commerce\Order\Entity\CollectionOrderLoader(
+					new Commerce\Order\Entity\Collection,
+					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
+				),
 			);
 		};
 
@@ -139,6 +165,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		};
 
+		$services['order.dispatch.edit'] = function($c) {
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current']);
+		};
+
 		// Order document entity
 		$services['order.document.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('documents');
@@ -191,6 +221,11 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
+				new Commerce\Order\Entity\Payment\Method\Sagepay,
+
+				new Commerce\Order\Entity\Payment\Method\Paypal,
+				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
+				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
 			));
 		});
 
@@ -206,22 +241,29 @@ class Services implements ServicesInterface
 		// Available order & item statuses
 		$services['order.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
-				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,     'Awaiting Dispatch'),
-				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,            'Processing'),
-				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED,  'Partially Dispatched'),
-				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED,    'Partially Received'),
-				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,            'Dispatched'),
-				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,              'Received'),
+				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,            'Cancelled'),
+				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,    'Awaiting Dispatch'),
+				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,           'Processing'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_DISPATCHED, 'Partially Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::PARTIALLY_RECEIVED,   'Partially Received'),
+				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,           'Dispatched'),
+				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,             'Received'),
 			));
 		});
 
 		$services['order.item.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,         'Cancelled'),
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH, 'Awaiting Dispatch'),
 				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,        'Dispatched'),
 				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,          'Received'),
 			));
 		});
+
+		// Configurable/optional event listeners
+		$services['order.listener.vat'] = function($c) {
+			return new Commerce\Order\EventListener\VatListener($c['country.list']);
+		};
 
 		// Product
 		$services['product'] = function($c) {
@@ -262,12 +304,16 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.create'] = function($c) {
-			return new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+
+			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
+
+			return $create;
 		};
 
 		$services['product.image.types'] = function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				new Commerce\Product\ImageType\ImageType('default'),
+				'default',
 			));
 		};
 
@@ -303,6 +349,10 @@ class Services implements ServicesInterface
 			return new Commerce\User\Address\Loader($c['db.query']);
 		};
 
+		$services['commerce.user.address.create'] = function($c) {
+			return new Commerce\User\Address\Create($c['db.query'], $c['commerce.user.address.loader'], $c['user.current']);
+		};
+
 		$services['commerce.user.address.edit'] = function($c) {
 			return new Commerce\User\Address\Edit($c['db.query'], $c['user.current']);
 		};
@@ -311,16 +361,48 @@ class Services implements ServicesInterface
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
 		};
 
+		$services['stock.manager'] = function($c) {
+			$trans = $c['db.transaction'];
+			return new Commerce\Product\Stock\StockManager(
+				$trans,
+				new Commerce\Product\Stock\Movement\Create(
+					$trans,
+					$c['user.current'],
+					new Commerce\Product\Stock\Movement\Adjustment\Create($trans)
+				),
+				new Commerce\Product\Stock\Movement\Adjustment\Create($trans),
+				$c['product.unit.edit'],
+				$c['event.dispatcher']
+			);
+		};
+
 		$services['stock.locations'] = $services->share(function() {
 			return new Commerce\Product\Stock\Location\Collection;
 		});
 
 		$services['stock.movement.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Loader($c['db.query'], $c['stock.movement.adjustment.loader']);
+			return new Commerce\Product\Stock\Movement\Loader(
+				$c['db.query'],
+				new Commerce\Product\Stock\Movement\Adjustment\Loader(
+					$c['db.query'],
+					$c['product.unit.loader'],
+					$c['stock.locations']
+				),
+				$c['stock.movement.reasons']
+			);
 		};
 
-		$services['stock.movement.adjustment.loader'] = function($c) {
-			return new Commerce\Product\Stock\Movement\Adjustment\Loader($c['db.query'], $c['product.unit.loader']);
+		$services['stock.movement.reasons'] = $services->share(function() {
+			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
+				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
+			));
+		});
+
+		$services['stock.movement.iterator'] = function($c) {
+			return new Commerce\Product\Stock\Movement\Iterator(
+				$c['stock.movement.loader'],
+				$c['stock.locations']
+			);
 		};
 
 		$services['shipping.methods'] = $services->share(function($c) {

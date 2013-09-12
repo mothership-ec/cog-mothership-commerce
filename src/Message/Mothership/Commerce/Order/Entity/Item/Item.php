@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Order\Order;
 
+use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
 
 /**
@@ -21,13 +22,15 @@ class Item implements EntityInterface
 	public $authorship;
 	public $status;
 
-	public $listPrice = 0;
-	public $net       = 0;
-	public $discount  = 0;
-	public $tax       = 0;
-	public $taxRate   = 0;
-	public $gross     = 0;
-	public $rrp       = 0;
+	public $listPrice       = 0;
+	public $net             = 0;
+	public $discount        = 0;
+	public $tax             = 0;
+	public $gross           = 0;
+	public $rrp             = 0;
+	public $taxRate         = 0;
+	public $productTaxRate  = 0;
+	public $taxStrategy;
 
 	public $productID;
 	public $productName;
@@ -43,6 +46,18 @@ class Item implements EntityInterface
 
 	public $personalisation;
 
+	protected $_product;
+	protected $_unit;
+
+	public function __construct()
+	{
+		$this->authorship = new Authorship;
+
+		$this->authorship
+			->disableUpdate()
+			->disableDelete();
+	}
+
 	/**
 	 * Populate this item with the data from a specific unit.
 	 *
@@ -57,27 +72,37 @@ class Item implements EntityInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->taxRate      = $unit->product->taxRate;
-		$this->productID    = $unit->product->id;
-		$this->productName  = $unit->product->name;
-		$this->unitID       = $unit->id;
-		$this->unitRevision = $unit->revisionID;
-		$this->sku          = $unit->sku;
-		$this->barcode      = $unit->barcode;
-		$this->options      = implode($unit->options, ', ');
-		$this->brand        = $unit->product->brand;
-		$this->weight       = $unit->weight;
+		$this->productTaxRate  = $unit->product->taxRate;
+		$this->taxStrategy     = $unit->product->taxStrategy;
+		$this->productID       = $unit->product->id;
+		$this->productName     = $unit->product->name;
+		$this->unitID          = $unit->id;
+		$this->unitRevision    = $unit->revisionID;
+		$this->sku             = $unit->sku;
+		$this->barcode         = $unit->barcode;
+		$this->options         = implode($unit->options, ', ');
+		$this->brand           = $unit->product->brand;
+		$this->weight          = $unit->weight;
 
 		return $this;
 	}
 
-	public function __construct()
+	/**
+	 * Get the item description.
+	 *
+	 * The item description is made up of the brand name; the product name and
+	 * the list of options. They are comma-separated, and if any of them are
+	 * not set or blank they are excluded.
+	 *
+	 * @return string The item description
+	 */
+	public function getDescription()
 	{
-		$this->authorship = new Authorship;
-
-		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+		return implode(', ', array_filter(array(
+			$this->brand,
+			$this->productName,
+			$this->options,
+		)));
 	}
 
 	/**
@@ -98,5 +123,53 @@ class Item implements EntityInterface
 		}
 
 		return round($this->listPrice - $this->discount - $this->net, 2);
+	}
+
+	/**
+	 * Get the product associated with this order.
+	 *
+	 * The product is only loaded once per Item instance, unless `$reload` is
+	 * passed as true.
+	 *
+	 * @todo Make this not access the service container statically!
+	 *
+	 * @param  boolean $reload True to force a reload of the Product instance
+	 *
+	 * @return \Message\Mothership\Commerce\Product\Product
+	 */
+	public function getProduct($reload = false)
+	{
+		if (!$this->_product || $reload) {
+			$this->_product = Container::get('product.loader')->getByID($this->productID);
+		}
+
+		return $this->_product;
+	}
+
+	/**
+	 * Get the unit associated with this order.
+	 *
+	 * The unit is loaded with the revision ID stored on this item, so the
+	 * options should match.
+	 *
+	 * The unit is only loaded once per Item instance, unless `$reload` is
+	 * passed as true.
+	 *
+	 * @todo Make this not access the service container statically!
+	 *
+	 * @param  boolean $reload True to force a reload of the Unit instance
+	 *
+	 * @return \Message\Mothership\Commerce\Product\Unit\Unit
+	 */
+	public function getUnit($reload = false)
+	{
+		if (!$this->_unit || $reload) {
+			$this->_unit = Container::get('product.unit.loader')
+				->includeInvisible(true)
+				->includeOutOfStock(true)
+				->getByID($this->unitID, $this->unitRevision);
+		}
+
+		return $this->_unit;
 	}
 }

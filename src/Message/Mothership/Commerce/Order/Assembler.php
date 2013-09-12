@@ -29,7 +29,7 @@ class Assembler
 	protected $_eventDispatcher;
 	protected $_session;
 
-	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event,Session $session)
+	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event, Session $session)
 	{
 		$this->_order             = $order;
 		$this->_order->currencyID = 'GBP';
@@ -76,7 +76,7 @@ class Assembler
 	{
 		// Count how many times this unit is already in the basket
 		$unitCount = $this->_countForUnitID($unit);
-		// Load the itesm from the basket which already have this unitID
+		// Load the items from the basket which already have this unitID
 		$items = $this->_order->items->getByProperty('unitID', $unit->id);
 
 		// If the quantities are the same then return
@@ -95,8 +95,9 @@ class Assembler
 		// Add the item to the order as many times to make the count equal to
 		// the given quantity
 		if ($quantity > $unitCount) {
+			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addItem($unit);
+				$this->addItem($unit, $item->stockLocation);
 			}
 		}
 
@@ -141,12 +142,7 @@ class Assembler
 		return true;
 	}
 
-	public function addVoucher()
-	{
-
-	}
-
-	public function addUser(\Message\User\User  $user)
+	public function addUser(\Message\User\UserInterface  $user)
 	{
 		$this->_order->user = $user;
 
@@ -165,30 +161,24 @@ class Assembler
 
 	}
 
-	public function addDiscount()
+	public function addDiscount(Entity\Discount\Discount $discount)
 	{
+		$discount->order = $this->_order;
+		$this->_order->discounts->append($discount);
 
+		$event = new Event($this->_order);
+
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			$event
+		);
+
+		return $this;
 	}
 
-	public function removeDiscount()
+	public function removeDiscount(Entity\Discount\Discount $discount)
 	{
-
-	}
-
-	public function hasAddress()
-	{
-
-	}
-
-	public function addPayment(MethodInterface $paymentMethod, $amount, $reference)
-	{
-		$payment            = new Entity\Payment\Payment;
-		$payment->method    = $paymentMethod;
-		$payment->amount    = $amount;
-		$payment->order     = $this->_order;
-		$payment->reference = $reference;
-
-		$this->_order->payments->append($payment);
+		$this->_order->discounts->removeByCode($discount->code);
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event
@@ -196,6 +186,40 @@ class Assembler
 			Events::ASSEMBLER_UPDATE,
 			$event
 		);
+
+		return $this;
+	}
+
+	public function hasAddress()
+	{
+
+	}
+
+	public function addPayment(MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
+	{
+		$payment            = new Entity\Payment\Payment;
+		$payment->method    = $paymentMethod;
+		$payment->amount    = $amount;
+		$payment->order     = $this->_order;
+		$payment->reference = $reference;
+		$payment->id 		= $reference;
+
+		foreach ($this->_order->payments->all() as $checkPayment) {
+			if ($checkPayment->reference == $payment->reference) {
+				return false;
+			}
+		}
+
+		$this->_order->payments->append($payment);
+
+		if (!$silenceEvent) {
+			$event = new Event($this->_order);
+			// Dispatch the edit event
+			$this->_eventDispatcher->dispatch(
+				Events::ASSEMBLER_UPDATE,
+				$event
+			);
+		}
 
 		return $this;
 
@@ -220,7 +244,16 @@ class Assembler
 		// basket so we only have one billing and one delivery address
 		$this->_order->addresses->remove($address->id);
 
-		return $this->_order->addresses->append($address);
+		$this->_order->addresses->append($address);
+
+		$event = new Event($this->_order);
+		// Dispatch the edit event
+		$this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_ADDRESS_UPDATE,
+			$event
+		);
+
+		return $this;
 	}
 
 	/**

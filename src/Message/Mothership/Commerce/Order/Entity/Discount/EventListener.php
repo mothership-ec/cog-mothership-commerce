@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
 
+use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
 /**
@@ -13,18 +14,25 @@ use Message\Cog\Event\SubscriberInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener implements SubscriberInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
 	/**
 	 * {@inheritdoc}
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(OrderEvents::CREATE_START => array(
-			array('setDiscountItems',     200),
-			array('resetDiscountAmounts', 150),
-			array('calculateItemDiscount', 100),
-		));
+		return array(
+			OrderEvents::CREATE_START => array(
+				array('resetDiscountAmounts',	300),
+				array('setDiscountItems',		150),
+				array('calculateItemDiscount',	100),
+			),
+			OrderEvents::ASSEMBLER_UPDATE => array(
+				array('resetDiscountAmounts',	300),
+				array('setDiscountItems',		150),
+				array('calculateItemDiscount',	100),
+			),
+		);
 	}
 
 	/**
@@ -45,7 +53,8 @@ class EventListener implements SubscriberInterface
 	}
 
 	/**
-	 *
+	 * Resets the item's discount and sets the amount to 0 if the discount
+	 * is a percentage one.
 	 *
 	 * @param Event $event The event object
 	 */
@@ -66,24 +75,42 @@ class EventListener implements SubscriberInterface
 	 * Set the discount amounts on all items in the order before it is created.
 	 *
 	 * If the discount is a fixed-amount discount, this is pro-rated across
-	 * items in the order.
+	 * items in the discount.
 	 *
 	 * @param Event $event The event object
 	 */
 	public function calculateItemDiscount(Event\Event $event)
 	{
-		// Loop through discounts
+		$this->resetDiscountAmounts($event);
+
 		foreach ($event->getOrder()->discounts as $discount) {
-			// Loop through items this discount applies to
-			foreach ($discount->items as $item) {
-				if ($discount->percentage) {
+			if ($discount->percentage) {
+				foreach ($discount->items as $item) {
 					$amount            = $item->listPrice * ($discount->percentage / 100);
 					$item->discount   += $amount;
 					$discount->amount += $amount;
 				}
-				else {
-					// TODO: do the complex pro-rating shiz
+			}
+			else {
+				$totalListPrice = 0;
+				foreach($discount->items->all() as $item) {
+					$totalListPrice += $item->listPrice;
 				}
+
+				$prorateHelper = $this->get('helper.prorate')
+					->setGetBasisPercentage(
+						function($item) use ($totalListPrice)
+					 	{
+					 		return $item->listPrice / $totalListPrice;
+					 	}
+					 )
+					->setAssignProrateAmount(
+						function($item, $proratedValue)
+						{
+							$item->discount += round($proratedValue, 2);
+						}
+					);
+				$prorateHelper->prorateValue($discount->amount, $discount->items->all());
 			}
 		}
 	}

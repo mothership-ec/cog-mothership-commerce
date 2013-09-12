@@ -1,14 +1,11 @@
 <div class="container">
 	<section class="group">
-		<h1 class="title">{{ address.type|capitalize }}, {{ address.lines[1] }}</h1>
+		<h1 class="title">{{ address.type|capitalize }}</h1>
 		<ul class="order-details">
-			<li>
-				<span>{{ 'ms.commerce.order.address.type'|trans }}</span>
-				{{ address.type|capitalize }}
-			</li>
+	
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
-				{{ address.name }}
+				{{ address.title }} {{ address.forename }} {{ address.surname }}
 			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
@@ -18,12 +15,13 @@
 					</li>
 				{% endif %}
 			{% endfor %}
-			<li>
-				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
-				{{ address.postcode }} 
-				<span>{{ 'ms.commerce.order.address.town'|trans }}</span>
+			
+				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
 				{{ address.town }}
 			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
+				{{ address.postcode }} </li>
 			{% if not address.state is empty %}
 				<li>
 					<span>{{ 'ms.commerce.order.address.state'|trans }}</span>

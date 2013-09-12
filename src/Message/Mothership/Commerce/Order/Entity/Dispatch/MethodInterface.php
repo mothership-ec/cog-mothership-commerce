@@ -37,4 +37,11 @@ interface MethodInterface
 	 *                      can't be tracked online
 	 */
 	public function getTrackingLink($code);
+
+	/**
+	 * Determines whether this dispatch method can be postaged automatically.
+	 *
+	 * @return bool
+	 */
+	public function allowAutomaticPostage();
 }

@@ -1,7 +1,13 @@
 <div class="topbar products">
 	<ul class="tabs">
 		<li class="active">
-			<a href="{{ url('ms.commerce.product.edit', {productID:productID}) }}" data-liv>Attributes</a>
+			<a href="{{ url('ms.commerce.product.edit.attributes', {productID:productID}) }}" data-liv>Attributes</a>
+		</li>
+		<li>
+			<a href="{{ url('ms.commerce.product.edit.details', {productID:productID}) }}" data-liv>Details</a>
+		</li>
+		<li>
+			<a href="{{ url('ms.commerce.product.edit.pricing', {productID:productID}) }}" data-liv>Pricing</a>
 		</li>
 		<li class="">
 			<a href="{{ url('ms.commerce.product.edit.units', {productID:productID}) }}" data-live>Units</a>

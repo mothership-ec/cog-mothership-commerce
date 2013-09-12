@@ -48,20 +48,25 @@ class Loader
 			throw new \InvalidArgumentException(sprintf('Unknown order entity: `%s`', $name));
 		}
 
-		$this->_entities[$name]->setOrderLoader($this);
+		$loader = $this->_entities[$name]->getLoader();
+		$loader->setOrderLoader($this);
 
-		return $this->_entities[$name];
+		return $loader;
 	}
 
 	/**
-	 * Get a specific order by ID.
+	 * Get a specific order or orders by ID.
 	 *
-	 * @param  int $id     The order ID
+	 * @param  int|array $id            The order ID, or array of order IDs
 	 *
-	 * @return Order|false The order, or false if it doesn't exist
+	 * @return Order|array[Order]|false The order, or false if it doesn't exist
 	 */
 	public function getByID($id)
 	{
+		if (is_array($id)) {
+			return $this->_load($id, true);
+		}
+
 		return $this->_load($id);
 	}
 
@@ -181,6 +186,7 @@ class Loader
 				order_summary.*,
 				order_summary.order_id         AS id,
 				order_summary.order_id         AS orderID,
+				order_summary.user_email	   AS userEmail,
 				order_summary.currency_id      AS currencyID,
 				order_summary.conversion_rate  AS conversionRate,
 				order_summary.product_net      AS productNet,
@@ -229,6 +235,8 @@ class Loader
 			$orders[$key]->shippingTax       = (float) $row->shippingTax;
 			$orders[$key]->shippingTaxRate   = (float) $row->shippingTaxRate;
 			$orders[$key]->shippingGross     = (float) $row->shippingGross;
+
+			$orders[$key]->taxable = (bool) $row->taxable;
 
 			$orders[$key]->user = $this->_userLoader->getByID($row->user_id);
 

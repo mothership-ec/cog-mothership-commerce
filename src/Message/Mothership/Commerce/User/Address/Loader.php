@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\User\Address;
 
-use Message\User\User;
+use Message\User\UserInterface;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -23,7 +23,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return array|Address an array of, or singular Address object
 	 */
-	public function getByUser(User $user)
+	public function getByUser(UserInterface $user)
 	{
 		$result = $this->_query->run('
 			SELECT
@@ -34,7 +34,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				user_id = ?i
 		', $user->id);
 
-		return count($result) ? $this->_loadAddresses($result->flatten()) : false;
+		return count($result) ? $this->_loadAddresses($result->flatten(), true) : false;
 	}
 
 	/**
@@ -45,7 +45,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return Address|false    Loaded address
 	 */
-	public function getByUserAndType(User $user, $type)
+	public function getByUserAndType(UserInterface $user, $type)
 	{
 		$results = $this->getByUser($user);
 
@@ -67,7 +67,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return Address|false    Address object or false if not found
 	 */
-	public function getByAddressID($addressID)
+	public function getByID($addressID)
 	{
 		return $this->_loadAddresses($addressID);
 	}
@@ -79,7 +79,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return array|Address|false 	singular or array of Address objects or false if none found
 	 */
-	protected function _loadAddresses($addressIDs)
+	protected function _loadAddresses($addressIDs, $alwaysReturnArray = false)
 	{
 		$result = $this->_query->run(
 			'SELECT
@@ -118,10 +118,10 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 		);
 
 		if (0 === count($result)) {
-			return false;
+			return ($alwaysReturnArray? array() : false);
 		}
 
-		return $this->_buildAddresses($result);
+		return $this->_buildAddresses($result, $alwaysReturnArray);
 	}
 
 	/**
@@ -131,7 +131,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 	 *
 	 * @return array|Address|false an array of Address objects or a singular Address object
 	 */
-	protected function _buildAddresses(Result $result)
+	protected function _buildAddresses(Result $result, $alwaysReturnArray)
 	{
 		$addresses = $result->bindTo('Message\\Mothership\\Commerce\\User\\Address\\Address');
 		foreach ($result as $key => $address) {
@@ -156,7 +156,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 			}
 		}
 
-		return count($addresses) == 1 ? array_shift($addresses) : $addresses;
+		return count($addresses) != 1 || $alwaysReturnArray ? $addresses : array_shift($addresses);
 	}
 
 }

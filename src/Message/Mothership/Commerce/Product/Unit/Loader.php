@@ -65,7 +65,7 @@ class Loader implements LoaderInterface
 		return count($result) ? $this->_load($result->flatten(), true, $product) : false;
 	}
 
-	public function getByID($unitID, Product $product = null, $revisionID = null)
+	public function getByID($unitID, $revisionID = null, Product $product = null)
 	{
 		return $this->_load($unitID, false, $product, $revisionID);
 	}
@@ -145,7 +145,7 @@ class Loader implements LoaderInterface
 			// Save prices to unit
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {
-					$units[$key]->price[$price->type]->setPrice($price->currencyID, $price->price, $this->_locale);
+					$units[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
 				}
 			}
 

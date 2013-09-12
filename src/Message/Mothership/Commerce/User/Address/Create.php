@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\User\Address;
 
-use Message\User\User;
+use Message\User\UserInterface;
 
 use Message\Cog\DB\Query;
 
@@ -11,13 +11,14 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Create
 {
 	protected $_query;
-	protected $_user;
+	protected $_currentUser;
+	protected $_loader;
 
-	public function __construct(Query $query, User $user, Loader $loader)
+	public function __construct(Query $query, Loader $loader, UserInterface $user)
 	{
 		$this->_query  = $query;
-		$this->_user   = $user;
 		$this->_loader = $loader;
+		$this->_currentUser   = $user;
 	}
 
 	/**
@@ -29,7 +30,16 @@ class Create
 	 */
 	public function create(Address $address)
 	{
-		$date = new DateTimeImmutable;
+		// Set create authorship data if not already set
+/*		if (!$address->authorship->createdAt()) {
+			$address->authorship->create(
+				new DateTimeImmutable,
+				$this->_currentUser->id
+			);
+		}
+*/
+		$address->authorship->update(new DateTimeImmutable, $this->_currentUser->id);
+
 
 		$result = $this->_query->run(
 			'INSERT INTO
@@ -45,7 +55,7 @@ class Create
 				postcode   = :postcode?s,
 				telephone  = :telephone?s,
 				created_at = :created_at?d,
-				created_by = :created_by?i,
+				created_by = :created_by?in,
 				user_id    = :userID?i,
 				type 	   = :type?s
 			', array(
@@ -58,15 +68,15 @@ class Create
 				'country_id' => $address->countryID,
 				'postcode'   => $address->postcode,
 				'telephone'  => $address->telephone,
-				'created_at' => $date,
-				'created_by' => $this->_user->id,
+				'created_at' => $address->authorship->createdAt(),
+				'created_by' => $address->authorship->createdBy(),
 				'userID'     => $address->userID,
 				'type'		 => $address->type,
 			)
 		);
 
 		if ($lastID = $result->id()) {
-			return $this->_loader->getByAddressID($lastID);
+			return $this->_loader->getByID($lastID);
 		}
 
 		return false;
