@@ -18,7 +18,7 @@
 		<table>
 			<thead>
 				<tr>
-					<th>SKU - Barcode</th>
+					<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
 					{% for heading in headings %}
 						<th>{{ heading }}</th>
 					{% endfor %}
@@ -30,7 +30,7 @@
 			<tbody>
 				{% for unit in units %}
 					<tr>
-						<td><span>{{ unit.sku }}</span> - <span>{{ unit.barcode }}</span></td>
+						<td><span>{{ unit.sku }}</span></td>
 						{% for key, name in headings %}
 							<td>
 							{% if key in unit.options|keys %}
@@ -55,7 +55,7 @@
 		{{ form_end(form) }}
 	</section>
 	<section class="repeatable-group">
-		<h1>Stock Movements</h1>
+		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
 		{% for movement in movementIterator %}
 		<div class="container">
@@ -112,11 +112,11 @@
 					</tbody>
 				</table>
 				<div>
-					<h2>Reason</h2>
+					<h2>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h2>
 					<p>{{ movement.reason }}
 				</div>
 				<div>
-					<h2>Note</h2>
+					<h2>{{ 'ms.commerce.product.stock.note.label'|trans }}</h2>
 					<p>{{ movement.note }}
 				</div>
 			</section>

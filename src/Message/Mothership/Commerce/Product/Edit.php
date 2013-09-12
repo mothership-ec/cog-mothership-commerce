@@ -44,29 +44,29 @@ class Edit
 			 LEFT JOIN
 			 	product_export ON (product.product_id = product_export.product_id AND product_export.locale = :localeID?s)
 			 SET
-				product.year         = :year?i,
+				product.year         = :year?in,
 				product.updated_at   = :updated_at?i,
-				product.updated_by   = :updated_by?i,
-				product.brand     	 = :brand?s,
+				product.updated_by   = :updated_by?in,
+				product.brand     	 = :brand?sn,
 				product.name         = :name?s,
-				product.tax_rate     = :tax_rate?s,
+				product.tax_rate     = :tax_rate?sn,
 				product.tax_strategy = :tax_strategy?s,
-				product.supplier_ref = :supplier_ref?s,
-				product.weight_grams = :weight_grams?i,
-				product.category     = :category?s,
+				product.supplier_ref = :supplier_ref?sn,
+				product.weight_grams = :weight_grams?in,
+				product.category     = :category?sn,
 
-				product_info.display_name      = :display_name?s,
-				product_info.season            = :season?s,
-				product_info.description       = :description?s,
-				product_info.fabric            = :fabric?s,
-				product_info.features          = :features?s,
-				product_info.care_instructions = :care_instructions?s,
-				product_info.short_description = :short_description?s,
-				product_info.sizing            = :sizing?s,
-				product_info.notes             = :notes?s,
+				product_info.display_name      = :display_name?sn,
+				product_info.season            = :season?sn,
+				product_info.description       = :description?sn,
+				product_info.fabric            = :fabric?sn,
+				product_info.features          = :features?sn,
+				product_info.care_instructions = :care_instructions?sn,
+				product_info.short_description = :short_description?sn,
+				product_info.sizing            = :sizing?sn,
+				product_info.notes             = :notes?sn,
 
-				product_export.export_value       = :exportValue?,
-				product_export.export_description = :exportDescription?,
+				product_export.export_value       = :exportValue?fn,
+				product_export.export_description = :exportDescription?sn,
 				product_export.export_manufacture_country_id  = :exportCountryID?s
 			WHERE
 				product.product_id = :productID?i

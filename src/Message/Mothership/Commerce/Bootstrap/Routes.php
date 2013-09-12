@@ -13,34 +13,51 @@ class Routes implements RoutesInterface
 
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', '::Controller:Product:Dashboard#index');
 
+
 		$router['ms.product']->add('ms.commerce.product.create.action', 'create', '::Controller:Product:Create#process')
 			->setMethod('POST');
-
 		$router['ms.product']->add('ms.commerce.product.create', 'create', '::Controller:Product:Create#index');
 
-		$router['ms.product']->add('ms.commerce.product.edit.action', 'edit/{productID}', '::Controller:Product:Edit#process')
+
+		$router['ms.product']->add('ms.commerce.product.edit.attributes.action', 'edit/{productID}', '::Controller:Product:Edit#processProductAttributes')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
-
-		$router['ms.product']->add('ms.commerce.product.edit', 'edit/{productID}', '::Controller:Product:Edit#index')
+		$router['ms.product']->add('ms.commerce.product.edit.attributes', 'edit/{productID}', '::Controller:Product:Edit#productAttributes')
 			->setRequirement('productID', '\d+');
 
-		$router['ms.product']->add('ms.commerce.product.edit.units.action', 'product/edit/{productID}/units', '::Controller:Product:Edit#unitProcess')
+
+		$router['ms.product']->add('ms.commerce.product.edit.details.action', 'edit/{productID}/details', '::Controller:Product:Edit#processProductDetails')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.edit.details', 'edit/{productID}/details', '::Controller:Product:Edit#productDetails')
+			->setRequirement('productID', '\d+');
 
-		$router['ms.product']->add('ms.commerce.product.edit.units.create.action', 'product/edit/{productID}/units/create', '::Controller:Product:Edit#addUnitProccess')
+
+		$router['ms.product']->add('ms.commerce.product.edit.pricing.action', 'edit/{productID}/pricing', '::Controller:Product:Edit#processProductPricing')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.edit.pricing', 'edit/{productID}/pricing', '::Controller:Product:Edit#productPricing')
+			->setRequirement('productID', '\d+');
 
+
+		$router['ms.product']->add('ms.commerce.product.edit.units.action', 'product/edit/{productID}/units', '::Controller:Product:Edit#processUnit')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.edit.units.create.action', 'product/edit/{productID}/units/create', '::Controller:Product:Edit#proccessAddUnit')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.edit.units', 'edit/{productID}/units', '::Controller:Product:Edit#units')
 			->setRequirement('productID', '\d+');
+
+
 		$router['ms.product']->add('ms.commerce.product.edit.stock.action', 'edit/{productID}/stock', '::Controller:Product:Edit#processStock')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.edit.stock', 'edit/{productID}/stock', '::Controller:Product:Edit#stock')
 			->setRequirement('productID', '\d+');
-		$router['ms.product']->add('ms.commerce.product.edit.images.action', 'edit/{productID}/images', '::Controller:Product:Edit#imagesProcess')
+
+
+		$router['ms.product']->add('ms.commerce.product.edit.images.action', 'edit/{productID}/images', '::Controller:Product:Edit#processImage')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', '::Controller:Product:Edit#images')
