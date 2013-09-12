@@ -31,12 +31,15 @@ class Create
 	public function create(Address $address)
 	{
 		// Set create authorship data if not already set
-		if (!$address->authorship->createdAt()) {
+/*		if (!$address->authorship->createdAt()) {
 			$address->authorship->create(
 				new DateTimeImmutable,
 				$this->_currentUser->id
 			);
 		}
+*/
+		$address->authorship->update(new DateTimeImmutable, $this->_currentUser->id);
+
 
 		$result = $this->_query->run(
 			'INSERT INTO
