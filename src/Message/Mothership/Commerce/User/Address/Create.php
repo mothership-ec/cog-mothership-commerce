@@ -3,9 +3,7 @@
 namespace Message\Mothership\Commerce\User\Address;
 
 use Message\User\UserInterface;
-
 use Message\Cog\DB\Query;
-
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Create
@@ -18,7 +16,7 @@ class Create
 	{
 		$this->_query  = $query;
 		$this->_loader = $loader;
-		$this->_currentUser   = $user;
+		$this->_currentUser = $user;
 	}
 
 	/**
@@ -31,15 +29,12 @@ class Create
 	public function create(Address $address)
 	{
 		// Set create authorship data if not already set
-/*		if (!$address->authorship->createdAt()) {
+		if (!$address->authorship->createdAt()) {
 			$address->authorship->create(
 				new DateTimeImmutable,
 				$this->_currentUser->id
 			);
 		}
-*/
-		$address->authorship->update(new DateTimeImmutable, $this->_currentUser->id);
-
 
 		$result = $this->_query->run(
 			'INSERT INTO
