@@ -1,10 +1,9 @@
-<div class="container">
-	<section class="group">
-		<h1 class="title">
+	<div class="group box">
+		<h2 class="title">
 			{{ payment.method.displayName }},
 			Created by {{ payment.authorship.createdBy }}
 			at {{ payment.authorship.createdAt|date }}
-		</h1>
+		</h2>
 		<ul class="order-details">
 			{% if not payment.return is empty %}
 				<li>
@@ -25,5 +24,5 @@
 				{{ payment.reference }}
 			</li>
 		</ul>
-	</section>
+
 </div>

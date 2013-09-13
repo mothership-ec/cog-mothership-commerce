@@ -1,28 +1,28 @@
 <div class="container-details dual-column" id="item{{ item.id }}">
 
 
-<div class="box">
-		<h1>{{ item.brand }} {{ item.productName }}  &mdash; {{ item.options }}</h1>
+
+		<h1 class="title">{{ item.brand }} {{ item.productName }}  &mdash; {{ item.options }}</h1>
 
 
 <div class="column">
 
 
-		<h3>Pricing Details</h3>
+		<h2>Pricing Details</h2>
 		<ul class="order-details ">
 			<li><span>Net</span> {{ item.net|price(order.currencyID) }}</li>
 			<li><span>Discount</span> {{ item.discount|price(order.currencyID) }}</li>
 			<li><span>Tax</span> {{ item.tax|price(order.currencyID) }}</li>
 			<li><span>Item Gross</span> {{ item.gross|price(order.currencyID) }} </li>
 		</ul>
-		<h3>Item Details</h3>
+		<h2>Item Details</h2>
 		<ul class="order-details ">
 			<li><span>SKU</span> {{ item.sku }}</li>
 			<li><span>Barcode</span> {{ item.barcode }}</li>
 			<li><span>Weight</span> {{ item.weight }}</li>
 			<li><span>Personalised </span> {{ item.isPersonalised }}</li>
 		</ul>
-		<h3>Processing Details</h3>
+		<h2>Processing Details</h2>
 		<ul class="order-details ">
 			<li><span>Shipping Type</span> ({{ order.shippingName }})</li>
 			<li><span>Created by</span> {{ item.authorship.createdBy }}</li>
@@ -33,7 +33,7 @@
 
 
 <div class="column">
-		<h3>Status History</h3>
+		<h2>Status History</h2>
 		<table class="order-listing progress">
 		<thead>
 		<tr>
@@ -55,6 +55,6 @@
 
 
 
-</div>
+
 </div>
 </div>

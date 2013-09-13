@@ -3,7 +3,7 @@
 {% block order_content %}
 
 	<section class="container-content">
-		<section class="repeatable-group">
+
 			{% if not payments is empty %}
 				{% for payment in payments %}
 					{% include '::order:detail:payment:detail' %}
@@ -11,6 +11,6 @@
 			{% else %}
 				{{ 'ms.commerce.order.payment.none'|trans }}
 			{% endif %}
-		</section>
+
 	</section>
 {% endblock %}
