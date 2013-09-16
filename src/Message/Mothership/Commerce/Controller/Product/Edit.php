@@ -815,7 +815,7 @@ class Edit extends Controller
 			)
 		))
 			->val()
-			->number()
+			// ->number()
 			->optional();
 
 		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
