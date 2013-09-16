@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\HTTP\Cookie;
+use Message\Mothership\Ecommerce;
+use Message\Mothership\Commerce\Order\Event\Event as CommerceEvent;
 
 class EventListener extends BaseListener implements SubscriberInterface
 {
@@ -21,6 +23,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			KernelEvents::RESPONSE => array(
 				array('saveBasket'),
 			),
+			Ecommerce\Event::EMPTY_BASKET => array(
+				array('deleteBasket'),
+			)
 		);
 	}
 
@@ -89,6 +94,23 @@ class EventListener extends BaseListener implements SubscriberInterface
 			$cookie = new Cookie($cookieName, NULL, 1);
 
 			$this->_services['http.cookies']->add($cookie);
+		}
+	}
+
+	public function deleteBasket(CommerceEvent $event)
+	{
+		$order = $this->_services['basket.order'];
+
+		// Get the token from the cookie
+		$token = $this->_services['request']->cookies->get($this->_services['cfg']->basket->cookieName);
+
+		// See if a basket already exists.
+		$basket = $this->_services['order.basket.loader']->getByToken($token);
+
+		// Update with current order details.
+		if($basket) {
+			$basketID = $basket->basket_id;
+			$this->_services['order.basket.delete']->delete($basketID);
 		}
 	}
 }

@@ -420,6 +420,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Basket\Edit($c['db.query']);
 		});
 
+		$services['order.basket.delete'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Delete($c['db.query']);
+		});
+
 		$services['order.basket.loader'] = $services->share(function($c) {
 			return new Commerce\Order\Basket\Loader($c['db.query'], $c['order.basket.token']);
 		});
