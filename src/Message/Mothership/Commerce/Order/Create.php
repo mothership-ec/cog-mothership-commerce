@@ -83,7 +83,7 @@ class Create
 				created_by       = :createdBy?in,
 				status_code      = :status?i,
 				user_id          = :userID?in,
-				user_email		 = :userEmail?sn
+				user_email		 = :userEmail?sn,
 				type             = :type?sn,
 				locale           = :locale?s,
 				taxable          = :taxable?b,
