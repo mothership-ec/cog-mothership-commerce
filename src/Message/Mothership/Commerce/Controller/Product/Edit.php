@@ -411,7 +411,7 @@ class Edit extends Controller
 						)
 					)
 					->val()
-					->number()
+					// ->number()
 					->optional();
 			}
 
