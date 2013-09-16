@@ -10,7 +10,7 @@ use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\HTTP\Cookie;
 use Message\Mothership\Ecommerce;
-use Message\Mothership\Commerce\Order\Event\Event as CommerceEvent;
+use Message\Cog\Event\Event as BaseEvent;
 
 class EventListener extends BaseListener implements SubscriberInterface
 {
@@ -97,7 +97,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
-	public function deleteBasket(CommerceEvent $event)
+	public function deleteBasket(BaseEvent $event)
 	{
 		$order = $this->_services['basket.order'];
 
