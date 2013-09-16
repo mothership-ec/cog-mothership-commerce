@@ -3,9 +3,7 @@
 namespace Message\Mothership\Commerce\User\Address;
 
 use Message\User\UserInterface;
-
 use Message\Cog\DB\Query;
-
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Create
@@ -18,7 +16,7 @@ class Create
 	{
 		$this->_query  = $query;
 		$this->_loader = $loader;
-		$this->_currentUser   = $user;
+		$this->_currentUser = $user;
 	}
 
 	/**

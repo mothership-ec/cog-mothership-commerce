@@ -3,7 +3,7 @@
 {% block order_content %}
 
 	<section class="container-content">
-		<section class="repeatable-group">
+
 				{% if not dispatches is empty %}
 					{% for dispatch in dispatches %}
 						{% include '::order:detail:dispatch:detail' %}
@@ -11,6 +11,6 @@
 				{% else %}
 					<p>{{ 'ms.commerce.order.dispatch.none'|trans }}</p>
 				{% endif %}
-			</section>
+
 	</section>
 {% endblock %}
