@@ -64,7 +64,7 @@
 		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
 		{% for movement in movementIterator %}
-		<div class="container-details box">
+		<div class="container-details dual-column">
 				<h2 class="title">
 					Stock Movement #{{ movement.id }}
 					- {{ movement.authorship.createdAt|date }}
@@ -74,6 +74,7 @@
 						by {{ movement.authorship.createdBy }}
 					{% endif %}
 				</h2>
+		<div class="column">
 				<table>
 					<thead>
 						<tr>
@@ -116,6 +117,8 @@
 						{% endfor %}
 					</tbody>
 				</table>
+		</div>
+		<div class="column">
 				<div>
 					<h2>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h2>
 					<p>{{ movement.reason }}
@@ -126,6 +129,7 @@
 				</div>
 
 		</div>
+	</div>
 		{% endfor %}
 	</section>
 </section>
