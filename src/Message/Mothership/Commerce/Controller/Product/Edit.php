@@ -415,10 +415,10 @@ class Edit extends Controller
 					->optional();
 			}
 
-			$units->add($stockForm, 'form');
+			$units->add($stockForm->getForm(), 'form');
 		}
 
-		$mainForm->add($units, 'form');
+		$mainForm->add($units->getForm(), 'form');
 
 		$mainForm
 			->add(
