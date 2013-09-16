@@ -47,7 +47,8 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 		// Add the logged in user to the basket order
 		$user = $this->get('user.current');
 		$this->get('basket')->addUser($user);
-
+		// Remove any addresses before we add them
+		$this->get('basket')->removeAddresses();
 		if (!$user instanceof User) {
 			return false;
 		}
