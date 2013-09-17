@@ -19,7 +19,9 @@
 		<ul class="order-details">
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
-				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">{{ address.title }} {{ address.forename }} {{ address.surname }}</a>
+				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
+					{{ address.title }} {{ address.forename }} {{ address.surname }}
+				</a>
 			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>

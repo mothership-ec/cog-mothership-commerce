@@ -5,7 +5,9 @@
 		<ul class="order-details">
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
-				{{ address.title }} {{ address.forename }} {{ address.surname }}
+				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
+					{{ address.title }} {{ address.forename }} {{ address.surname }}
+				</a>
 			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
