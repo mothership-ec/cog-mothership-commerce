@@ -166,6 +166,28 @@ class _1379411978_SetUpProducts extends Migration
 			  PRIMARY KEY (`unit_id`,`location`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
+
+		$this->run("
+			CREATE TABLE `stock_movement` (
+			  `stock_movement_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			  `created_at` int(11) unsigned DEFAULT NULL,
+			  `created_by` int(11) unsigned DEFAULT NULL,
+			  `reason` varchar(255) DEFAULT NULL,
+			  `note` text,
+			  `automated` tinyint(1) unsigned NOT NULL DEFAULT '1',
+			  PRIMARY KEY (`stock_movement_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+
+		$this->run("
+			CREATE TABLE `stock_movement_adjustment` (
+			  `stock_movement_id` int(11) unsigned NOT NULL,
+			  `unit_id` int(11) unsigned NOT NULL,
+			  `location` varchar(50) NOT NULL DEFAULT '',
+			  `delta` int(11) NOT NULL,
+			  PRIMARY KEY (`stock_movement_id`,`unit_id`,`location`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
 	}
 
 	public function down()
@@ -228,6 +250,16 @@ class _1379411978_SetUpProducts extends Migration
 		$this->run('
 			DROP TABLE IF EXISTS
 				`product_unit_stock`
+		');
+
+		$this->run('
+			DROP TABLE IF EXISTS
+				`stock_movement`
+		');
+
+		$this->run('
+			DROP TABLE IF EXISTS
+				`stock_movement_adjustment`
 		');
 	}
 }
