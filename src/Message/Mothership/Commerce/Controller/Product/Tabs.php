@@ -4,11 +4,11 @@ namespace Message\Mothership\Commerce\Controller\Product;
 
 use Message\Cog\Controller\Controller;
 
-class Menu extends Controller
+class Tabs extends Controller
 {
 	public function index($productID = null)
 	{
-		return $this->render('Message:Mothership:Commerce::product:menu', array(
+		return $this->render('Message:Mothership:Commerce::product:tabs', array(
 			'productID' => $productID,
 		));
 	}

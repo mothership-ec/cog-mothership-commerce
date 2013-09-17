@@ -10,11 +10,11 @@
 		<h1>Editing 'Stock'</h1>
 </hgroup>
 
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
+{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
 
 <section class="container-content">
+		<h1>Stock Adjustments</h1>
 	<div class="dual-column">
-	<h1 class="title">Stock Adjustments</h1>
 	<div class="column">
 <h2>Adjust Stock</h2>
 		{{ form_start(form) }}
@@ -60,11 +60,11 @@
 		{{ form_end(form) }}
 </div>
 </div>
-	<section class="repeatable-group">
+	<section class="display-group">
 		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
 		{% for movement in movementIterator %}
-		<div class="container-details dual-column">
+
 				<h2 class="title">
 					Stock Movement #{{ movement.id }}
 					- {{ movement.authorship.createdAt|date }}
@@ -74,6 +74,8 @@
 						by {{ movement.authorship.createdBy }}
 					{% endif %}
 				</h2>
+
+		<div class="container-details dual-column">
 		<div class="column">
 				<table>
 					<thead>
