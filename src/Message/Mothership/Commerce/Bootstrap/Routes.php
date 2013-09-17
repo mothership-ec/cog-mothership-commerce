@@ -18,11 +18,11 @@ class Routes implements RoutesInterface
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.create', 'create', '::Controller:Product:Create#index');
 
-		$router['ms.product']->add('ms.commerce.product.delete', '/{productID}/delete', '::Controller:Product:Delete#delete')
+		$router['ms.product']->add('ms.commerce.product.delete', 'delete/{productID}', '::Controller:Product:Delete#delete')
 			->setRequirement('productID', '\d+')
 			->setMethod('DELETE');
 
-		$router['ms.product']->add('ms.commerce.product.restore', '/{productID}/restore/{hash}', '::Controller:Product:Delete#restore')
+		$router['ms.product']->add('ms.commerce.product.restore', 'restore/{productID}/{hash}', '::Controller:Product:Delete#restore')
 			->setRequirement('productID', '\d+')
 			->setMethod('GET')
 			->enableCsrf('hash');
