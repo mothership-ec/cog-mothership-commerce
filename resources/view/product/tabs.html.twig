@@ -19,11 +19,11 @@
 			<a href="{{ url('ms.commerce.product.edit.images', {productID:productID}) }}" data-live>Images</a>
 		</li>
 	</ul>
-</div>
 
-<div class="controls">
-    <form action="{{ url('ms.commerce.product.delete', {productID: productID}) }}" method="post" id="delete-page">
-        <input type="hidden" name="_method" value="DELETE">
-        <button name="delete[delete]" value="delete" id="delete" type="submit" class="button small delete">{{ 'Delete'|trans }}</button>
-    </form>
+	<div class="controls">
+	    <form action="{{ url('ms.commerce.product.delete', {productID: productID}) }}" method="post" id="delete-page">
+	        <input type="hidden" name="_method" value="DELETE">
+	        <button name="delete[delete]" value="delete" id="delete" type="submit" class="button small delete">{{ 'Delete'|trans }}</button>
+	    </form>
+	</div>
 </div>
