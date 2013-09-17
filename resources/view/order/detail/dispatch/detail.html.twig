@@ -1,10 +1,14 @@
-<div class="container-details dual-column">
 
-<h1 class="title">
+<section class="display-group">
+<h2 class="title">
 			{{ dispatch.method.displayName|title }},
 			{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
 			{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
-		</h1>
+		</h2>
+
+<div class="container-details dual-column">
+
+
 	<div class="column">
 <h2>Shipping Details</h2>
 		<ul class="order-details">
@@ -37,3 +41,4 @@
 		</div>
 
 </div>
+</section>
