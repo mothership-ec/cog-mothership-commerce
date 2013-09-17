@@ -29,7 +29,6 @@ abstract class Porting extends BaseTask
 	 */
 	public function getToConnection()
 	{
-
 		return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
 				'host'		=> '192.168.201.99',
 				'user'		=> 'danny',
