@@ -2,8 +2,7 @@
 
 namespace Message\Mothership\Commerce\Forex;
 
-use Exception;
-use Feeds\FeedInterface;
+use InvalidArgumentException;
 
 /**
  * Provides foreign exchange currency conversions.
@@ -20,7 +19,7 @@ class Forex {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param Message\Cog\DB\Query $query
 	 * @param string               $baseCurrency Base currency to do conversions against.
 	 * @param array                $currencies   List of currencies that can be used in conversions.
@@ -34,32 +33,86 @@ class Forex {
 
 	/**
 	 * Create a converter, and if possible return the converted value.
-	 * 
+	 *
 	 * @param  float|null       $amount Amount to convert
 	 * @param  string|null      $to     Currency to convert to
 	 * @param  string|null      $from   Currency to convert from
-	 * 
+	 *
 	 * @return float|Converter  Converter instance if not all values provided for an instant conversion
 	 */
 	public function convert($amount = null, $to = null, $from = null)
 	{
-		if ($from == null) {
-			$from = $this->_baseCurrency;
+		if ($amount !== null) {
+			$this->amount($amount);
 		}
 
-		$converter = new Converter($this->getRates(), $amount, $from, $to);
+		if ($to !== null) {
+			$this->to($to);
+		}
 
-		try {
-			return $converter->get();
+		if ($from !== null) {
+			$this->from($from);
 		}
-		catch (Exception $e) {
-			return $converter;
+		else {
+			$this->from($this->_baseCurrency);
 		}
+
+		if ($this->_amount !== null and $this->_from !== null and $this->_to !== null) {
+			return $this->_amount * $this->_to->rate / $this->_from->rate;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Set the amount to convert.
+	 *
+	 * @param  int $amount Amount to convert
+	 *
+	 * @return Converter
+	 */
+	public function amount($amount)
+	{
+		$this->_amount = (float) $amount;
+
+		return $this;
+	}
+
+	/**
+	 * Set the currency to convert from.
+	 *
+	 * @param  string $currency Currency to convert from
+	 *
+	 * @return Converter
+	 */
+	public function from($currency)
+	{
+		$from = $this->getRateByCurrency($currency);
+
+		$this->_from = $from;
+
+		return $this;
+	}
+
+	/**
+	 * Set the currency to convert to.
+	 *
+	 * @param  string $currency Currency to convert to
+	 *
+	 * @return Converter
+	 */
+	public function to($currency)
+	{
+		$to = $this->getRateByCurrency($currency);
+
+		$this->_to = $to;
+
+		return $this;
 	}
 
 	/**
 	 * Get the currency rates.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getRates()
@@ -76,11 +129,31 @@ class Forex {
 			');
 
 			foreach ($results as $row) {
-				$this->_rates[$row->currency] = $row->rate;
+				$this->_rates[strtoupper($row->currency)] = $row;
 			}
 		}
 
 		return $this->_rates;
+	}
+
+	/**
+	 * Get a rate by currency.
+	 *
+	 * @param  string $currency
+	 *
+	 * @return stdObject
+	 */
+	public function getRateByCurrency($currency)
+	{
+		$rates = $this->getRates();
+
+		$currency = strtoupper($currency);
+
+		if (! isset($rates[$currency])) {
+			throw new InvalidArgumentException(sprintf("The currency '%s' is not valid", $currency));
+		}
+
+		return $rates[$currency];
 	}
 
 }
