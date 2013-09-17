@@ -405,12 +405,13 @@ class Edit extends Controller
 						$location->name,
 						'text',
 						$this->trans('ms.commerce.product.stock.location.'.$location->name),
-						array('attr' => array(
-							'value' => '+0',
-							'data-help-key' => 'ms.commerce.product.stock.level.help'
-						))
+						array(
+							'data' => '+0',
+							'attr' => array('data-help-key' => 'ms.commerce.product.stock.level.help')
+						)
 					)
 					->val()
+					// ->number()
 					->optional();
 			}
 
@@ -783,7 +784,6 @@ class Edit extends Controller
 				'features'                      => $this->_product->features,
 				'sizing'                        => $this->_product->sizing,
 				'fabric'                        => $this->_product->fabric,
-				'weight_grams'                  => $this->_product->weight,
 				'care_instructions' 			=> $this->_product->careInstructions,
 				'tags'							=> implode(',', $this->_product->tags),
 				'supplier_ref'                  => $this->_product->supplierRef,
@@ -808,12 +808,15 @@ class Edit extends Controller
 		))
 			->val()->optional();
 
-		$form->add('weight_grams', 'integer', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.weight-grams.help')
+		$form->add('weight_grams', 'number', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
+			'data' => $this->_product->weight,
+			'attr' => array(
+				'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
+			)
 		))
 			->val()
-				->maxLength(11)
-				->optional();
+			// ->number()
+			->optional();
 
 		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')

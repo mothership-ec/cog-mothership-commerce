@@ -128,20 +128,6 @@ class Assembler
 		return $this->_countForUnitID($unit);
 	}
 
-	public function emptyBasket()
-	{
-		$this->_session->remove('basket.order');
-
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			\Message\Mothership\Ecommerce\Event::EMPTY_BASKET,
-			$event
-		);
-
-		return true;
-	}
-
 	public function addUser(\Message\User\UserInterface  $user)
 	{
 		$this->_order->user = $user;

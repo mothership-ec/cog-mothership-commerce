@@ -1,9 +1,6 @@
-<div class="container">
 
-
-	<section class="group">
-		<h1 class="title">Created by {{ note.authorship.createdBy }} at {{ note.authorship.createdAt|date }}</h1>
-		
+	<div class="group box">
+		<h2 class="title">Created by {{ note.authorship.createdBy }} at {{ note.authorship.createdAt|date }}</h2>
 
 		<ul class="order-details">
 			<li><span>Note</span>{{ note.note }}</li>
@@ -16,5 +13,4 @@
 				{{ note.raisedFrom }}
 			</li>
 		</ul>
-	</section>
-</div>
+	</div>
