@@ -311,6 +311,10 @@ class Services implements ServicesInterface
 			return $create;
 		};
 
+		$services['product.delete'] = function($c) {
+			return new Commerce\Product\Delete($c['db.query'], $c['user.current']);
+		};
+
 		$services['product.image.types'] = function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
 				'default',
