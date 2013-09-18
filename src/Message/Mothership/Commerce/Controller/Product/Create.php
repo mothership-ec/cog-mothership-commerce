@@ -39,18 +39,18 @@ class Create extends Controller
 			->setAction($this->generateUrl('ms.commerce.product.create.action'))
 			->setMethod('post');
 
-		$form->add('name', 'text', $this->trans('ms.commerce.product.name.label'), array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.name.help'
+		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array('attr' => array(
+			'data-help-key' => 'ms.commerce.product.attributes.name.help'
 		)))
 			->val()->maxLength(255);
 
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.display-name.label'), array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.name.help'
+		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array('attr' => array(
+			'data-help-key' => 'ms.commerce.product.attributes.display-name.help'
 		)))
 			->val()->maxLength(255);
 
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.short-description.label'), array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.name.help'
+		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array('attr' => array(
+			'data-help-key' => 'ms.commerce.product.attributes.short-description.help'
 		)));
 
 		return $form;
