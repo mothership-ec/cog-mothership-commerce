@@ -5,7 +5,7 @@
 	<li><a href="#">{{ category }}</a>
 		<ol>
 		{% for product in products %}
-			<li><a href="{{ url('ms.commerce.product.edit', {productID:product.id}) }}" data-live>{{ product.name }}</a></li>
+			<li><a href="{{ url('ms.commerce.product.edit.attributes', {productID:product.id}) }}" data-live>{{ product.name }}</a></li>
 		{% endfor %}
 		</ol>
 	</li>

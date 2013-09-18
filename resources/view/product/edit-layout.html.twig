@@ -7,15 +7,15 @@
 {% block main %}
 
 <hgroup class="title">
-		<h1>Editing '{{ product.name }}'</h1>
+	<h1>
+		{{ title is defined ? title : 'Editing ' ~ product.name }}
+	</h1>
 </hgroup>
 
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
+{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
 
 <section class="container-content">
-	{{ form_start(form) }}
-		{{ form_rest(form) }}
-		<button type="submit" class="button small save" id="save-content">Save changes</button>
-	{{ form_end(form) }}
+{% block edit %} {% endblock %}
 </section>
+
 {% endblock %}

@@ -1,35 +1,24 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-
-{% block main %}
-
-<hgroup class="title">
-		<h1>Editing Stock'</h1>
-</hgroup>
-
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
-
-<section class="container-content">
+{% block edit %}
 <ul>
 	{% for image in product.images %}
 		<li>
 			<img src="{{ resize(image.file.file.getPublicUrl, 200, 200) }}" />
 			<ul>
-				<li>Image type: {{ image.type }}</li>
-				<li>Option name: {{ image.optionName }}</li>
-				<li>Option value: {{ image.optionValue }}</li>
+				<li>{{ 'ms.commerce.product.image.type.label'|trans }} {{ image.type }}</li>
+				<li>{{ 'ms.commerce.product.image.option.name.label'|trans }} {{ image.optionName }}</li>
+				<li>{{ 'ms.commerce.product.image.option.value.label'|trans }} {{ image.optionValue }}</li>
 			</ul>
 		</li>
 	{% endfor %}
 </ul>
 	{{ form_start(form) }}
 		{{ form_rest(form) }}
-		<button type="submit" class="button small save" id="save-content">Update</button>
+		<button type="submit" class="button small save" id="save-content">
+			{{ 'ms.commerce.product.button.save'|trans }}
+		</button>
 	{{ form_end(form) }}
 
-</section>
-
 {% endblock %}
+

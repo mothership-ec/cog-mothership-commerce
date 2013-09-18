@@ -39,6 +39,22 @@ class PostageAutomaticallyEvent extends Event
 		return $this->_documents;
 	}
 
+	public function setCode($code)
+	{
+		if (!$code) {
+			return false;
+		}
+
+		$this->_code = $code;
+
+		$this->stopPropagation();
+	}
+
+	public function setCost($cost)
+	{
+		$this->_cost = (float) $cost;
+	}
+
 	public function addDocument(Document $document)
 	{
 		$this->_documents[] = $document;

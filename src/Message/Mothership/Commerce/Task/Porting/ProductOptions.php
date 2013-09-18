@@ -18,7 +18,7 @@ class ProductOptions extends Porting
 					\'size\' AS type,
 					string_value AS value
 				FROM
-					uniform_wares.catalogue_unit_size
+					catalogue_unit_size
 				JOIN
 					val_size USING (size_id)
 				JOIN
@@ -48,7 +48,7 @@ class ProductOptions extends Porting
 					\'colour\' AS type,
 					string_value AS value
 				FROM
-					uniform_wares.catalogue_unit_colour
+					catalogue_unit_colour
 				JOIN
 					val_colour USING (colour_id)
 				JOIN

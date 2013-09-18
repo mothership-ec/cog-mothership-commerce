@@ -15,6 +15,7 @@ class Loader
 	protected $_locale;
 	protected $_entities;
 	protected $_imageTypes;
+	protected $_includeDeleted = false;
 
 	protected $_returnArray;
 
@@ -32,6 +33,18 @@ class Loader
 		$this->_priceTypes = $priceTypes;
 		$this->_imageTypes = $imageTypes;
 		$this->_fileLoader = $fileLoader;
+	}
+
+	/**
+	 * Sets $_includeDeleted
+	 *
+	 * @param  bool   $bool boolean $_includeDeleted is set to
+	 * @return Loader returns $this for chainability
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = (bool)$bool;
+		return $this;
 	}
 
 	public function getEntityLoader($name)
@@ -135,6 +148,7 @@ class Loader
 				product_export ON (product.product_id = product_export.product_id)
 			WHERE
 				product.product_id 	 IN (?ij)
+				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NULL' : '' ) . '
 		', 	array(
 				(array) $productIDs,
 			)

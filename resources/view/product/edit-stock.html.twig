@@ -1,24 +1,16 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
+{% block edit %}
 
-{% block main %}
-
-<hgroup class="title">
-		<h1>Editing 'Stock'</h1>
-</hgroup>
-
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Menu#index', {'productID':product.id}))}}
-
-<section class="container-content">
-	<section>
+	<h1>Stock Adjustments</h1>
+	<div class="dual-column">
+	<div class="column">
+<h2>Adjust Stock</h2>
 		{{ form_start(form) }}
 		<table>
 			<thead>
 				<tr>
-					<th>SKU - Barcode</th>
+					<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
 					{% for heading in headings %}
 						<th>{{ heading }}</th>
 					{% endfor %}
@@ -30,7 +22,7 @@
 			<tbody>
 				{% for unit in units %}
 					<tr>
-						<td><span>{{ unit.sku }}</span> - <span>{{ unit.barcode }}</span></td>
+						<td><span>{{ unit.sku }}</span></td>
 						{% for key, name in headings %}
 							<td>
 							{% if key in unit.options|keys %}
@@ -46,19 +38,23 @@
 					</tr>
 				{% endfor %}
 			</tbody>
-		</table>
+		</table></div>
+	<div class="column">
+		<h2>Adjustment Information</h2>
 		{{ form_row(form['reason']) }}
 		{{ form_row(form['note']) }}
-		<button type="submit" class="button small save" id="save-content">Update</button>
+		<button type="submit" class="button small save" id="save-content">
+			{{ 'ms.commerce.product.button.save'|trans }}
+		</button>
 		{{ form_end(form) }}
-	</section>
-	<section class="repeatable-group">
-		<h1>Stock Movements</h1>
+</div>
+</div>
+	<section class="display-group">
+		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
 		{% for movement in movementIterator %}
-		<div class="container">
-			<section class="group">
-				<h2>
+
+				<h2 class="title">
 					Stock Movement #{{ movement.id }}
 					- {{ movement.authorship.createdAt|date }}
 					{% if movement.automated %}
@@ -67,10 +63,13 @@
 						by {{ movement.authorship.createdBy }}
 					{% endif %}
 				</h2>
+
+		<div class="container-details dual-column">
+		<div class="column">
 				<table>
 					<thead>
 						<tr>
-							<th>SKU - Barcode</th>
+							<th>SKU</th>
 							{% for heading in headings %}
 								<th>{{ heading }}</th>
 							{% endfor %}
@@ -82,7 +81,7 @@
 					<tbody>
 						{% for adjustment in movement.adjustments %}
 						<tr>
-							<td><span>{{ adjustment.unit.sku }}</span> - <span>{{ adjustment.unit.barcode }}</span></td>
+							<td><span>{{ adjustment.unit.sku }}</span></td>
 							{% for key, name in headings %}
 								<td>
 								{% if key in adjustment.unit.options|keys %}
@@ -93,7 +92,7 @@
 							{% for location in locations %}
 								<div class="inline">
 									<td>
-									{% if movementIterator.hasStock(adjustment.unit, location) %}
+									{% if adjustment.location == location %}
 										{{ movementIterator.getStockBefore(adjustment.unit, location) }}
 										<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
 											{{ '%+d'|format(adjustment.delta) }}
@@ -109,18 +108,20 @@
 						{% endfor %}
 					</tbody>
 				</table>
+		</div>
+		<div class="column">
 				<div>
-					<h2>Reason</h2>
+					<h2>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h2>
 					<p>{{ movement.reason }}
 				</div>
 				<div>
-					<h2>Note</h2>
+					<h2>{{ 'ms.commerce.product.stock.note.label'|trans }}</h2>
 					<p>{{ movement.note }}
 				</div>
-			</section>
+
 		</div>
+	</div>
 		{% endfor %}
 	</section>
-</section>
 
 {% endblock %}

@@ -1,10 +1,16 @@
-<div class="container">
-	<section class="group">
-		<h1 class="title">
-			{{ dispatch.method.displayName|title }}, 
+
+<section class="display-group">
+<h2 class="title">
+			{{ dispatch.method.displayName|title }},
 			{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
 			{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
-		</h1>
+		</h2>
+
+<div class="container-details dual-column">
+
+
+	<div class="column">
+<h2>Shipping Details</h2>
 		<ul class="order-details">
 			<li>
 				<span>{{ 'Shipped by'|trans }}</span>
@@ -13,7 +19,7 @@
 			<li>
 				<span>{{ 'Shipped on'|trans }}</span>
 				{{ dispatch.shippedAt|date }}
-			</li>	
+			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.dispatch.code'|trans }}</span>
 				{{ dispatch.code }}
@@ -27,10 +33,12 @@
 				{{ dispatch.weight }}
 			</li>
 		</ul>
-		<section class="order-summary">
+	</div>
+		<div class="column">
 			{% set items = dispatch.items %}
 
 			{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}
-		</section>
-	</section>
+		</div>
+
 </div>
+</section>

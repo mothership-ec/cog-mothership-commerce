@@ -1,7 +1,4 @@
 {% if not orders is empty %}
-	{% if not orderLink is defined %}
-		{% set orderLink = 'ms.commerce.order.detail.view' %}
-	{% endif %}
 	<table class="order-listing">
 		<thead>
 		<tr>
@@ -16,9 +13,22 @@
 		<tbody>
 			{% for order in orders %}
 				<tr>
-					<td><a href="{{ url(orderLink, {orderID: order.id}) }}">{{ order.id }}</a></td>
+					<td>
+						{% if orderLink is defined %}
+							<a href="{{ url(orderLink, {orderID: order.id}) }}">{{ order.id }}</a>
+						{% else %}
+							{{ order.id }}
+						{% endif %}
+
+					</td>
 					<td>{{ order.authorship.createdAt|date }}</td>
-					<td><a href="">{{ order.user.name }}</a></td>
+					<td>
+						{% if userLink is defined %}
+							<a href="{{ url(userLink) }}">{{ order.user.name }}</a>
+						{% else %}
+							{{ order.user.name }}
+						{% endif %}
+					</td>
 					<td>{{ order.status }}</td>
 					<td>{{ order.shippingName }}</td>
 					<td>{{ order.totalGross|price(order.currencyID) }}</td>
