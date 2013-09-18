@@ -4,7 +4,14 @@ namespace Message\Mothership\Commerce\Forex\Feed;
 
 class ECB implements FeedInterface {
 
+	protected $_query;
+
 	protected $_url = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
+
+	public function __construct($query)
+	{
+		$this->_query = $query;
+	}
 
 	public function fetch()
 	{
@@ -20,16 +27,33 @@ class ECB implements FeedInterface {
 					$$key = (string) $val;
 				}
 
-				$rates[$currency] = $rate;
+				$rates[$currency] = (float) $rate;
 			}
 
 			unset($xml, $item, $key, $val);
 		}
-		
-		foreach ($rates as $key => $val) {
-            $this->_rates[$key] = ((1 / $rates[FXRate::BASE_CURRENCY]) * $rates[$key]);
-			ksort($this->_rates);
+
+		// Truncate the rates table
+		$this->_query->run('
+			TRUNCATE TABLE
+				forex_rate
+		');
+
+		// Insert each rate into the table
+		foreach ($rates as $currency => $rate) {
+            $this->_query->run('
+            	INSERT INTO
+            		forex_rate
+            	SET
+            		currency = ?s,
+            		rate     = ?f
+            ', array(
+            	strtoupper($currency),
+            	$rate
+            ));
         }
+
+        return $rates;
 	}
 
 }

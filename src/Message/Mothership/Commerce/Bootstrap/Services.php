@@ -422,7 +422,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['forex.feed'] = $services->share(function($c) {
-			return new Commerce\Forex\Feed\ECB;
+			return new Commerce\Forex\Feed\ECB($c['db.query']);
 		});
 
 		/*

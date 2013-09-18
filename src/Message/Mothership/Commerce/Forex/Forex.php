@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Forex;
 
+use LogicException;
 use InvalidArgumentException;
 
 /**
@@ -57,8 +58,15 @@ class Forex {
 			$this->from($this->_baseCurrency);
 		}
 
-		if (null === $this->_amount or null === $this->_to or null === $this->_from) {
-			throw new LogicException();
+		if (null === $this->_amount) {
+			throw new LogicException("The amount to convert must be set");
+		}
+		if (null === $this->_to) {
+			throw new LogicException("The 'to currency' must be set");
+		}
+
+		if (null === $this->_from) {
+			throw new LogicException("The 'from currency' must be set");
 		}
 
 		return $this->_amount * $this->_to->rate / $this->_from->rate;
