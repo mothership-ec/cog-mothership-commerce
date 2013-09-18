@@ -42,25 +42,25 @@ $priceGBP = 12.50;
 $currencies = array('GBP', 'USD', 'EUR', 'JPY');
 
 // Create a converter on the base currency
-$base = $this->get('forex')->amount($priceGBP);
+$converter = $this->get('forex')->amount($priceGBP);
 
 // Loop currencies and output the converter value for each one
 foreach ($currencies as $currency) {
-	echo $currency . ': ' .$base->to($currency)->convert();
+	echo $currency . ': ' .$converter->to($currency)->convert();
 }
 
-// Change the base currency
-$base->from('USD');
+// Change the currency to convert from
+$converter->from('USD');
 
-// Loop currencies and output the converter value for each one against the new base
+// Loop currencies and output the converter value for each one against the new from currency
 foreach ($currencies as $currency) {
-	echo $currency . ': ' .$base->to($currency)->convert();
+	echo $currency . ': ' .$converter->to($currency)->convert();
 }
 ```
 
 **Fetch the latest rates**
 
-This should be run within cron job.
+This should be run regularly to keep the exchange rates up to date.
 
 ```php
 $this->get('forex.feed')->fetch();
