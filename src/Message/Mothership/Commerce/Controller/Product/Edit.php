@@ -180,8 +180,7 @@ class Edit extends Controller
 				$unit->setOption($data['option_name_2'], $data['option_value_2']);
 			}
 
-			$unit = $this->get('product.unit.create')->save($unit);
-			$unit = $this->get('product.unit.create')->savePrices($unit);
+			$unit = $this->get('product.unit.create')->create($unit);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
