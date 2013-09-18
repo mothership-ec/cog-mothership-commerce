@@ -1,0 +1,14 @@
+<div class="topbar products">
+	<ul class="tabs">
+		{% for name, url in tabs %}
+			<li class="{{ url == current ? 'active' : '' }}"><a href="{{ url(url, {'productID': productID}) }}" data-live>{{ name }}</a></li>
+		{% endfor %}
+	</ul>
+
+	<div class="controls">
+	    <form action="{{ url('ms.commerce.product.delete', {productID: productID}) }}" method="post" id="delete-page">
+	        <input type="hidden" name="_method" value="DELETE">
+	        <button name="delete[delete]" value="delete" id="delete" type="submit" class="button small delete">{{ 'Delete'|trans }}</button>
+	    </form>
+	</div>
+</div>

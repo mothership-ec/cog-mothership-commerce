@@ -11,7 +11,7 @@ class Tasks implements TasksInterface
     {
         // Order related ports
         $tasks->add(new Task\Porting\OrderSummary('commerce:porting:port_order_summary'), 'Ports order_summary from pre mothership');
-        $tasks->add(new Task\Porting\OrderShipping('commerce:porting:port_shipping'), 'Ports order_shipping from pre mothership');
+        $tasks->add(new Task\Porting\OrderShipping('commerce:porting:port_order_shipping'), 'Ports order_shipping from pre mothership');
         $tasks->add(new Task\Porting\OrderAddress('commerce:porting:port_order_address'), 'Ports order_address from pre mothership');
         $tasks->add(new Task\Porting\OrderItem('commerce:porting:port_order_item'), 'Ports order_item from pre mothership');
         $tasks->add(new Task\Porting\OrderRefund('commerce:porting:port_order_refund'), 'Ports order_refund from pre mothership');
@@ -29,7 +29,7 @@ class Tasks implements TasksInterface
 
         // Product related ports
         $tasks->add(new Task\Porting\Products('commerce:porting:port_products'), 'Ports catalogue and catalogue_info from pre mothership');
-        $tasks->add(new Task\Porting\ProductsPricing('commerce:porting:port_products_pricing'), 'Ports catalogue_unit_price and catalogue_info prices from pre mothership');
+        $tasks->add(new Task\Porting\ProductsPricing('commerce:porting:port_product_pricing'), 'Ports catalogue_unit_price and catalogue_info prices from pre mothership');
         $tasks->add(new Task\Porting\ProductExport('commerce:porting:port_product_export'), 'Ports catalogue_export and catalogue_info prices from pre mothership');
         $tasks->add(new Task\Porting\ProductTags('commerce:porting:port_product_tag'), 'Ports product_tag from catalogue_range from pre mothership');
         $tasks->add(new Task\Porting\ProductUnit('commerce:porting:port_product_unit'), 'Ports product_unit from catalogue_unit from pre mothership');
@@ -38,6 +38,5 @@ class Tasks implements TasksInterface
 
         $tasks->add(new Task\Porting\User('commerce:porting:port_user'), 'Ports users and user addresses from pre mothership');
         $tasks->add(new Task\Porting\OrderDispatchFiles('commerce:porting:port_dispatch_files'), 'Ports dispatch files to the file syetem from pre mothership');
-
     }
 }

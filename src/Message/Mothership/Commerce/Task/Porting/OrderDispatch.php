@@ -21,8 +21,8 @@ class OrderDispatch extends Porting
 					NULL AS created_by,
 					NULL AS updated_at,
 					NULL AS updated_by,
-					NULL AS shipped_at,
-					NULL AS shipped_by,
+					shipped_at AS shipped_at,
+					shipped_by AS shipped_by,
 					despatch_type_name AS method,
 					despatch_code AS `code`,
 					despatch_cost AS cost,
@@ -32,7 +32,18 @@ class OrderDispatch extends Porting
 				JOIN
 					order_summary USING (order_id)
 				JOIN
-					order_despatch_type USING (despatch_type_id)';
+					order_despatch_type USING (despatch_type_id)
+				LEFT JOIN (
+					SELECT
+						order_id,
+						UNIX_TIMESTAMP(status_datetime) AS shipped_at,
+						staff_id AS shipped_by
+					FROM
+						order_item_status
+					WHERE status_id = 6
+					GROUP BY order_id
+					ORDER BY status_datetime DESC
+				) AS shipped_date USING (order_id)';
 
 		$result = $old->run($sql);
 		$output= '';

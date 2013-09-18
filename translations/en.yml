@@ -1,39 +1,145 @@
 ms.commerce:
   product:
-    label:
-      name: Name
-      display-name: Display Name
-      short-description: Short Description
-      year: Year
-      tax-rate: Tax Rate
-      supplier-ref: Supplier Reference
-      weight-grams: Weight Grams
-      season: Season
-      description: Description
-      fabric: Fabric
-      export-manufacture-country: Manufacture Country Name
-      export-value: Export value
-      export-description: Export Description
-      tags: Tags
-      notes: Notes
-      sizing: Sizing
-      care-instructions: Care Instructions
-      features: Features
-      fabric: Fabric
-      description: Description
-      category: Category
-      brand: Brand
-      price:
-        retail: Retail Price
-        cost: Cost Price
-        rrp: RRP Price
-      price-sans:
-        retail: Retail
-        cost: Cost
-        rrp: RRP
-      stock-location:
-        1: Web Stock
-
+    button:
+      save: Save product
+      create: Create product
+    attributes:
+      name:
+        label: Name
+        help: -
+      display-name:
+        label: Display Name
+        help: -
+      category:
+        label: Category
+        help: -
+      brand:
+        label: Brand
+        help: -
+      season:
+        label: Season
+        help: -
+      year:
+        label: Year
+        help: -
+      short-description:
+        label: Short Description
+        help: -
+      description:
+        label: Description
+        help: -
+      export-description:
+        label: Export Description
+        help: -
+    pricing:
+      tax-rate:
+        label: Tax Rate
+        help: -
+      retail:
+        label: Retail Price
+        label-sans: Retail
+        help: -
+      cost:
+        label: Cost Price
+        label-sans: Cost
+        help: -
+      rrp:
+        label: RRP Price
+        label-sans: RRP
+        help: -
+      tax-strategy:
+          label: Tax Strategy
+          help: -
+          choices:
+            inclusive: Inclusive
+            exclusive: Exclusive
+      export-value:
+        label: Export value
+        help: -
+    details:
+      supplier-ref:
+        label: Supplier Reference
+        help: -
+      weight-grams:
+        label: Weight Grams
+        help: -
+      fabric:
+        label: Fabric
+        help: -
+      export-manufacture-country:
+        label: Manufacture Country Name
+        help: -
+      tags:
+        label: Tags
+        help: -
+      notes:
+        label: Notes
+        help: -
+      sizing:
+        label: Sizing
+        help: -
+      care-instructions:
+        label: Care Instructions
+        help: -
+      features:
+        label: Features
+        help: -
+      fabric:
+        label: Fabric
+        help: -
+    image:
+      file:
+        label: Image
+        help: -
+      type:
+        label: Image Type
+        help: -
+      option:
+        name:
+          label: Option Name
+          help: -
+        value:
+          label: Option Value
+          help: -
+    units:
+      sku:
+        label: SKU
+        placeholder: SKU
+        help: -
+      prices:
+        label: Prices
+        help: -
+      visible:
+        label: Visible
+        help: -
+      delete:
+        label: Delete
+        help: -
+      option:
+        type:
+          label: Option Type
+          placeholder: Option Type
+          empty-value: Select Option
+          help: -
+        value:
+          label: Option Value
+          placeholder: Option Value
+          help: -
+        button:
+          create: Add unit
+    stock:
+      page-title: Stock Movements
+      reason:
+        label: Reason
+        help: -
+      note:
+        label: Note
+        help: -
+      location:
+        web: Web Stock
+      level:
+        label: Adjust stock level
+        help: - The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
   order:
     order:
       none: There are no orders to view.
@@ -51,6 +157,7 @@ ms.commerce:
       product-gross: Product Gross
       total-gross: Total Gross
       status: Status
+      user-email: E-Mail
 
     item:
       none: There are no items to view.

@@ -1,11 +1,13 @@
-<div class="container">
-	<section class="group">
-		<h1 class="title">{{ address.type|capitalize }}</h1>
+
+
+<div class="column">
+		<h2>{{ address.type|capitalize }}</h2>
 		<ul class="order-details">
-	
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
-				{{ address.title }} {{ address.forename }} {{ address.surname }}
+				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
+					{{ address.title }} {{ address.forename }} {{ address.surname }}
+				</a>
 			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
@@ -15,7 +17,7 @@
 					</li>
 				{% endif %}
 			{% endfor %}
-			
+
 				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
 				{{ address.town }}
 			</li>
@@ -39,5 +41,5 @@
 				</li>
 			{% endif %}
 		</ul>
-	</section>
 </div>
+

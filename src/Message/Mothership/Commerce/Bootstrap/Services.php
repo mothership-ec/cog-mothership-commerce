@@ -38,6 +38,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['basket.order'] = function($c) {
+
 			if (!$c['http.session']->get('basket.order')) {
 				$order = $c['order'];
 				$order->locale = $c['locale']->getId();
@@ -221,6 +222,10 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
 				new Commerce\Order\Entity\Payment\Method\Sagepay,
+
+				new Commerce\Order\Entity\Payment\Method\Paypal,
+				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
+				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
 			));
 		});
 
@@ -304,6 +309,10 @@ class Services implements ServicesInterface
 			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
 
 			return $create;
+		};
+
+		$services['product.delete'] = function($c) {
+			return new Commerce\Product\Delete($c['db.query'], $c['user.current']);
 		};
 
 		$services['product.image.types'] = function($c) {
@@ -410,6 +419,33 @@ class Services implements ServicesInterface
 				'GBP',
 				array('GBP', 'USD', 'EUR', 'JPY')
 			);
+		});
+
+		$services['forex.feed'] = $services->share(function($c) {
+			return new Commerce\Forex\Feed\ECB;
+		});
+
+		/*
+		 * Basket
+		 */
+		$services['order.basket.create'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Create($c['db.query']);
+		});
+
+		$services['order.basket.edit'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Edit($c['db.query']);
+		});
+
+		$services['order.basket.delete'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Delete($c['db.query']);
+		});
+
+		$services['order.basket.loader'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Loader($c['db.query'], $c['order.basket.token']);
+		});
+
+		$services['order.basket.token'] = $services->share(function($c) {
+			return new Commerce\Order\Basket\Token($c['user.password_hash'], $c['cfg']);
 		});
 	}
 }

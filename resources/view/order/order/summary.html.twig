@@ -13,9 +13,22 @@
 		<tbody>
 			{% for order in orders %}
 				<tr>
-					<td><a href="{{ url('ms.commerce.order.detail.view', {orderID: order.id}) }}">{{ order.id }}</a></td>
+					<td>
+						{% if orderLink is defined %}
+							<a href="{{ url(orderLink, {orderID: order.id}) }}">{{ order.id }}</a>
+						{% else %}
+							{{ order.id }}
+						{% endif %}
+
+					</td>
 					<td>{{ order.authorship.createdAt|date }}</td>
-					<td><a href="">{{ order.user.name }}</a></td>
+					<td>
+						{% if userLink is defined %}
+							<a href="{{ url(userLink) }}">{{ order.user.name }}</a>
+						{% else %}
+							{{ order.user.name }}
+						{% endif %}
+					</td>
 					<td>{{ order.status }}</td>
 					<td>{{ order.shippingName }}</td>
 					<td>{{ order.totalGross|price(order.currencyID) }}</td>
@@ -24,9 +37,9 @@
 		</tbody>
 	</table>
 	<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} (Tax: {{ order.productTax|price(order.currencyID) }} ) </li>
-			<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
-			<li><span>Shipping ({{ order.shippingName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
-			<li><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
+	<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
+	<li><span>Shipping ({{ order.shippingName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
+	<li><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
 {% else %}
 	<p>{{ 'ms.commerce.order.order.none'|trans }}</p>
 {% endif %}
