@@ -24,7 +24,7 @@ class Edit extends Controller
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
-		return $this->render('::product:edit', array(
+		return $this->render('::product:edit-form', array(
 			'product' => $this->_product,
 			'form'    => $this->_getProductAttributesForm(),
 		));
@@ -34,7 +34,7 @@ class Edit extends Controller
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
-		return $this->render('::product:edit', array(
+		return $this->render('::product:edit-form', array(
 			'product' => $this->_product,
 			'form'    => $this->_getProductDetailsForm(),
 		));
@@ -44,7 +44,7 @@ class Edit extends Controller
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
-		return $this->render('::product:edit', array(
+		return $this->render('::product:edit-form', array(
 			'product' => $this->_product,
 			'form'    => $this->_getProductPricingForm(),
 		));
@@ -218,7 +218,7 @@ class Edit extends Controller
 			}
 		}
 
-		return $this->render('::product:edit', array(
+		return $this->render('::product:edit-form', array(
 			'product' => $this->_product,
 			'form'    => $form,
 		));
@@ -255,7 +255,7 @@ class Edit extends Controller
 			}
 		}
 
-		return $this->render('::product:edit', array(
+		return $this->render('::product:edit-form', array(
 			'product' => $this->_product,
 			'form'    => $form,
 		));
@@ -293,7 +293,7 @@ class Edit extends Controller
 			}
 		}
 
-		return $this->render('::product:edit', array(
+		return $this->render('::product:edit-form', array(
 			'product' => $this->_product,
 			'form'    => $form,
 		));

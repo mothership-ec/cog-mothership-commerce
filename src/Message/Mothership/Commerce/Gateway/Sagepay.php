@@ -94,7 +94,7 @@ class Sagepay extends Wrapper
 			'transactionId' => $payment->order->id.'_'.time(), // Needs to be unique
 			'Amount'        => $amount, //
 			'Currency'      => $payment->order->currencyID,
-			'Description'   => 'Refund from '.$this->_config->mothership->appName,
+			'Description'   => 'Refund from '.$this->_config->app->name,
 		);
 
 		$values['transactionReference'] = json_encode($reference);
