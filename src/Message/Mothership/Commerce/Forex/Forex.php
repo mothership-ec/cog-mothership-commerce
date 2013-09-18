@@ -38,7 +38,7 @@ class Forex {
 	 * @param  string|null      $to     Currency to convert to
 	 * @param  string|null      $from   Currency to convert from
 	 *
-	 * @return float|Converter  Converter instance if not all values provided for an instant conversion
+	 * @return float
 	 */
 	public function convert($amount = null, $to = null, $from = null)
 	{
@@ -57,11 +57,11 @@ class Forex {
 			$this->from($this->_baseCurrency);
 		}
 
-		if ($this->_amount !== null and $this->_from !== null and $this->_to !== null) {
-			return $this->_amount * $this->_to->rate / $this->_from->rate;
+		if (null === $this->_amount or null === $this->_to or null === $this->_from) {
+			throw new LogicException();
 		}
 
-		return $this;
+		return $this->_amount * $this->_to->rate / $this->_from->rate;
 	}
 
 	/**
