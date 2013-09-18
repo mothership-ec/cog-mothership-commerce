@@ -1,19 +1,8 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
+{% block edit %}
 
-{% block main %}
-
-<hgroup class="title">
-		<h1>Editing 'Stock'</h1>
-</hgroup>
-
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
-
-<section class="container-content">
-		<h1>Stock Adjustments</h1>
+	<h1>Stock Adjustments</h1>
 	<div class="dual-column">
 	<div class="column">
 <h2>Adjust Stock</h2>
@@ -134,6 +123,5 @@
 	</div>
 		{% endfor %}
 	</section>
-</section>
 
 {% endblock %}

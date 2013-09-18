@@ -1,18 +1,6 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-
-{% block main %}
-
-<hgroup class="title">
-		<h1>Editing Units of '{{ product.name }}'</h1>
-</hgroup>
-
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
-
-<section class="container-content">
+{% block edit %}
 	{{ form_start(form) }}
 	<table>
 		<thead>
@@ -108,6 +96,5 @@
 		</datalist>
 
 	{{ form_end(addForm) }}
-</section>
 
 {% endblock %}

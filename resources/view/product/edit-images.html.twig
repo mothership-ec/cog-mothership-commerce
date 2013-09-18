@@ -1,18 +1,6 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-
-{% block main %}
-
-<hgroup class="title">
-		<h1>Editing Images</h1>
-</hgroup>
-
-{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
-
-<section class="container-content">
+{% block edit %}
 <ul>
 	{% for image in product.images %}
 		<li>
@@ -32,6 +20,5 @@
 		</button>
 	{{ form_end(form) }}
 
-</section>
-
 {% endblock %}
+
