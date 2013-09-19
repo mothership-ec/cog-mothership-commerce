@@ -168,7 +168,7 @@ class Loader
 				status_code IN (?ij)
 		', array((array) $statuses));
 
-		return $this->_load($result->flatten(), true);
+		return $this->_load(array_unique($result->flatten()), true);
 	}
 
 	protected function _load($ids, $returnArray = false)
@@ -209,7 +209,9 @@ class Loader
 			LEFT JOIN
 				order_shipping USING (order_id)
 			WHERE
-				order_id IN (?ij)
+				order_summary.order_id IN (?ij)
+			GROUP BY
+				order_summary.order_id
 		', array($ids));
 
 		if (0 === count($result)) {
