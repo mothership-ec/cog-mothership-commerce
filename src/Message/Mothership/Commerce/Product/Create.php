@@ -33,6 +33,11 @@ class Create
 
 	public function save(Product $product)
 	{
+		return $this->create($product);
+	}
+
+	public function create(Product $product)
+	{
 		$result = $this->_query->run(
 			'INSERT INTO
 				product
