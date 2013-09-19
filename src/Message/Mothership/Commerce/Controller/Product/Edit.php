@@ -627,7 +627,7 @@ class Edit extends Controller
 				->optional();
 
 			// Add the unit form to the main form
-			$mainForm->add($form->getForm(), 'form');
+			$mainForm->add($form, 'form');
 		}
 
 		return $mainForm;
