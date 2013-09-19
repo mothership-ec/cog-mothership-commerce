@@ -107,7 +107,7 @@ class Edit extends Controller
 		));
 	}
 
-		/**
+	/**
 	 * Process the updating of the units data
 	 *
 	 * @param  int 		$productID ProductID to load
@@ -410,14 +410,14 @@ class Edit extends Controller
 						)
 					)
 					->val()
-					// ->number()
+					->number()
 					->optional();
 			}
 
-			$units->add($stockForm->getForm(), 'form');
+			$units->add($stockForm, 'form');
 		}
 
-		$mainForm->add($units->getForm(), 'form');
+		$mainForm->add($units, 'form');
 
 		$mainForm
 			->add(
@@ -547,20 +547,23 @@ class Edit extends Controller
 			foreach ($unit->price as $type => $value) {
 				$priceForm->add(
 					$type,
-					'text',
+					'money',
 					$this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
 					array(
+						'currency' => 'GBP',
 						'attr' => array(
 							'value' 		=> $value->getPrice('GBP', $this->get('locale')),
 							'data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help',
 						)
 					)
 				)
-					->val()->optional();
+					->val()
+					->number()
+					->optional();
 			}
 
 			// Add the price form to the parent form
-			$form->add($priceForm->getForm(), 'form');
+			$form->add($priceForm, 'form');
 
 			// Work out the default options which should be 'selected' in the option drop downs
 			$defaults = array();
@@ -589,7 +592,7 @@ class Edit extends Controller
 					->val()->optional();
 			}
 			// Add the option forms to the parent form
-			$form->add($optionForm->getForm(), 'form');
+			$form->add($optionForm, 'form');
 
 			// Populate the rest of the editbale unit attributes
 			$form->add('sku', 'text','', array(
@@ -604,7 +607,9 @@ class Edit extends Controller
 					'data-help-key' => 'ms.commerce.product.details.weight-grams.help'
 				)
 			))
-				->val()->optional();
+				->val()
+				->number()
+				->optional();
 
 			$form->add('visible', 'checkbox','', array(
 				'attr' => array(
@@ -612,12 +617,14 @@ class Edit extends Controller
 					'data-help-key' => 'ms.commerce.product.units.visible.help'
 				)
 			))
-				->val()->optional();
+				->val()
+				->optional();
 
 			$form->add('delete', 'checkbox','', array(
 				'attr' => array('data-help-key' => 'ms.commerce.product.units.delete.help'),
 			))
-				->val()->optional();
+				->val()
+				->optional();
 
 			// Add the unit form to the main form
 			$mainForm->add($form->getForm(), 'form');
@@ -651,7 +658,9 @@ class Edit extends Controller
 
 		$form->add('weight', 'text','',  array('attr' => array(
 			'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
-		)));
+		)))
+			->val()
+			->number();
 
 		$form->add('option_name_1', 'choice', $this->trans('ms.commerce.product.units.option.type.label'),
 			array(
@@ -692,12 +701,18 @@ class Edit extends Controller
 		);
 
 		foreach ($this->get('product.price.types') as $type) {
-			$priceForm->add($type, 'text', $this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
-				array('attr' => array('data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help')))
-				->val()->optional();
+			$priceForm
+				->add($type, 'money', $this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
+					array(
+						'currency' => 'GBP',
+						'attr' => array('data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help'))
+					)
+				->val()
+				->number()
+				->optional();
 		}
 
-		$form->add($priceForm->getForm(), 'form');
+		$form->add($priceForm, 'form');
 
 		return $form;
 	}
@@ -723,39 +738,43 @@ class Edit extends Controller
 		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.name.help')
 		))
-			->val()->maxLength(255);
+			->val()
+			->maxLength(255);
 
 		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
 		))
-			->val()->maxLength(255);
+			->val()
+			->maxLength(255);
 
 		$form->add('category', 'text', $this->trans('ms.commerce.product.attributes.category.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.category.help')
 		))
-			->val()->maxLength(255);
+			->val()
+			->maxLength(255);
 
 		$form->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
 		))
-			->val()->maxLength(255);
+			->val()
+			->maxLength(255);
 
 
 		$form->add('season', 'text', $this->trans('ms.commerce.product.attributes.season.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.season.help')
 		))
 			->val()
-				->maxLength(255)
-				->optional();
+			->maxLength(255)
+			->optional();
 
 
 		$form->add('year', 'text', $this->trans('ms.commerce.product.attributes.year.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.year.help')
 		))
 			->val()
-				->maxLength(4)
-				->digit()
-				->optional();
+			->maxLength(4)
+			->digit()
+			->optional();
 
 		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.short-description.help')
@@ -764,12 +783,14 @@ class Edit extends Controller
 		$form->add('description', 'textarea', $this->trans('ms.commerce.product.attributes.description.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
 		))
-			->val()->optional();
+			->val()
+			->optional();
 
 		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.attributes.export-description.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
 		))
-			->val()->optional();
+			->val()
+			->optional();
 
 		return $form;
 	}
@@ -794,61 +815,77 @@ class Edit extends Controller
 		$form->add('features', 'textarea', $this->trans('ms.commerce.product.details.features.label'), array(
 			'attr' => array('data-help-key' => 'ms.commerce.product.details.features.help')
 		))
-			->val()->optional();
-
-
-		$form->add('sizing', 'textarea', $this->trans('ms.commerce.product.details.sizing.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.sizing.help')
-		))
-			->val()->optional();
-
-		$form->add('fabric', 'textarea', $this->trans('ms.commerce.product.details.fabric.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.fabric.help')
-		))
-			->val()->optional();
-
-		$form->add('weight_grams', 'number', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
-			'data' => $this->_product->weight,
-			'attr' => array(
-				'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
-			)
-		))
 			->val()
-			// ->number()
 			->optional();
 
-		$form->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')
-		))
-			->val()->optional();
+
+		$form
+			->add('sizing', 'textarea', $this->trans('ms.commerce.product.details.sizing.label'), array(
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.sizing.help')
+			))
+			->val()
+			->optional();
+
+		$form
+			->add('fabric', 'textarea', $this->trans('ms.commerce.product.details.fabric.label'), array(
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.fabric.help')
+			))
+			->val()
+			->optional();
+
+		$form
+			->add('weight_grams', 'number', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
+				'data' => $this->_product->weight,
+				'attr' => array(
+					'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
+				)
+			))
+			->val()
+			->number()
+			->optional();
+
+		$form
+			->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')
+			))
+			->val()
+			->optional();
 
 
-		$form->add('tags', 'textarea', $this->trans('ms.commerce.product.details.tags.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
-		))
-			->val()->optional();
+		$form
+			->add('tags', 'textarea', $this->trans('ms.commerce.product.details.tags.label'), array(
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
+			))
+			->val()
+			->optional();
 
-		$form->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
-		))
+		$form
+			->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
+			))
 			->val()
 			->maxLength(255)
 			->optional();
 
-		$form->add(
-			'export_manufacture_country_id',
-			'choice',
-			$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
-			array(
-				'choices' => $this->get('country.list')->all(),
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
+		$form
+			->add(
+				'export_manufacture_country_id',
+				'choice',
+				$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
+				array(
+					'choices' => $this->get('country.list')->all(),
+					'attr' => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
+				)
 			)
-		)->val()->optional();
+			->val()
+			->optional();
 
-		$form->add('notes', 'textarea', $this->trans('ms.commerce.product.details.notes.label'), array(
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
-		))
-			->val()->optional();
+		$form
+			->add('notes', 'textarea', $this->trans('ms.commerce.product.details.notes.label'), array(
+				'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
+			))
+			->val()
+			->optional();
 
 		return $form;
 	}
@@ -858,31 +895,30 @@ class Edit extends Controller
 		$form = $this->get('form')
 			->setName('product-pricing-edit')
 			->setAction($this->generateUrl('ms.commerce.product.edit.pricing.action', array('productID' => $this->_product->id)))
-			->setDefaultValues(array(
-				'tax_rate' 		=> $this->_product->taxRate,
-				'tax_strategy' 	=> $this->_product->taxStrategy,
-				'export_value' 	=> $this->_product->exportValue,
-			))
 			->setMethod('post');
 
 		foreach ($this->_product->price as $type => $value) {
 			$form->add(
 				'price_'.$type,
-				'text',
+				'money',
 				$this->trans('ms.commerce.product.pricing.'.$type.'.label'),
 				array(
+					'currency' => 'GBP',
 					'data' =>  $value->getPrice('GBP', $this->get('locale')),
 					'attr' => array(
 						'data-help-key' => 'ms.commerce.product.pricing.'.$type.'.help',
 					)
 				)
-			);
+			)->val()->number();
 		}
 
-		$form->add('tax_rate', 'text', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
+		$form->add('tax_rate', 'percent', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
+			'type' => 'integer',
+			'data' => $this->_product->taxRate,
 			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help')
 		))
 			->val()
+			->number()
 			->maxLength(255);
 
 		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.pricing.tax-strategy.label'), array(
@@ -890,14 +926,18 @@ class Edit extends Controller
 				'inclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.inclusive'),
 				'exclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.exclusive'),
 			),
+			'data' => $this->_product->taxStrategy,
 			'required' => true, // will remove the empty value from the choice-list
 			'attr' 	   => array('data-help-key' => 'ms.commerce.product.pricing.tax-strategy.help'),
 		));
 
-		$form->add('export_value', 'text', $this->trans('ms.commerce.product.pricing.export-value.label'), array(
+		$form->add('export_value', 'money', $this->trans('ms.commerce.product.pricing.export-value.label'), array(
+			'currency' => 'GBP',
+			'data' => $this->_product->exportValue,
 			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.export-value.help')
 		))
 			->val()
+			->number()
 			->optional();
 
 		return $form;
