@@ -16,7 +16,7 @@ class OrderSummary extends Porting
 		$sql = 'SELECT
 					order_summary.order_id,
 					UNIX_TIMESTAMP(order_summary.order_datetime) AS created_at,
-					NULL AS created_by,
+					user_id AS created_by,
 					UNIX_TIMESTAMP(order_summary.order_updated) AS updated_at,
 					NULL AS update_by,
 					CASE order_summary.status_id
