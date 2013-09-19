@@ -24,6 +24,11 @@ class Create
 
 	public function save(Unit $unit)
 	{
+		return $this->create($unit);
+	}
+
+	public function create(Unit $unit)
+	{
 		if (is_null($unit->authorship->createdAt())) {
 			$unit->authorship->create(new DateTimeImmutable, $this->_user->id);
 		}
@@ -83,10 +88,12 @@ class Create
 
 		$unit->id = $unitID;
 
-		return $unitID ? $unit : false;
+		$unit = $this->_savePrices($unit);
+
+		return $unit ? $unit : false;
 	}
 
-	public function savePrices(Unit $unit)
+	protected function _savePrices(Unit $unit)
 	{
 		$options = array();
 		$inserts = array();

@@ -24,7 +24,7 @@ class Create extends Controller
 			$product->shortDescription = $data['short_description'];
 			$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 
-			$product = $this->get('product.create')->save($product);
+			$product = $this->get('product.create')->create($product);
 
 			if ($product->id) {
 				return $this->redirectToRoute('ms.commerce.product.edit', array('productID' => $product->id));
