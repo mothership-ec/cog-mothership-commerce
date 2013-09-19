@@ -328,7 +328,7 @@ class CountryList implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function getByID($countryID)
 	{
-		return isset($this->_counties[$countryID]) ? $this->_counties[$countryID] : false;
+		return isset($this->_countries[$countryID]) ? $this->_countries[$countryID] : false;
 	}
 
 	public function isInEU($countryID)
