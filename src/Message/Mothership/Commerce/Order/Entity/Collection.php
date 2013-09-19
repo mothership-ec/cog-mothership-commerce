@@ -78,6 +78,11 @@ class Collection implements CollectionInterface
 		return false;
 	}
 
+	public function clear()
+	{
+		$this->_items = array();
+	}
+
 	public function count()
 	{
 		return count($this->_items);
