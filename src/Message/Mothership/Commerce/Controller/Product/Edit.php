@@ -7,6 +7,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
+use Message\Mothership\Commerce\Field;
 
 class Edit extends Controller
 {
@@ -481,7 +482,10 @@ class Edit extends Controller
 			->setName('images')
 			->setAction(
 				$this->generateUrl('ms.commerce.product.edit.images',array('productID' => $this->_product->id))
-		);
+			)
+			->setDefaultValues(array(
+				'options' => array('hello', 'blah')
+			));
 
 		$imageTypes = array();
 		foreach ($this->get('product.image.types')->all() as $image) {
@@ -498,19 +502,30 @@ class Edit extends Controller
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.type.help'),
 		));
 
-		$optionNames = array();
+		$form->add('options', 'collection', 'Options', array(
+			'type' => new Field\OptionType(array(
+				'option_name'  => $this->trans('ms.commerce.product.image.option.name.label'),
+				'option_value' => $this->trans('ms.commerce.product.image.option.value.label'),
+			), array(
+				'option_name'  => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
+				'option_value' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
+			)),
+			'allow_add' => true,
+		));
 
-		$form->add('option_name', 'choice',  $this->trans('ms.commerce.product.image.option.name.label'), array(
-			'choices' => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
-			'attr' => array('data-help-key' => 'ms.commerce.product.image.option.name.help'),
-		))
-			->val()->optional();
+		// $optionNames = array();
 
-		$form->add('option_value', 'choice', $this->trans('ms.commerce.product.image.option.value.label'), array(
-			'choices' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
-			'attr' => array('data-help-key' => 'ms.commerce.product.image.option.value.help'),
-		))
-			->val()->optional();
+		// $form->add('option_name', 'choice',  $this->trans('ms.commerce.product.image.option.name.label'), array(
+		// 	'choices' => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
+		// 	'attr' => array('data-help-key' => 'ms.commerce.product.image.option.name.help'),
+		// ))
+		// 	->val()->optional();
+
+		// $form->add('option_value', 'choice', $this->trans('ms.commerce.product.image.option.value.label'), array(
+		// 	'choices' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
+		// 	'attr' => array('data-help-key' => 'ms.commerce.product.image.option.value.help'),
+		// ))
+		// 	->val()->optional();
 
 		return $form;
 	}
