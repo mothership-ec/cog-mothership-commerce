@@ -1,7 +1,8 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-	<section class="container-content display-group">
+	<section class="container-content">
+		<section class=" display-group">
 
 			{% if not notes is empty %}
 				{% for note in notes %}
@@ -12,4 +13,5 @@
 			{% endif %}
 
 	</section>
+</section>
 {% endblock %}
