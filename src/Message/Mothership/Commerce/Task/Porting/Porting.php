@@ -16,7 +16,7 @@ abstract class Porting extends BaseTask
         return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
 				'host'		=> $this->get('cfg')->porting->from->hostname,
 				'user'		=> $this->get('cfg')->porting->from->user,
-				'password' 	=> $this->get('cfg')->porting->from->password,
+				'password' 	=> $this->get('cfg')->porting->from->pass,
 				'db'		=> $this->get('cfg')->porting->from->name,
 				'charset'	=> 'utf-8',
 		));
@@ -32,7 +32,7 @@ abstract class Porting extends BaseTask
 		return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
 				'host'		=> $this->get('cfg')->db->hostname,
 				'user'		=> $this->get('cfg')->db->user,
-				'password' 	=> $this->get('cfg')->db->password,
+				'password' 	=> $this->get('cfg')->db->pass,
 				'db'		=> $this->get('cfg')->db->name,
 				'charset'	=> 'utf-8',
 		));
