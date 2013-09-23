@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Order;
 use Message\User\UserInterface;
 
 use Message\Cog\DB;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
  * Order note creator.
@@ -41,7 +42,7 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
-		$this->_query->add('
+		$result = $this->_query->run('
 			INSERT INTO
 				order_note
 			SET
