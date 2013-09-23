@@ -33,7 +33,7 @@ class Edit implements DB\TransactionalInterface
 
 	public function save(Unit $unit)
 	{
-		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
+		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->revisionID, $unit->product);
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
 		$result = $this->_query->run(
