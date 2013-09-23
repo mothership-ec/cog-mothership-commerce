@@ -319,11 +319,11 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['product.image.types'] = function($c) {
+		$services['product.image.types'] = $services->share(function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				'default',
+				'default' => 'Default',
 			));
-		};
+		});
 
 		$services['product.unit.loader'] = function($c) {
 			return $c['product.loader']->getEntityLoader('units');
@@ -349,7 +349,12 @@ class Services implements ServicesInterface
 			return new Commerce\CountryList;
 		};
 
+		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = function($c) {
+			return $c['product.option.loader'];
+		};
+
+		$services['product.option.loader'] = function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
 
