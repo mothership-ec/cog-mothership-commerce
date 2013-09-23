@@ -354,7 +354,7 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$image = new Image(
 				$data['image'],
-				$this->get('product.image.types')->get($data['type']),
+				$data['type'],
 				$this->get('locale'),
 				null,
 				$data['option_name'],
@@ -483,10 +483,7 @@ class Edit extends Controller
 				$this->generateUrl('ms.commerce.product.edit.images',array('productID' => $this->_product->id))
 		);
 
-		$imageTypes = array();
-		foreach ($this->get('product.image.types')->all() as $image) {
-			$imageTypes[$image] = ucfirst($image);
-		}
+		$imageTypes = $this->get('product.image.types')->all();
 
 		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.image.file.label'), array(
 			'choices' => $choices,
