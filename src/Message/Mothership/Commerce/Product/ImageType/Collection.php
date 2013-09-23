@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Product\ImageType;
 
 /**
- * A container for order typees that are available throughout the system.
+ * A container for order types that are available throughout the system.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
@@ -14,12 +14,12 @@ class Collection implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 *
-	 * @param array $typees An array of typees to add
+	 * @param array $types An array of types to add
 	 */
 	public function __construct(array $types = array())
 	{
-		foreach ($types as $type) {
-			$this->add($type);
+		foreach ($types as $type => $name) {
+			$this->add($type, $name);
 		}
 	}
 
@@ -29,24 +29,29 @@ class Collection implements \IteratorAggregate, \Countable
 	 * The typees on this collection are sorted by type ascending immediately
 	 * after the new type is added.
 	 *
-	 * @param type $type The type to add
+	 * @param string      $type Internal name for the image type
+	 * @param string|null $name Display name for the image type (null to use $type)
 	 *
-	 * @return Collection    Returns $this for chainability
+	 * @return Collection       Returns $this for chainability
 	 *
 	 * @throws \InvalidArgumentException If a type with the same type has
 	 *                                   already been set on this collection
 	 */
-	public function add($type)
+	public function add($type, $name = null)
 	{
+		if (!$name) {
+			$name = $type;
+		}
+
 		if ($this->exists($type)) {
 			throw new \InvalidArgumentException(sprintf(
-				'type type `%i` is already defined as `%s`',
+				'Type `%i` is already defined as `%s`',
 				$type,
 				$this->_types[$type]
 			));
 		}
 
-		$this->_types[$type] = $type;
+		$this->_types[$type] = $name;
 
 		return $this;
 	}
