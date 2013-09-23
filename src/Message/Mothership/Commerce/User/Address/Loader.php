@@ -31,8 +31,11 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 			FROM
 				user_address
 			WHERE
-				user_id = ?i
-		', $user->id);
+				user_id = ?in
+		', array(
+			$user->id
+		)
+		);
 
 		return count($result) ? $this->_loadAddresses($result->flatten(), true) : false;
 	}
