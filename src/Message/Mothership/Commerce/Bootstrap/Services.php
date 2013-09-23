@@ -341,6 +341,12 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
+		$services['product.tax.rates'] = function($c) {
+			return array(
+				20.00 => 'VAT - 20%'
+			);
+		};
+
 		$services['country.list'] = function($c) {
 			return new Commerce\CountryList;
 		};
