@@ -22,15 +22,6 @@ class ProductSelector extends Controller
 			'product'   => $this->_product,
 			'form' => $this->getForm(),
 		));
-		$basket = $this->get('basket');
-		$product = $this->get('product.loader')->getByID(36);
-		$unit = $product->getUnit(126);
-		d($basket->getOrder()->items->count());
-		$basket->updateQuantity($unit, 3);
-		de($basket->getOrder()->items->count());
-		$item = array_pop($basket->getOrder()->items->all());
-		$basket->removeItem($item);
-		de($basket->getOrder()->items->count());
 	}
 
 	public function getForm()
