@@ -315,11 +315,11 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['product.image.types'] = function($c) {
+		$services['product.image.types'] = $services->share(function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				'default',
+				'default' => 'Default',
 			));
-		};
+		});
 
 		$services['product.unit.loader'] = function($c) {
 			return $c['product.loader']->getEntityLoader('units');
