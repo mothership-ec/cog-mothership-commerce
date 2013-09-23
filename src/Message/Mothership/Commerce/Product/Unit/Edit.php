@@ -40,11 +40,11 @@ class Edit implements DB\TransactionalInterface
 			'UPDATE
 				product_unit
 			SET
-				visible      = ?i,
+				visible      = ?b,
 				supplier_ref = ?s,
-				weight_grams = ?i,
+				weight_grams = ?in,
 				updated_at   = ?d,
-				updated_by   = ?i
+				updated_by   = ?in
 			WHERE
 				unit_id 	 = ?i
 			', 	array(
@@ -56,6 +56,7 @@ class Edit implements DB\TransactionalInterface
 					$unit->id
 			)
 		);
+
 
 		if ($currentUnit->options != $unit->options || $currentUnit->sku != $unit->sku) {
 			$options = array();
