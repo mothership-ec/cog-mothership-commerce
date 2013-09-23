@@ -35,7 +35,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			Events::BUILD_ORDER_TABS => array(
 				array('registerTabItems'),
 			),
-			Events::SEND_CUSTOMER_NOTIFICATION => array(
+			Events::CREATE_NOTE => array(
 				array('sendCustomerNotification'),
 			),
 		);
