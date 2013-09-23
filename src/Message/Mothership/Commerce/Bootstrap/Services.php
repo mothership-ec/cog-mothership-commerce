@@ -341,10 +341,6 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['country.list'] = function($c) {
-			return new Commerce\CountryList;
-		};
-
 		$services['option.loader'] = function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
