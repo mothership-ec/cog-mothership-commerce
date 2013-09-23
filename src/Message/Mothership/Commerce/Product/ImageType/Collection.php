@@ -26,7 +26,7 @@ class Collection implements \IteratorAggregate, \Countable
 	/**
 	 * Add a type to this collection.
 	 *
-	 * The typees on this collection are sorted by type ascending immediately
+	 * The types on this collection are sorted by type ascending immediately
 	 * after the new type is added.
 	 *
 	 * @param string      $type Internal name for the image type
@@ -45,7 +45,7 @@ class Collection implements \IteratorAggregate, \Countable
 
 		if ($this->exists($type)) {
 			throw new \InvalidArgumentException(sprintf(
-				'Type `%i` is already defined as `%s`',
+				'Type `%s` is already defined as `%s`',
 				$type,
 				$this->_types[$type]
 			));
@@ -68,7 +68,7 @@ class Collection implements \IteratorAggregate, \Countable
 	public function get($type)
 	{
 		if (!$this->exists($type)) {
-			throw new \InvalidArgumentException(sprintf('type `%i` not set on collection', $type));
+			throw new \InvalidArgumentException(sprintf('Type `%s` not set on collection', $type));
 		}
 
 		return $this->_types[$type];
