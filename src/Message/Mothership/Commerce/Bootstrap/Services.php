@@ -345,7 +345,12 @@ class Services implements ServicesInterface
 			return new Commerce\CountryList;
 		};
 
+		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = function($c) {
+			return $c['product.option.loader'];
+		};
+
+		$services['product.option.loader'] = function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
 
