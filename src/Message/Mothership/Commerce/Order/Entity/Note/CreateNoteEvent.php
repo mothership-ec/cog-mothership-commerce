@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Note;
 
 use Message\Cog\Event\Event;
 
-class CustomerNotificationEvent extends Event
+class CreateNoteEvent extends Event
 {
 	protected $_note;
 	protected $_order;

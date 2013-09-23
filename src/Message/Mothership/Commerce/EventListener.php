@@ -81,10 +81,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 	/**
 	 * Send a customer a notification.
 	 *
-	 * @param  Order\Entity\Note\CustomerNotificationEvent $event
+	 * @param  Order\Entity\Note\CreateNoteEvent $event
 	 * @return false If the note is not set to notify the customer.
 	 */
-	public function sendCustomerNotification(Note\CustomerNotificationEvent $event)
+	public function sendCustomerNotification(Note\CreateNoteEvent $event)
 	{
 		$note     = $event->getNote();
 		$order    = $event->getOrder();
