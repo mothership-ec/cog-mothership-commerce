@@ -353,7 +353,9 @@ class Services implements ServicesInterface
 		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
-				$c['country.list']);
+				$c['country.list'],
+				$c['state.list']
+			);
 		};
 
 		$services['commerce.user.address.create'] = function($c) {
