@@ -124,8 +124,10 @@ class Product
 	 *
 	 * @return array                   array of Unit objects
 	 */
-	public function getUnits($showOutOfStock = true, $showInvisible = false) {
+	public function getUnits($showOutOfStock = true, $showInvisible = false)
+	{
 		$this->_entities['units']->load($this, $showOutOfStock, $showInvisible);
+
 		return $this->_entities['units']->all();
 	}
 

@@ -18,7 +18,7 @@ class ProductSelector extends Controller
 		));
 	}
 
-	public function getForm(Product $product, array $options = null)
+	public function getForm(Product $product, array $options = array())
 	{
 		$form = $this->get('form')
 			->setName('select_product')
