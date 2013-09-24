@@ -124,8 +124,10 @@ class Product
 	 *
 	 * @return array                   array of Unit objects
 	 */
-	public function getUnits($showOutOfStock = true, $showInvisible = false) {
+	public function getUnits($showOutOfStock = true, $showInvisible = false)
+	{
 		$this->_entities['units']->load($this, $showOutOfStock, $showInvisible);
+
 		return $this->_entities['units']->all();
 	}
 
@@ -176,8 +178,8 @@ class Product
 	}
 
 	/**
-	 * Check unit level prices and see whether there is any unit prices which are
-	 * less that the product price
+	 * Get the lowest price for this product by checking the unit-level price
+	 * overrides.
 	 *
 	 * @param  string $type       Type of price to check
 	 * @param  string $currencyID CurrencyID of price to check
@@ -186,16 +188,44 @@ class Product
 	 */
 	public function getPriceFrom($type = 'retail', $currencyID = 'GBP')
 	{
-		$prices = array();
+		$basePrice = $this->getPrice($type, $currencyID);
+		$prices    = array();
+
 		foreach ($this->getAllUnits() as $unit) {
-			if ($unit->getPrice($type, $currencyID) < $this->getPrice($type, $currencyID)) {
+			if ($unit->getPrice($type, $currencyID) < $basePrice) {
 				$prices[$unit->getPrice($type, $currencyID)] = $unit->getPrice($type, $currencyID);
 			}
 		}
 		// Sort the array with lowest value at the top
 		ksort($prices);
 		// get the lowest value
-		return $prices ? array_shift($prices) : false;
+		return $prices ? array_shift($prices) : $basePrice;
+	}
+
+	/**
+	 * Check whether this product has variable pricing in a specific type &
+	 * currency ID.
+	 *
+	 * @todo Allow $options to be passed, only checking units which match that
+	 *       options criteria
+	 *
+	 * @param  string      $type       Type of price to check
+	 * @param  string      $currencyID Currency ID
+	 * @param  array|null  $options    Array of options criteria for units to check
+	 *
+	 * @return boolean                 Result of checkPunit
+	 */
+	public function hasVariablePricing($type = 'retail', $currencyID = 'GBP', array $options = null)
+	{
+		$basePrice = $this->getPrice($type, $currencyID);
+
+		foreach ($this->getAllUnits() as $unit) {
+			if ($unit->getPrice($type, $currencyID) != $basePrice) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

@@ -151,6 +151,7 @@ class Loader implements LoaderInterface
 
 			// Set Authorship details
 			$units[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
+			$units[$key]->visible = (bool)$data->visible;
 
 			if ($data->updatedAt) {
 				$units[$key]->authorship->update(new DateTimeImmutable(date('c',$data->updatedAt)), $data->updatedBy);

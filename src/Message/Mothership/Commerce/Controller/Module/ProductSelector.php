@@ -2,64 +2,69 @@
 
 namespace Message\Mothership\Commerce\Controller\Module;
 
-use Message\Cog\Controller\Controller;
+use Message\Mothership\Commerce\Product\Product;
+
 use Message\Mothership\CMS\Page\Content;
+
+use Message\Cog\Controller\Controller;
 
 class ProductSelector extends Controller
 {
-	protected $_product;
-
-	public function __construct()
+	public function index(Product $product, array $options = null)
 	{
-
-	}
-
-	public function index($productID)
-	{
-		$this->_product = $this->get('product.loader')->getByID($productID);
-
 		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
-			'product'   => $this->_product,
-			'form' => $this->getForm(),
+			'product'  => $product,
+			'form'     => $this->getForm($product, $options),
 		));
-		$basket = $this->get('basket');
-		$product = $this->get('product.loader')->getByID(36);
-		$unit = $product->getUnit(126);
-		d($basket->getOrder()->items->count());
-		$basket->updateQuantity($unit, 3);
-		de($basket->getOrder()->items->count());
-		$item = array_pop($basket->getOrder()->items->all());
-		$basket->removeItem($item);
-		de($basket->getOrder()->items->count());
 	}
 
-	public function getForm()
+	public function getForm(Product $product, array $options = array())
 	{
-		$form = $this->get('form');
-		$form->setName('select_product')
-			->setAction($this->generateUrl('ms.commerce.product.add.basket',array('productID' => $this->_product->id)))
+		$form = $this->get('form')
+			->setName('select_product')
+			->setAction($this->generateUrl('ms.commerce.product.add.basket', array('productID' => $product->id)))
 			->setMethod('post');
 
 		$choices = array();
-		foreach($this->_product->units->all() as $unit) {
-			$choices[$unit->id] = ucwords(implode(' / ',$unit->options));
+		$options = array_filter($options);
+
+		foreach ($product->getVisibleUnits() as $unit) {
+			// Skip units that don't meet the options criteria, if set
+			if ($options
+			 && $options !== array_intersect_assoc($options, $unit->options)) {
+				continue;
+			}
+
+			// Don't show option names that were passed as criteria to avoid weird-looking duplication
+			$optionsToShow = ($options) ? array_diff_assoc($unit->options, $options) : $unit->options;
+
+			$choices[$unit->id] = implode(', ', $optionsToShow);
 		}
 
-		$form->add('unit_id', 'choice', '', array(
-			'choices' => $choices
-		));
+		// If there's only one unit available to choose, add it as a hidden field
+		if (1 === count($choices)) {
+			$form->add('unit_id', 'hidden', null, array(
+				'attr' => array(
+					'value' => key($choices),
+				),
+			));
+		// Otherwise, add a select box to select the unit
+		} else {
+			$form->add('unit_id', 'choice', $this->trans('ms.commerce.product.selector.unit.label'), array(
+				'choices' => $choices,
+			));
+		}
 
 		return $form;
 	}
 
 	public function process($productID)
 	{
-		$this->_product = $this->get('product.loader')->getByID($productID);
-
-		$form = $this->getForm();
+		$product = $this->get('product.loader')->getByID($productID);
+		$form    = $this->getForm($product);
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$unit = $this->_product->getUnit($data['unit_id']);
+			$unit = $product->getUnit($data['unit_id']);
 			$basket = $this->get('basket');
 			$location = $this->get('stock.locations')->get('web');
 			if ($basket->addItem($unit, $location)) {
