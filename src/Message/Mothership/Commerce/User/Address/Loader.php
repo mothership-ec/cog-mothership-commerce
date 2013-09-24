@@ -146,7 +146,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 
 			$addresses[$key]->country = $this->_countries->getByID($address->countryID);
 
-			if ($address->state_id) {
+			if ($address->stateID) {
 				$addresses[$key]->state = $this->_states->getByID($address->countryID, $address->stateID);
 			}
 
