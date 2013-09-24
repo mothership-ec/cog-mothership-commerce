@@ -26,6 +26,7 @@ class ProductSelector extends Controller
 			->setMethod('post');
 
 		$choices = array();
+		$options = array_filter($options);
 
 		foreach ($product->getVisibleUnits() as $unit) {
 			// Skip units that don't meet the options criteria, if set
