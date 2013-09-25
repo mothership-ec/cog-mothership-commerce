@@ -37,11 +37,11 @@ class MethodCollection implements \IteratorAggregate, \Countable
 	 */
 	public function add(MethodInterface $method)
 	{
-		if (isset($this->methods[$method->getName()])) {
-			throw new \InvalidArgumentException(sprintf('Shipping method `%s` is already defined', $method->getName()));
+		if (isset($this->methods[$method->getDisplayName()])) {
+			throw new \InvalidArgumentException(sprintf('Shipping method `%s` is already defined', $method->getDisplayName()));
 		}
 
-		$this->_methods[$method->getName()] = $method;
+		$this->_methods[$method->getDisplayName()] = $method;
 
 		return $this;
 	}
