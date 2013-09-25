@@ -96,8 +96,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 		$message = $this->get('mail.message');
 
-		$message->setTo('laurence@message.co.uk');
-		$message->setFrom('laurence@message.co.uk');
+		$message->setTo($order->user->email, $order->user->getName());
 		$message->setSubject('Updates to your ' . $merchant->name . ' order ' . $order->orderID);
 		$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
 			'note'     => $note,
