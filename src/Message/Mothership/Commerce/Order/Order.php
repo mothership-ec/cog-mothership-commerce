@@ -37,6 +37,7 @@ class Order
 	public $totalGross        = 0;
 
 	public $shippingName;
+	public $shippingDisplayName;
 	public $shippingListPrice = 0;
 	public $shippingNet       = 0;
 	public $shippingDiscount  = 0;

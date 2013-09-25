@@ -6,7 +6,7 @@
 		<ul class="order-details">
 			<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} (Tax: {{ order.productTax|price(order.currencyID) }} ) </li>
 			<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
-			<li><span>Shipping ({{ order.shippingName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
+			<li><span>Shipping ({{ order.shippingDisplayName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
 			<li class="grand-total"><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
 			<li><span>Currency</span> {{ order.currencyID }} (Conversion Rate: {{ order.conversionRate }})</li>
 
