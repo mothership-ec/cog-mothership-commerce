@@ -74,7 +74,8 @@ class OrderShipping extends Porting
 					tax,
 					tax_rate,
 					gross,
-					name
+					name,
+					display_name
 				)
 				VALUES
 				(
@@ -85,7 +86,7 @@ class OrderShipping extends Porting
 					:tax?,
 					:tax_rate?,
 					:gross?,
-					:name?
+					:name?,
 					:display_name?
 				)', (array) $row
 			);
