@@ -33,18 +33,18 @@ class Edit implements DB\TransactionalInterface
 
 	public function save(Unit $unit)
 	{
-		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
+		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->revisionID, $unit->product);
 		$unit->authorship->update(new DateTimeImmutable, $this->_user->id);
 
 		$result = $this->_query->run(
 			'UPDATE
 				product_unit
 			SET
-				visible      = ?i,
+				visible      = ?b,
 				supplier_ref = ?s,
-				weight_grams = ?i,
+				weight_grams = ?in,
 				updated_at   = ?d,
-				updated_by   = ?i
+				updated_by   = ?in
 			WHERE
 				unit_id 	 = ?i
 			', 	array(
@@ -56,6 +56,7 @@ class Edit implements DB\TransactionalInterface
 					$unit->id
 			)
 		);
+
 
 		if ($currentUnit->options != $unit->options || $currentUnit->sku != $unit->sku) {
 			$options = array();

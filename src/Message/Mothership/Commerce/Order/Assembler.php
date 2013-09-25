@@ -261,7 +261,7 @@ class Assembler
 
 	public function setShipping(ShippingInterface $option)
 	{
-		$this->_order->shippingName      = $option->getName();
+		$this->_order->shippingName      = $option->getDisplayName();
 		$this->_order->shippingListPrice = $option->getPrice();
 
 		$event = new Event($this->_order);

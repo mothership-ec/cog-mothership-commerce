@@ -91,7 +91,7 @@ class Edit
 				'notes'             => $product->notes,
 				'category'          => $product->category,
 				'productID'			=> $product->id,
-				'localeID'			=> $this->_locale->getID(),
+				'localeID'			=> $this->_locale->getId(),
 				'exportValue'		=> $product->exportValue,
 				'exportDescription'	=> $product->exportDescription,
 				'exportCountryID'	=> $product->exportManufactureCountryID,
@@ -191,6 +191,8 @@ class Edit
 	 * @param  Image 	$image 		Image object to save
 	 *
 	 * @return Product          	Saved Product object
+	 *
+	 * @todo save the options
 	 */
 	public function saveImage(Product $product, Image $image)
 	{
@@ -201,18 +203,18 @@ class Edit
 				product_id = ?i,
 				file_id = ?i,
 				locale = ?,
-				type = ?s,
-				option_name = ?sn,
-				option_value = ?sn',
+				type = ?s',
 			array(
 				$product->id,
 				$image->fileID,
-				$image->locale->getID(),
+				$this->_locale->getID(),
 				$image->type,
-				$image->optionName,
-				$image->optionValue
 			)
 		);
+
+		// $this->_query->run('
+
+		// ');
 
 		return $product;
 	}

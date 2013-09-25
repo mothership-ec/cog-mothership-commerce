@@ -7,13 +7,20 @@ use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
+use Message\Cog\Location\CountryList;
+use Message\Cog\Location\StateList;
+
 class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 {
 	protected $_query;
+	protected $_countries;
+	protected $_states;
 
-	public function __construct(Query $query)
+	public function __construct(Query $query, CountryList $countries, StateList $states)
 	{
 		$this->_query = $query;
+		$this->_countries = $countries;
+		$this->_states = $states;
 	}
 
 	/**
@@ -31,8 +38,11 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 			FROM
 				user_address
 			WHERE
-				user_id = ?i
-		', $user->id);
+				user_id = ?in
+		', array(
+			$user->id
+		)
+		);
 
 		return count($result) ? $this->_loadAddresses($result->flatten(), true) : false;
 	}
@@ -93,9 +103,7 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				user_address.town,
 				user_address.postcode,
 				user_address.state_id AS stateID,
-				state.name AS stateName,
 				user_address.country_id AS countryID,
-				country.name AS country,
 				user_address.telephone,
 				user_address.created_at,
 				user_address.created_by,
@@ -103,13 +111,6 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				user_address.updated_by
 			FROM
 				user_address
-			JOIN
-				country ON (country.country_id = user_address.country_id)
-			LEFT JOIN
-				state ON (
-					user_address.state_id = state.state_id AND
-					user_address.country_id = user_address.country_id
-				)
 			WHERE
 				user_address.address_id IN (?ij)
 			', array(
@@ -142,6 +143,12 @@ class Loader implements \Message\Mothership\Commerce\User\LoaderInterface
 				3 => $address->line_3 ?: null,
 				4 => $address->line_4 ?: null,
 			);
+
+			$addresses[$key]->country = $this->_countries->getByID($address->countryID);
+
+			if ($address->stateID) {
+				$addresses[$key]->state = $this->_states->getByID($address->countryID, $address->stateID);
+			}
 
 			$addresses[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $address->created_at)),
