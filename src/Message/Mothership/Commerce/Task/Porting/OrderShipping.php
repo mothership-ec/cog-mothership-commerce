@@ -32,7 +32,19 @@ class OrderShipping extends Porting
 						WHEN 16 THEN \'us_gift_voucher\'
 						WHEN 17 THEN \'row_gift_couher\'
 						ELSE \'uk_fedex\'
-					END AS name
+					END AS name,
+					CASE shipping_id
+						WHEN 1  THEN \'FedEx UK: Next working day\'
+						WHEN 2  THEN \'FedEx Express: Next working day\'
+						WHEN 3  THEN \'FedEx Express: Next working day\'
+						WHEN 4  THEN \'FedEx Express: 2-4 working days\'
+						WHEN 5  THEN \'free_shipping\'
+						WHEN 14 THEN \'uk_gift_voucher\'
+						WHEN 15 THEN \'eu_gift_voucher\'
+						WHEN 16 THEN \'us_gift_voucher\'
+						WHEN 17 THEN \'row_gift_voucher\'
+						ELSE \'FedEx UK: Next working day\'
+					END AS display_name
 				FROM
 					order_shipping
 				JOIN
@@ -74,6 +86,7 @@ class OrderShipping extends Porting
 					:tax_rate?,
 					:gross?,
 					:name?
+					:display_name?
 				)', (array) $row
 			);
 		}
