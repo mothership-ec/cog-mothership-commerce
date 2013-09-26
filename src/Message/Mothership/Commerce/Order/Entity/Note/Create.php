@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Order;
 use Message\User\UserInterface;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Order note creator.
@@ -17,6 +18,7 @@ class Create implements DB\TransactionalInterface
 	protected $_loader;
 	protected $_query;
 	protected $_currentUser;
+	protected $_event;
 
 	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser, DispatcherInterface $event)
 	{
@@ -62,7 +64,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_event->dispatch(
 			Order\Events::CREATE_NOTE,
-			$event
+			$this->_event
 		);
 
 		if ($this->_query instanceof DB\Transaction) {
