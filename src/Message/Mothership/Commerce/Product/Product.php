@@ -191,7 +191,7 @@ class Product
 		$basePrice = $this->getPrice($type, $currencyID);
 		$prices    = array();
 
-		foreach ($this->getAllUnits() as $unit) {
+		foreach ($this->getVisibleUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) < $basePrice) {
 				$prices[$unit->getPrice($type, $currencyID)] = $unit->getPrice($type, $currencyID);
 			}
@@ -219,7 +219,7 @@ class Product
 	{
 		$basePrice = $this->getPrice($type, $currencyID);
 
-		foreach ($this->getAllUnits() as $unit) {
+		foreach ($this->getVisibleUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) != $basePrice) {
 				return true;
 			}
