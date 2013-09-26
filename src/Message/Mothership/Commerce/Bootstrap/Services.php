@@ -215,7 +215,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.note.create'] = function($c) {
-			return new Commerce\Order\Entity\Note\Create($c['db.query'], $c['order.note.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Note\Create(
+				$c['db.query'],
+				$c['order.note.loader'],
+				$c['user.current'],
+				$c['event.dispatcher']);
 		};
 
 		// Available payment & despatch methods
