@@ -57,7 +57,6 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 		// Try and load their addresses
 		$delivery = $addressLoader->getByUserAndType($user, 'delivery');
 		$billing  = $addressLoader->getByUserAndType($user, 'billing');
-
 		// A billing address is all we need to continue
 		if($billing) {
 			// If there is no delivery address, set the billing to the delivery
@@ -75,11 +74,11 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 				$deliveryAddress->{$property} = $value;
 			}
 			$deliveryAddress->id = 'delivery';
+			$deliveryAddress->type = 'delivery';
 			$deliveryAddress->order = $this->get('basket')->getOrder();
 
 			// Save the delivery address
 			$this->get('basket')->addAddress($deliveryAddress);
-
 			$billingAddress = new Address;
 			// Save the billing address
 			foreach ($billing as $property => $value) {
