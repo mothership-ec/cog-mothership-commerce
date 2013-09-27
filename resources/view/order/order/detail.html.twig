@@ -70,6 +70,10 @@
 					{{ order.authorship.createdUser.name }}
 				</a>
 			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>
+				{{ order.authorship.createdUser.email }}
+			</li>
 			<li><span>{{ 'Created at'|trans }}</span> {{ order.authorship.createdAt|date }}</li>
 		</ul>
 	</section>
