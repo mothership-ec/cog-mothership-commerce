@@ -25,7 +25,7 @@ class Listing extends Controller
 			Statuses::PARTIALLY_RECEIVED,
 			Statuses::DISPATCHED,
 			Statuses::RECEIVED,
-		));
+		), 50); // TEMP: limit to 50
 
 		$heading = $this->trans('ms.commerce.order.order.all-orders-title');
 
@@ -55,7 +55,7 @@ class Listing extends Controller
 		$form = $this->_getSearchForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$orderID = $data['term'];
-			
+
 			$order = $this->get('order.loader')->getById($orderID);
 
 			if ($order) {

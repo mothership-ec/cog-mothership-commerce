@@ -100,7 +100,7 @@ class Loader
 	 *
 	 * @throws \InvalidArgumentException If any status codes are not known
 	 */
-	public function getByStatus($statuses)
+	public function getByStatus($statuses, $limit = 9999)
 	{
 		if (!is_array($statuses)) {
 			$statuses = (array) $statuses;
@@ -119,7 +119,8 @@ class Loader
 				order_summary
 			WHERE
 				status_code IN (?ij)
-		', array($statuses));
+			LIMIT ?i
+		', array($statuses, $limit));
 
 		return $this->_load($result->flatten(), true);
 	}
