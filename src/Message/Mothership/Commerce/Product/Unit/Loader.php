@@ -161,6 +161,10 @@ class Loader implements LoaderInterface
 				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
 			}
 
+			if (is_null($units[$key]->weight)) {
+				$units[$key]->weight = $product->weight;
+			}
+
 			if ($product) {
 				$units[$key]->product = $product;
 			}

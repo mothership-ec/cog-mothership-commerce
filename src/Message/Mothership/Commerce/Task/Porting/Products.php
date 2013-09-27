@@ -27,7 +27,7 @@ class Products extends Porting
 					catalogue_product.product_name AS name,
 					order_tax.tax_rate,
 					catalogue_product.supplier_ref,
-					catalogue_product.weight,
+					catalogue_product.weight AS weight_grams,
 					category_name AS category
 				FROM
 					catalogue
