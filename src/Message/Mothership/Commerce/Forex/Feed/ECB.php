@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Forex\Feed;
 
+use DateTime;
+
 class ECB implements FeedInterface {
 
 	protected $_query;
@@ -45,11 +47,13 @@ class ECB implements FeedInterface {
             	INSERT INTO
             		forex_rate
             	SET
-            		currency = ?s,
-            		rate     = ?f
+            		currency   = ?s,
+            		rate       = ?f,
+            		created_at = ?d
             ', array(
             	strtoupper($currency),
-            	$rate
+            	$rate,
+            	new DateTime
             ));
         }
 

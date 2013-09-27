@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Forex;
 
+use DateTime;
+use DateTimeZone;
 use LogicException;
 use InvalidArgumentException;
 
@@ -131,12 +133,15 @@ class Forex {
 			$results = $this->_query->run('
 				SELECT
 					currency,
-					rate
+					rate,
+					created_at as createdAt
 				FROM
 					forex_rate
 			');
 
 			foreach ($results as $row) {
+				$row->createdAt = new DateTime('@' . $row->createdAt);
+				$row->createdAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
 				$this->_rates[strtoupper($row->currency)] = $row;
 			}
 		}
