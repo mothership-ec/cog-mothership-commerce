@@ -7,7 +7,7 @@ class _1379411978_SetUpProducts extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `product` (
+			CREATE TABLE IF NOT EXISTS `product` (
 			  `product_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `year` year(4) DEFAULT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
@@ -28,7 +28,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_export` (
+			CREATE TABLE IF NOT EXISTS `product_export` (
 			  `product_id` int(11) unsigned NOT NULL DEFAULT '0',
 			  `locale` varchar(50) NOT NULL DEFAULT '',
 			  `export_value` decimal(10,2) DEFAULT NULL,
@@ -39,7 +39,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_image` (
+			CREATE TABLE IF NOT EXISTS `product_image` (
 			  `image_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `product_id` int(11) unsigned NOT NULL DEFAULT '0',
 			  `created_at` int(11) unsigned NOT NULL,
@@ -58,7 +58,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_image_option` (
+			CREATE TABLE IF NOT EXISTS `product_image_option` (
 			  `image_id` int(11) unsigned NOT NULL,
 			  `name` varchar(255) NOT NULL DEFAULT '',
 			  `value` varchar(255) NOT NULL DEFAULT '',
@@ -67,7 +67,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_info` (
+			CREATE TABLE IF NOT EXISTS `product_info` (
 			  `product_id` int(11) NOT NULL DEFAULT '0',
 			  `locale` varchar(50) NOT NULL DEFAULT '',
 			  `display_name` varchar(200) DEFAULT NULL,
@@ -85,7 +85,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_price` (
+			CREATE TABLE IF NOT EXISTS `product_price` (
 			  `product_id` int(11) unsigned NOT NULL,
 			  `type` char(50) NOT NULL DEFAULT '',
 			  `price` decimal(10,2) unsigned NOT NULL,
@@ -99,7 +99,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_tag` (
+			CREATE TABLE IF NOT EXISTS `product_tag` (
 			  `product_id` int(11) NOT NULL DEFAULT '0',
 			  `name` varchar(255) NOT NULL DEFAULT '',
 			  PRIMARY KEY (`product_id`,`name`)
@@ -107,7 +107,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_unit` (
+			CREATE TABLE IF NOT EXISTS `product_unit` (
 			  `product_id` int(11) unsigned DEFAULT NULL,
 			  `unit_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -126,7 +126,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_unit_info` (
+			CREATE TABLE IF NOT EXISTS `product_unit_info` (
 			  `unit_id` int(11) unsigned NOT NULL,
 			  `revision_id` int(11) NOT NULL DEFAULT '1',
 			  `sku` varchar(255) NOT NULL DEFAULT '',
@@ -135,7 +135,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_unit_option` (
+			CREATE TABLE IF NOT EXISTS `product_unit_option` (
 			  `unit_id` int(11) unsigned NOT NULL,
 			  `option_name` varchar(255) NOT NULL DEFAULT '',
 			  `option_value` varchar(255) DEFAULT NULL,
@@ -145,7 +145,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_unit_price` (
+			CREATE TABLE IF NOT EXISTS `product_unit_price` (
 			  `unit_id` int(11) unsigned NOT NULL,
 			  `type` char(50) NOT NULL DEFAULT '',
 			  `price` decimal(10,2) unsigned NOT NULL,
@@ -159,7 +159,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `product_unit_stock` (
+			CREATE TABLE IF NOT EXISTS `product_unit_stock` (
 			  `unit_id` int(11) NOT NULL DEFAULT '0',
 			  `location` varchar(50) NOT NULL DEFAULT '',
 			  `stock` int(11) DEFAULT NULL,
@@ -168,7 +168,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `stock_movement` (
+			CREATE TABLE IF NOT EXISTS `stock_movement` (
 			  `stock_movement_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `created_at` int(11) unsigned DEFAULT NULL,
 			  `created_by` int(11) unsigned DEFAULT NULL,
@@ -180,7 +180,7 @@ class _1379411978_SetUpProducts extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `stock_movement_adjustment` (
+			CREATE TABLE IF NOT EXISTS `stock_movement_adjustment` (
 			  `stock_movement_id` int(11) unsigned NOT NULL,
 			  `unit_id` int(11) unsigned NOT NULL,
 			  `location` varchar(50) NOT NULL DEFAULT '',

@@ -7,7 +7,7 @@ class _1379413937_SetUpBasket extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `basket` (
+			CREATE TABLE IF NOT EXISTS `basket` (
 			  `basket_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			  `user_id` int(10) unsigned DEFAULT NULL,
 			  `contents` blob NOT NULL,

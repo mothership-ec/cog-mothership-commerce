@@ -7,7 +7,7 @@ class _1379411228_SetUpOrders extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `order_address` (
+			CREATE TABLE IF NOT EXISTS `order_address` (
 			  `address_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `type` varchar(20) NOT NULL DEFAULT 'unknown',
@@ -34,7 +34,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_discount` (
+			CREATE TABLE IF NOT EXISTS `order_discount` (
 			  `discount_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
@@ -53,7 +53,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_dispatch` (
+			CREATE TABLE IF NOT EXISTS `order_dispatch` (
 			  `dispatch_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
@@ -80,7 +80,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_dispatch_item` (
+			CREATE TABLE IF NOT EXISTS `order_dispatch_item` (
 			  `dispatch_id` int(11) unsigned NOT NULL,
 			  `item_id` int(11) unsigned NOT NULL,
 			  PRIMARY KEY (`item_id`,`dispatch_id`),
@@ -90,7 +90,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_document` (
+			CREATE TABLE IF NOT EXISTS `order_document` (
 			  `document_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `dispatch_id` int(11) unsigned DEFAULT NULL,
@@ -108,7 +108,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_item` (
+			CREATE TABLE IF NOT EXISTS `order_item` (
 			  `item_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
@@ -144,7 +144,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_item_discount` (
+			CREATE TABLE IF NOT EXISTS `order_item_discount` (
 			  `item_id` int(11) unsigned NOT NULL,
 			  `discount_id` int(11) unsigned NOT NULL,
 			  `amount` float(10,2) unsigned NOT NULL,
@@ -155,7 +155,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_item_personalisation` (
+			CREATE TABLE IF NOT EXISTS `order_item_personalisation` (
 			  `item_id` int(11) unsigned NOT NULL,
 			  `sender_name` varchar(255) DEFAULT NULL,
 			  `recipient_name` varchar(255) DEFAULT NULL,
@@ -166,7 +166,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_item_return` (
+			CREATE TABLE IF NOT EXISTS `order_item_return` (
 			  `return_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `item_id` int(11) unsigned NOT NULL,
@@ -200,7 +200,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_item_status` (
+			CREATE TABLE IF NOT EXISTS `order_item_status` (
 			  `order_id` int(11) unsigned NOT NULL,
 			  `item_id` int(11) unsigned NOT NULL,
 			  `status_code` int(6) NOT NULL,
@@ -215,7 +215,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_metadata` (
+			CREATE TABLE IF NOT EXISTS `order_metadata` (
 			  `order_id` int(11) unsigned NOT NULL,
 			  `key` varchar(255) NOT NULL DEFAULT '',
 			  `value` text,
@@ -226,7 +226,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_note` (
+			CREATE TABLE IF NOT EXISTS `order_note` (
 			  `note_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
@@ -243,7 +243,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_payment` (
+			CREATE TABLE IF NOT EXISTS `order_payment` (
 			  `payment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `return_id` int(11) unsigned DEFAULT NULL,
@@ -262,7 +262,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_refund` (
+			CREATE TABLE IF NOT EXISTS `order_refund` (
 			  `refund_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `order_id` int(11) unsigned NOT NULL,
 			  `payment_id` int(11) unsigned DEFAULT NULL,
@@ -285,7 +285,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_shipping` (
+			CREATE TABLE IF NOT EXISTS `order_shipping` (
 			  `order_id` int(11) unsigned NOT NULL,
 			  `list_price` decimal(10,2) unsigned NOT NULL,
 			  `net` decimal(10,2) unsigned NOT NULL,
@@ -299,7 +299,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `order_summary` (
+			CREATE TABLE IF NOT EXISTS `order_summary` (
 			  `order_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `created_at` int(11) unsigned NOT NULL,
 			  `created_by` int(11) unsigned DEFAULT NULL,
@@ -334,7 +334,7 @@ class _1379411228_SetUpOrders extends Migration
 		");
 
 		$this->run("
-			CREATE TABLE `payment_dump` (
+			CREATE TABLE IF NOT EXISTS `payment_dump` (
 			  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `dump` blob,
 			  `transaction_id` varchar(255) DEFAULT NULL,

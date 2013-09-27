@@ -7,7 +7,7 @@ class _1379498312_SetUpForex extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `forex_rate` (
+			CREATE TABLE IF NOT EXISTS `forex_rate` (
 			  `currency` varchar(255) NOT NULL DEFAULT '',
 			  `rate` decimal(10,4) DEFAULT NULL,
 			  PRIMARY KEY (`currency`)
