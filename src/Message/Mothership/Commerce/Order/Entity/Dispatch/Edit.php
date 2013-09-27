@@ -8,15 +8,18 @@ use Message\Cog\DB;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
+use Message\Mothership\Commerce\Order;
+
 class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_currentUser;
 
-	public function __construct(DB\Query $query, UserInterface $currentUser)
+	public function __construct(DB\Query $query, UserInterface $currentUser, DispatcherInterface $eventDispatcher)
 	{
-		$this->_query       = $query;
-		$this->_currentUser = $currentUser;
+		$this->_query           = $query;
+		$this->_currentUser     = $currentUser;
+		$this->_eventDispatcher = $eventDispatcher;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -46,6 +49,9 @@ class Edit implements DB\TransactionalInterface
 			'shippedBy' => $dispatch->shippedBy,
 			'id'        => $dispatch->id,
 		));
+
+		$event = new Order\Events\DispatchEvent($dispatch);
+		$this->_event->dispatch(Order\Events::DISPATCH_SHIPPED, $event);
 
 		return $dispatch;
 	}
