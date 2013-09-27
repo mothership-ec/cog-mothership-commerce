@@ -14,6 +14,7 @@ class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_currentUser;
+	protected $_eventDispatcher;
 
 	public function __construct(DB\Query $query, UserInterface $currentUser, DispatcherInterface $eventDispatcher)
 	{
