@@ -133,7 +133,7 @@ class Edit extends Controller
 				}
 
 				$changedUnit->sku 		= $values['sku'];
-				$changedUnit->weight 	= (int) $values['weight'];
+				$changedUnit->weight 	= (null === $values['weight'] ? null : (int) $values['weight']);
 				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
 				foreach ($values['price'] as $type => $value) {
@@ -175,10 +175,9 @@ class Edit extends Controller
 			}
 
 			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
-			$unit->setOption($data['option_name_1'], $data['option_value_1']);
 
-			if (!empty($data['option_name_2']) && !empty($data['option_value_2'])) {
-				$unit->setOption($data['option_name_2'], $data['option_value_2']);
+			foreach($data['options'] as $optionArray) {
+				$unit->setOption($optionArray['name'], $optionArray['value']);
 			}
 
 			$unit = $this->get('product.unit.create')->create($unit);
@@ -586,13 +585,14 @@ class Edit extends Controller
 				$defaults[$type] = $value;
 			}
 
-			// create a nested form for the unit options so we can have name="units-edit[unitID][options][colour]"
+			// create a nested form for the unit options so we can have name="units-edit[unitID][optionForm][colour]"
 			$optionForm = $this->get('form')
-				->setName('options')
+				->setName('optionForm')
 				->setDefaultValues($defaults)
 				->addOptions(array(
 					'auto_initialize' => false,
 			));
+
 
 			// Build the options
 			foreach ($this->_getAllOptionsAndHeadings() as $type => $displayName) {
@@ -603,7 +603,7 @@ class Edit extends Controller
 					$choices[$choice] = $choice;
 				}
 
-				$optionForm->add($type, 'choice','', array('choices' => $choices))
+				$optionForm->add($type, 'choice', 'Option', array('choices' => $choices))
 					->val()->optional();
 			}
 			// Add the option forms to the parent form
@@ -623,8 +623,8 @@ class Edit extends Controller
 				)
 			))
 				->val()
-				->number()
-				->optional();
+				->optional()
+				->number();
 
 			$form->add('visible', 'checkbox','', array(
 				'attr' => array(
@@ -655,7 +655,7 @@ class Edit extends Controller
 	{
 		$headings = array();
 		foreach ($this->get('option.loader')->getAllOptionNames() as $name => $value) {
-				$headings[$value] = ucfirst($value);
+			$headings[$value] = ucfirst($value);
 		}
 
 		$form = $this->get('form')
@@ -677,36 +677,19 @@ class Edit extends Controller
 			->val()
 			->number();
 
-		$form->add('option_name_1', 'choice', $this->trans('ms.commerce.product.units.option.type.label'),
+
+		$form->add('options', 'collection', 'Options',
 			array(
-				'choices' => $headings,
-				'empty_value' => $this->trans('ms.commerce.product.units.option.type.empty-value'),
-				'attr' => array('data-help-key' => 'ms.commerce.product.units.option.type.help'),
+				'type' => new Field\OptionType(
+					$this->trans('ms.commerce.product.units.option.type.label'),
+					$this->trans('ms.commerce.product.units.option.value.label'),
+					$headings
+				),
+				'label'        => 'Options',
+				'allow_add'    => true,
+				'allow_delete' => true
 			)
 		);
-		$form->add('option_value_1', 'text', $this->trans('ms.commerce.product.units.option.value.label'), array(
-			'attr' => array(
-				'list' => 'option_value',
-				'placeholder' => $this->trans('ms.commerce.product.units.option.value.placeholder'),
-				'data-help-key' => 'ms.commerce.product.units.option.value.help',
-			)
-		));
-
-		$form->add('option_name_2', 'choice', $this->trans('ms.commerce.product.units.option.type.label'),
-			array(
-				'choices' => $headings,
-				'empty_value' => $this->trans('ms.commerce.product.units.option.type.empty-value'),
-				'attr' => array('data-help-key' => 'ms.commerce.product.units.option.type.help'),
-			)
-		);
-
-		$form->add('option_value_2', 'text',$this->trans('ms.commerce.product.units.option.value.label'), array(
-			'attr' => array(
-				'list' => 'option_value',
-				'placeholder' => $this->trans('ms.commerce.product.units.option.value.placeholder'),
-				'data-help-key' => 'ms.commerce.product.units.option.value.help',
-			)
-		));
 
 		$priceForm = $this->get('form')
 			->setName('price')
@@ -720,8 +703,9 @@ class Edit extends Controller
 				->add($type, 'money', $this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
 					array(
 						'currency' => 'GBP',
-						'attr' => array('data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help'))
+						'attr' => array('data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help')
 					)
+				)
 				->val()
 				->number()
 				->optional();

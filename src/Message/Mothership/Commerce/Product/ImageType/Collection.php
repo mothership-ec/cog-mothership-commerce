@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Product\ImageType;
 
 /**
- * A container for order typees that are available throughout the system.
+ * A container for order types that are available throughout the system.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */

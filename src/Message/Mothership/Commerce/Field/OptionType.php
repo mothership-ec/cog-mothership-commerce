@@ -8,46 +8,41 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class OptionType extends AbstractType {
 
-	protected $_labels;
+	protected $_nameLabel;
+	protected $_valueLabel;
 	protected $_choices;
 
-	public function __construct(array $labels, array $choices)
+	public function __construct($nameLabel, $valueLabel, array $choices)
 	{
-		$this->_label   = $labels;
+		$this->_nameLabel   = $nameLabel;
+		$this->_valueLabel  = $valueLabel;
+
 		$this->_choices = $choices;
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
-		$builder->add(
-			'option_name',
-			'choice',
-			$this->_labels['option_name'],
+		$builder->add('name', 'choice',
 			array(
-				'choices' => $this->_choices['option_name'],
-				'attr' => array('data-help-key' => 'ms.commerce.product.image.option.name.help'),
+				'label'    => $this->_nameLabel,
+				'choices'  => $this->_choices,
+				'required' => true,
+				'attr'     => array(
+					'data-help-key' => 'ms.commerce.product.units.option.type.help'
+				),
 			)
 		);
 
-		$builder->add(
-			'option_value',
-			'choice',
-			$this->_labels['option_value'],
+		$builder->add('value', 'text',
 			array(
-				'choices' => $this->_choices['option_value'],
-				'attr' => array('data-help-key' => 'ms.commerce.product.image.option.value.help'),
+				'label' => $this->_valueLabel,
+				'attr'  => array(
+					'data-help-key' => 'ms.commerce.product.units.option.value.help',
+				)
 			)
 		);
 
 		return $builder;
-	}
-
-	public function setDefaultOptions(OptionsResolverInterface $resolver)
-	{
-		$resolver->setDefaults(array(
-			'allow_add' => true,
-			'allow_delete' => true,
-		));
 	}
 
 	public function getName()
