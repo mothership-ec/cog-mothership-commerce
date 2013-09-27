@@ -482,9 +482,7 @@ class Edit extends Controller
 			->setAction(
 				$this->generateUrl('ms.commerce.product.edit.images',array('productID' => $this->_product->id))
 			)
-			->setDefaultValues(array(
-				'options' => array('hello', 'blah')
-			));
+		;
 
 		$imageTypes = array();
 		foreach ($this->get('product.image.types')->all() as $image) {
@@ -500,6 +498,19 @@ class Edit extends Controller
 			'choices' => $imageTypes,
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.type.help'),
 		));
+
+		$form->add('options', 'collection', 'Options',
+			array(
+				'type' => new Field\OptionType(
+					$this->trans('ms.commerce.product.image.option.name.label'),
+					$this->trans('ms.commerce.product.image.option.value.label'),
+					$headings
+				),
+				'label'        => 'Options',
+				'allow_add'    => true,
+				'allow_delete' => true
+			)
+		);
 
 		$form->add('options', 'collection', 'Options', array(
 			'type' => new Field\OptionType(array(
@@ -677,14 +688,21 @@ class Edit extends Controller
 			->val()
 			->number();
 
+		$optionType = new Field\OptionType($headings,
+			array('attr' => array(
+				'data-help-key' => array(
+					'name'  => 'ms.commerce.product.units.option.name.help',
+					'value' => 'ms.commerce.product.units.option.value.help',
+				)
+			)));
+
+		$optionType
+			->setNameLabel($this->trans('ms.commerce.product.units.option.name.label'))
+			->setValueLabel($this->trans('ms.commerce.product.units.option.value.label'));
 
 		$form->add('options', 'collection', 'Options',
 			array(
-				'type' => new Field\OptionType(
-					$this->trans('ms.commerce.product.units.option.type.label'),
-					$this->trans('ms.commerce.product.units.option.value.label'),
-					$headings
-				),
+				'type'         => $optionType,
 				'label'        => 'Options',
 				'allow_add'    => true,
 				'allow_delete' => true
