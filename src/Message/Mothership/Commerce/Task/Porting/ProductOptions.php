@@ -16,7 +16,7 @@ class ProductOptions extends Porting
 		$sql = 'SELECT
 					unit_id,
 					\'size\' AS type,
-					string_value AS value
+					TRIM(string_value) AS value
 				FROM
 					catalogue_unit_size
 				JOIN
@@ -46,7 +46,7 @@ class ProductOptions extends Porting
 		$sql = 'SELECT
 					unit_id,
 					\'colour\' AS type,
-					string_value AS value
+					TRIM(string_value) AS value
 				FROM
 					catalogue_unit_colour
 				JOIN
