@@ -40,7 +40,7 @@ class Listing extends Controller
 		// TODO: Load actual shipped orders!
 		$this->_orders = $this->get('order.loader')->getByStatus(array(
 			Statuses::DISPATCHED,
-		));
+		), 50); // TEMP: limit to 50
 
 		$heading = $this->trans('ms.commerce.order.order.shipped-orders-title');
 
