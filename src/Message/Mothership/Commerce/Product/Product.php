@@ -202,6 +202,28 @@ class Product
 		return $prices ? array_shift($prices) : $basePrice;
 	}
 
+	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		$price = $this->getPrice($type, $currencyID);
+
+		if ('exclusive' === $this->taxStrategy) {
+			return $price;
+		}
+
+		return $price / (1 + ($this->taxRate / 100));
+	}
+
+	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
+	{
+		$price = $this->getPriceFrom($type, $currencyID);
+
+		if ('exclusive' === $this->taxStrategy) {
+			return $price;
+		}
+
+		return $price / (1 + ($this->taxRate / 100));
+	}
+
 	/**
 	 * Check whether this product has variable pricing in a specific type &
 	 * currency ID.
@@ -209,11 +231,11 @@ class Product
 	 * @todo Allow $options to be passed, only checking units which match that
 	 *       options criteria
 	 *
-	 * @param  string      $type       Type of price to check
-	 * @param  string      $currencyID Currency ID
-	 * @param  array|null  $options    Array of options criteria for units to check
+	 * @param  string     $type       Type of price to check
+	 * @param  string     $currencyID Currency ID
+	 * @param  array|null $options    Array of options criteria for units to check
 	 *
-	 * @return boolean                 Result of checkPunit
+	 * @return boolean                Result of checkPunit
 	 */
 	public function hasVariablePricing($type = 'retail', $currencyID = 'GBP', array $options = null)
 	{
