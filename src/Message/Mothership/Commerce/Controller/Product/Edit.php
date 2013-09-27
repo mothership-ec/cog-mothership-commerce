@@ -499,43 +499,26 @@ class Edit extends Controller
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.type.help'),
 		));
 
+		$optionType = new Field\OptionType($this->get('option.loader')->getOptionNamesByProduct($this->_product),
+			array('attr' => array(
+				'data-help-key' => array(
+					'name'  => 'ms.commerce.product.units.option.name.help',
+					'value' => 'ms.commerce.product.units.option.value.help',
+				)
+			)));
+		$optionType
+			->setValueChoice($this->get('option.loader')->getOptionValuesByProduct($this->_product))
+			->setNameLabel($this->trans('ms.commerce.product.image.option.name.label'))
+			->setValueLabel($this->trans('ms.commerce.product.image.option.value.label'));
+
 		$form->add('options', 'collection', 'Options',
 			array(
-				'type' => new Field\OptionType(
-					$this->trans('ms.commerce.product.image.option.name.label'),
-					$this->trans('ms.commerce.product.image.option.value.label'),
-					$headings
-				),
+				'type'         => $optionType,
 				'label'        => 'Options',
 				'allow_add'    => true,
 				'allow_delete' => true
 			)
 		);
-
-		$form->add('options', 'collection', 'Options', array(
-			'type' => new Field\OptionType(array(
-				'option_name'  => $this->trans('ms.commerce.product.image.option.name.label'),
-				'option_value' => $this->trans('ms.commerce.product.image.option.value.label'),
-			), array(
-				'option_name'  => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
-				'option_value' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
-			)),
-			'allow_add' => true,
-		));
-
-		// $optionNames = array();
-
-		// $form->add('option_name', 'choice',  $this->trans('ms.commerce.product.image.option.name.label'), array(
-		// 	'choices' => $this->get('option.loader')->getOptionNamesByProduct($this->_product),
-		// 	'attr' => array('data-help-key' => 'ms.commerce.product.image.option.name.help'),
-		// ))
-		// 	->val()->optional();
-
-		// $form->add('option_value', 'choice', $this->trans('ms.commerce.product.image.option.value.label'), array(
-		// 	'choices' => $this->get('option.loader')->getOptionValuesByProduct($this->_product),
-		// 	'attr' => array('data-help-key' => 'ms.commerce.product.image.option.value.help'),
-		// ))
-		// 	->val()->optional();
 
 		return $form;
 	}

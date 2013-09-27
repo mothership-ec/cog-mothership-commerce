@@ -1,4 +1,5 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
+{% import 'Message:Mothership:Commerce::options' as option %}
 
 {% block edit %}
 	{{ form_start(form) }}
@@ -43,34 +44,11 @@
 	</button>
 	{{ form_end(form) }}
 
-	{% macro getRepeatablePrototype(repeatable) %}
-		{% filter escape %}
-			<section class="group">
-				{% for field in repeatable.vars.prototype %}
-					{{ form_row(field) }}
-				{% endfor %}
-				<a href="#" data-group-remove class="button small remove">Remove Option</a>
-			</section>
-		{% endfilter %}
-	{% endmacro %}
-
 	{{ form_start(addForm) }}
 
 	{{ form_row(addForm.sku) }}
 
-	<section class="display-group">
-		<h2 class="title">Options</h2>
-		<div class="content-wrap">
-			<section class="repeatable-group">
-				{% do addForm.options.setRendered %}
-				<div class="add-group">
-					<a href="#" data-group-add data-prototype="{{ _self.getRepeatablePrototype(addForm.options) }}" class="button small add">
-						Add option
-					</a>
-				</div>
-			</section>
-		</div>
-	</section>
+	{{ option.renderRepeatable(addForm.options) }}
 
 	{{ form_rest(addForm) }}
 	<button type="submit" class="button small submit">

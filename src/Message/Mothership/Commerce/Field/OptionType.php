@@ -53,7 +53,7 @@ class OptionType extends AbstractType {
 
 		$builder->add('name', 'choice',
 			array(
-				'label'    => ($this->_nameLabel ? $this->_nameLabel : "Name"),
+				'label'    => ($this->_nameLabel ? $this->_nameLabel : 'Name'),
 				'choices'  => $this->_nameChoice,
 				'required' => true,
 				'attr'     => array(
@@ -64,7 +64,7 @@ class OptionType extends AbstractType {
 		if(count($this->_valueChoice) > 0) {
 			$builder->add('value', 'choice',
 				array(
-					'label'    => ($this->_valueLabel ? $this->_valueLabel : "Value"),
+					'label'    => ($this->_valueLabel ? $this->_valueLabel : 'Value'),
 					'choices'  => $this->_valueChoice,
 					'required' => true,
 					'attr'     => array(
@@ -75,7 +75,7 @@ class OptionType extends AbstractType {
 		} else {
 			$builder->add('value', 'text',
 				array(
-					'label'    => ($this->_valueLabel ? $this->_valueLabel : "Value"),
+					'label'    => ($this->_valueLabel ? $this->_valueLabel : 'Value'),
 					'attr'  => array(
 						'data-help-key' => $valueHelpKey,
 					)
