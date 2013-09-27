@@ -24,7 +24,7 @@
 					<td>{{ order.authorship.createdAt|date }}</td>
 					<td>
 						{% if userLink is defined %}
-							<a href="{{ url(userLink) }}">{{ order.user.name }}</a>
+							<a href="{{ url(userLink, {userID: order.user.id}) }}">{{ order.user.name }}</a>
 						{% else %}
 							{{ order.user.name }}
 						{% endif %}
