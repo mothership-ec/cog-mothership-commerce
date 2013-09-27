@@ -13,7 +13,7 @@
 		</ul>
 	</section>
 
-		<section class="group small-box">
+	<section class="group small-box">
 		<h2 class="title">Delivery Address</h2>
 		{% set address = order.addresses.getByType('delivery') %}
 		<ul class="order-details">
@@ -59,15 +59,19 @@
 				</li>
 			{% endif %}
 		</ul>
-		</section>
+	</section>
 
-		<section class="group small-box">
+	<section class="group small-box">
 		<h2 class="title">Information</h2>
 		<ul class="order-details">
-		<li><span>{{ 'Created by'|trans }}</span> {{ order.authorship.createdBy }}</li>
-		<li><span>{{ 'Created at'|trans }}</span> {{ order.authorship.createdAt|date }}</li>
+			<li>
+				<span>{{ 'Created by'|trans }}</span>
+				<a href="{{ url('ms.cp.user.admin.detail.edit', {userID: order.authorship.createdBy}) }}">
+					{{ order.authorship.createdUser.name }}
+				</a>
+			</li>
+			<li><span>{{ 'Created at'|trans }}</span> {{ order.authorship.createdAt|date }}</li>
 		</ul>
-
-		</section>
+	</section>
 </div>
 
