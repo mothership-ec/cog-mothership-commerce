@@ -356,7 +356,7 @@ class Services implements ServicesInterface
 
 		$services['product.tax.rates'] = function($c) {
 			return array(
-				20.00 => 'VAT - 20%'
+				'20.00' => 'VAT - 20%'
 			);
 		};
 
