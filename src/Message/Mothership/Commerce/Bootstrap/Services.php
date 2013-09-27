@@ -349,7 +349,6 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
-
 		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = function($c) {
 			return $c['product.option.loader'];
