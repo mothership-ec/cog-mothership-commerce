@@ -265,7 +265,7 @@ class Loader
 					FROM
 						product_image_option
 					WHERE
-						image_id = ?i
+						image_id = ?s
 				', $image->id);
 
 				foreach ($opts->hash('name', 'value') as $name => $value) {
