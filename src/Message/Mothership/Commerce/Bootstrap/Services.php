@@ -324,7 +324,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.image.types'] = $services->share(function($c) {
-			return new Commerce\Product\ImageType\Collection(array(
+			return new Commerce\Product\Image\TypeCollection(array(
 				'default' => 'Default',
 			));
 		});

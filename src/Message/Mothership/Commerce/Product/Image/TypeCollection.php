@@ -7,7 +7,7 @@ namespace Message\Mothership\Commerce\Product\Image;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Collection implements \IteratorAggregate, \Countable
+class TypeCollection implements \IteratorAggregate, \Countable
 {
 	protected $_types = array();
 

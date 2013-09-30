@@ -7,7 +7,7 @@ use Message\Cog\DB\Result;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\FileManager\File\Loader as FileLoader;
-use Message\Mothership\Commerce\Product\ImageType\Collection as ImageTypes;
+use Message\Mothership\Commerce\Product\Image\TypeCollection as ImageTypes;
 
 class Loader
 {
@@ -246,7 +246,7 @@ class Loader
 					continue;
 				}
 
-				$image          = new Image;
+				$image          = new Image\Image;
 				$image->id      = $imageData->id;
 				$image->type    = $this->_imageTypes->get($imageData->type);
 				$image->product = $products[$key];
