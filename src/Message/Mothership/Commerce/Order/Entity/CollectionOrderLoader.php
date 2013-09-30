@@ -45,8 +45,8 @@ class CollectionOrderLoader implements CollectionInterface
 
 	public function setOrder(Order $order)
 	{
-		if ($this->_order !== $order) {
-			$this->_loaded = false;
+		if ($this->_order != $order) {
+			$this->unload();
 		}
 
 		$this->_order = $order;
@@ -158,5 +158,15 @@ class CollectionOrderLoader implements CollectionInterface
 		}
 
 		return false;
+	}
+
+	public function unload()
+	{
+		if (!$this->_loaded) {
+			return false;
+		}
+
+		$this->_collection->clear();
+		$this->_loaded = false;
 	}
 }

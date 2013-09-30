@@ -125,23 +125,25 @@ class Create
 			INSERT INTO
 				order_shipping
 			SET
-				order_id   = :orderID?i,
-				list_price = :listPrice?f,
-				net        = :net?f,
-				discount   = :discount?f,
-				tax        = :tax?f,
-				tax_rate   = :taxRate?f,
-				gross      = :gross?f,
-				name       = :name?sn
+				order_id     = :orderID?i,
+				list_price   = :listPrice?f,
+				net          = :net?f,
+				discount     = :discount?f,
+				tax          = :tax?f,
+				tax_rate     = :taxRate?f,
+				gross        = :gross?f,
+				name         = :name?sn,
+				display_name = :display_name?sn
 		', array(
-			'orderID'   => $order->id,
-			'listPrice' => $order->shippingListPrice,
-			'net'       => $order->shippingNet,
-			'discount'  => $order->shippingDiscount,
-			'tax'       => $order->shippingTax,
-			'taxRate'   => $order->shippingTaxRate,
-			'gross'     => $order->shippingGross,
-			'name'      => $order->shippingName
+			'orderID'      => $order->id,
+			'listPrice'    => $order->shippingListPrice,
+			'net'          => $order->shippingNet,
+			'discount'     => $order->shippingDiscount,
+			'tax'          => $order->shippingTax,
+			'taxRate'      => $order->shippingTaxRate,
+			'gross'        => $order->shippingGross,
+			'name'         => $order->shippingName,
+			'display_name' => $order->shippingDisplayName
 		));
 
 		// Insert metadata

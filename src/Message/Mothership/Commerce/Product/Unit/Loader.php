@@ -151,6 +151,7 @@ class Loader implements LoaderInterface
 
 			// Set Authorship details
 			$units[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
+			$units[$key]->visible = (bool)$data->visible;
 
 			if ($data->updatedAt) {
 				$units[$key]->authorship->update(new DateTimeImmutable(date('c',$data->updatedAt)), $data->updatedBy);
@@ -158,6 +159,10 @@ class Loader implements LoaderInterface
 
 			if ($data->deletedAt) {
 				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
+			}
+
+			if (is_null($units[$key]->weight)) {
+				$units[$key]->weight = $product->weight;
 			}
 
 			if ($product) {

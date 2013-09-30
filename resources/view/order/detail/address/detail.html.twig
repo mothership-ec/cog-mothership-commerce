@@ -1,13 +1,15 @@
-
-
 <div class="column">
 		<h2>{{ address.type|capitalize }}</h2>
 		<ul class="order-details">
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
+				{% if order %}
 				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
 					{{ address.title }} {{ address.forename }} {{ address.surname }}
 				</a>
+				{% else %}
+					{{ user.title }} {{ user.forename }} {{ user.surname }}
+				{% endif %}
 			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}

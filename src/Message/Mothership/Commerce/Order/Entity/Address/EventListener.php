@@ -31,7 +31,7 @@ class EventListener implements SubscriberInterface
 	public function checkWebOrderAddresses(Event\ValidateEvent $event)
 	{
 		if ('web' !== $event->getOrder()->type) {
-			continue;
+			return;
 		}
 
 		if (count($event->getOrder()->addresses->getByProperty('type', Address::DELIVERY)) < 1) {

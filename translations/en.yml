@@ -1,5 +1,9 @@
 ms.commerce:
   product:
+    selector:
+      unit:
+        label: Please select an option...
+      button: Add to basket
     button:
       save: Save product
       create: Create product

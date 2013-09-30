@@ -100,7 +100,7 @@ class Loader
 	 *
 	 * @throws \InvalidArgumentException If any status codes are not known
 	 */
-	public function getByStatus($statuses)
+	public function getByStatus($statuses, $limit = 9999)
 	{
 		if (!is_array($statuses)) {
 			$statuses = (array) $statuses;
@@ -119,7 +119,8 @@ class Loader
 				order_summary
 			WHERE
 				status_code IN (?ij)
-		', array($statuses));
+			LIMIT ?i
+		', array($statuses, $limit));
 
 		return $this->_load($result->flatten(), true);
 	}
@@ -168,7 +169,7 @@ class Loader
 				status_code IN (?ij)
 		', array((array) $statuses));
 
-		return $this->_load($result->flatten(), true);
+		return $this->_load(array_unique($result->flatten()), true);
 	}
 
 	protected function _load($ids, $returnArray = false)
@@ -198,6 +199,7 @@ class Loader
 				order_summary.total_tax        AS totalTax,
 				order_summary.total_gross      AS totalGross,
 				order_shipping.name            AS shippingName,
+				order_shipping.display_name    AS shippingDisplayName,
 				order_shipping.list_price      AS shippingListPrice,
 				order_shipping.net             AS shippingNet,
 				order_shipping.discount        AS shippingDiscount,
@@ -209,7 +211,9 @@ class Loader
 			LEFT JOIN
 				order_shipping USING (order_id)
 			WHERE
-				order_id IN (?ij)
+				order_summary.order_id IN (?ij)
+			GROUP BY
+				order_summary.order_id
 		', array($ids));
 
 		if (0 === count($result)) {

@@ -82,7 +82,22 @@ class Loader
 		$this->_returnArray = false;
 
 		return count($result) ? $this->_loadProduct($result->flatten()) : false;
+	}
 
+	public function getByCategory($name)
+	{
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			WHERE
+				category = ?s
+		', $name);
+
+		$this->_returnArray = true;
+
+		return $this->_loadProduct($result->flatten());
 	}
 
 	public function getAll()

@@ -14,37 +14,6 @@ class OrderAddress extends Porting
 		$newQuery = new \Message\Cog\DB\Query($uwNew);
 		$old = new \Message\Cog\DB\Query($uwOld);
 
-		// Check that the function doesn't exist, if not then create it
-		$checkFunction = $newQuery->run('SHOW FUNCTION STATUS WHERE name = \'SPLIT_STR\'');
-
-		if (count($checkFunction) == 0) {
-
-			$newQuery->run('CREATE FUNCTION SPLIT_STR(
-			  x VARCHAR(255),
-			  delim VARCHAR(12),
-			  pos INT
-			)
-			RETURNS VARCHAR(255)
-			RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
-			       LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
-			       delim, "")');
-		}
-
-		$checkFunction = $old->run('SHOW FUNCTION STATUS WHERE name = \'SPLIT_STR\'');
-
-		if (count($checkFunction) == 0) {
-
-			$old->run('CREATE FUNCTION SPLIT_STR(
-			  x VARCHAR(255),
-			  delim VARCHAR(12),
-			  pos INT
-			)
-			RETURNS VARCHAR(255)
-			RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
-			       LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
-			       delim, "")');
-		}
-
 		$sql = 'SELECT
 					NULL AS address_id,
 					order_id,
@@ -52,9 +21,7 @@ class OrderAddress extends Porting
 						WHEN 1 THEN \'delivery\'
 						WHEN 2 THEN \'billing\'
 					END AS type,
-					IF (order_id >=5000, SPLIT_STR(address_name,\' \',1), NULL) AS title,
-					IF (order_id >=5000, SPLIT_STR(address_name,\' \',2), SPLIT_STR(address_name,\' \',1)) AS forename,
-					IF (order_id >=5000, SPLIT_STR(address_name,\' \',3), SPLIT_STR(address_name,\' \',2)) AS surname,
+					address_name,
 					address_address_1 AS line_1,
 					address_address_2 AS line_2,
 					NULL AS line_3,
@@ -75,6 +42,18 @@ class OrderAddress extends Porting
 		$new->add('TRUNCATE order_address');
 
 		foreach($result as $row) {
+			if ($row->order_id >= 5000) {
+				$nameParts     = explode(' ',$row->address_name);
+				$row->forename = $nameParts[1];
+				$row->surname  = $nameParts[2];
+				$row->title    = $nameParts[0];
+			} else {
+				$nameParts     = explode(' ',$row->address_name);
+				$row->forename = $nameParts[0];
+				$row->surname  = $nameParts[1];
+				$row->title    = null;
+			}
+
 			$new->add('
 				INSERT INTO
 					order_address
@@ -116,14 +95,32 @@ class OrderAddress extends Porting
 					:town?,
 					:state_id?,
 					:state?
-				)', (array) $row
+				)', array(
+					'address_id' => $row->address_id,
+					'order_id'   => $row->order_id,
+					'type'       => $row->type,
+					'title'      => $row->title,
+					'forename'   => $row->forename,
+					'surname'    => $row->surname,
+					'line_1'     => $row->line_1,
+					'line_2'     => $row->line_2,
+					'line_3'     => $row->line_3,
+					'line_4'     => $row->line_4,
+					'postcode'   => $row->postcode,
+					'country'    => $row->country,
+					'country_id' => $row->country_id,
+					'telephone'  => $row->telephone,
+					'town'       => $row->town,
+					'state_id'   => $row->state_id,
+					'state'      => $row->state
+				)
 			);
 		}
 
 		if ($new->commit()) {
-        	$output.= '<info>Successful</info>';
+        	$this->writeln('<info>Successfully ported order addresses</info>');
 		}
 
-		return $ouput;
+		return true;
     }
 }

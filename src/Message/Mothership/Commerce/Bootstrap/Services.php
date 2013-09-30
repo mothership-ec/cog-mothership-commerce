@@ -82,7 +82,7 @@ class Services implements ServicesInterface
 				),
 				'notes'      => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Note\Loader($c['db.query'])
+					new Commerce\Order\Entity\Note\Loader($c['db.query'], $c['event.dispatcher'])
 				),
 				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
@@ -140,7 +140,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.item.create'] = function($c) {
-			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['event.dispatcher'], $c['user.current']);
 		};
 
 		$services['order.item.edit'] = function($c) {
@@ -205,13 +205,21 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
 		};
 
+		$services['order.refund.edit'] = function($c) {
+			return new Commerce\Order\Entity\Refund\Edit($c['db.query'], $c['order.refund.loader'], $c['user.current']);
+		};
+
 		// Order note entity
 		$services['order.note.loader'] = function($c) {
 			return $c['order.loader']->getEntityLoader('notes');
 		};
 
 		$services['order.note.create'] = function($c) {
-			return new Commerce\Order\Entity\Note\Create($c['db.query'], $c['order.note.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Note\Create(
+				$c['db.query'],
+				$c['order.note.loader'],
+				$c['user.current'],
+				$c['event.dispatcher']);
 		};
 
 		// Available payment & despatch methods
@@ -315,11 +323,11 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['product.image.types'] = function($c) {
+		$services['product.image.types'] = $services->share(function($c) {
 			return new Commerce\Product\ImageType\Collection(array(
-				'default',
+				'default' => 'Default',
 			));
-		};
+		});
 
 		$services['product.unit.loader'] = function($c) {
 			return $c['product.loader']->getEntityLoader('units');
@@ -341,16 +349,27 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
-		$services['country.list'] = function($c) {
-			return new Commerce\CountryList;
+		// DO NOT USE: LEFT IN FOR BC
+		$services['option.loader'] = function($c) {
+			return $c['product.option.loader'];
 		};
 
-		$services['option.loader'] = function($c) {
+		$services['product.tax.rates'] = function($c) {
+			return array(
+				'20.00' => 'VAT - 20%'
+			);
+		};
+
+		$services['product.option.loader'] = function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
 
 		$services['commerce.user.address.loader'] = function($c) {
-			return new Commerce\User\Address\Loader($c['db.query']);
+			return new Commerce\User\Address\Loader(
+				$c['db.query'],
+				$c['country.list'],
+				$c['state.list']
+			);
 		};
 
 		$services['commerce.user.address.create'] = function($c) {
@@ -411,6 +430,18 @@ class Services implements ServicesInterface
 
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
+		});
+
+		$services['forex'] = $services->share(function($c) {
+			return new Commerce\Forex\Forex(
+				$c['db.query'],
+				'GBP',
+				array('GBP', 'USD', 'EUR', 'JPY')
+			);
+		});
+
+		$services['forex.feed'] = $services->share(function($c) {
+			return new Commerce\Forex\Feed\ECB($c['db.query']);
 		});
 
 		/*

@@ -7,7 +7,7 @@ class _1379413375_SetUpUsers extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `user_address` (
+			CREATE TABLE IF NOT EXISTS `user_address` (
 			  `address_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `user_id` int(11) unsigned NOT NULL,
 			  `type` varchar(255) NOT NULL DEFAULT '',

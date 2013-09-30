@@ -14,39 +14,44 @@ class Collection implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 *
-	 * @param array $typees An array of typees to add
+	 * @param array $types An array of types to add
 	 */
 	public function __construct(array $types = array())
 	{
-		foreach ($types as $type) {
-			$this->add($type);
+		foreach ($types as $type => $name) {
+			$this->add($type, $name);
 		}
 	}
 
 	/**
 	 * Add a type to this collection.
 	 *
-	 * The typees on this collection are sorted by type ascending immediately
+	 * The types on this collection are sorted by type ascending immediately
 	 * after the new type is added.
 	 *
-	 * @param type $type The type to add
+	 * @param string      $type Internal name for the image type
+	 * @param string|null $name Display name for the image type (null to use $type)
 	 *
-	 * @return Collection    Returns $this for chainability
+	 * @return Collection       Returns $this for chainability
 	 *
 	 * @throws \InvalidArgumentException If a type with the same type has
 	 *                                   already been set on this collection
 	 */
-	public function add($type)
+	public function add($type, $name = null)
 	{
+		if (!$name) {
+			$name = $type;
+		}
+
 		if ($this->exists($type)) {
 			throw new \InvalidArgumentException(sprintf(
-				'type type `%i` is already defined as `%s`',
+				'Type `%s` is already defined as `%s`',
 				$type,
 				$this->_types[$type]
 			));
 		}
 
-		$this->_types[$type] = $type;
+		$this->_types[$type] = $name;
 
 		return $this;
 	}
@@ -63,7 +68,7 @@ class Collection implements \IteratorAggregate, \Countable
 	public function get($type)
 	{
 		if (!$this->exists($type)) {
-			throw new \InvalidArgumentException(sprintf('type `%i` not set on collection', $type));
+			throw new \InvalidArgumentException(sprintf('Type `%s` not set on collection', $type));
 		}
 
 		return $this->_types[$type];

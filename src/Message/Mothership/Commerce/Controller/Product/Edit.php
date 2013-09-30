@@ -133,6 +133,7 @@ class Edit extends Controller
 				}
 
 				$changedUnit->sku 		= $values['sku'];
+
 				$changedUnit->weight 	= (null === $values['weight'] ? null : (int) $values['weight']);
 				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
@@ -354,7 +355,7 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$image = new Image(
 				$data['image'],
-				$this->get('product.image.types')->get($data['type']),
+				$data['type'],
 				$this->get('locale'),
 				null,
 				$data['option_name'],
@@ -484,10 +485,7 @@ class Edit extends Controller
 			)
 		;
 
-		$imageTypes = array();
-		foreach ($this->get('product.image.types')->all() as $image) {
-			$imageTypes[$image] = ucfirst($image);
-		}
+		$imageTypes = $this->get('product.image.types')->all();
 
 		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.image.file.label'), array(
 			'choices' => $choices,
@@ -538,9 +536,6 @@ class Edit extends Controller
 		foreach ($this->_units as $id => $unit) {
 			$form = $this->get('form')
 				->setName($id)
-				->setDefaultValues(array(
-					'visible' => (bool) $unit->visible,
-				))
 				->addOptions(array(
 					'auto_initialize' => false,
 				));
@@ -559,8 +554,8 @@ class Edit extends Controller
 					$this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
 					array(
 						'currency' => 'GBP',
-						'attr' => array(
-							'value' 		=> $value->getPrice('GBP', $this->get('locale')),
+						'data' 	   => $value->getPrice('GBP', $this->get('locale')),
+						'attr'     => array(
 							'data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help',
 						)
 					)
@@ -572,6 +567,7 @@ class Edit extends Controller
 
 			// Add the price form to the parent form
 			$form->add($priceForm, 'form');
+
 
 			// Work out the default options which should be 'selected' in the option drop downs
 			$defaults = array();
@@ -605,14 +601,14 @@ class Edit extends Controller
 
 			// Populate the rest of the editbale unit attributes
 			$form->add('sku', 'text','', array(
+				'data' =>  $unit->sku,
 				'attr' => array(
-					'value' =>  $unit->sku,
 					'data-help-key' => 'ms.commerce.product.units.sku.help',
 				)
 			));
 			$form->add('weight', 'text','', array(
+				'data' => $unit->weight,
 				'attr' => array(
-					'value' =>  $unit->weight,
 					'data-help-key' => 'ms.commerce.product.details.weight-grams.help'
 				)
 			))
@@ -621,8 +617,8 @@ class Edit extends Controller
 				->number();
 
 			$form->add('visible', 'checkbox','', array(
+				'data' =>  $unit->visible,
 				'attr' => array(
-					'value' =>  $unit->visible,
 					'data-help-key' => 'ms.commerce.product.units.visible.help'
 				)
 			))
@@ -722,38 +718,31 @@ class Edit extends Controller
 		$form = $this->get('form')
 			->setName('product-attributes-edit')
 			->setAction($this->generateUrl('ms.commerce.product.edit.attributes.action', array('productID' => $this->_product->id)))
-			->setDefaultValues(array(
-				'name' 				 => $this->_product->name,
-				'short_description'  => $this->_product->shortDescription,
-				'display_name'		 => $this->_product->displayName,
-				'year'				 => $this->_product->year,
-				'season'			 => $this->_product->season,
-				'description'		 => $this->_product->description,
-				'category'			 => $this->_product->category,
-				'brand'				 => $this->_product->brand,
-				'export_description' => $this->_product->exportDescription,
-			))
 			->setMethod('post');
 
 		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array(
+			'data' => $this->_product->name,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.name.help')
 		))
 			->val()
 			->maxLength(255);
 
 		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array(
+			'data' => $this->_product->displayName,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
 		))
 			->val()
 			->maxLength(255);
 
 		$form->add('category', 'text', $this->trans('ms.commerce.product.attributes.category.label'), array(
+			'data' => $this->_product->category,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.category.help')
 		))
 			->val()
 			->maxLength(255);
 
 		$form->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
+			'data' => $this->_product->brand,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
 		))
 			->val()
@@ -761,6 +750,7 @@ class Edit extends Controller
 
 
 		$form->add('season', 'text', $this->trans('ms.commerce.product.attributes.season.label'), array(
+			'data' => $this->_product->season,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.season.help')
 		))
 			->val()
@@ -769,6 +759,7 @@ class Edit extends Controller
 
 
 		$form->add('year', 'text', $this->trans('ms.commerce.product.attributes.year.label'), array(
+			'data' => $this->_product->year,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.year.help')
 		))
 			->val()
@@ -777,16 +768,19 @@ class Edit extends Controller
 			->optional();
 
 		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array(
+			'data' => $this->_product->shortDescription,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.short-description.help')
 		));
 
 		$form->add('description', 'textarea', $this->trans('ms.commerce.product.attributes.description.label'), array(
+			'data' => $this->_product->description,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
 		))
 			->val()
 			->optional();
 
 		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.attributes.export-description.label'), array(
+			'data' => $this->_product->exportDescription,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
 		))
 			->val()
@@ -800,19 +794,10 @@ class Edit extends Controller
 		$form = $this->get('form')
 			->setName('product-details-edit')
 			->setAction($this->generateUrl('ms.commerce.product.edit.details.action', array('productID' => $this->_product->id)))
-			->setDefaultValues(array(
-				'features'                      => $this->_product->features,
-				'sizing'                        => $this->_product->sizing,
-				'fabric'                        => $this->_product->fabric,
-				'care_instructions' 			=> $this->_product->careInstructions,
-				'tags'							=> implode(',', $this->_product->tags),
-				'supplier_ref'                  => $this->_product->supplierRef,
-				'export_manufacture_country_id' => $this->_product->exportManufactureCountryID,
-				'notes'                         => $this->_product->notes,
-			))
 			->setMethod('post');
 
 		$form->add('features', 'textarea', $this->trans('ms.commerce.product.details.features.label'), array(
+			'data' => $this->_product->features,
 			'attr' => array('data-help-key' => 'ms.commerce.product.details.features.help')
 		))
 			->val()
@@ -821,6 +806,7 @@ class Edit extends Controller
 
 		$form
 			->add('sizing', 'textarea', $this->trans('ms.commerce.product.details.sizing.label'), array(
+				'data' => $this->_product->sizing,
 				'attr' => array('data-help-key' => 'ms.commerce.product.details.sizing.help')
 			))
 			->val()
@@ -828,6 +814,7 @@ class Edit extends Controller
 
 		$form
 			->add('fabric', 'textarea', $this->trans('ms.commerce.product.details.fabric.label'), array(
+				'data' => $this->_product->fabric,
 				'attr' => array('data-help-key' => 'ms.commerce.product.details.fabric.help')
 			))
 			->val()
@@ -846,6 +833,7 @@ class Edit extends Controller
 
 		$form
 			->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
+				'data' => $this->_product->careInstructions,
 				'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')
 			))
 			->val()
@@ -854,6 +842,7 @@ class Edit extends Controller
 
 		$form
 			->add('tags', 'textarea', $this->trans('ms.commerce.product.details.tags.label'), array(
+				'data' => implode(',', $this->_product->tags),
 				'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
 			))
 			->val()
@@ -861,6 +850,7 @@ class Edit extends Controller
 
 		$form
 			->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
+				'data' => $this->_product->supplierRef,
 				'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
 			))
 			->val()
@@ -873,8 +863,9 @@ class Edit extends Controller
 				'choice',
 				$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
 				array(
+					'data' 	  => $this->_product->exportManufactureCountryID,
 					'choices' => $this->get('country.list')->all(),
-					'attr' => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
+					'attr'    => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
 				)
 			)
 			->val()
@@ -882,6 +873,7 @@ class Edit extends Controller
 
 		$form
 			->add('notes', 'textarea', $this->trans('ms.commerce.product.details.notes.label'), array(
+				'data' => $this->_product->notes,
 				'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
 			))
 			->val()
@@ -912,10 +904,11 @@ class Edit extends Controller
 			)->val()->number();
 		}
 
-		$form->add('tax_rate', 'percent', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
-			'type' => 'integer',
+		$form->add('tax_rate', 'choice', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
 			'data' => $this->_product->taxRate,
-			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help')
+			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help'),
+			'choices' => $this->get('product.tax.rates'),
+			'empty_value' => '-- Please select --'
 		))
 			->val()
 			->number()

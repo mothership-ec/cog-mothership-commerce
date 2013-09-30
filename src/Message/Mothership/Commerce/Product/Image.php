@@ -2,9 +2,10 @@
 
 namespace Message\Mothership\Commerce\Product;
 
+use Message\Cog\ImageResize\ResizableInterface;
 use Message\Cog\ValueObject\Authorship;
 
-class Image
+class Image implements ResizableInterface
 {
 	public $id;
 	public $authorship;
@@ -22,5 +23,15 @@ class Image
 		$this->authorship
 			->disableUpdate()
 			->disableDelete();
+	}
+
+	public function getUrl()
+	{
+		return $this->file->getUrl();
+	}
+
+	public function getAltText()
+	{
+		return $this->file->getAltText();
 	}
 }
