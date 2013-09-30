@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product;
+namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Cog\ImageResize\ResizableInterface;
 use Message\Cog\ValueObject\Authorship;
