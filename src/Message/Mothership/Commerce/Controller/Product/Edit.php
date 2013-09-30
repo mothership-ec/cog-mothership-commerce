@@ -593,7 +593,7 @@ class Edit extends Controller
 					$choices[$choice] = $choice;
 				}
 
-				$optionForm->add($type, 'choice', 'Option', array('choices' => $choices))
+				$optionForm->add($type, 'choice', ucfirst($type), array('choices' => $choices))
 					->val()->optional();
 			}
 			// Add the option forms to the parent form

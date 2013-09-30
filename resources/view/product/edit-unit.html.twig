@@ -7,9 +7,7 @@
 		<thead>
 			<tr>
 				<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
-				{% for heading in headings %}
-					<th>{{heading}}</th>
-				{% endfor %}
+				<th>{{ 'ms.commerce.product.units.option.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.units.prices.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.details.weight-grams.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.units.visible.label'|trans }}</th>
@@ -20,11 +18,9 @@
 			{% for unit in units %}
 				<tr>
 					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
-					{% for name, title in headings %}
-						<td>
-							{{ form_widget(form[unit.id]['optionForm'][name]) }}
-						</td>
-					{% endfor %}
+					<td>
+						{{ form_widget(form[unit.id]['optionForm']) }}
+					</td>
 					<td>
 					{% for name, value in unit.price %}
 						<div class="inline">
