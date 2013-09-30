@@ -305,7 +305,8 @@ class Product
 	 */
 	public function getImages($type = 'default', array $options = null)
 	{
-		$return = array();
+		$return  = array();
+		$options = array_filter($options);
 
 		foreach ($this->images as $image) {
 			if ($image->type !== $type) {
