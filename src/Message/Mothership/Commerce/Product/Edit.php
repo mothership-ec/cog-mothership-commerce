@@ -212,9 +212,20 @@ class Edit
 			)
 		);
 
-		// $this->_query->run('
-
-		// ');
+		foreach ($image->options as $name => $value) {
+			$this->_query->run('
+				REPLACE INTO
+					product_image_option
+				SET
+					image_id = ?i,
+					name = ?s,
+					value = ?s
+			', array(
+				null,
+				$name,
+				$value
+			));
+		}
 
 		return $product;
 	}

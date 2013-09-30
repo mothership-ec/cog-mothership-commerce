@@ -353,14 +353,12 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$form = $this->_getImageForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$image = new Image(
-				$data['image'],
-				$data['type'],
-				$this->get('locale'),
-				null,
-				$data['option_name'],
-				$data['option_value']
-			);
+
+			$image = new Image;
+			$image->file    = $data['image'];
+			$image->type    = $data['type'];
+			$image->locale  = $this->get('locale');
+			$image->options = $data['options'];
 
 			$this->get('product.edit')->saveImage($this->_product, $image);
 		}
