@@ -352,16 +352,17 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$form = $this->_getImageForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$image = new Image(
-				$data['image'],
-				$data['type'],
-				$this->get('locale'),
-				null,
-				$data['option_name'],
-				$data['option_value']
-			);
+			$image          = new Image\Image;
+			$image->product = $this->_product;
+			$image->file    = $this->get('file_manager.file.loader')->getByID($data['image']);
+			$image->type    = $data['type'];
+			$image->locale  = $this->get('locale');
 
-			$this->get('product.edit')->saveImage($this->_product, $image);
+			if ($data['option_name']) {
+				$image->options[$data['option_name']] = $data['option_value'];
+			}
+
+			$this->get('product.image.create')->create($image);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.images', array('productID' => $this->_product->id));

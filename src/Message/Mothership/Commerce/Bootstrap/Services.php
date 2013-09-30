@@ -329,6 +329,10 @@ class Services implements ServicesInterface
 			));
 		});
 
+		$services['product.image.create'] = function($c) {
+			return new Commerce\Product\Image\Create($c['db.transaction'], $c['user.current']);
+		};
+
 		$services['product.unit.loader'] = function($c) {
 			return $c['product.loader']->getEntityLoader('units');
 		};
