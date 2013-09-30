@@ -255,7 +255,8 @@ class Product
 	 *
 	 * @return [type] [description]
 	 */
-	public function getFullName() {
+	public function getFullName()
+	{
 		return $this->brand.', '.$this->displayName;
 	}
 

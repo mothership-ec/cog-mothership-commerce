@@ -14,7 +14,6 @@ class Loader
 	protected $_query;
 	protected $_locale;
 	protected $_entities;
-	protected $_imageTypes;
 	protected $_includeDeleted = false;
 
 	protected $_returnArray;
@@ -23,7 +22,6 @@ class Loader
 		Query $query,
 		Locale $locale,
 		FileLoader $fileLoader,
-		ImageTypes $imageTypes,
 		array $entities = array(),
 		$priceTypes = array()
 	) {
@@ -31,7 +29,6 @@ class Loader
 		$this->_locale = $locale;
 		$this->_entities = $entities;
 		$this->_priceTypes = $priceTypes;
-		$this->_imageTypes = $imageTypes;
 		$this->_fileLoader = $fileLoader;
 	}
 
@@ -248,7 +245,7 @@ class Loader
 
 				$image          = new Image\Image;
 				$image->id      = $imageData->id;
-				$image->type    = $this->_imageTypes->get($imageData->type);
+				$image->type    = $imageData->type;
 				$image->product = $products[$key];
 				$image->locale  = $imageData->locale;
 				$image->file    = $this->_fileLoader->getByID($imageData->fileID);
