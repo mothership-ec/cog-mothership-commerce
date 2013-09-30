@@ -305,7 +305,6 @@ class Services implements ServicesInterface
 				$c['db.query'],
 				$c['locale'],
 				$c['file_manager.file.loader'],
-				$c['product.image.types'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);
@@ -324,10 +323,14 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.image.types'] = $services->share(function($c) {
-			return new Commerce\Product\ImageType\Collection(array(
+			return new Commerce\Product\Image\TypeCollection(array(
 				'default' => 'Default',
 			));
 		});
+
+		$services['product.image.create'] = function($c) {
+			return new Commerce\Product\Image\Create($c['db.transaction'], $c['user.current']);
+		};
 
 		$services['product.unit.loader'] = function($c) {
 			return $c['product.loader']->getEntityLoader('units');

@@ -255,14 +255,15 @@ class Product
 	 *
 	 * @return [type] [description]
 	 */
-	public function getFullName() {
+	public function getFullName()
+	{
 		return $this->brand.', '.$this->displayName;
 	}
 
 	/**
 	 * Return the internal product name (not the display name)
 	 *
-	 * @return string 	 product name
+	 * @return string
 	 */
 	public function getDefaultName()
 	{
@@ -281,14 +282,14 @@ class Product
 	 * @param  string     $type    The image type to get images for
 	 * @param  array|null $options Associative array of options, or null for all
 	 *
-	 * @return Image|false         Image matching the criteria, or false if none
+	 * @return Image|null          Image matching the criteria, or null if none
 	 *                             found
 	 */
 	public function getImage($type = 'default', array $options = null)
 	{
 		$images = $this->getImages($type, $options);
 
-		return count($images) > 0 ? array_shift($images) : false;
+		return count($images) > 0 ? array_shift($images) : null;
 	}
 
 	/**
@@ -304,7 +305,8 @@ class Product
 	 */
 	public function getImages($type = 'default', array $options = null)
 	{
-		$return = array();
+		$return  = array();
+		$options = array_filter($options);
 
 		foreach ($this->images as $image) {
 			if ($image->type !== $type) {
@@ -340,7 +342,7 @@ class Product
 	 * @param  Unit\Unit $unit The unit to get an image for
 	 * @param  string    $type The image type to get
 	 *
-	 * @return Image|false
+	 * @return Image|null
 	 */
 	public function getUnitImage(Unit\Unit $unit, $type = 'default')
 	{

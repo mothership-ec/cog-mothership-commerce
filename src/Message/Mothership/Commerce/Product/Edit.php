@@ -183,40 +183,4 @@ class Edit
 
 		return $product;
 	}
-
-	/**
-	 * Save the new image to the product object
-	 *
-	 * @param  Product 	$product 	Product object to update
-	 * @param  Image 	$image 		Image object to save
-	 *
-	 * @return Product          	Saved Product object
-	 *
-	 * @todo save the options
-	 */
-	public function saveImage(Product $product, Image $image)
-	{
-		$result = $this->_query->run(
-			'REPLACE INTO
-				product_image
-			SET
-				product_id = ?i,
-				file_id = ?i,
-				locale = ?,
-				type = ?s',
-			array(
-				$product->id,
-				$image->fileID,
-				$this->_locale->getID(),
-				$image->type,
-			)
-		);
-
-		// $this->_query->run('
-
-		// ');
-
-		return $product;
-	}
-
 }

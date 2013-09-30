@@ -1,13 +1,13 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\ImageType;
+namespace Message\Mothership\Commerce\Product\Image;
 
 /**
  * A container for order types that are available throughout the system.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Collection implements \IteratorAggregate, \Countable
+class TypeCollection implements \IteratorAggregate, \Countable
 {
 	protected $_types = array();
 
@@ -88,9 +88,9 @@ class Collection implements \IteratorAggregate, \Countable
 	/**
 	 * Check if a given type type has been defined on this collection.
 	 *
-	 * @param  int $type The type type
+	 * @param  string $type The type type
 	 *
-	 * @return boolean   True if it exists, false otherwise
+	 * @return boolean      True if it exists, false otherwise
 	 */
 	public function exists($type)
 	{
@@ -98,9 +98,9 @@ class Collection implements \IteratorAggregate, \Countable
 	}
 
 	/**
-	 * Get the number of typees registered on this collection.
+	 * Get the number of types registered on this collection.
 	 *
-	 * @return int The number of typees registered
+	 * @return int The number of types registered
 	 */
 	public function count()
 	{
@@ -110,7 +110,7 @@ class Collection implements \IteratorAggregate, \Countable
 	/**
 	 * Get the iterator object to use for iterating over this class.
 	 *
-	 * @return \ArrayIterator An \ArrayIterator instance for the >_types`
+	 * @return \ArrayIterator An \ArrayIterator instance for the `_types`
 	 *                        property
 	 */
 	public function getIterator()

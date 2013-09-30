@@ -29,8 +29,9 @@
 	"require": {
 		"php": ">=5.3.0",
 
-		"message/cog-user"         : "dev-master",
-		"message/cog-mothership-cp": "dev-master"
+		"message/cog-user"                   : "dev-master",
+		"message/cog-mothership-file-manager": "dev-master",
+		"message/cog-mothership-cp"          : "dev-master"
 	},
 	"suggest": {
 	},
