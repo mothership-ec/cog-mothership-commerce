@@ -359,8 +359,8 @@ class Edit extends Controller
 			$image->type    = $data['type'];
 			$image->locale  = $this->get('locale');
 
-			if ($data['option_name']) {
-				$image->options[$data['option_name']] = $data['option_value'];
+			foreach ($data['options'] as $option) {
+				$image->options[$option['name']] = $option['value'];
 			}
 
 			$this->get('product.image.create')->create($image);
