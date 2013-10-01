@@ -28,7 +28,7 @@ class Services implements ServicesInterface
 
 		$services['commerce.gateway.refund'] = function($c) {
 			return new Commerce\Gateway\Sagepay(
-				'Sagepay_Direct',
+				'SagePay_Direct',
 				$c['user.current'],
 				$c['http.request.master'],
 				$c['cache'],
