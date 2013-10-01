@@ -32,6 +32,14 @@ class CollectionOrderLoader implements CollectionInterface
 		return array('_collection', '_loaded', '_order');
 	}
 
+	public function __clone()
+	{
+		$this->_collection = clone $this->_collection;
+		if ($this->_order) {
+			$this->_order = clone $this->_order;
+		}
+	}
+
 	public function __call($method, $args)
 	{
 		if (method_exists($this->_collection, $method)) {

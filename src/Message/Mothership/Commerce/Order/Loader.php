@@ -35,6 +35,17 @@ class Loader
 		$this->_entities     = $entities;
 	}
 
+	public function getEntities()
+	{
+		$return = array();
+
+		foreach ($this->_entities as $name => $loader) {
+			$return[$name] = clone $loader;
+		}
+
+		return $return;
+	}
+
 	/**
 	 * Get the loader for a specific entity.
 	 *
@@ -220,64 +231,73 @@ class Loader
 			return $returnArray ? array() : false;
 		}
 
-		$orders = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Order', array($this->_entities));
+		$self       = $this;
+		$userLoader = $this->_userLoader;
+		$statuses   = $this->_statuses;
+		$query      = $this->_query;
 
-		foreach ($result as $key => $row) {
+		$orders = $result->bindWith(function($row) use ($self, $userLoader, $statuses, $query)
+		{
+			$order = new Order($self->getEntities());
+
+			foreach ($row as $k => $v) {
+				if (property_exists($order, $k)) {
+					$order->$k = $v;
+				}
+			}
+
 			// Cast decimals to float
-			$orders[$key]->conversionRate    = (float) $row->conversionRate;
-			$orders[$key]->productNet        = (float) $row->productNet;
-			$orders[$key]->productDiscount   = (float) $row->productDiscount;
-			$orders[$key]->productTax        = (float) $row->productTax;
-			$orders[$key]->productGross      = (float) $row->productGross;
-			$orders[$key]->totalNet          = (float) $row->totalNet;
-			$orders[$key]->totalDiscount     = (float) $row->totalDiscount;
-			$orders[$key]->totalTax          = (float) $row->totalTax;
-			$orders[$key]->totalGross        = (float) $row->totalGross;
-			$orders[$key]->shippingListPrice = (float) $row->shippingListPrice;
-			$orders[$key]->shippingNet       = (float) $row->shippingNet;
-			$orders[$key]->shippingDiscount  = (float) $row->shippingDiscount;
-			$orders[$key]->shippingTax       = (float) $row->shippingTax;
-			$orders[$key]->shippingTaxRate   = (float) $row->shippingTaxRate;
-			$orders[$key]->shippingGross     = (float) $row->shippingGross;
+			$order->conversionRate    = (float) $row->conversionRate;
+			$order->productNet        = (float) $row->productNet;
+			$order->productDiscount   = (float) $row->productDiscount;
+			$order->productTax        = (float) $row->productTax;
+			$order->productGross      = (float) $row->productGross;
+			$order->totalNet          = (float) $row->totalNet;
+			$order->totalDiscount     = (float) $row->totalDiscount;
+			$order->totalTax          = (float) $row->totalTax;
+			$order->totalGross        = (float) $row->totalGross;
+			$order->shippingListPrice = (float) $row->shippingListPrice;
+			$order->shippingNet       = (float) $row->shippingNet;
+			$order->shippingDiscount  = (float) $row->shippingDiscount;
+			$order->shippingTax       = (float) $row->shippingTax;
+			$order->shippingTaxRate   = (float) $row->shippingTaxRate;
+			$order->shippingGross     = (float) $row->shippingGross;
 
-			$orders[$key]->taxable = (bool) $row->taxable;
+			$order->taxable = (bool) $row->taxable;
 
-			$orders[$key]->user = $this->_userLoader->getByID($row->user_id);
+			$order->user = $userLoader->getByID($row->user_id);
 
-			$orders[$key]->authorship->create(
+			$order->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
 
 			if ($row->updated_at) {
-				$orders[$key]->authorship->update(
+				$order->authorship->update(
 					new DateTimeImmutable(date('c', $row->updated_at)),
 					$row->updated_by
 				);
 			}
 
-			$orders[$key]->status = $this->_statuses->get($row->status_code);
+			$order->status = $statuses->get($row->status_code);
 
-			$this->_loadMetadata($orders[$key]);
-		}
+			$query->run('
+				SELECT
+					`key`,
+					`value`
+				FROM
+					order_metadata
+				WHERE
+					order_id = ?i
+			', $order->id);
+
+			foreach ($result->hash('key', 'value') as $key => $value) {
+				$order->metadata->set($key, $value);
+			}
+
+			return $order;
+		});
 
 		return $returnArray ? $orders : reset($orders);
-	}
-
-	protected function _loadMetadata(Order $order)
-	{
-		$result = $this->_query->run('
-			SELECT
-				`key`,
-				`value`
-			FROM
-				order_metadata
-			WHERE
-				order_id = ?i
-		', $order->id);
-
-		foreach ($result->hash('key', 'value') as $key => $value) {
-			$order->metadata->set($key, $value);
-		}
 	}
 }

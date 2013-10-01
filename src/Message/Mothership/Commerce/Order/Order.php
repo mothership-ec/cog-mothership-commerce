@@ -105,6 +105,7 @@ class Order
 			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
 		}
 
+		// $collection = clone $collection;
 		$collection->setOrder($this);
 
 		$this->_entities[$name] = $collection;
