@@ -13,6 +13,7 @@ class Sagepay extends Wrapper
 	protected $_data;
 	protected $_request;
 	protected $_config;
+	protected $_cache;
 
 	public function __construct(
 		$gatewayName = 'SagePay_Server',
@@ -78,6 +79,7 @@ class Sagepay extends Wrapper
 	public function handleResponse($responseID)
 	{
 		$data = $this->_cache->fetch($responseID);
+		$this->_cache->delete($responseID);
 
 		return unserialize($data);
 	}
