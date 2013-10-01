@@ -58,6 +58,19 @@ class Item implements EntityInterface
 			->disableDelete();
 	}
 
+	public function __sleep()
+	{
+		$keys = array();
+		foreach (get_object_vars($this) as $key => $value) {
+			if (substr($key,0,1) == '_') {
+				continue;
+			}
+			$keys[] = $key;
+		}
+
+		return $keys;
+	}
+
 	/**
 	 * Populate this item with the data from a specific unit.
 	 *
