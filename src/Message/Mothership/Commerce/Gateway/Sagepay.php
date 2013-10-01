@@ -15,7 +15,7 @@ class Sagepay extends Wrapper
 	protected $_config;
 
 	public function __construct(
-		$gatewayName = 'Sagepay_Server',
+		$gatewayName = 'SagePay_Server',
 		UserInterface $user,
 		Request $request,
 		Instance $cache,
