@@ -18,7 +18,7 @@ Delivery Address: {{ order.getAddress('delivery').flatten|join(', ') }}
 {% if dispatch.method.getTrackingLink(dispatch.code) %}
 Track your order:
 Your {{ dispatch.method.getDisplayName() }} order tracking number is {{ dispatch.code }}, please click the following link to check on the delivery status of your order.
-{{ dispatch.method.getTrackingLink.href }}
+{{ dispatch.method.getTrackingLink(dispatch.code) }}
 
 {% elseif false %}
 Track your order:

@@ -32,7 +32,7 @@ class NotificationListener extends BaseListener implements SubscriberInterface
 	 *
 	 * @param  Event\DispatchEvent $event
 	 */
-	public function sendCustomerNotification(Event\DispatchEvent $event)
+	public function sendDispatchShippedNotification(Event\DispatchEvent $event)
 	{
 		$dispatch = $event->getDispatch();
 		$order    = $event->getOrder();
@@ -41,7 +41,7 @@ class NotificationListener extends BaseListener implements SubscriberInterface
 		$message = $this->get('mail.message');
 
 		$message->setTo($order->user->email, $order->user->getName());
-		$message->setSubject('Your ' . $merchant->name . ' order ' . $order->orderID . ' has shipped');
+		$message->setSubject('Your ' . $merchant->companyName . ' order ' . $order->orderID . ' has shipped');
 		$message->setView('Message:Mothership:Commerce::mail:order:dispatch:shipped-notification', array(
 			'dispatch' => $dispatch,
 			'order'    => $order,
