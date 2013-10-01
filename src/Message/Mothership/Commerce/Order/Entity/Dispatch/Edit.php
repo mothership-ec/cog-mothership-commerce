@@ -51,8 +51,8 @@ class Edit implements DB\TransactionalInterface
 			'id'        => $dispatch->id,
 		));
 
-		$event = new Order\Events\DispatchEvent($dispatch);
-		$this->_event->dispatch(Order\Events::DISPATCH_SHIPPED, $event);
+		$event = new Order\Event\DispatchEvent($dispatch);
+		$this->_eventDispatcher->dispatch(Order\Events::DISPATCH_SHIPPED, $event);
 
 		return $dispatch;
 	}

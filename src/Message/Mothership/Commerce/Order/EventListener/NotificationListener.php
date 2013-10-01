@@ -13,7 +13,7 @@ use Message\Cog\Event\SubscriberInterface;
  *
  * @author Laurence Roberts <laurence@message.co.uk>
  */
-class StatusListener extends BaseListener implements SubscriberInterface
+class NotificationListener extends BaseListener implements SubscriberInterface
 {
 	/**
 	 * {@inheritdoc}

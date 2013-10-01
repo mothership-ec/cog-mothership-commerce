@@ -20,8 +20,9 @@ class DispatchEvent extends Event
 	 * @param Order $order
 	 * @param Dispatch  $dispatch
 	 */
-	public function __construct(Order $order, Dispatch $dispatch)
+	public function __construct(Dispatch $dispatch, Order $order = null)
 	{
+		$order = $order ?: $dispatch->order;
 		parent::__construct($order);
 		$this->setDispatch($dispatch);
 	}
