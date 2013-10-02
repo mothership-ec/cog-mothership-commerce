@@ -362,7 +362,7 @@ class _1379411228_SetUpOrders extends Migration
 
 		$this->run('
 			DROP TABLE IF EXISTS
-				`order_dispatch_items`
+				`order_dispatch_item`
 		');
 
 		$this->run('
