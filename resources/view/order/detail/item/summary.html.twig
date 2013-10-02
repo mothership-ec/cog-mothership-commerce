@@ -8,6 +8,9 @@
 			<th><span>Discount</span></th>
 			<th><span>Tax</span></th>
 			<th><span>Gross</span></th>
+			{% if moduleExists('Message\\Mothership\\OrderReturn') %}
+				<th><span>Return</span></th>
+			{% endif %}
 		</tr>
 		</thead>
 		<tbody>
@@ -18,6 +21,13 @@
 					<td>{{ item.discount|price(order.currencyID) }}</td>
 					<td>{{ item.tax|price(order.currencyID) }}</td>
 					<td>{{ item.gross|price(order.currencyID) }}</td>
+					{% if moduleExists('Message\\Mothership\\OrderReturn') %}
+						<td>
+							{% if item.status.code == 1000 %}
+							<a href="{{ url('ms.user.return.create',{itemID: item.id}) }}">Return</a>
+							{% endif %}
+						</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</tbody>
