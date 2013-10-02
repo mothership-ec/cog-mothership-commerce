@@ -281,7 +281,7 @@ class Loader
 
 			$order->status = $statuses->get($row->status_code);
 
-			$query->run('
+			$result = $query->run('
 				SELECT
 					`key`,
 					`value`
