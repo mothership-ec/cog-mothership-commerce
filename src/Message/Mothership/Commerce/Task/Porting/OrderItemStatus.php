@@ -27,7 +27,7 @@ class OrderItemStatus extends Porting
 						WHEN 7 THEN 2300
 						WHEN 9 THEN 2100
 						WHEN 10 THEN 2100
-						WHEN 99 THEN 2400
+						WHEN 99 THEN 2100
 						WHEN -2 THEN -300
 						WHEN -1 THEN -100
 					END AS status_code,
