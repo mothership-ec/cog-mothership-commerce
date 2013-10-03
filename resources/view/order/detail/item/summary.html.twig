@@ -23,7 +23,7 @@
 					<td>{{ item.gross|price(order.currencyID) }}</td>
 					{% if moduleExists('Message\\Mothership\\OrderReturn') %}
 						<td>
-							{% if item.status.code == 1000 %}
+							{% if despatchedStatus is defined and item.status.code ==  despatchedStatus %}
 							<a href="{{ url('ms.user.return.create',{itemID: item.id}) }}">Return</a>
 							{% endif %}
 						</td>
