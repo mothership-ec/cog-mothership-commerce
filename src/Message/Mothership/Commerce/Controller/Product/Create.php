@@ -27,7 +27,7 @@ class Create extends Controller
 			$product = $this->get('product.create')->create($product);
 
 			if ($product->id) {
-				return $this->redirectToRoute('ms.commerce.product.edit', array('productID' => $product->id));
+				return $this->redirectToRoute('ms.commerce.product.edit.attributes', array('productID' => $product->id));
 			}
 		}
 	}
