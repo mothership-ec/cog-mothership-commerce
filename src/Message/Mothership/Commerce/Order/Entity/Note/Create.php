@@ -64,7 +64,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_event->dispatch(
 			Order\Events::CREATE_NOTE,
-			$this->_event
+			new CreateNoteEvent($note)
 		);
 
 		if ($this->_query instanceof DB\Transaction) {
