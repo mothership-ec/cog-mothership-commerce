@@ -24,7 +24,20 @@ class OrderItemReturn extends Porting
 					NULL AS completed_by,
 					return_exchange_item_id AS exchange_item_id,
 					IF (package_received_date IS NULL, 2000, 2100) AS status_id,
-					return_reason_name AS reason,
+					CASE return_reason_id
+						WHEN 1 THEN \'doesnt-suit-me\'
+						WHEN 2 THEN \'not-as-expected\'
+						WHEN 3 THEN \'wrong-colour\'
+						WHEN 4 THEN \'wrong-colour\'
+						WHEN 5 THEN \'doesnt-fit-me\'
+						WHEN 6 THEN \'doesnt-fit-me\'
+						WHEN 7 THEN \'doesnt-suit-me\'
+						WHEN 8 THEN \'wrong-item-sent\'
+						WHEN 9 THEN \'not-as-expected\'
+						WHEN 10 THEN \'ordered-two-sizes-for-fit-returning-one\'
+						WHEN 12 THEN \'doesnt-fit-me\'
+						WHEN 13 THEN \'not-as-expected\'
+					END AS reason,
 					return_resolution_name AS resolution,
 					IFNULL(balancing_payment,0) AS balance,
 					IFNULL(balancing_payment,0) AS calculated_balance,
