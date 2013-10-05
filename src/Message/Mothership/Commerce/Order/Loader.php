@@ -24,6 +24,7 @@ class Loader
 	protected $_statuses;
 	protected $_itemStatuses;
 	protected $_entities;
+	protected $_orderBy;
 
 	public function __construct(DB\Query $query, User\Loader $userLoader,
 		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
@@ -130,8 +131,11 @@ class Loader
 				order_summary
 			WHERE
 				status_code IN (?ij)
+			ORDER BY created_at DESC
 			LIMIT ?i
 		', array($statuses, $limit));
+
+		$this->_orderBy = 'order_summary.created_at DESC';
 
 		return $this->_load($result->flatten(), true);
 	}
@@ -185,6 +189,9 @@ class Loader
 
 	protected function _load($ids, $returnArray = false)
 	{
+		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
+		$this->_orderBy = '';
+
 		if (!is_array($ids)) {
 			$ids = (array) $ids;
 		}
@@ -225,6 +232,7 @@ class Loader
 				order_summary.order_id IN (?ij)
 			GROUP BY
 				order_summary.order_id
+			' . ($orderBy) . '
 		', array($ids));
 
 		if (0 === count($result)) {
