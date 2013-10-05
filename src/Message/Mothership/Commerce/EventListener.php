@@ -76,6 +76,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$event->addItem('ms.commerce.order.detail.view.payments', 	'ms.commerce.order.payment.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.dispatches', 'ms.commerce.order.dispatch.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.notes', 		'ms.commerce.order.note.listing-title');
+		$event->addItem('ms.commerce.order.detail.view.documents', 	'ms.commerce.order.document.listing-title');
 	}
 
 	/**
@@ -90,14 +91,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$order    = $event->getOrder();
 		$merchant = $this->get('cfg')->merchant;
 
-		if (! $note->notifyCustomer) {
-			return false;
-		}
-
 		$message = $this->get('mail.message');
 
 		$message->setTo($order->user->email, $order->user->getName());
-		$message->setSubject('Updates to your ' . $merchant->name . ' order ' . $order->orderID);
+		$message->setSubject('Updates to your ' . $merchant->companyName . ' order ' . $order->orderID);
 		$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
 			'note'     => $note,
 			'order'    => $order,

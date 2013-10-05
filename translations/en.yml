@@ -221,3 +221,7 @@ ms.commerce:
 
       key: key
       value: Value
+
+    document:
+      listing-title: Documents
+      none: There are no documents to view.

@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Note;
 
 use Message\Cog\Event\Event;
+use Message\Mothership\Commerce\Order\Order;
 
 class CreateNoteEvent extends Event
 {

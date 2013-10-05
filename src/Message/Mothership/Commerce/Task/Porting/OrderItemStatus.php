@@ -23,10 +23,10 @@ class OrderItemStatus extends Porting
 						WHEN 3 THEN 300
 						WHEN 4 THEN 400
 						WHEN 6 THEN 1000
-						WHEN 8 THEN 2000
-						WHEN 7 THEN 2300
-						WHEN 9 THEN 2100
-						WHEN 10 THEN 2100
+						WHEN 8 THEN 2200
+						WHEN 7 THEN 2100
+						WHEN 9 THEN 2200
+						WHEN 10 THEN 2200
 						WHEN 99 THEN 2100
 						WHEN -2 THEN -300
 						WHEN -1 THEN -100
