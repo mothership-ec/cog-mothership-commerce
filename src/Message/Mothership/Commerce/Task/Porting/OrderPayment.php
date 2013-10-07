@@ -19,7 +19,7 @@ class OrderPayment extends Porting
 					NULL AS return_id,
 					UNIX_TIMESTAMP(payment_datetime) AS created_at,
 					NULL AS created_by,
-					payment_type_name AS method,
+					REPLACE(payment_type_name, " ", "-") AS method,
 					payment_amount AS amount,
 					payment_reference AS reference
 				FROM
