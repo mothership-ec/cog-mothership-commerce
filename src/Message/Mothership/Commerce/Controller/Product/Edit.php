@@ -72,6 +72,21 @@ class Edit extends Controller
 		));
 	}
 
+	public function deleteUnit($unitID)
+	{
+		$unit = $this->get('product.unit.loader')
+			->includeInvisible(true)
+			->includeOutOfStock(true)
+			->getByID((int) $unitID);
+
+		if ($unit) {
+			$this->get('product.unit.delete')->delete($unit);
+			$this->addFlash('success','Unit deleted');
+		}
+
+		return $this->redirectToReferer();
+	}
+
 	/**
 	 * Method for unit stock interface
 	 *
@@ -125,12 +140,6 @@ class Edit extends Controller
 				$unit = clone $this->_units[$unitID];
 				// unit to update
 				$changedUnit = clone $unit;
-
-				if ($values['delete']) {
-					$this->get('product.unit.delete')->delete($unit);
-
-					continue;
-				}
 
 				$changedUnit->sku 		= $values['sku'];
 
