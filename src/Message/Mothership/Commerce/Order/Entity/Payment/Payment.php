@@ -29,4 +29,15 @@ class Payment implements EntityInterface
 			->disableUpdate()
 			->disableDelete();
 	}
+
+	public function getCustomerFacingReference()
+	{
+		if (strpos($this->reference,'sagepay')) {
+			$reference = json_decode($this->reference);
+
+			return isset($reference->VPSTxId) ? $reference->VPSTxId : '';
+		}
+
+		return $this->reference;
+	}
 }
