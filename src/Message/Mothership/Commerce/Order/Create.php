@@ -40,6 +40,19 @@ class Create
 	}
 
 	/**
+	 * Overwrite the current user, this should be used for when a user is being
+	 * placed via sagepay and the request is coming from a different server.
+	 *
+	 * @param UserInterface $user user to set when the order is created
+	 */
+	public function setUser(UserInterface $user)
+	{
+		$this->_currentUser = $user;
+
+		return $this;
+	}
+
+	/**
 	 * Define the creator for an entity type.
 	 *
 	 * @param string                    $name    Entity name

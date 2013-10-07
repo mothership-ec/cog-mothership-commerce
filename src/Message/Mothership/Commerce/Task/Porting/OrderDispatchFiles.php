@@ -7,7 +7,11 @@ class OrderDispatchFiles extends Porting
     public function process()
     {
         $uwOld 	 = $this->getFromConnection();
+        $uwNew = $this->getToCOnnection();
+
 		$old 	 = new \Message\Cog\DB\Query($uwOld);
+		$new = new \Message\Cog\DB\Transaction($uwNew);
+
 		$results = $old->run('
 			SELECT
 				despatch_packing_slip AS slip,
@@ -21,6 +25,26 @@ class OrderDispatchFiles extends Porting
 				despatch_packing_slip IS NOT NULL
 			AND despatch_timestamp IS NOT NULL'
 		);
+
+		$documentSql = '
+				INSERT INTO
+					order_document
+				(
+					order_id,
+					dispatch_id,
+					created_at,
+					type,
+					url
+				)
+				VALUES
+				(
+					:order_id,
+					:dispatch_id,
+					:created_at,
+					:type,
+					:url
+				)
+			';
 
 		foreach ($results as $row) {
 			$dirs = array(
@@ -42,16 +66,40 @@ class OrderDispatchFiles extends Porting
 			// Save the file
 			$this->get('filesystem')->dumpFile($path, $contents);
 
+			$new->add($documentSql, array(
+				'order_id' => $row->order_id,
+				'dispatch_id' => $row->despatch_id,
+				'created_at' => $row->created_at,
+				'type' => 'packing-slip',
+				// http://regex101.com/r/jK5rN1
+				'url' => preg_replace('/(.+)(data\/order\/picking)(.+)/', 'cog://$2$3', $path)
+			));
+
 			// Set the data for the label data
 			$filename = $row->order_id .'_'.$row->despatch_id.'_label-data';
 			$contents = (string) $row->label_data;
-			$path     = $fileDestination . '/' . $filename . '.txt';
+			$path     = $fileDestination . '/' . $filename;
+
+			if ($row->despatch_label_type == 'PNG') {
+				$path .= '.png';
+			} else {
+				$path .= '.txt';
+			}
 
 			$manager = $this->get('filesystem.stream_wrapper_manager');
 			$handler = $manager::getHandler('cog');
 			$path    = $handler->getLocalPath($path);
 			// Save the file
 			$this->get('filesystem')->dumpFile($path, $contents);
+
+			$new->add($documentSql, array(
+				'order_id' => $row->order_id,
+				'dispatch_id' => $row->despatch_id,
+				'created_at' => $row->created_at,
+				'type' => 'dispatch-label',
+				// http://regex101.com/r/jK5rN1
+				'url' =>  preg_replace('/(.+)(data\/order\/picking)(.+)/', 'cog://$2$3', $path)
+			));
 		}
 
 		if ($new->commit()) {

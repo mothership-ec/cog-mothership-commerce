@@ -58,6 +58,12 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.edit.units', 'edit/{productID}/units', '::Controller:Product:Edit#units')
 			->setRequirement('productID', '\d+');
 
+		$router['ms.product']->add('ms.commerce.product.unit.delete', 'edit/{productID}/units/delete/{unitID}', '::Controller:Product:Edit#deleteUnit')
+			->setRequirement('productID', '\d+')
+			->setRequirement('unitID', '\d+')
+			->setMethod('GET')
+			->enableCsrf('csrfHash');
+
 
 		$router['ms.product']->add('ms.commerce.product.edit.stock.action', 'edit/{productID}/stock', '::Controller:Product:Edit#processStock')
 			->setRequirement('productID', '\d+')

@@ -38,7 +38,7 @@ class OrderItemReturn extends Porting
 						WHEN 12 THEN \'doesnt-fit-me\'
 						WHEN 13 THEN \'not-as-expected\'
 					END AS reason,
-					return_resolution_name AS resolution,
+					IF (return_resolution_name = "sizestyle_exchange", "exchange", return_resolution_name) AS resolution,
 					IFNULL(balancing_payment,0) AS balance,
 					IFNULL(balancing_payment,0) AS calculated_balance,
 					item_price - IFNULL(item_discount,0) AS returned_value,
