@@ -10,75 +10,75 @@ ms.commerce:
     attributes:
       name:
         label: Name
-        help: -
+        help: The 'actual' name of the product. You can enter a different (perhaps shorter) name for display purposes.
       display-name:
         label: Display Name
-        help: -
+        help: The display name can be different from the 'actual' product name.
       category:
         label: Category
-        help: -
+        help: This is used for grouping products. All products with the same 'category' are linked automatically.
       brand:
         label: Brand
-        help: -
+        help: Allows products from multiple brands to be related.
       season:
         label: Season
-        help: -
+        help: Allows the optional grouping of products into seasons (e.g. Spring, Summer ).
       year:
         label: Year
-        help: -
+        help: This can be used to store the year a product originates from.
       short-description:
         label: Short Description
-        help: -
+        help: A short description of the product which can be used by Mothership for specific display purposes.
       description:
         label: Description
-        help: -
+        help: The main description of the product which can be used by Mothership for specific display purposes.
       export-description:
         label: Export Description
-        help: -
+        help: This description of the product is for export purposes and will display on export documentation.
     pricing:
       tax-rate:
         label: Tax Rate
-        help: -
+        help: Select a tax rate applicable to your region and product type.
       retail:
         label: Retail Price
         label-sans: Retail
-        help: -
+        help: The price customers will pay on youru website.
       cost:
         label: Cost Price
         label-sans: Cost
-        help: -
+        help: The nominal cost of manufacture of the product.
       rrp:
         label: RRP Price
         label-sans: RRP
-        help: -
+        help: The recommended retail price, which can from the Retail Price.
       tax-strategy:
           label: Tax Strategy
-          help: -
+          help: Select whether the price customers pay should include or exclude tax.
           choices:
             inclusive: Inclusive
             exclusive: Exclusive
       export-value:
         label: Export value
-        help: -
+        help: The nominal cost of the product for export purposes.
     details:
       supplier-ref:
         label: Supplier Reference
-        help: -
+        help: Optionally you can store a reference from the supplier of this product.
       weight-grams:
         label: Weight Grams
-        help: -
+        help: This field can be used to calculate shipping costs, depending on your delivery preferences.
       fabric:
         label: Fabric
-        help: -
+        help:
       export-manufacture-country:
         label: Manufacture Country Name
         help: -
       tags:
         label: Tags
-        help: -
+        help: Tags are single words separated by commans which can be used to group items together in ad-hoc ways, depending on the set-up of your site.
       notes:
         label: Notes
-        help: -
+        help: A place for you to jot down additional information about your product.
       sizing:
         label: Sizing
         help: -
@@ -94,57 +94,57 @@ ms.commerce:
     image:
       file:
         label: Image
-        help: -
+        help: Select an image to associate with this product
       type:
         label: Image Type
-        help: -
+        help: The image 'type' sets how the image will be used on your site.
       option:
         name:
           label: Option Name
-          help: -
+          help: Options help define the specific version of the product. Choose the one that suits the product you're setting up.
         value:
           label: Option Value
-          help: -
+          help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
     units:
       sku:
         label: SKU
         placeholder: SKU
-        help: -
+        help: The unique Stock Keeping Unit you assign internally to this specific product variant.
       prices:
         label: Prices
-        help: -
+        help: SKU prices can be set differently from the overall Product price. Edit these fields if you want this SKU to be priced seperately from the others.
       visible:
         label: Visible
-        help: -
+        help: Defines whether or not the SKU appears on the website.
       delete:
         label: Delete
-        help: -
+        help: Click this link to delete the SKU.
       option:
         label: Options
         name:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
-          help: -
+          help: Select the type of Option you wish to add to this SKU.
         value:
           label: Option Value
           placeholder: Option Value
-          help: -
+          help: Depending on the Option 'type' you have set above please enter the value for it here. (For example, an option type of 'Colour' could have a value of 'Red')
         button:
           create: Add unit
     stock:
       page-title: Stock Movements
       reason:
         label: Reason
-        help: -
+        help: Select the reason you need to adjust stock.
       note:
         label: Note
-        help: -
+        help: Additional information on this stock adjustment can be noted here to make future accounting easier.
       location:
         web: Web Stock
       level:
         label: Adjust stock level
-        help: - The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
+        help: The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
   order:
     order:
       none: There are no orders to view.
@@ -221,7 +221,3 @@ ms.commerce:
 
       key: key
       value: Value
-
-    document:
-      listing-title: Documents
-      none: There are no documents to view.
