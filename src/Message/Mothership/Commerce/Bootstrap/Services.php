@@ -234,6 +234,7 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Paypal,
 				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
 				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
+				new Commerce\Order\Entity\Payment\Method\GiftVoucher,
 			));
 		});
 
