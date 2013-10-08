@@ -103,6 +103,7 @@ class OrderDetail extends Controller
 			$note->order = $this->_order;
 			$note->note = $data['note'];
 			$note->raisedFrom = 'order_view';
+			$note->customerNotified = $data['customer_notified'];
 
 			$this->get('order.note.create')->create($note);
 
@@ -162,6 +163,8 @@ class OrderDetail extends Controller
 		)));
 
 		$form->add('note', 'textarea', $this->trans('ms.commerce.order.note.note'));
+
+		$form->add('customer_notified', 'checkbox', $this->trans('ms.commerce.order.note.create.notify'));
 
 		return $form;
 	}
