@@ -1,6 +1,8 @@
 <?php
 
-namespace Message\Mothership\Commerce\Task\Porting;
+namespace Message\Mothership\Commerce\Task\Porting\Order;
+
+use Message\Mothership\Commerce\Task\Porting\Porting;
 
 class OrderPayment extends Porting
 {

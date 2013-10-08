@@ -1,9 +1,12 @@
 <?php
 
-namespace Message\Mothership\Commerce\Task\Porting;
+namespace Message\Mothership\Commerce\Task\Porting\Order;
 
-class OrderMetadata extends Porting
+use Message\Mothership\Commerce\Task\Porting\Porting;
+
+class OrderItemDispatch extends Porting
 {
+
     public function process()
     {
         $uwOld = $this->getFromConnection();
@@ -13,36 +16,33 @@ class OrderMetadata extends Porting
 		$old = new \Message\Cog\DB\Query($uwOld);
 
 		$sql = 'SELECT
-					order_id,
-					metadata_key AS `key`,
-					metadata_value AS `value`
+					despatch_id AS dispatch_id,
+					item_id AS item_id
 				FROM
-					order_metadata';
+					order_despatch_items';
 
 		$result = $old->run($sql);
 		$output= '';
-		$new->add('TRUNCATE order_metadata');
+		$new->add('TRUNCATE order_dispatch_item');
 
 		foreach($result as $row) {
 			$new->add('
 				INSERT INTO
-					order_metadata
+					order_dispatch_item
 				(
-					order_id,
-					`key`,
-					`value`
+					item_id,
+					dispatch_id
 				)
 				VALUES
 				(
-					:order_id?,
-					:key?,
-					:value?
+					:item_id?,
+					:dispatch_id?
 				)', (array) $row
 			);
 		}
 
 		if ($new->commit()) {
-        	$this->writeln('<info>Successfully ported order metadata</info>');
+        	$this->writeln('<info>Successfully ported order item dispatches</info>');
 		}
 
 		return true;
