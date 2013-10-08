@@ -217,8 +217,6 @@ ms.commerce:
       create:
         title: Add note
         button: Add note to the order
-        fields:
-          note: Note
 
     metadata:
       none: There is no metadata to view.

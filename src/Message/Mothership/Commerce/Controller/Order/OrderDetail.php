@@ -161,7 +161,7 @@ class OrderDetail extends Controller
 			'orderID' => $orderID
 		)));
 
-		$form->add('note', 'textarea', $this->trans('ms.commerce.order.note.create.fields.note'));
+		$form->add('note', 'textarea', $this->trans('ms.commerce.order.note.note'));
 
 		return $form;
 	}
