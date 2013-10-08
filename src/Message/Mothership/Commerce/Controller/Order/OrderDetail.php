@@ -164,7 +164,8 @@ class OrderDetail extends Controller
 
 		$form->add('note', 'textarea', $this->trans('ms.commerce.order.note.note'));
 
-		$form->add('customer_notified', 'checkbox', $this->trans('ms.commerce.order.note.create.notify'));
+		$form->add('customer_notified', 'checkbox', $this->trans('ms.commerce.order.note.create.notify'))
+			->val()->optional();
 
 		return $form;
 	}
