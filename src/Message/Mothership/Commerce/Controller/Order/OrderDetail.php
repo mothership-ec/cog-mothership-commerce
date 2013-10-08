@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Controller\Order;
 use Message\Cog\Controller\Controller;
 use Message\Mothership\Commerce\Order\Event\BuildOrderTabsEvent;
 use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\Commerce\Order\Entity\Note\Note;
 
 class OrderDetail extends Controller
 {
@@ -92,6 +93,27 @@ class OrderDetail extends Controller
 		));
 	}
 
+	public function processNote($orderID)
+	{
+		$this->_order = $this->get('order.loader')->getById($orderID);
+		$form = $this->_createNoteForm($orderID);
+
+		if ($form->isValid() and $data = $form->getFilteredData()) {
+			$note = new Note;
+			$note->order = $this->_order;
+			$note->note = $data['note'];
+			$note->raisedFrom = 'order_view';
+
+			$this->get('order.note.create')->create($note);
+
+			$this->addFlash('success', 'The note has been added the order');
+		}
+
+		return $this->redirectToRoute('ms.commerce.order.detail.view.notes', array(
+			'orderID' => $orderID,
+		));
+	}
+
 	public function documentListing($orderID)
 	{
 		$this->_order     = $this->get('order.loader')->getById($orderID);
@@ -135,10 +157,11 @@ class OrderDetail extends Controller
 		$this->_order = ($this->_order) ?: $this->get('order.loader')->getById($orderID);
 
 		$form = $this->get('form');
+		$form->setAction($this->generateUrl('ms.commerce.order.detail.process.notes', array(
+			'orderID' => $orderID
+		)));
 
-		$form->add('note', 'textarea');
-
-		$form->add('notify_customer', 'checkbox');
+		$form->add('note', 'textarea', $this->trans('ms.commerce.order.note.create.fields.note'));
 
 		return $form;
 	}
