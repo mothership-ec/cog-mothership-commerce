@@ -82,9 +82,13 @@ class OrderDetail extends Controller
 	{
 		$this->_order = $this->get('order.loader')->getById($orderID);
 		$this->_notes = $this->get('order.note.loader')->getByOrder($this->_order);
+
+		$createNoteForm = $this->_createNoteForm($orderID);
+
 		return $this->render('::order:detail:note:listing', array(
-			'order' => $this->_order,
-			'notes' => $this->_notes,
+			'order'          => $this->_order,
+			'notes'          => $this->_notes,
+			'createNoteForm' => $createNoteForm,
 		));
 	}
 
@@ -124,5 +128,18 @@ class OrderDetail extends Controller
 			'orderID' => $event->getOrder()->id,
 			'items' => $event->getItems(),
 		));
+	}
+
+	public function _createNoteForm($orderID)
+	{
+		$this->_order = ($this->_order) ?: $this->get('order.loader')->getById($orderID);
+
+		$form = $this->get('form');
+
+		$form->add('note', 'textarea');
+
+		$form->add('notify_customer', 'checkbox');
+
+		return $form;
 	}
 }
