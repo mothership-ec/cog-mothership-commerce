@@ -206,6 +206,10 @@ ms.commerce:
       cost: Cost
       weight: Weight(grams)
 
+    document:
+      none: There are no documents to view.
+      listing-title: Documents
+
     note:
       none: There are no notes to view.
 
