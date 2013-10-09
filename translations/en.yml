@@ -7,6 +7,7 @@ ms.commerce:
     button:
       save: Save product
       create: Create product
+      sku: Add product
     attributes:
       name:
         label: Name

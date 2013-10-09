@@ -40,6 +40,12 @@
 	</button>
 	{{ form_end(form) }}
 
+<div class="display-group">
+	<h2 class="title">Add Unit</h2>
+
+	<div class="content-wrap">
+
+
 	{{ form_start(addForm) }}
 
 	{{ form_row(addForm.sku) }}
@@ -48,9 +54,11 @@
 
 	{{ form_rest(addForm) }}
 	<button type="submit" class="button small submit">
-		{{ 'ms.commerce.product.button.save'|trans }}
+		{{ 'ms.commerce.product.button.sku'|trans }}
 	</button>
 
 	{{ form_end(addForm) }}
+</div>
+</div>
 
 {% endblock %}
