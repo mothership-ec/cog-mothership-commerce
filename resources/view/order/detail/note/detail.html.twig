@@ -4,11 +4,11 @@
 		<li><span>Note</span>{{ note.note }}</li>
 		<li>
 			<span>{{ 'ms.commerce.order.note.customer-notified'|trans }}</span>
-			{{ note.customerNotified }}
+			{{ note.customerNotified|replace({'1': 'Yes', '0': 'No'})|default('No') }}
 		</li>
 		<li>
 			<span>{{ 'ms.commerce.order.note.raised-from'|trans }}</span>
-			{{ note.raisedFrom }}
+			{{ note.raisedFrom|replace({'_': ' '})|capitalize }}
 		</li>
 	</ul>
 </div>
