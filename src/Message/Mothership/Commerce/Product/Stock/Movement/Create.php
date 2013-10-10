@@ -17,6 +17,7 @@ class Create implements DB\TransactionalInterface
 	protected $_currentUser;
 	protected $_query;
 	protected $_adjustmentCreator;
+	protected $_createWithRawNote = false;
 
 	public function __construct(DB\Transaction $query, UserInterface $currentUser, Adjustment\Create $adjustmentCreator)
 	{
@@ -29,6 +30,10 @@ class Create implements DB\TransactionalInterface
 	{
 		$this->_query = $trans;
 		$this->_adjustmentCreator->setTransaction($trans);
+	}
+
+	public function createWithRawNote($bool) {
+		$this->_createWithRawNote = (bool)$bool;
 	}
 
 	public function create(Movement $movement)
@@ -57,6 +62,8 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
+		$note = ($this->_createWithRawNote ? 'note = ' . $movement->note . '' : 'note = :note?sn');
+
 		$result = $this->_query->add('
 			INSERT INTO
 				stock_movement
@@ -64,8 +71,8 @@ class Create implements DB\TransactionalInterface
 				created_at  = :createdAt?d,
 				created_by  = :createdBy?i,
 				reason   	= :reason?s,
-				note    	= :note?sn,
-				automated	= :automated?b
+				automated	= :automated?b,
+				' . $note . '
 		', array(
 			'createdAt' => $movement->authorship->createdAt(),
 			'createdBy' => $movement->authorship->createdBy(),

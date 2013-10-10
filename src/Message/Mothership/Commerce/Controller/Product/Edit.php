@@ -107,7 +107,7 @@ class Edit extends Controller
 			'product' 		   => $this->_product,
 			'units'   		   => $this->_units,
 			'locations' 	   => $locations,
-			'form'	  		   => $this->_getUnitStockForm($locations),
+			'form'	  		   => $this->_getStockForm($locations),
 			'movementIterator' => $movementIterator,
 		));
 	}
@@ -313,7 +313,7 @@ class Edit extends Controller
 		$this->_product 	= $this->get('product.loader')->getByID($productID);
 		$locationCollection = $this->get('stock.locations');
 		$this->_units   	= $this->_product->getUnits();
-		$form           	= $this->_getUnitStockForm($locationCollection->all());
+		$form           	= $this->_getStockForm($locationCollection->all());
 		$stockManager 		= $this->get('stock.manager');
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
@@ -383,7 +383,7 @@ class Edit extends Controller
 	 *
 	 * @return Handler Form Handler for stock editing
 	 */
-	protected function _getUnitStockForm($locations)
+	protected function _getStockForm($locations)
 	{
 		// Make an overall form
 		$mainForm = $this->get('form')

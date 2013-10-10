@@ -136,6 +136,11 @@ class StockManager implements DB\TransactionalInterface
 		$this->_movement->note = $note;
 		return $this;
 	}
+
+	public function createWithRawNote($bool) {
+		$this->_checkMovementNotInTransaction();
+		$this->_movementCreator->createWithRawNote((bool)$bool);
+	}
 	
 	/**
 	 * Sets the movement the stock manager is working with
@@ -151,7 +156,6 @@ class StockManager implements DB\TransactionalInterface
 		$this->movement = $movement;
 		return $this;
 	}
-
 
 	/**
 	 * Creates an adjustment for the given unit and location, with
