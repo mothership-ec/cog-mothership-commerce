@@ -4,11 +4,11 @@
 	<section class="group small-box">
 		<h2 class="title">Billing Total</h2>
 		<ul class="order-details">
-			<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} (Tax: {{ order.productTax|price(order.currencyID) }} ) </li>
+			<li><span>Subtotal</span> {{ order.productGross|price(order.currencyID) }} <em>(Tax: {{ order.productTax|price(order.currencyID) }})</em> </li>
 			<li><span>Discount</span> {{ order.totalDiscount|price(order.currencyID) }} </li>
-			<li><span>Shipping ({{ order.shippingDisplayName }} )</span> {{ order.shippingGross|price(order.currencyID) }}</li>
+			<li><span>Shipping</span> {{ order.shippingGross|price(order.currencyID) }} <em>({{ order.shippingDisplayName }})</em></li>
 			<li class="grand-total"><span>Grand Total</span> {{ order.totalGross|price(order.currencyID) }} </li>
-			<li><span>Currency</span> {{ order.currencyID }} (Conversion Rate: {{ order.conversionRate }})</li>
+			<li><span>Currency</span> {{ order.currencyID }} <em>(Conversion Rate: {{ order.conversionRate }})</em></li>
 
 		</ul>
 	</section>
