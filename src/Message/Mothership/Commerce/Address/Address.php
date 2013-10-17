@@ -24,7 +24,7 @@ class Address
 	public function __construct()
 	{
 		for($i = 1; $i <= self::AMOUNT_LINES; ++$i) {
-			$lines[$i] = null;
+			$this->lines[$i] = null;
 		}
 	}
 
