@@ -126,7 +126,7 @@ class Product
 	 */
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
-		$this->_entities['units']->load($this, $showOutOfStock, $showInvisible);
+		$this->_entities['units']->load($showOutOfStock, $showInvisible);
 
 		return $this->_entities['units']->all();
 	}
