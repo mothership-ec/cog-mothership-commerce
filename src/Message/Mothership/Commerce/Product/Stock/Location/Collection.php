@@ -115,7 +115,7 @@ class Collection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Set the location for a role.
-	 * 
+	 *
 	 * @param string $role
 	 * @param string $name
 	 *
@@ -130,14 +130,14 @@ class Collection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Get the location for a role.
-	 * 
+	 *
 	 * @param  string $role
-	 * 
+	 *
 	 * @return Location
 	 */
 	public function getRoleLocation($role)
 	{
-		if (! array_key_exists($this->_roles, $role)) {
+		if (! array_key_exists($role, $this->_roles)) {
 			throw new \InvalidArgumentException(sprintf('Location role `%s` does not exist', $role));
 		}
 
