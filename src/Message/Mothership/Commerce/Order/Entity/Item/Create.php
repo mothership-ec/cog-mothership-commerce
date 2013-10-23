@@ -142,22 +142,18 @@ class Create implements DB\TransactionalInterface
 		}
 
 		// Set personalisation data, if defined
-		if ($item->personalisation && !$item->personalisation->isEmpty()) {
+		foreach ($item->personalisation as $name => $value) {
 			$this->_query->add('
 				INSERT INTO
 					order_item_personalisation
 				SET
-					item_id         = :itemID?i,
-					sender_name     = :senderName?sn,
-					recipient_name  = :recipientName?sn,
-					recipient_email = :recipientEmail?sn,
-					message         = :message?sn
+					item_id = :itemID?i,
+					name    = :name?s,
+					value   = :value?sn
 			', array(
-				'itemID'         => $item->id,
-				'senderName'     => $item->personalisation->senderName,
-				'recipientName'  => $item->personalisation->recipientName,
-				'recipientEmail' => $item->personalisation->recipientEmail,
-				'message'        => $item->personalisation->message,
+				'itemID' => $item->id,
+				'name'   => $name,
+				'value'  => $value,
 			));
 		}
 
