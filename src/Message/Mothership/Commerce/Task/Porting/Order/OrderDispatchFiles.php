@@ -9,10 +9,10 @@ class OrderDispatchFiles extends Porting
     public function process()
     {
         $uwOld 	 = $this->getFromConnection();
-        $uwNew = $this->getToCOnnection();
+        $uwNew   = $this->getToConnection();
 
 		$old 	 = new \Message\Cog\DB\Query($uwOld);
-		$new = new \Message\Cog\DB\Transaction($uwNew);
+		$new     = new \Message\Cog\DB\Transaction($uwNew);
 
 		$results = $old->run('
 			SELECT
