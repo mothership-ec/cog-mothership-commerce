@@ -42,6 +42,7 @@ class Sagepay extends Wrapper
 			'card'          => $this->_card,
 			'currency'      => $this->_currencyID,
 			'returnUrl'     => $this->_redirect,
+			'cancelUrl'     => $this->_cancelUrl,
 			'transactionId' => $this->_transactionID,
 			'description'   => 'Uniform Wares payment',
 		);
