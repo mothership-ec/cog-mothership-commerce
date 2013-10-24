@@ -14,6 +14,7 @@ class Sagepay extends Wrapper
 	protected $_request;
 	protected $_config;
 	protected $_cache;
+	protected $_cancelUrl;
 
 	public function __construct(
 		$gatewayName = 'SagePay_Server',
@@ -29,6 +30,7 @@ class Sagepay extends Wrapper
 		$this->_order   = $order;
 		$this->setGateway($gatewayName, $request);
 		$this->_config = $config;
+		$this->_cancelUrl = $this->_request->getUri();
 	}
 
 	public function send()
@@ -44,11 +46,20 @@ class Sagepay extends Wrapper
 			'description'   => 'Uniform Wares payment',
 		);
 
+		/**
+		 * WTF!? $this->_request starts out as an Cog HTTP request then becomes an OmniPay request
+		 */
 		$this->_request = $this->_gateway->purchase($this->_data);
+		$this->_request->setCancelUrl($this->_cancelUrl);
 
 		$this->_response = $this->_request->send();
 
 		return $this->_response;
+	}
+
+	public function setCancelUrl($url)
+	{
+		$this->_cancelUrl = $url;
 	}
 
 	public function completePurchase($data)
