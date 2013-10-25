@@ -34,4 +34,21 @@ class Image implements ResizableInterface
 	{
 		return $this->file->getAltText();
 	}
+
+	public function __sleep()
+	{
+		return array(
+			'id',
+			'authorship',
+			'type',
+			'locale',
+			'options',
+			'product',
+		);
+	}
+
+	public function __wakeup()
+	{
+
+	}
 }
