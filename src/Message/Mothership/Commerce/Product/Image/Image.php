@@ -49,6 +49,6 @@ class Image implements ResizableInterface
 
 	public function __wakeup()
 	{
-
+		$this->file = \Message\Cog\Service\Container::get('file_manager.file.loader')->getByID($this->id);
 	}
 }
