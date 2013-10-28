@@ -77,7 +77,7 @@ class ProductSelector extends Controller
 			$item     = new Order\Entity\Item\Item;
 
 			$item->stockLocation = $this->get('stock.locations')->get('web');
-			$item->populate($item);
+			$item->populate($unit);
 
 			$item = $this->get('event.dispatcher')->dispatch(
 				Events::PRODUCT_SELECTOR_PROCESS,

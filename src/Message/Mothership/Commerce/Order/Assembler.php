@@ -109,7 +109,7 @@ class Assembler
 		if ($quantity > $unitCount) {
 			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addItem($unit, $item->stockLocation);
+				$this->addUnit($unit, $item->stockLocation);
 			}
 		}
 

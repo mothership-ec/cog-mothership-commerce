@@ -7,7 +7,7 @@ use Message\Mothership\Commerce\Order\Entity\Item\Item;
 
 use Message\Cog\Form\Handler as Form;
 
-class ProductSelectorProcessEvent extends Event
+class ProductSelectorProcessEvent extends ProductSelectorEvent
 {
 	protected $_item;
 
