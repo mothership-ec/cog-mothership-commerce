@@ -47,8 +47,13 @@ class Create implements DB\TransactionalInterface
 
 	public function create(Item $item)
 	{
-		$item = $this->_eventDispatcher->dispatch(Order\Events::CREATE_ITEM, new Order\Event\ItemEvent($item->order, $item))
-			->getItem();
+		$event = new Order\Event\EntityEvent($item->order, $item);
+		$event->setTransaction($this->_query);
+
+		$item = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE,
+			$event
+		)->getEntity();
 
 		// Set create authorship data if not already set
 		if (!$item->authorship->createdAt()) {
