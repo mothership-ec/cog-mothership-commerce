@@ -2,7 +2,9 @@
 
 namespace Message\Mothership\Commerce\Controller\Module;
 
+use Message\Mothership\Commerce\Events;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Order;
 
 use Message\Mothership\CMS\Page\Content;
 
@@ -55,6 +57,11 @@ class ProductSelector extends Controller
 			));
 		}
 
+		$form = $this->get('event.dispatcher')->dispatch(
+			Events::PRODUCT_SELECTOR_BUILD,
+			new ProductSelectorBuildEvent($form, $product, $options)
+		)->getForm();
+
 		return $form;
 	}
 
@@ -64,10 +71,19 @@ class ProductSelector extends Controller
 		$form    = $this->getForm($product);
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$unit = $product->getUnit($data['unit_id']);
-			$basket = $this->get('basket');
-			$location = $this->get('stock.locations')->get('web');
-			if ($basket->addItem($unit, $location)) {
+			$basket   = $this->get('basket');
+			$unit     = $product->getUnit($data['unit_id']);
+			$item     = new Order\Entity\Item;
+
+			$item->stockLocation = $this->get('stock.locations')->get('web');
+			$item->populate($item);
+
+			$item = $this->get('event.dispatcher')->dispatch(
+				Events::PRODUCT_SELECTOR_PROCESS,
+				new ProductSelectorProcessEvent($form, $product)
+			)->getItem();
+
+			if ($basket->addItem($item)) {
 				$this->addFlash('success', 'The item has been added to your basket');
 			}
 		}
