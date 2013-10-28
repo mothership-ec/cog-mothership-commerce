@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order;
 use Message\Mothership\Commerce\User\LoaderInterface;
 use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
 use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
 use Message\Mothership\Commerce\Order\Entity\Item\Item;
@@ -40,19 +41,31 @@ class Assembler
 		$this->_session           = $session;
 	}
 
-	public function addItem(Unit $unit, $stockLocation)
+	public function addUnit(Unit $unit, $stockLocation)
+	{
+		$item = new Entity\Item\Item;
+
+		$item->populate($unit);
+
+		$item->stockLocation = $stockLocation;
+
+		return $this->addItem($item);
+	}
+
+	public function addItem(Entity\Item\Item $item)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
-		$item->stockLocation = $stockLocation;
 
-		$this->_order->items->append($item->populate($unit));
-		$event = new Event($this->_order);
-		// Dispatch the edit event
+		if (!($item->stockLocation instanceof StockLocation)) {
+			throw new \InvalidArgumentException('Cannot add item to order: must have a valid stock location set');
+		}
+
+		$this->_order->items->append($item);
 
 		$this->_eventDispatcher->dispatch(
 			Events::ASSEMBLER_UPDATE,
-			$event
+			new Event($this->_order)
 		);
 
 		return $this;
