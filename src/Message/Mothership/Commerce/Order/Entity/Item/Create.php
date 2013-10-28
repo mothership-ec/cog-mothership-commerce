@@ -146,6 +146,14 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
+		$event = new Order\Event\EntityEvent($item->order, $item);
+		$event->setTransaction($this->_query);
+
+		$item = $this->_eventDispatcher->dispatch(
+			Events::CREATE_PRE_PERSONALISATION_INSERTS,
+			$event
+		)->getEntity();
+
 		// Set personalisation data, if defined
 		foreach ($item->personalisation as $name => $value) {
 			$this->_query->add('
