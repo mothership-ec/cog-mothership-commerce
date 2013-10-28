@@ -14,7 +14,6 @@ final class Events
 	const SET_STATUS               = 'commerce.order.status';
 	const ITEM_STATUS_CHANGE       = 'commerce.order.item.status.change';
 	const DISPATCH_POSTAGE_AUTO    = 'commerce.order.dispatch.postage.automatically';
-	const CREATE_NOTE              = 'commerce.order.note.create';
 	const DISPATCH_SHIPPED         = 'commerce.order.dispatch.shipped';
 
 	const ENTITY_CREATE            = 'commerce.order.entity.create';
