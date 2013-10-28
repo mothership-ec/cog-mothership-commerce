@@ -11,6 +11,11 @@ class Personalisation implements \IteratorAggregate, \Countable, \ArrayAccess
 {
 	protected $_data = array();
 
+	static public function getDisplayName($name)
+	{
+		return ucfirst(str_replace(array('_', '-'), ' ', $name));
+	}
+
 	public function __get($name)
 	{
 		return $this->get($name);
@@ -36,7 +41,7 @@ class Personalisation implements \IteratorAggregate, \Countable, \ArrayAccess
 		$return = '';
 
 		foreach ($this->_data as $name => $value) {
-			$return .= $name . ': ' . $value . "\n";
+			$return .= statis::getDisplayName($name) . ': ' . $value . "\n";
 		}
 
 		return $return;

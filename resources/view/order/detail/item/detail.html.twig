@@ -25,7 +25,7 @@
 		<h2>Personalisation Data</h2>
 		<ul class="order-details">
 			{% for name, value in item.personalisation %}
-			<li><span>{{ name|replace('_', ' ')|capitalize }}</span> {{ value }}</li>
+			<li><span>{{ item.personalisation.getDisplayName(name) }}</span> {{ value|nl2br }}</li>
 			{% endfor %}
 		</ul>
 		{% endif %}
