@@ -76,6 +76,7 @@ class ProductSelector extends Controller
 			$unit     = $product->getUnit($data['unit_id']);
 			$item     = new Order\Entity\Item\Item;
 
+			$item->order         = $basket->getOrder();
 			$item->stockLocation = $this->get('stock.locations')->get('web');
 			$item->populate($unit);
 
