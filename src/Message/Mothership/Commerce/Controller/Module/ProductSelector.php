@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Controller\Module;
 
 use Message\Mothership\Commerce\Events;
+use Message\Mothership\Commerce\Event;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Mothership\Commerce\Order;
 
@@ -59,7 +60,7 @@ class ProductSelector extends Controller
 
 		$form = $this->get('event.dispatcher')->dispatch(
 			Events::PRODUCT_SELECTOR_BUILD,
-			new ProductSelectorBuildEvent($form, $product, $options)
+			new Event\ProductSelectorEvent($form, $product)
 		)->getForm();
 
 		return $form;
@@ -73,14 +74,14 @@ class ProductSelector extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$basket   = $this->get('basket');
 			$unit     = $product->getUnit($data['unit_id']);
-			$item     = new Order\Entity\Item;
+			$item     = new Order\Entity\Item\Item;
 
 			$item->stockLocation = $this->get('stock.locations')->get('web');
 			$item->populate($item);
 
 			$item = $this->get('event.dispatcher')->dispatch(
 				Events::PRODUCT_SELECTOR_PROCESS,
-				new ProductSelectorProcessEvent($form, $product)
+				new Event\ProductSelectorProcessEvent($form, $product, $item)
 			)->getItem();
 
 			if ($basket->addItem($item)) {

@@ -54,7 +54,6 @@ class Assembler
 
 	public function addItem(Entity\Item\Item $item)
 	{
-		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
 
 		if (!($item->stockLocation instanceof StockLocation)) {
