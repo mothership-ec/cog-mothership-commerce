@@ -74,7 +74,9 @@ class Create
 
 	public function create(Order $order, array $metadata = array())
 	{
-		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, new Event\Event($order))
+		$event = new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_trans);
+		$order = $this->_eventDispatcher->dispatch(Events::CREATE_START, $event)
 			->getOrder();
 
 		$validation = $this->_eventDispatcher->dispatch(Events::CREATE_VALIDATE, new Event\ValidateEvent($order));
