@@ -73,7 +73,7 @@ class Assembler
 
 	public function removeItem(Item $item)
 	{
-		$this->_order->items->remove($item->id);
+		$this->_order->items->remove($item);
 
 		$event = new Event($this->_order);
 		// Dispatch the edit event
