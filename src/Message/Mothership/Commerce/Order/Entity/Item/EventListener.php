@@ -89,32 +89,6 @@ class EventListener implements SubscriberInterface
 		}
 	}
 
-	/**
-	 * Clear the tax amounts on all items in the order, and reset the gross &
-	 * net amounts.
-	 *
-	 * This event is skipped if the order is taxable.
-	 *
-	 * @param Event\EntityEvent $event The event object
-	 */
-	public function clearTax(Event\EntityEvent $event)
-	{
-		$item = $event->getEntity();
-
-		if (!($item instanceof Item)
-		 || $item->order->taxable) {
-			return false;
-		}
-
-		// Resetting the gross is important because if the tax strategy is
-		// exclusive this will include the tax amount
-		$item->gross   = round($item->listPrice - $item->discount, 2);
-
-		$item->taxRate = 0;
-		$item->tax     = 0;
-		$item->net     = $item->gross;
-	}
-
 	public function checkItemSet(Event\ValidateEvent $event)
 	{
 		if (count($event->getOrder()->items) < 1) {
