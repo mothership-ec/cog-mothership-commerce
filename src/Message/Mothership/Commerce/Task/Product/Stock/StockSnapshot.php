@@ -14,7 +14,7 @@ class StockSnapshot extends Task
 
 	public function process()
 	{
-		$conn = $this->getToConnection();
+		$conn = $this->get('db.query');
 
 		$conn->add("
 			INSERT INTO
@@ -41,21 +41,5 @@ class StockSnapshot extends Task
 
 		$this->writeln('<error>Failed to cache snapshot of current stock levels.</error>');
 		return false;
-	}
-
-	/**
-	 * Gets the DB connection to port the data into.
-	 *
-	 * @return Connection Instance of the DB Connection.
-	 */
-	public function getToConnection()
-	{
-		return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-				'host'		=> $this->get('cfg')->db->hostname,
-				'user'		=> $this->get('cfg')->db->user,
-				'password' 	=> $this->get('cfg')->db->pass,
-				'db'		=> $this->get('cfg')->db->name,
-				'charset'	=> 'utf-8',
-		));
 	}
 }
