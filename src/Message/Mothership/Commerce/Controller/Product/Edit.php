@@ -635,12 +635,6 @@ class Edit extends Controller
 				->val()
 				->optional();
 
-			$form->add('delete', 'checkbox','', array(
-				'attr' => array('data-help-key' => 'ms.commerce.product.units.delete.help'),
-			))
-				->val()
-				->optional();
-
 			// Add the unit form to the main form
 			$mainForm->add($form, 'form');
 		}
