@@ -101,7 +101,11 @@ class EventListener implements SubscriberInterface
 		if (!$item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
-			$item->gross   = round($item->listPrice - $item->discount, 2);
+			$item->gross = round($item->listPrice - $item->discount, 2);
+
+			if ('inclusive' === $item->taxStrategy) {
+				$item->gross = round($item->gross - $this->_calculateInclusiveTax($item->gross, $item->productTaxRate), 2);
+			}
 
 			$item->taxRate = 0;
 			$item->tax     = 0;
@@ -125,10 +129,15 @@ class EventListener implements SubscriberInterface
 		}
 		// Calculate tax where the strategy is inclusive
 		else {
-			$item->tax = round(($item->gross / (100 + $item->taxRate)) * $item->taxRate, 2);
+			$item->tax = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
 		}
 
 		// Set the net value to gross - tax
 		$item->net = round($item->gross - $item->tax, 2);
+	}
+
+	protected function _calculateInclusiveTax($amount, $rate)
+	{
+		return round(($amount / (100 + $rate)) * $rate, 2);
 	}
 }
