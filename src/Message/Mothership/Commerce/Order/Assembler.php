@@ -44,6 +44,7 @@ class Assembler
 	public function addUnit(Unit $unit, $stockLocation)
 	{
 		$item = new Entity\Item\Item;
+		$item->order = $this->_order;
 
 		$item->populate($unit);
 
