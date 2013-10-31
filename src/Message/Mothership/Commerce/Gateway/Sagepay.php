@@ -36,7 +36,7 @@ class Sagepay extends Wrapper
 		parent::setDeliveryAddress($address);
 
 		// Remove the state if the country is not United States
-		if ("US" !== $address->countryID) {
+		if ("US" !== strtoupper($address->countryID)) {
 			$this->_card->setShippingState(null);
 		}
 	}
@@ -46,7 +46,7 @@ class Sagepay extends Wrapper
 		parent::setBillingAddress($address);
 
 		// Remove the state if the country is not United States
-		if ("US" !== $address->countryID) {
+		if ("US" !== strtoupper($address->countryID)) {
 			$this->_card->setShippingState(null);
 		}
 	}
