@@ -48,7 +48,7 @@ class Sagepay extends Wrapper
 
 		// Remove the state if the country is not United States
 		if ("US" !== strtoupper($address->countryID)) {
-			$this->_card->setShippingState("");
+			$this->_card->setState("");
 		}
 	}
 
