@@ -7,6 +7,7 @@ use Message\Cog\HTTP\Request;
 use Message\Cog\Cache\Instance;
 use Message\Mothership\Commerce\Order\Order;
 use Message\Mothership\Commerce\Order\Entity\Payment\Payment;
+use Message\Mothership\Commerce\Order\Entity\Address\Address;
 
 class Sagepay extends Wrapper
 {
