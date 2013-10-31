@@ -31,6 +31,26 @@ class Sagepay extends Wrapper
 		$this->_config = $config;
 	}
 
+	public function setDeliveryAddress(Address $address)
+	{
+		parent::setDeliveryAddress($address);
+
+		// Remove the state if the country is not United States
+		if ("US" !== strtoupper($address->countryID)) {
+			$this->_card->setShippingState(null);
+		}
+	}
+
+	public function setBillingAddress(Address $address)
+	{
+		parent::setBillingAddress($address);
+
+		// Remove the state if the country is not United States
+		if ("US" !== strtoupper($address->countryID)) {
+			$this->_card->setShippingState(null);
+		}
+	}
+
 	public function send()
 	{
 		$this->_transactionID = $this->_request->getSession()->getID().'_'.time();
