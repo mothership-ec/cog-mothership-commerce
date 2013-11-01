@@ -14,9 +14,9 @@ class StockSnapshot extends Task
 
 	public function process()
 	{
-		$conn = $this->get('db.query');
+		$query = $this->get('db.query');
 
-		$conn->add("
+		$result = $query->run("
 			INSERT INTO
 				product_unit_stock_snapshot (
 					unit_id,
@@ -34,7 +34,7 @@ class StockSnapshot extends Task
 
 		");
 
-		if ($conn->commit()) {
+		if ($result) {
 			$this->writeln('<info>Successfully cached a snapshot of current stock levels.</info>');
 			return true;
 		}
