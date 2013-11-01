@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Mothership\Commerce\Task\Product\Stock;
+namespace Message\Mothership\Commerce\Product\Stock;
 
-use Message\Cog\Console\Task;
+use Message\Cog\Console\Task\Task;
 
 class StockSnapshot extends Task
 {
