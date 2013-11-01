@@ -526,7 +526,7 @@ class Edit extends Controller
 				'allow_add'    => true,
 				'allow_delete' => true
 			)
-		);
+		)->val()->optional();
 
 		return $form;
 	}
