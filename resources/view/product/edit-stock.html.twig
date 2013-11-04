@@ -60,9 +60,9 @@
 					Stock Movement #{{ movement.id }}
 					- {{ movement.authorship.createdAt|date }}
 					{% if movement.automated %}
-						- Automated Movement
+						(Automated)
 					{% else %}
-						by {{ movement.authorship.createdBy }}
+						by {{ movement.authorship.createdUser.name }}
 					{% endif %}
 				</h2>
 
