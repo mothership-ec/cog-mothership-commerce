@@ -78,7 +78,7 @@ class ProductUnit extends Porting
 
 		$sql = 'SELECT
 					unit_id,
-					name AS location,
+					LOWER(name) AS location,
 					stock
 				FROM
 					catalogue_unit_stock
