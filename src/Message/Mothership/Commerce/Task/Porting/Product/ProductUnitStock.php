@@ -6,9 +6,9 @@ use Message\Mothership\Commerce\Task\Porting\Porting;
 
 class ProductUnitStock extends Porting
 {
-    public function process()
-    {
-        $uwOld = $this->getFromConnection();
+	public function process()
+	{
+		$uwOld = $this->getFromConnection();
 		$uwNew = $this->getToCOnnection();
 
 		$new = new \Message\Cog\DB\Transaction($uwNew);
@@ -77,7 +77,7 @@ class ProductUnitStock extends Porting
 		}
 
 		if ($new->commit()) {
-        	$this->writeln('<info>Successfully ported product unit stock & stock snapshots</info>');
+			$this->writeln('<info>Successfully ported product unit stock & stock snapshots</info>');
 		}
-    }
+	}
 }
