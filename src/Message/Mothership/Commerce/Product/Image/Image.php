@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Cog\ImageResize\ResizableInterface;
 use Message\Cog\ValueObject\Authorship;
-use Message\Cog\Filesystem\File;
+use Message\Mothership\FileManager\File;
 
 use Exception;
 
