@@ -31,7 +31,8 @@ class Image implements ResizableInterface
 	public function getUrl()
 	{
 		if (! $this->file or ! $this->file instanceof File) {
-			throw new Exception(sprintf("No file set for image with id #%s", $this->id));
+			return "";
+			// throw new Exception(sprintf("No file set for image with id #%s", $this->id));
 		}
 
 		return $this->file->getUrl();
@@ -40,7 +41,8 @@ class Image implements ResizableInterface
 	public function getAltText()
 	{
 		if (! $this->file or ! $this->file instanceof File) {
-			throw new Exception(sprintf("No file set for image with id #%s", $this->id));
+			return "";
+			// throw new Exception(sprintf("No file set for image with id #%s", $this->id));
 		}
 
 		return $this->file->getAltText();
