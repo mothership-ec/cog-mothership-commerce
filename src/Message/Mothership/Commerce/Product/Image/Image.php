@@ -4,6 +4,9 @@ namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Cog\ImageResize\ResizableInterface;
 use Message\Cog\ValueObject\Authorship;
+use Message\Cog\Filesystem\File;
+
+use Exception;
 
 class Image implements ResizableInterface
 {
@@ -27,11 +30,19 @@ class Image implements ResizableInterface
 
 	public function getUrl()
 	{
+		if (! $this->file or ! $this->file instanceof File) {
+			throw new Exception(sprintf("No file set for image with id #%s", $this->id));
+		}
+
 		return $this->file->getUrl();
 	}
 
 	public function getAltText()
 	{
+		if (! $this->file or ! $this->file instanceof File) {
+			throw new Exception(sprintf("No file set for image with id #%s", $this->id));
+		}
+
 		return $this->file->getAltText();
 	}
 
