@@ -5,7 +5,10 @@ namespace Message\Mothership\Commerce\Controller\Module;
 use Message\Mothership\Commerce\Events;
 use Message\Mothership\Commerce\Event;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Order;
+
+use Message\Mothership\Commerce\Field\ProductUnitInStockOnlyChoiceType;
 
 use Message\Mothership\CMS\Page\Content;
 
@@ -17,18 +20,12 @@ class ProductSelector extends Controller
 
 	public function index(Product $product, array $options = null)
 	{
-		$options = array_filter($options);
-		$units   = $this->_getAvailableUnits($product, $options);
-		$locs    = $this->get('stock.locations');
-		$inStock = false;
+		$options  = array_filter($options);
+		$units    = $this->_getAvailableUnits($product, $options);
+		$locs     = $this->get('stock.locations');
+		$oosUnits = $this->_filterInStockUnits($units);
 
-		foreach ($units as $unit) {
-			if (0 < $unit->getStockForLocation($locs->getRoleLocation($locs::SELL_ROLE))) {
-				$inStock = true;
-			}
-		}
-
-		if (!$inStock) {
+		if (count($units) === count($oosUnits)) {
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
 				'product' => $product,
 				'units'   => $units,
@@ -36,9 +33,9 @@ class ProductSelector extends Controller
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
-			'product'  => $product,
-			'units'    => $units,
-			'form'     => $this->_getForm($product, $options),
+			'product' => $product,
+			'units'   => $units,
+			'form'    => $this->_getForm($product, $options),
 		));
 	}
 
@@ -76,9 +73,11 @@ class ProductSelector extends Controller
 			->setAction($this->generateUrl('ms.commerce.product.add.basket', array('productID' => $product->id)))
 			->setMethod('post');
 
-		$choices = array();
+		$units    = $this->_getAvailableUnits($product, $options);
+		$oosUnits = $this->_filterInStockUnits($units);
+		$choices  = array();
 
-		foreach ($this->_getAvailableUnits($product, $options) as $unit) {
+		foreach ($units as $unit) {
 			// Don't show option names that were passed as criteria to avoid weird-looking duplication
 			$optionsToShow = ($options) ? array_diff_assoc($unit->options, $options) : $unit->options;
 
@@ -94,8 +93,9 @@ class ProductSelector extends Controller
 			));
 		// Otherwise, add a select box to select the unit
 		} else {
-			$form->add('unit_id', 'choice', $this->trans('ms.commerce.product.selector.unit.label'), array(
+			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), array(
 				'choices' => $choices,
+				'oos'     => array_keys($oosUnits),
 			));
 		}
 
@@ -121,10 +121,28 @@ class ProductSelector extends Controller
 					continue;
 				}
 
-				$this->_availableUnits[$key][] = $unit;
+				$this->_availableUnits[$key][$unit->id] = $unit;
 			}
 		}
 
 		return $this->_availableUnits[$key];
+	}
+
+	protected function _filterInStockUnits(array $units)
+	{
+		$return = array();
+		$locs   = $this->get('stock.locations');
+
+		foreach ($units as $key => $unit) {
+			if (!($unit instanceof Unit)) {
+				throw new \InvalidArgumentException('Expected instance of Product\Unit\Unit');
+			}
+
+			if (1 > $unit->getStockForLocation($locs->getRoleLocation($locs::SELL_ROLE))) {
+				$return[$key] = $unit;
+			}
+		}
+
+		return $return;
 	}
 }
