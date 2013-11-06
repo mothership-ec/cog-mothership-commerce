@@ -13,15 +13,63 @@ use Message\Cog\Controller\Controller;
 
 class ProductSelector extends Controller
 {
+	protected $_availableUnits = array();
+
 	public function index(Product $product, array $options = null)
 	{
+		$options = array_filter($options);
+		$units   = $this->_getAvailableUnits($product, $options);
+		$locs    = $this->get('stock.locations');
+		$inStock = false;
+
+		foreach ($units as $unit) {
+			if (0 < $unit->getStockForLocation($locs->getRoleLocation($locs::SELL_ROLE))) {
+				$inStock = true;
+			}
+		}
+
+		if (!$inStock) {
+			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
+				'product' => $product,
+				'units'   => $units,
+			));
+		}
+
 		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
 			'product'  => $product,
-			'form'     => $this->getForm($product, $options),
+			'units'    => $units,
+			'form'     => $this->_getForm($product, $options),
 		));
 	}
 
-	public function getForm(Product $product, array $options = array())
+	public function process($productID)
+	{
+		$product = $this->get('product.loader')->getByID($productID);
+		$form    = $this->_getForm($product);
+
+		if ($form->isValid() && $data = $form->getFilteredData()) {
+			$basket   = $this->get('basket');
+			$unit     = $product->getUnit($data['unit_id']);
+			$item     = new Order\Entity\Item\Item;
+
+			$item->order         = $basket->getOrder();
+			$item->stockLocation = $this->get('stock.locations')->get('web');
+			$item->populate($unit);
+
+			$item = $this->get('event.dispatcher')->dispatch(
+				Events::PRODUCT_SELECTOR_PROCESS,
+				new Event\ProductSelectorProcessEvent($form, $product, $item)
+			)->getItem();
+
+			if ($basket->addItem($item)) {
+				$this->addFlash('success', 'The item has been added to your basket');
+			}
+		}
+
+		return $this->redirectToReferer();
+	}
+
+	protected function _getForm(Product $product, array $options = array())
 	{
 		$form = $this->get('form')
 			->setName('select_product')
@@ -29,15 +77,8 @@ class ProductSelector extends Controller
 			->setMethod('post');
 
 		$choices = array();
-		$options = array_filter($options);
 
-		foreach ($product->getVisibleUnits() as $unit) {
-			// Skip units that don't meet the options criteria, if set
-			if ($options
-			 && $options !== array_intersect_assoc($options, $unit->options)) {
-				continue;
-			}
-
+		foreach ($this->_getAvailableUnits($product, $options) as $unit) {
 			// Don't show option names that were passed as criteria to avoid weird-looking duplication
 			$optionsToShow = ($options) ? array_diff_assoc($unit->options, $options) : $unit->options;
 
@@ -66,31 +107,24 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	public function process($productID)
+	protected function _getAvailableUnits(Product $product, array $options = null)
 	{
-		$product = $this->get('product.loader')->getByID($productID);
-		$form    = $this->getForm($product);
+		$key = md5(serialize(array($product, $options)));
 
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$basket   = $this->get('basket');
-			$unit     = $product->getUnit($data['unit_id']);
-			$item     = new Order\Entity\Item\Item;
+		if (!array_key_exists($key, $this->_availableUnits)) {
+			$this->_availableUnits[$key] = array();
 
-			$item->order         = $basket->getOrder();
-			$item->stockLocation = $this->get('stock.locations')->get('web');
-			$item->populate($unit);
+			foreach ($product->getVisibleUnits() as $unit) {
+				// Skip units that don't meet the options criteria, if set
+				if ($options
+				 && $options !== array_intersect_assoc($options, $unit->options)) {
+					continue;
+				}
 
-			$item = $this->get('event.dispatcher')->dispatch(
-				Events::PRODUCT_SELECTOR_PROCESS,
-				new Event\ProductSelectorProcessEvent($form, $product, $item)
-			)->getItem();
-
-			if ($basket->addItem($item)) {
-				$this->addFlash('success', 'The item has been added to your basket');
+				$this->_availableUnits[$key][] = $unit;
 			}
 		}
 
-		return $this->redirectToReferer();
+		return $this->_availableUnits[$key];
 	}
-
 }
