@@ -61,7 +61,6 @@ class Create implements DB\TransactionalInterface
 				order_dispatch
 			SET
 				order_id     = :orderID?i,
-				address_id   = :addressID?i,
 				created_at   = :createdAt?d,
 				created_by   = :createdBy?in,
 				shipped_at   = :shippedAt?dn,
@@ -72,7 +71,6 @@ class Create implements DB\TransactionalInterface
 				weight_grams = :weight?in
 		', array(
 			'orderID'   => $dispatch->order->id,
-			'addressID' => 0,
 			'createdAt' => $dispatch->authorship->createdAt(),
 			'createdBy' => $dispatch->authorship->createdBy(),
 			'shippedAt' => $dispatch->shippedAt,
