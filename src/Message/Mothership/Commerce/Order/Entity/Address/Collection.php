@@ -12,4 +12,9 @@ class Collection extends BaseCollection
 
 		return current($addresses) ?: false;
 	}
+
+	public function getAllByType($type)
+	{
+		return $this->getByProperty('type', $type);
+	}
 }
