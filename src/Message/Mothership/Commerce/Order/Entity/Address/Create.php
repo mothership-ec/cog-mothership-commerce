@@ -17,11 +17,13 @@ class Create implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_loader;
+	protected $_currentUser;
 
-	public function __construct(DB\Query $query, Loader $loader)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
 	{
-		$this->_query  = $query;
-		$this->_loader = $loader;
+		$this->_query       = $query;
+		$this->_loader      = $loader;
+		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -34,7 +36,8 @@ class Create implements DB\TransactionalInterface
 		// Set create authorship data if not already set
 		if (!$address->authorship->createdAt()) {
 			$address->authorship->create(
-				new DateTimeImmutable
+				new DateTimeImmutable,
+				$this->_currentUser->id
 			);
 		}
 
@@ -44,6 +47,7 @@ class Create implements DB\TransactionalInterface
 			SET
 				order_id   = :orderID?i,
 				created_at = :createdAt?d,
+				created_by = :createdBy?in,
 				type       = :type?s,
 				title      = :title?sn,
 				forename   = :forename?sn,
@@ -62,6 +66,7 @@ class Create implements DB\TransactionalInterface
 		', array(
 			'orderID'   => $address->order->id,
 			'createdAt' => $address->authorship->createdAt(),
+			'createdBy' => $address->authorship->createdBy(),
 			'type'      => $address->type,
 			'title'     => $address->title,
 			'forename'  => $address->forename,
