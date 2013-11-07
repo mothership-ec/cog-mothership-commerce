@@ -72,7 +72,7 @@ class Create implements DB\TransactionalInterface
 				weight_grams = :weight?in
 		', array(
 			'orderID'   => $dispatch->order->id,
-			'addressID' => $dispatch->order->getAddress('delivery')->id,
+			'addressID' => 0,
 			'createdAt' => $dispatch->authorship->createdAt(),
 			'createdBy' => $dispatch->authorship->createdBy(),
 			'shippedAt' => $dispatch->shippedAt,
