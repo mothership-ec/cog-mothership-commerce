@@ -21,6 +21,8 @@ class Address extends BaseAddress implements EntityInterface
 	public $forename;
 	public $surname;
 
+	public $authorship;
+
 	public function __construct()
 	{
 		parent::__construct();
