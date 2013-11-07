@@ -41,6 +41,16 @@ class OrderAddress extends Porting
 		$result = $old->run($sql);
 		$output= '';
 
+		$authorshipSQL = '
+			SELECT
+				order_id,
+				UNIX_TIMESTAMP(order_summary.order_datetime) AS created_at,
+				user_id AS created_by
+			FROM
+				order_summary
+		';
+		$authorshipResults = $old->run($authorshipSQL);
+
 		$new->add('TRUNCATE order_address');
 
 		foreach($result as $row) {
@@ -54,6 +64,12 @@ class OrderAddress extends Porting
 				$row->forename = $nameParts[0];
 				$row->surname  = $nameParts[1];
 				$row->title    = null;
+			}
+
+			foreach ($authorshipResults as $authorshipRow) {
+				if ($authorshipRow->order_id == $row->order_id) {
+					break;
+				}
 			}
 
 			$new->add('
@@ -100,6 +116,8 @@ class OrderAddress extends Porting
 				)', array(
 					'address_id' => $row->address_id,
 					'order_id'   => $row->order_id,
+					'created_at' => $authorshipRow->created_at,
+					'created_by' => $authorshipRow->created_by,
 					'type'       => $row->type,
 					'title'      => $row->title,
 					'forename'   => $row->forename,
