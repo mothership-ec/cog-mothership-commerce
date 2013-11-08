@@ -55,6 +55,7 @@ class ProductSelector extends Controller
 		} else {
 			$form->add('unit_id', 'choice', $this->trans('ms.commerce.product.selector.unit.label'), array(
 				'choices' => $choices,
+				'empty_value' => $this->trans('ms.commerce.product.selector.unit.label')
 			));
 		}
 
