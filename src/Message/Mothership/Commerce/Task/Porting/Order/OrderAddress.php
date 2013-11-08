@@ -116,8 +116,6 @@ class OrderAddress extends Porting
 				)', array(
 					'address_id' => $row->address_id,
 					'order_id'   => $row->order_id,
-					'created_at' => $authorshipRow->created_at,
-					'created_by' => $authorshipRow->created_by,
 					'type'       => $row->type,
 					'title'      => $row->title,
 					'forename'   => $row->forename,
@@ -136,6 +134,16 @@ class OrderAddress extends Porting
 				)
 			);
 		}
+
+		$new->add('
+			UPDATE
+				order_address
+			LEFT JOIN
+				order_summary ON order_address.order_id = order_summary.order_id
+			SET
+				order_address.created_at = order_summary.created_at,
+				order_address.created_by = order_summary.created_by;
+		');
 
 		if ($new->commit()) {
         	$this->writeln('<info>Successfully ported order addresses</info>');
