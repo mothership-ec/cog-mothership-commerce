@@ -3,10 +3,9 @@
 namespace Message\Mothership\Commerce\Order\Entity\Address;
 
 use Message\Mothership\Commerce\Order;
-
 use Message\Cog\DB;
-
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\User\UserInterface;
 
 /**
  * Order address creator.
