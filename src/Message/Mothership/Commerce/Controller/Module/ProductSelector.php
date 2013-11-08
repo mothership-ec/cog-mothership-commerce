@@ -22,7 +22,6 @@ class ProductSelector extends Controller
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
-		$locs     = $this->get('stock.locations');
 		$oosUnits = $this->_filterInStockUnits($units);
 
 		if (count($units) === count($oosUnits)) {
