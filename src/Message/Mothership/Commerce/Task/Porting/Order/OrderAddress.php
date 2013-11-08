@@ -66,12 +66,6 @@ class OrderAddress extends Porting
 				$row->title    = null;
 			}
 
-			foreach ($authorshipResults as $authorshipRow) {
-				if ($authorshipRow->order_id == $row->order_id) {
-					break;
-				}
-			}
-
 			$new->add('
 				INSERT INTO
 					order_address
