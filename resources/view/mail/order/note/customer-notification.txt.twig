@@ -1,0 +1,6 @@
+{% extends 'Message:Mothership:CMS::mail:templates:main' %}
+{% block content %}
+Dear {{ order.user.name }},
+
+{{ note.note }}
+{% endblock %}
