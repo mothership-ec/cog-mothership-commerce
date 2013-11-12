@@ -38,7 +38,7 @@ class NotificationListener extends BaseListener implements SubscriberInterface
 	 */
 	public function triggerSendEvent(Event\DispatchEvent $event)
 	{
-		$this->_services['event.dispatcher']->dispatch(OrderEvents::DISPATCH_NOTIFICATION, $event);
+		$event->getDispatcher()->dispatch(OrderEvents::DISPATCH_NOTIFICATION, $event);
 	}
 
 	/**
