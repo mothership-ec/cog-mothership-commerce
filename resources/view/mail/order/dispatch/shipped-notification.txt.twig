@@ -1,30 +1,41 @@
-Your  order has now been dispatched. Delivery and order details are as follows.
+{% extends 'Message:Mothership:ControlPanel::mail:templates:main' %}
+{% block content %}
+{% block intro %}
+Dear {{ order.user.title }} {{ order.user.name }},
 
-------------------------------------------------------------------
+Your order has now been dispatched.
+{% endblock intro %}
 
 {% block details %}
-Order Number: {{ order.id }}
+ORDER NUMBER: {{ order.id }}
 
-Order Details:
+ORDER DETAILS:
 {% for row in order.items.getRows %}
 	{{ row.quantity }} x {{ row.first.description }}
 {% endfor %}
 
-Delivery Method: {{ order.shippingDisplayName }}
-
-Delivery Address: {{ order.getAddress('delivery').flatten|join(', ') }}
-{% endblock %}
-
-{% if dispatch.method.getTrackingLink(dispatch.code) %}
-Track your order:
-Your {{ dispatch.method.getDisplayName() }} order tracking number is {{ dispatch.code }}, please click the following link to check on the delivery status of your order.
-{{ dispatch.method.getTrackingLink(dispatch.code) }}
-
-{% elseif false %}
-Track your order:
-You can track your order by loggin into your account and selecting the order in 'View order history' within the 'Your account' section.
-
+{% if order.customerNotes|length > 0 %}
+ORDER NOTES:
+{% for note in order.customerNotes %}
+{{ note.note }}
+{% endfor %}
 {% endif %}
 
+{% if dispatch.method.getTrackingLink(dispatch.code) %}
+TRACKING YOUR SHIPMENT:
+Your {{ dispatch.method.getDisplayName() }} order tracking number is {{ dispatch.code }}, please click the following link to check on the delivery status of your order.
+{{ dispatch.method.getTrackingLink(dispatch.code) }}
+{% elseif false %}
+TRACKING YOUR ORDER:
+You can track your order by logging into your account and selecting the order in 'View order history' within the 'Your account' section.
+{% endif %}
+
+DELIVERY METHOD:
+{{ order.shippingDisplayName }}
+
+YOUR DELIVERY ADDRESS:
+{{ order.getAddress('delivery').flatten|join("\n") }}
 
 All orders must be signed for when you receive your delivery.
+{% endblock details %}
+{% endblock content %}
