@@ -47,7 +47,7 @@ class EventListener implements SubscriberInterface
 		$message = $this->get('mail.message');
 
 		$message->setTo($order->user->email, $order->user->getName());
-		$message->setSubject('Updates to your ' . $merchant->companyName . ' order ' . $order->orderID);
+		$message->setSubject('Updates to your ' . $this->get('cfg')->app->defaultEmailFrom->name . ' order ' . $order->orderID);
 		$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
 			'note'     => $note,
 			'order'    => $order,

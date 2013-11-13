@@ -55,7 +55,7 @@ class NotificationListener extends BaseListener implements SubscriberInterface
 		$message = $this->get('mail.message');
 
 		$message->setTo($order->user->email, $order->user->getName());
-		$message->setSubject('Your ' . $merchant->companyName . ' order ' . $order->orderID . ' has shipped');
+		$message->setSubject('Your ' . $this->get('cfg')->app->defaultEmailFrom->name . ' order ' . $order->orderID . ' has shipped');
 		$message->setView('Message:Mothership:Commerce::mail:order:dispatch:shipped-notification', array(
 			'dispatch' => $dispatch,
 			'order'    => $order,
