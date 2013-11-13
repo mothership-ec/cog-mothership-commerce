@@ -1,6 +1,6 @@
 {% extends 'Message:Mothership:ControlPanel::mail:templates:main' %}
 {% block content %}
-Dear {{ order.user.name }},
+Dear {{ order.user.title }} {{ order.user.name }},
 
 {{ note.note }}
 {% endblock %}
