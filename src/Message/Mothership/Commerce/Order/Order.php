@@ -300,6 +300,17 @@ class Order
 	}
 
 	/**
+	 * Get the notes associated with this order that are visible to the
+	 * customer.
+	 *
+	 * @return Entity\Collection Collection of notes
+	 */
+	public function getCustomerNotes()
+	{
+		return $this->_getEntity('notes')->getByProperty('customerNotified', 1);
+	}
+
+	/**
 	 * Get the grand total for this order.
 	 *
 	 * @deprecated Just use the totalGross property directly

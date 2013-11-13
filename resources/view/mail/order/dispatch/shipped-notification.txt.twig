@@ -14,12 +14,12 @@ ORDER DETAILS:
 	{{ row.quantity }} x {{ row.first.description }}
 {% endfor %}
 
+{% if order.customerNotes|length > 0 %}
 ORDER NOTES:
-{% for note in order.notes %}
+{% for note in order.customerNotes %}
 {{ note.note }}
-{% else %}
-None
 {% endfor %}
+{% endif %}
 
 {% if dispatch.method.getTrackingLink(dispatch.code) %}
 TRACKING YOUR SHIPMENT:
