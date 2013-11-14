@@ -6,13 +6,14 @@ use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Event\EventListener as BaseListener;
 
 /**
  * Order item event listener.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener implements SubscriberInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
 	protected $_defaultStatus;
 
@@ -41,21 +42,11 @@ class EventListener implements SubscriberInterface
 			return false;
 		}
 
-		$order    = $event->getOrder();
-		$merchant = $this->get('cfg')->merchant;
+		$factory = $this->get('mail.factory.order.note.notification')
+				->set('order', $event->getOrder())
+				->set('note', $note)
+				->set('companyName', $this->get('cfg')->app->defaultEmailFrom->name);
 
-		$message = $this->get('mail.message');
-
-		$message->setTo($order->user->email, $order->user->getName());
-		$message->setSubject('Updates to your ' . $this->get('cfg')->app->defaultEmailFrom->name . ' order ' . $order->orderID);
-		$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
-			'note'     => $note,
-			'order'    => $order,
-			'merchant' => $merchant,
-		));
-
-		$dispatcher = $this->get('mail.dispatcher');
-
-		$dispatcher->send($message);
+		$this->get('mail.dispatcher')->send($factory->getMessage());
 	}
 }
