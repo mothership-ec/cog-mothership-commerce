@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Refund;
 use Message\User\UserInterface;
 
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Order\Entity\Payment\Payment;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
