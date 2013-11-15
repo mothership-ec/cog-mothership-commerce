@@ -44,8 +44,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 		$factory = $this->get('mail.factory.order.note.notification')
 				->set('order', $event->getOrder())
-				->set('note', $note)
-				->set('companyName', $this->get('cfg')->app->defaultEmailFrom->name);
+				->set('note', $note);
 
 		$this->get('mail.dispatcher')->send($factory->getMessage());
 	}
