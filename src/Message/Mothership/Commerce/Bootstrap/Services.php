@@ -11,6 +11,8 @@ class Services implements ServicesInterface
 {
 	public function registerServices($services)
 	{
+		$this->registerEmails($services);
+
 		$services['order'] = function($c) {
 			return new Commerce\Order\Order($c['order.entities']);
 		};
@@ -473,5 +475,25 @@ class Services implements ServicesInterface
 		$services['order.basket.token'] = $services->share(function($c) {
 			return new Commerce\Order\Basket\Token($c['user.password_hash'], $c['cfg']);
 		});
+	}
+
+	public function registerEmails($services)
+	{
+		$services['mail.factory.order.note.notification'] = function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order', 'note');
+
+			$factory->extend(function($factory, $message) {
+				$message->setTo($factory->order->user->email, $factory->order->user->getName());
+				$message->setSubject(sprintf('Updates to your %s order - %d', $c['cfg']->app->name, $factory->order->orderID));
+				$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
+					'order' => $factory->order,
+					'note'  => $factory->note,
+				));
+			});
+
+			return $factory;
+		};
 	}
 }
