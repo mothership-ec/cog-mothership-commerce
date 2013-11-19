@@ -73,6 +73,21 @@ class Assembler
 		return $this;
 	}
 
+	/**
+	 * Add a note to the assembler's order.
+	 *
+	 * @param Entity\Note\Note $note
+	 * @return Assembler
+	 */
+	public function addNote(Entity\Note\Note $note)
+	{
+		$note->order = $this->_order;
+
+		$this->_order->notes->append($note);
+
+		return $this;
+	}
+
 	public function removeItem(Item $item, $fireEvent = true)
 	{
 		$this->_order->items->remove($item);
