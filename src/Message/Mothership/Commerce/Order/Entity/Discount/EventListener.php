@@ -46,7 +46,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function setDiscountItems(Event\Event $event)
 	{
 		foreach ($event->getOrder()->discounts as $discount) {
-			if (empty($discount->items)) {
+			if (count($discount->items) <= 0) {
 				$discount->items = $event->getOrder()->items;
 			}
 		}
