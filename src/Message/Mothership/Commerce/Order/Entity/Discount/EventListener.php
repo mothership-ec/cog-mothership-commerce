@@ -47,7 +47,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	{
 		foreach ($event->getOrder()->discounts as $discount) {
 			if (empty($discount->items)) {
-				$discount->items = $event->getOrder()->items->all();
+				$discount->items = $event->getOrder()->items;
 			}
 		}
 	}
