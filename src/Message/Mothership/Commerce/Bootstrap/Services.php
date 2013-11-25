@@ -40,7 +40,6 @@ class Services implements ServicesInterface
 		};
 
 		$services['basket.order'] = function($c) {
-
 			if (!$c['http.session']->get('basket.order')) {
 				$order = $c['order'];
 				$order->locale = $c['locale']->getId();
