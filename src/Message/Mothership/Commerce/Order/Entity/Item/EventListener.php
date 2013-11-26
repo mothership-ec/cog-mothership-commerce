@@ -23,6 +23,9 @@ class EventListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
+			OrderEvents::CREATE_START => array(
+				array('calculateAllItemsTax'),
+			),
 			OrderEvents::ENTITY_CREATE => array(
 				array('calculateTax'),
 				array('setDefaultStatus'),
@@ -31,7 +34,7 @@ class EventListener implements SubscriberInterface
 				array('checkItemSet')
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
-				array('calculateAllItemsTax'),
+				array('calculateAllItemsTax', 255),
 			),
 		);
 	}
@@ -75,7 +78,7 @@ class EventListener implements SubscriberInterface
 	{
 		$item = $event->getEntity();
 
-		if (!($item instanceof Item)) {
+		if (!($item instanceof Item) || !$event->getOrder()->id) {
 			return false;
 		}
 
