@@ -69,8 +69,8 @@ class VatListener implements SubscriberInterface
 	 */
 	public function forceTaxable(Event\Event $event)
 	{
-//		$order           = $event->getOrder();
-//		$deliveryCountry = $order->getAddress(Address::DELIVERY)->countryID;
-//		$order->taxable  = (bool) $this->_countries->isInEU($deliveryCountry);
+		$order           = $event->getOrder();
+		$deliveryCountry = $order->getAddress(Address::DELIVERY)->countryID;
+		$order->taxable  = (bool) $this->_countries->isInEU($deliveryCountry);
 	}
 }
