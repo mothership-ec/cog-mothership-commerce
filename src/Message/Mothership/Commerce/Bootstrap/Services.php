@@ -46,6 +46,7 @@ class Services implements ServicesInterface
 				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
 					$order->user = $c['user.current'];
 				}
+
 				$c['http.session']->set('basket.order', $order);
 			}
 
