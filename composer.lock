@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "4de42b2d4586b49e26cb8f9adb32aed8",
+    "hash": "e57ebf754221267ac3b8d495ca083c7a",
     "packages": [
         {
             "name": "filp/whoops",
@@ -482,20 +482,20 @@
         },
         {
             "name": "message/cog-mothership-file-manager",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-file-manager.git",
-                "reference": "1.0.0"
+                "reference": "1.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-file-manager/zipball/1.0.0",
-                "reference": "1.0.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-file-manager/zipball/1.0.1",
+                "reference": "1.0.1",
                 "shasum": ""
             },
             "require": {
-                "message/cog-mothership-cp": "1.0.*",
+                "message/cog-mothership-cp": "1.*",
                 "php": ">=5.3.0"
             },
             "type": "library",
@@ -510,6 +510,9 @@
                     "Message\\Mothership\\FileManager\\Test": "tests"
                 }
             },
+            "license": [
+                "proprietary"
+            ],
             "authors": [
                 {
                     "name": "The Message Development Team",
@@ -533,9 +536,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-file-manager/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-file-manager/tree/develop"
+                "source": "https://github.com/messagedigital/cog-mothership-file-manager/tree/1.0.1"
             },
-            "time": "2013-11-17 18:37:56"
+            "time": "2013-11-20 12:13:44"
         },
         {
             "name": "message/cog-user",
