@@ -88,6 +88,22 @@ class Assembler
 		return $this;
 	}
 
+	/**
+	 * Set the note for the order.
+	 *
+	 * @param  Entity\Note\Note $note
+	 * @return Assembler
+	 */
+	public function setNote(Entity\Note\Note $note)
+	{
+		// Clear the order notes before adding the new entity
+		$this->_order->notes->clear();
+
+		$this->addNote($note);
+
+		return $this;
+	}
+
 	public function removeItem(Item $item, $fireEvent = true)
 	{
 		$this->_order->items->remove($item);
