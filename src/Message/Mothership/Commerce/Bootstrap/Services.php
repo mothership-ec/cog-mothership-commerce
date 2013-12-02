@@ -486,7 +486,7 @@ class Services implements ServicesInterface
 
 			$appName = $c['cfg']->app->name;
 
-			$factory->extend(function($factory, $message) {
+			$factory->extend(function($factory, $message) use ($appName) {
 				$message->setTo($factory->order->user->email, $factory->order->user->getName());
 				$message->setSubject(sprintf('Updates to your %s order - %d', $appName, $factory->order->orderID));
 				$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
