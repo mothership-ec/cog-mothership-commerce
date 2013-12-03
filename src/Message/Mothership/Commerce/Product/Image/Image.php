@@ -14,12 +14,12 @@ class Image implements ResizableInterface
 	public $authorship;
 	public $type;
 	public $locale;
-	public $file;
 	public $fileID;
 	public $options = array();
 
 	public $product;
 
+	protected $_file;
 	protected $_fileLoader;
 
 	public function __construct()
@@ -59,7 +59,11 @@ class Image implements ResizableInterface
 	public function __get($key)
 	{
 		if ('file' == $key) {
-			return $this->_fileLoader->getByID($this->fileID);
+			if (!$this->_file) {
+				$this->_file = $this->_fileLoader->getByID($this->fileID);
+			}
+
+			return $this->_file;
 		}
 	}
 
