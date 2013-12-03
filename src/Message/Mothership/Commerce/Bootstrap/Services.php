@@ -40,13 +40,13 @@ class Services implements ServicesInterface
 		};
 
 		$services['basket.order'] = function($c) {
-
 			if (!$c['http.session']->get('basket.order')) {
 				$order = $c['order'];
 				$order->locale = $c['locale']->getId();
 				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
 					$order->user = $c['user.current'];
 				}
+
 				$c['http.session']->set('basket.order', $order);
 			}
 
@@ -486,7 +486,7 @@ class Services implements ServicesInterface
 
 			$appName = $c['cfg']->app->name;
 
-			$factory->extend(function($factory, $message) {
+			$factory->extend(function($factory, $message) use ($appName) {
 				$message->setTo($factory->order->user->email, $factory->order->user->getName());
 				$message->setSubject(sprintf('Updates to your %s order - %d', $appName, $factory->order->orderID));
 				$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(

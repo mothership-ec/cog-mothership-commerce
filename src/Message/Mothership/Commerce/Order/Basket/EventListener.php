@@ -35,10 +35,22 @@ class EventListener extends BaseListener implements SubscriberInterface
 			return false;
 		}
 
-		$order = $this->_services['basket.order'];
+		$order      = $this->get('basket.order');
+		$cookieName = $this->get('cfg')->basket->cookieName;
+		$token      = $this->get('request')->cookies->get($cookieName);
 
-		// Get the token from the cookie
-		$token = $this->_services['request']->cookies->get($this->_services['cfg']->basket->cookieName);
+		// Skip if the order is empty
+		if (count($order->items) < 1) {
+			// If the cookie was in the request, delete it and clear the cookie
+			if ($token) {
+				$this->deleteBasket();
+				$this->get('http.cookies')->add(
+					new Cookie($cookieName, null, new \DateTime('-1 hour'))
+				);
+			}
+
+			return false;
+		}
 
 		// See if a basket already exists.
 		$basket = $this->_services['order.basket.loader']->getByToken($token);
@@ -97,7 +109,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
-	public function deleteBasket(BaseEvent $event)
+	public function deleteBasket()
 	{
 		$order = $this->_services['basket.order'];
 
