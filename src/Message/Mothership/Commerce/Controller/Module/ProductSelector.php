@@ -28,7 +28,7 @@ class ProductSelector extends Controller
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
 				'product' => $product,
 				'units'   => $units,
-				'emailSignupForm' => $this->_getEmailSignupForm($product)
+				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product)
 			));
 		}
 
@@ -108,11 +108,11 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	protected function _getEmailSignupForm(Product $product)
+	protected function _getReplenishedNotificationForm(Product $product)
 	{
 		$form = $this->get('form')
 			->setName('oos_email_signup')
-			->setAction($this->generateUrl('ms.commerce.product.oos.email.signup', array('productID' => $product->id)))
+			->setAction($this->generateUrl('ms.commerce.product.oos.email', array('productID' => $product->id)))
 			->setMethod('post');
 
 		$form->add('email', 'text', 'Email');
