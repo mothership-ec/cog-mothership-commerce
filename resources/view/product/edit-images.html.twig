@@ -16,18 +16,14 @@
 			</div>
 		{% endfor %}
 	</div>
-
 	{{ form_start(form) }}
 		{{ form_row(form.image) }}
 		{{ form_row(form.type) }}
 		{{ option.renderRepeatable(form.options) }}
-
 		{{ form_rest(form) }}
-
 		<button type="submit" class="button small save" id="save-content">
 			{{ 'ms.commerce.product.button.save'|trans }}
 		</button>
 	{{ form_end(form) }}
-
 {% endblock %}
 
