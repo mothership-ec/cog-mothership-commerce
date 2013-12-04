@@ -15,6 +15,9 @@ class Notification {
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
+
+		$this->authorship->disableUpdate();
+		$this->authorship->disableDelete();
 	}
 
 }

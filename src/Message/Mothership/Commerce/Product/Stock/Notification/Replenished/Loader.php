@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
-use Message\Cog\DB;
+use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Loader {
@@ -11,7 +11,7 @@ class Loader {
 
 	protected $_returnArray;
 
-	public function __construct(DB\Query $query)
+	public function __construct(Query $query)
 	{
 		$this->_query = $query;
 	}

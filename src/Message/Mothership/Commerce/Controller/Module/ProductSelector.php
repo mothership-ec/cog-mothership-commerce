@@ -29,7 +29,7 @@ class ProductSelector extends Controller
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
 				'product' => $product,
 				'units'   => $units,
-				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product)
+				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($oosUnits)
 			));
 		}
 
@@ -67,20 +67,34 @@ class ProductSelector extends Controller
 		return $this->redirectToReferer();
 	}
 
-	public function processReplenishedNotificationSignup($productID)
+	public function processReplenishedNotificationSignup()
 	{
-		$product = $this->get('product.loader')->getByID($productID);
-		$form    = $this->_getOSSEmailSignupForm($product);
+		// $product = $this->get('product.loader')->getByID($productID);
+		// $form    = $this->_getReplenishedNotificationForm();
 
-		if ($form->isValid() and $data = $form->getFilteredData()) {
+		// if ($form->isValid() and $data = $form->getFilteredData()) {
+
+		$data = $this->get('request')->request->get('replenished_notification');
+
+		if (! isset($data['email']) or empty($data['email']) or ! isset($data['units']) or empty($data['units'])) {
+			$this->addFlash('error', "Please fill all required fields");
+			return $this->redirectToReferer();
+		}
+
+		if (! is_array($data['units'])) $data['units'] = array($data['units']);
+
+		foreach ($data['units'] as $unitID) {
 			$notification = new Stock\Notification\Replenished\Notification;
 			$notification->email = $data['email'];
-			$notification->unitID = 0;
+			$notification->unitID = $unitID;
 
 			$this->get('stock.notification.replenished.create')->create($notification);
-
-			$this->addFlash('success', sprintf('A notification will be sent to <em>%s</em> when this product is back in stock', $data['email']));
 		}
+
+		$this->addFlash('success', sprintf(
+			'A notification will be sent to <em>%s</em> when this product is back in stock',
+			$data['email']
+		));
 
 		return $this->redirectToReferer();
 	}
@@ -127,12 +141,29 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	protected function _getReplenishedNotificationForm(Product $product)
+	protected function _getReplenishedNotificationForm($units)
 	{
 		$form = $this->get('form')
-			->setName('oos_email_signup')
-			->setAction($this->generateUrl('ms.commerce.product.stock.notification.replenished.signup', array('productID' => $product->id)))
+			->setName('replenished_notification')
+			->setAction($this->generateUrl('ms.commerce.product.stock.notification.replenished.signup'))
 			->setMethod('post');
+
+		if (count($units) == 1) {
+			$unit = array_shift($units);
+			$form->add('units', 'hidden', false, array(
+				'data' => $unit->id
+			));
+		}
+		elseif (count($units) > 1) {
+			foreach ($units as $unit) {
+				$choices[$unit->id] = implode(',', $unit->options);
+			}
+			$form->add('units', 'choice', 'Options', array(
+				'choices' => $choices,
+				'expanded' => true,
+				'multiple' => true
+			));
+		}
 
 		$form->add('email', 'text', 'Email');
 

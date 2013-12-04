@@ -3,12 +3,13 @@
 namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
 use DateTime;
+use Message\Cog\DB\Query;
 
 class Edit {
 
 	protected $_query;
 
-	public function __construct(DB\Query $query)
+	public function __construct(Query $query)
 	{
 		$this->_query = $query;
 	}
