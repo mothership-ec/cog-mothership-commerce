@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Events;
 use Message\Mothership\Commerce\Event;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Order;
 
 use Message\Mothership\Commerce\Field\ProductUnitInStockOnlyChoiceType;
@@ -66,6 +67,24 @@ class ProductSelector extends Controller
 		return $this->redirectToReferer();
 	}
 
+	public function processReplenishedNotificationSignup($productID)
+	{
+		$product = $this->get('product.loader')->getByID($productID);
+		$form    = $this->_getOSSEmailSignupForm($product);
+
+		if ($form->isValid() and $data = $form->getFilteredData()) {
+			$notification = new Stock\Notification\Replenished\Notification;
+			$notification->email = $data['email'];
+			$notification->unitID = 0;
+
+			$this->get('stock.notification.replenished.create')->create($notification);
+
+			$this->addFlash('success', sprintf('A notification will be sent to <em>%s</em> when this product is back in stock', $data['email']));
+		}
+
+		return $this->redirectToReferer();
+	}
+
 	protected function _getForm(Product $product, array $options = array())
 	{
 		$form = $this->get('form')
@@ -112,7 +131,7 @@ class ProductSelector extends Controller
 	{
 		$form = $this->get('form')
 			->setName('oos_email_signup')
-			->setAction($this->generateUrl('ms.commerce.product.oos.email', array('productID' => $product->id)))
+			->setAction($this->generateUrl('ms.commerce.product.stock.notification.replenished.signup', array('productID' => $product->id)))
 			->setMethod('post');
 
 		$form->add('email', 'text', 'Email');

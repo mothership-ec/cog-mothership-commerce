@@ -83,6 +83,10 @@ class Routes implements RoutesInterface
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 
+		$router['ms.product.basket']->add('ms.commerce.product.stock.notification.replenished.signup', '/product-replenished-notification-signup/{productID}', 'Message:Mothership:Commerce::Controller:Module:ProductSelector#processReplenishedNotificationSignup')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
+
 
 		$router['ms.order']->add('ms.commerce.order.view.dashboard', 'view', 'Message:Mothership:Commerce::Controller:Order:Listing#dashboard');
 		$router['ms.order']->add('ms.commerce.order.view.all', 'view/all', 'Message:Mothership:Commerce::Controller:Order:Listing#all');
