@@ -437,6 +437,18 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$services['stock.notification.replenished.loader'] = $services->share(function($c) {
+			return new Commerce\Product\Stock\Notification\Replenished\Loader($c['db.query']);
+		});
+
+		$services['stock.notification.replenished.create'] = $services->share(function($c) {
+			return new Commerce\Product\Stock\Notification\Replenished\Create($c['db.query']);
+		});
+
+		$services['stock.notification.replenished.edit'] = $services->share(function($c) {
+			return new Commerce\Product\Stock\Notification\Replenished\Edit($c['db.query']);
+		});
+
 		$services['shipping.methods'] = $services->share(function($c) {
 			return new Commerce\Shipping\MethodCollection;
 		});
