@@ -1,13 +1,10 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-
 	<div class="container-content">
-
-			{% include '::order:order:detail' %}
+		{% include '::order:order:detail' %}
 		<section class="summary">
 			{% include '::order:detail:item:summary' %}
-
 			{% if order is defined %}
 				<ul class="summary-totals">
 					<li>Subtotal <span>{{ order.productGross|price(order.currencyID) }}</span></li>
@@ -19,5 +16,4 @@
 			{% endif %}
 		</section>
 	</div>
-
 {% endblock %}

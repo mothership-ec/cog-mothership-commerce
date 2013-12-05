@@ -1,5 +1,6 @@
-<div class="column">
-		<h2>{{ address.type|capitalize }}</h2>
+<div class="group">
+	<h2 class="title">{{ address.type|capitalize }}</h2>
+	<div class="content">
 		<ul class="order-details">
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
@@ -42,6 +43,6 @@
 					{{ address.telephone }}
 				</li>
 			{% endif %}
-		</ul>
+		</ul>		
+	</div>
 </div>
-
