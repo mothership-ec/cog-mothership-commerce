@@ -438,7 +438,12 @@ class Services implements ServicesInterface
 		};
 
 		$services['stock.notification.replenished.loader'] = $services->share(function($c) {
-			return new Commerce\Product\Stock\Notification\Replenished\Loader($c['db.query']);
+			return new Commerce\Product\Stock\Notification\Replenished\Loader(
+				$c['db.query'],
+				$c['stock.locations'],
+				$c['user.loader'],
+				$c['product.unit.loader']
+			);
 		});
 
 		$services['stock.notification.replenished.create'] = $services->share(function($c) {
@@ -516,12 +521,31 @@ class Services implements ServicesInterface
 			$factory->requires('notification');
 
 			$appName = $c['cfg']->app->name;
+			$appUrl  = $c['cfg']->app->baseUrl;
 
-			$factory->extend(function($factory, $message) use ($appName) {
-				$message->setTo($factory->order->user->email, $factory->order->user->getName());
-				$message->setSubject(sprintf('%s is back in stock at %s', $factory->notification, $appName));
+			$factory->extend(function($factory, $message) use ($appName, $appUrl) {
+
+				// If a user has been found matching the notification email
+				// address we can add the user's name.
+				if ($factory->notification->user) {
+					$message->setTo($factory->notification->email, $factory->notification->user->getName());
+				}
+
+				// Else just add the email address
+				else {
+					$message->setTo($factory->notification->email);
+				}
+
+				$message->setSubject(sprintf(
+					'%s is back in stock at %s',
+					$factory->notification->unit->product->name, $appName
+				));
 				$message->setView('Message:Mothership:Commerce::mail:stock:notification:replenished', array(
 					'notification' => $factory->notification,
+					'appName'      => $appName,
+
+					// @TODO: Make this link to the product rather than the homepage
+					'url'          => $appUrl,
 				));
 			});
 

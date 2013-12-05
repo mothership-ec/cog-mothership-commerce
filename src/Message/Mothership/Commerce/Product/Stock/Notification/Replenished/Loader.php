@@ -7,17 +7,22 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Loader
 {
-
 	protected $_query;
+	protected $_stockLocations;
+	protected $_userLoader;
+	protected $_unitLoader;
 
 	protected $_returnArray;
 
-	public function __construct(Query $query)
+	public function __construct(Query $query, $stockLocations, $userLoader, $unitLoader)
 	{
-		$this->_query = $query;
+		$this->_query          = $query;
+		$this->_stockLocations = $stockLocations;
+		$this->_userLoader     = $userLoader;
+		$this->_unitLoader     = $unitLoader;
 	}
 
-	public function getPending()
+	public function getUnnotified()
 	{
 		$result = $this->_query->run("
 			SELECT
@@ -30,6 +35,32 @@ class Loader
 		");
 
 		return count($result) ? $this->_load($result->flatten(), true) : false;
+	}
+
+	public function getPending()
+	{
+		$result = $this->_query->run("
+			SELECT
+				sn.notification_id
+			FROM
+				stock_notification sn
+			LEFT JOIN
+				product_unit_stock pus USING (unit_id)
+			WHERE
+				sn.type = 'replenished' AND
+				sn.notified_at IS NULL AND
+				pus.stock > 0 AND
+				pus.location = :location?s
+		", array(
+			'location' => $this->_stockLocations->getRoleLocation('sell')->name
+		));
+
+		return count($result) ? $this->_load($result->flatten(), true) : false;
+	}
+
+	public function getNotified()
+	{
+
 	}
 
 	public function _load($ids, $alwaysReturnArray = false)
@@ -68,6 +99,10 @@ class Loader
 				new DateTimeImmutable(date('c', $result[$key]->created_at))//,
 				// $result[$key]->created_by
 			);
+
+			$entity->user = $this->_userLoader->getByEmail($result[$key]->email);
+
+			$entity->unit = $this->_unitLoader->getByID($result[$key]->unit_id);
 
 			$notifications[$entity->id] = $entity;
 		}

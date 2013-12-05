@@ -69,11 +69,6 @@ class ProductSelector extends Controller
 
 	public function processReplenishedNotificationSignup()
 	{
-		// $product = $this->get('product.loader')->getByID($productID);
-		// $form    = $this->_getReplenishedNotificationForm();
-
-		// if ($form->isValid() and $data = $form->getFilteredData()) {
-
 		$data = $this->get('request')->request->get('replenished_notification');
 
 		if (! isset($data['email']) or empty($data['email']) or ! isset($data['units']) or empty($data['units'])) {

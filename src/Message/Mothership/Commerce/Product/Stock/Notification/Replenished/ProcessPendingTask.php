@@ -12,7 +12,7 @@ class ProcessPendingTask extends Task
         // $this->schedule('0 * * * *');
     }
 
-	public function run()
+	public function process()
 	{
 		$pending = $this->get('stock.notification.replenished.loader')->getPending();
 
