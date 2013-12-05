@@ -509,5 +509,23 @@ class Services implements ServicesInterface
 
 			return $factory;
 		};
+
+		$services['mail.factory.stock.notification.replenished'] = function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('notification');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email, $factory->order->user->getName());
+				$message->setSubject(sprintf('%s is back in stock at %s', $factory->notification, $appName));
+				$message->setView('Message:Mothership:Commerce::mail:stock:notification:replenished', array(
+					'notification' => $factory->notification,
+				));
+			});
+
+			return $factory;
+		};
 	}
 }
