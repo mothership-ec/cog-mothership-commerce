@@ -178,7 +178,9 @@ class ProductSelector extends Controller
 			));
 		}
 
-		$form->add('email', 'text', 'Email');
+		$form->add('email', 'text', 'Email', array(
+			'data' => (! $this->get('user.current') instanceof AnonymousUser) ? $this->get('user.current')->email : ''
+		));
 
 		return $form;
 	}
