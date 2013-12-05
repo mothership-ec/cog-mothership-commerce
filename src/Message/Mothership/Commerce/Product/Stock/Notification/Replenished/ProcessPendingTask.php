@@ -9,7 +9,7 @@ class ProcessPendingTask extends Task
 	protected function configure()
     {
         // Run every hour
-        $this->schedule('0 * * * *');
+        // $this->schedule('0 * * * *');
     }
 
 	public function run()

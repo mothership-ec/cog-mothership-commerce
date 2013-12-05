@@ -38,5 +38,8 @@ class Tasks implements TasksInterface
         $tasks->add(new Forex\FetchDataTask('commerce:forex:fetch'), 'Fetches the lastest forex data from the feed');
 
         $tasks->add(new Product\Stock\StockSnapshot('commerce:stock:snapshot'), 'Creates a snapshot of current stock levels');
+
+        $tasks->add(new Product\Stock\Notification\Replenished\ProcessPendingTask('commerce:stock:notification:replenished'),
+            'Processes all pending stock replenished notifications');
     }
 }
