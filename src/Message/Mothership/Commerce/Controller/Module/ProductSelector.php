@@ -29,7 +29,7 @@ class ProductSelector extends Controller
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
 				'product' => $product,
 				'units'   => $units,
-				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($oosUnits)
+				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product, $oosUnits)
 			));
 		}
 
@@ -154,12 +154,20 @@ class ProductSelector extends Controller
 	 * @param  array[Unit] $units Out of stock units to choose from.
 	 * @return Message\Cog\Form\Handler
 	 */
-	protected function _getReplenishedNotificationForm($units)
+	protected function _getReplenishedNotificationForm($product, $units)
 	{
 		$form = $this->get('form')
 			->setName('replenished_notification')
 			->setAction($this->generateUrl('ms.commerce.product.stock.notification.replenished.signup'))
 			->setMethod('post');
+
+		// If there are no units to display, load all units for the product.
+		if (count($units) == 0) {
+			$loader = $this->get('product.unit.loader');
+			$loader->includeOutOfStock(true);
+			$loader->includeInvisible(true);
+			$units = $loader->getByProduct($product);
+		}
 
 		if (count($units) == 1) {
 			$unit = array_shift($units);
