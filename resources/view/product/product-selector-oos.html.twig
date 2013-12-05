@@ -1,8 +1,8 @@
 <p class="oos">
-	This product is currently out of stock.
+	Out of stock. Email me when this product is back in stock.
 </p>
 
 {{ form_start(replenishedNotificationForm) }}
-	{{ form_rest(replenishedNotificationForm) }}
-	<button type="submit">Notify me when this product is back in stock</button>
+	<div class="oos-options">{{ form_rest(replenishedNotificationForm) }}</div>
+	<button type="submit" class="oos-notify">Notify me</button>
 {{ form_end(replenishedNotificationForm) }}
