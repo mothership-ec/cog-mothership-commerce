@@ -541,13 +541,19 @@ class Services implements ServicesInterface
 					$message->setTo($factory->notification->email);
 				}
 
+				$productName = $factory->notification->unit->product->name;
+				foreach ($factory->notification->unit->options as $value) {
+					$productName .= ' ' . $value;
+				}
+
 				$message->setSubject(sprintf(
 					'%s is back in stock at %s',
-					$factory->notification->unit->product->name, $appName
+					$productName, $appName
 				));
 				$message->setView('Message:Mothership:Commerce::mail:stock:notification:replenished', array(
 					'notification' => $factory->notification,
 					'appName'      => $appName,
+					'productName'  => $productName,
 
 					// @TODO: Make this link to the product rather than the homepage
 					'url'          => $appUrl,
