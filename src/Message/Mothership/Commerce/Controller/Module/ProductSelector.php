@@ -67,6 +67,13 @@ class ProductSelector extends Controller
 		return $this->redirectToReferer();
 	}
 
+	/**
+	 * Process the replenished notification email signup. This does not use the
+	 * usual `$form->isValid()` method since we do not know the units to pass
+	 * into the form builder.
+	 *
+	 * @return Message\Cog\HTTP\RedirectResponse
+	 */
 	public function processReplenishedNotificationSignup()
 	{
 		$data = $this->get('request')->request->get('replenished_notification');
@@ -78,6 +85,7 @@ class ProductSelector extends Controller
 
 		if (! is_array($data['units'])) $data['units'] = array($data['units']);
 
+		// Add a separate notification for each unit.
 		foreach ($data['units'] as $unitID) {
 			$notification = new Stock\Notification\Replenished\Notification;
 			$notification->email = $data['email'];
@@ -86,6 +94,7 @@ class ProductSelector extends Controller
 			$this->get('stock.notification.replenished.create')->create($notification);
 		}
 
+		// Only add a single flash message even if multiple units are selected.
 		$this->addFlash('success', sprintf(
 			'A notification will be sent to <em>%s</em> when this product is back in stock',
 			$data['email']
@@ -136,6 +145,15 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
+	/**
+	 * Get the stock replenished notification email signup form. If a single
+	 * unit is passed this is added a hidden field, for multiple units the user
+	 * is able to choose from a list as to which they would like notification(s)
+	 * for.
+	 *
+	 * @param  array[Unit] $units Out of stock units to choose from.
+	 * @return Message\Cog\Form\Handler
+	 */
 	protected function _getReplenishedNotificationForm($units)
 	{
 		$form = $this->get('form')

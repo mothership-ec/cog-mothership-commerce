@@ -4,6 +4,11 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
 use Message\Cog\ValueObject\Authorship;
 
+/**
+ * Stock replenished notification entity.
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class Notification
 {
 

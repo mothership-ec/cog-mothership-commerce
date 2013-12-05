@@ -5,6 +5,11 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 use DateTime;
 use Message\Cog\DB\Query;
 
+/**
+ * Edit decorator for stock replenished notifications.
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class Edit
 {
 

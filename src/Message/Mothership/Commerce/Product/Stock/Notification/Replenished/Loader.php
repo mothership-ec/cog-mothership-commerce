@@ -5,6 +5,11 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
+/**
+ * Loader for stock replenished notifications.
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class Loader
 {
 	protected $_query;
@@ -22,6 +27,11 @@ class Loader
 		$this->_unitLoader     = $unitLoader;
 	}
 
+	/**
+	 * Get all notifications that have not yet been sent to the user.
+	 *
+	 * @return array[Notification]
+	 */
 	public function getUnnotified()
 	{
 		$result = $this->_query->run("
@@ -37,6 +47,12 @@ class Loader
 		return count($result) ? $this->_load($result->flatten(), true) : false;
 	}
 
+	/**
+	 * Get all notifications that have not yet been sent to the user and where
+	 * the related unit has available stock in the `sell` role.
+	 *
+	 * @return array[Notification]
+	 */
 	public function getPending()
 	{
 		$result = $this->_query->run("
@@ -58,11 +74,24 @@ class Loader
 		return count($result) ? $this->_load($result->flatten(), true) : false;
 	}
 
+	/**
+	 * Get all notifications where the user has been informed of the available
+	 * stock.
+	 *
+	 * @return array[Notification]
+	 */
 	public function getNotified()
 	{
 
 	}
 
+	/**
+	 * Load notifications from a list of ids.
+	 *
+	 * @param  int|array  $ids
+	 * @param  boolean    $alwaysReturnArray
+	 * @return array[Notification]
+	 */
 	public function _load($ids, $alwaysReturnArray = false)
 	{
 		if (! is_array($ids)) {
@@ -100,8 +129,11 @@ class Loader
 				// $result[$key]->created_by
 			);
 
+			// Try to load the user which has the email address associated with
+			// the notification.
 			$entity->user = $this->_userLoader->getByEmail($result[$key]->email);
 
+			// Load the related unit.
 			$entity->unit = $this->_unitLoader->getByID($result[$key]->unit_id);
 
 			$notifications[$entity->id] = $entity;

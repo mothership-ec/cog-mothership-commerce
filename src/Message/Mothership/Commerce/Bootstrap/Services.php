@@ -515,6 +515,11 @@ class Services implements ServicesInterface
 			return $factory;
 		};
 
+		/**
+		 * Mail factory for stock replenished notifications.
+		 *
+		 * @see Message\Mothership\Commerce\Product\Stock\Notification\Replenished
+		 */
 		$services['mail.factory.stock.notification.replenished'] = function($c) {
 			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
 

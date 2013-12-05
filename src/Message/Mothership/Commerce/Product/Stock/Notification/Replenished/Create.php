@@ -5,6 +5,11 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
+/**
+ * Create decorator for stock replenished notifications.
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class Create
 {
 

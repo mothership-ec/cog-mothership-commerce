@@ -4,12 +4,18 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
 use Message\Cog\Console\Task\Task;
 
+/**
+ * Process pending stock replenished notifications. This emails the notification
+ * to the related email address and sets it to notified.
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class ProcessPendingTask extends Task
 {
 	protected function configure()
     {
         // Run every hour
-        // $this->schedule('0 * * * *');
+        $this->schedule('0 * * * *');
     }
 
 	public function process()
