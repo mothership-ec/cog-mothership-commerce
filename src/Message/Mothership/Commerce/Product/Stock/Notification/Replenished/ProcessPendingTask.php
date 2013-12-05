@@ -2,7 +2,8 @@
 
 namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
-class ProcessPendingTask {
+class ProcessPendingTask
+{
 
 	public function run()
 	{

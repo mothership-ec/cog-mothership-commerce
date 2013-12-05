@@ -4,7 +4,8 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
 use Message\Cog\ValueObject\Authorship;
 
-class Notification {
+class Notification
+{
 
 	public $id;
 	public $type;

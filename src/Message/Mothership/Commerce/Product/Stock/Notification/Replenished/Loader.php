@@ -5,7 +5,8 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-class Loader {
+class Loader
+{
 
 	protected $_query;
 

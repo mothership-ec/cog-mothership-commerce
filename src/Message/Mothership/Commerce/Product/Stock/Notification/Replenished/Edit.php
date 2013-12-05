@@ -5,7 +5,8 @@ namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 use DateTime;
 use Message\Cog\DB\Query;
 
-class Edit {
+class Edit
+{
 
 	protected $_query;
 
