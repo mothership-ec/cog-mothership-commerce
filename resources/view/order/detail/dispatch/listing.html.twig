@@ -1,7 +1,7 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-	<section class="container-content medium">
+	<section class="container-content short">
 		{% if not dispatches is empty %}
 			{% for dispatch in dispatches %}
 				{% include '::order:detail:dispatch:detail' %}

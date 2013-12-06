@@ -1,11 +1,11 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-	<section class="container-content medium">
+	<section class="container-content short">
 		{% for document in documents %}
 			{% include '::order:detail:document:detail' %}
 		{% else %}
-			{{ 'ms.commerce.order.document.none'|trans }}
+			<p>{{ 'ms.commerce.order.document.none'|trans }}</p>
 		{% endfor %}
 	</section>
 {% endblock %}
