@@ -27,7 +27,7 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.0",
+		"php": ">=5.4.0",
 
 		"message/cog-user"                   : "1.*",
 		"message/cog-mothership-file-manager": "1.*",
