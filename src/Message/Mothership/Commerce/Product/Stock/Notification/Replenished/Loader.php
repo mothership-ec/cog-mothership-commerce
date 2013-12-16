@@ -120,6 +120,9 @@ class Loader
 		);
 		$notifications = array();
 
+		$this->_unitLoader->includeInvisible(true);
+		$this->_unitLoader->includeOutOfStock(true);
+
 		foreach ($entities as $key => $entity) {
 			$entity->id = $result[$key]->notification_id;
 

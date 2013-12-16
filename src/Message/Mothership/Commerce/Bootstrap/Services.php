@@ -523,40 +523,26 @@ class Services implements ServicesInterface
 		$services['mail.factory.stock.notification.replenished'] = function($c) {
 			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
 
-			$factory->requires('notification');
+			$factory->requires('notifications', 'email');
 
 			$appName = $c['cfg']->app->name;
 			$appUrl  = $c['cfg']->app->baseUrl;
 
 			$factory->extend(function($factory, $message) use ($appName, $appUrl) {
 
-				// If a user has been found matching the notification email
-				// address we can add the user's name.
-				if ($factory->notification->user) {
-					$message->setTo($factory->notification->email, $factory->notification->user->getName());
-				}
+				$message->setTo($factory->email);
 
-				// Else just add the email address
-				else {
-					$message->setTo($factory->notification->email);
-				}
+				$subject = (count($factory->notifications) > 1) ?
+					count($factory->notifications) . ' products back in stock at %s' :
+					array_pop($factory->notifications)->unit->product->name . ' back in stock at %s';
+				$message->setSubject(sprintf($subject, $appName));
 
-				$productName = $factory->notification->unit->product->name;
-				foreach ($factory->notification->unit->options as $value) {
-					$productName .= ' ' . $value;
-				}
-
-				$message->setSubject(sprintf(
-					'%s is back in stock at %s',
-					$productName, $appName
-				));
 				$message->setView('Message:Mothership:Commerce::mail:stock:notification:replenished', array(
-					'notification' => $factory->notification,
-					'appName'      => $appName,
-					'productName'  => $productName,
+					'notifications' => $factory->notifications,
+					'appName'       => $appName,
 
 					// @TODO: Make this link to the product rather than the homepage
-					'url'          => $appUrl,
+					'url'           => $appUrl,
 				));
 			});
 

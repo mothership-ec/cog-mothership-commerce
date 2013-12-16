@@ -19,7 +19,7 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = null)
+	public function index(Product $product, array $options = null, $collapseFullyOss = false)
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
@@ -29,7 +29,7 @@ class ProductSelector extends Controller
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
 				'product' => $product,
 				'units'   => $units,
-				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product, $oosUnits)
+				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product, $oosUnits, $collapseFullyOss)
 			));
 		}
 
@@ -154,7 +154,7 @@ class ProductSelector extends Controller
 	 * @param  array[Unit] $units Out of stock units to choose from.
 	 * @return Message\Cog\Form\Handler
 	 */
-	protected function _getReplenishedNotificationForm($product, $units)
+	protected function _getReplenishedNotificationForm($product, $units, $collapse = false)
 	{
 		$form = $this->get('form')
 			->setName('replenished_notification')
@@ -179,11 +179,22 @@ class ProductSelector extends Controller
 			foreach ($units as $unit) {
 				$choices[$unit->id] = implode(',', $unit->options);
 			}
-			$form->add('units', 'choice', 'Options', array(
-				'choices' => $choices,
-				'expanded' => true,
-				'multiple' => true
-			));
+
+			if ($collapse) {
+				// @fix: The label ' ' is a dirty hack to stop the label showing for
+				// these hidden fields.
+				$form->add('units', 'collection', ' ', array(
+					'type' => 'hidden',
+					'data' => array_keys($choices)
+				));
+			}
+			else {
+				$form->add('units', 'choice', 'Options', array(
+					'choices' => $choices,
+					'expanded' => true,
+					'multiple' => true
+				));
+			}
 		}
 
 		$form->add('email', 'text', 'Email', array(

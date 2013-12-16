@@ -22,14 +22,30 @@ class ProcessPendingTask extends Task
 	{
 		$pending = $this->get('stock.notification.replenished.loader')->getPending();
 
+		$userNotifications = array();
+
+		// Group the notifications by user
 		foreach ($pending as $notification) {
+			$userNotifications[$notification->email][] = $notification;
+		}
+
+		$notified = 0;
+
+		foreach ($userNotifications as $notifications) {
 			$factory = $this->get('mail.factory.stock.notification.replenished')
-				->set('notification', $notification);
+				->set('notifications', $notifications)
+				->set('email', array_pop($notifications)->email);
 
 			if ($this->get('mail.dispatcher')->send($factory->getMessage())) {
-				$this->get('stock.notification.replenished.edit')->setNotified($notification);
+				foreach ($notifications as $notification) {
+					$this->get('stock.notification.replenished.edit')->setNotified($notification);
+				}
+
+				$notified++;
 			}
 		}
+
+		$this->writeln(sprintf("<comment>%s users notified of %s users found</comment>", $notified, count($userNotifications)));
 	}
 
 }

@@ -6,9 +6,12 @@ Hi {{ notification.user.name }},
 Hi,
 {% endif %}
 
-Good news, the product that you are interested in is now back in stock. Click the following link to our website to view {{ productName }}.
+Good news, the product(s) that you are interested in are now back in stock.
 
-{{ url }}
+{% for notification in notifications %}
+{{ notification.unit.product.name }}{% for value in notification.unit.options %} {{ value }}{% endfor %}
+
+{% endfor %}
 
 If you can't click on the link, please copy and paste it into your web browser.
 {% endblock %}
