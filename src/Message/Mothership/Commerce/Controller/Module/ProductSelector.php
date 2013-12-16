@@ -19,7 +19,7 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = null, $collapseFullyOss = false)
+	public function index(Product $product, array $options = null, $collapseFullyOos = false)
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
@@ -29,7 +29,7 @@ class ProductSelector extends Controller
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
 				'product' => $product,
 				'units'   => $units,
-				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product, $oosUnits, $collapseFullyOss)
+				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product, $oosUnits, $collapseFullyOos)
 			));
 		}
 
