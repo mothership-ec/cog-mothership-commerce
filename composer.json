@@ -34,10 +34,5 @@
 		"message/cog-mothership-cp"          : "1.*"
 	},
 	"suggest": {
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "1.0.x-dev"
-		}
 	}
 }
