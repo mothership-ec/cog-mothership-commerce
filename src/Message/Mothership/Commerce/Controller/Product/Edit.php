@@ -150,7 +150,7 @@ class Edit extends Controller
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
 				}
 
-				foreach ($values['options'] as $type => $value) {
+				foreach ($values['optionForm'] as $type => $value) {
 					$changedUnit->options[$type] = $value;
 				}
 
