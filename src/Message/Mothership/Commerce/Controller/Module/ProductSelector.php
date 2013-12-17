@@ -18,7 +18,7 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = null)
+	public function index(Product $product, array $options = array())
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
@@ -107,7 +107,7 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	protected function _getAvailableUnits(Product $product, array $options = null)
+	protected function _getAvailableUnits(Product $product, array $options = array())
 	{
 		$key = md5(serialize(array($product, $options)));
 
