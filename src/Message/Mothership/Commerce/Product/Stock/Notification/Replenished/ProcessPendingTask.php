@@ -22,6 +22,11 @@ class ProcessPendingTask extends Task
 	{
 		$pending = $this->get('stock.notification.replenished.loader')->getPending();
 
+		if (false == $pending or 0 == count($pending)) {
+			$this->writeln("<comment>No notifications pending</comment>");
+			return;
+		}
+
 		$userNotifications = array();
 
 		// Group the notifications by user

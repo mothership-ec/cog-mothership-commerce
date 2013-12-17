@@ -534,7 +534,7 @@ class Services implements ServicesInterface
 
 				$subject = (count($factory->notifications) > 1) ?
 					count($factory->notifications) . ' products back in stock at %s' :
-					array_pop($factory->notifications)->unit->product->name . ' back in stock at %s';
+					$factory->notifications[0]->unit->product->name . ' back in stock at %s';
 				$message->setSubject(sprintf($subject, $appName));
 
 				$message->setView('Message:Mothership:Commerce::mail:stock:notification:replenished', array(
