@@ -37,9 +37,10 @@ class ProcessPendingTask extends Task
 		$notified = 0;
 
 		foreach ($userNotifications as $notifications) {
+
 			$factory = $this->get('mail.factory.stock.notification.replenished')
 				->set('notifications', $notifications)
-				->set('email', array_pop($notifications)->email);
+				->set('email', $notifications[0]->email);
 
 			if ($this->get('mail.dispatcher')->send($factory->getMessage())) {
 				foreach ($notifications as $notification) {
