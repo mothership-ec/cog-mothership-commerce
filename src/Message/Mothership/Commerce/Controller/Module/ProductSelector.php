@@ -37,6 +37,9 @@ class ProductSelector extends Controller
 			'product' => $product,
 			'units'   => $units,
 			'form'    => $this->_getForm($product, $options),
+			'replenishedNotificationForm' => count($oosUnits) ?
+				$this->_getReplenishedNotificationForm($product, $oosUnits, false) :
+				false
 		));
 	}
 
@@ -189,7 +192,7 @@ class ProductSelector extends Controller
 				));
 			}
 			else {
-				$form->add('units', 'choice', 'Options', array(
+				$form->add('units', 'choice', 'Choose the options you are interested in', array(
 					'choices' => $choices,
 					'expanded' => true,
 					'multiple' => true

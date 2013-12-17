@@ -4,3 +4,15 @@
 	{{ form_rest(form) }}
 	<button type="submit">{{ 'ms.commerce.product.selector.button'|trans }}</button>
 {{ form_end(form) }}
+
+{% if replenishedNotificationForm %}
+	<p class="oos">
+		Some of the units are out of stock. Choose to be notified when these are
+		back in stock below.
+	</p>
+
+	{{ form_start(replenishedNotificationForm) }}
+		<div class="oos-options">{{ form_rest(replenishedNotificationForm) }}</div>
+		<button type="submit" class="oos-notify">Notify me</button>
+	{{ form_end(replenishedNotificationForm) }}
+{% endif %}
