@@ -2,12 +2,15 @@
 
 namespace Message\Mothership\Commerce\Controller\Product;
 
-use Message\Cog\Controller\Controller;
-use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Message\Mothership\Commerce\Field;
+
+use Message\Mothership\FileManager\File;
+
+use Message\Cog\Controller\Controller;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Edit extends Controller
 {
@@ -477,7 +480,7 @@ class Edit extends Controller
 		$files   = (array) $this->get('file_manager.file.loader')->getAll();
 
 		$choices = array();
-		$allowedTypes = array();
+		$allowedTypes = array(File\Type::IMAGE);
 		foreach ($files as $file) {
 			if ($allowedTypes) {
 				if (!in_array($file->typeID, $allowedTypes)) {
@@ -487,6 +490,10 @@ class Edit extends Controller
 
 			$choices[$file->id] = $file->name;
 		}
+
+		uasort($choices, function($a, $b) {
+			return strcmp($a, $b);
+		});
 
 		$form = $this->get('form')
 			->setName('images')
@@ -499,6 +506,7 @@ class Edit extends Controller
 
 		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.image.file.label'), array(
 			'choices' => $choices,
+			'empty_value' => 'Pleae select&hellip;',
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.file.help'),
 		));
 
