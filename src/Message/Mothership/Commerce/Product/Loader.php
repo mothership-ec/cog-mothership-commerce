@@ -106,7 +106,9 @@ class Loader
 				product'
 		);
 
-		return count($result) ? $this->_loadProduct($result->flatten()) : false;
+		$this->_returnArray = true;
+
+		return count($result) ? $this->_loadProduct($result->flatten()) : array();
 	}
 
 

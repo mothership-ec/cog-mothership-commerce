@@ -4,7 +4,7 @@
 	<div>
 		{% for image in product.images %}
 			<div class="product-image">
-				{{ getResizedImage(image.file, 200, 200) }}
+				{{ getResizedImage(image, 200, 200) }}
 				<dl>
 					<dt>{{ 'ms.commerce.product.image.type.label'|trans }}</dt>
 					<dd>{{ image.type }}</dd>
