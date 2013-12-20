@@ -76,11 +76,7 @@ class Image implements ResizableInterface
 			'locale',
 			'options',
 			'product',
+			'_file',
 		);
-	}
-
-	public function __wakeup()
-	{
-		$this->file = \Message\Cog\Service\Container::get('file_manager.file.loader')->getByID($this->id);
 	}
 }
