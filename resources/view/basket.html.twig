@@ -1,8 +1,8 @@
 {% if order.items|length > 0 %}
 	<dl>
 		{% for item in order.items.getRows %}
-		<dt>{{ item.quantity }} x {{item.description }}</dt>
-			<dd>{{ item.listPrice|price(order.currencyID) }}</dd>
+		<dt>{{ item.quantity }} x {{ item.first.description }}</dt>
+			<dd>{{ item.first.listPrice|price(order.currencyID) }}</dd>
 		{% endfor %}
 		<dt>Total</dt>
 			<dd>{{ totalListPrice|price(order.currencyID) }}</dd>
