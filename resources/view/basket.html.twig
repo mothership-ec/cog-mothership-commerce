@@ -4,9 +4,10 @@
 		<dt>{{ item.quantity }} x {{ item.first.description }}</dt>
 			<dd>{{ item.first.listPrice|price(order.currencyID) }}</dd>
 		{% endfor %}
-		<dt>Total</dt>
-			<dd>{{ totalListPrice|price(order.currencyID) }}</dd>
 	</dl>
+
+	<p class="total"><strong>Total</strong> <span class="value">{{ totalListPrice|price(order.currencyID) }}</span></p>
+
 	<p class="go-to-checkout"><a href="{{ url('ms.ecom.checkout') }}">Go to checkout</a>
 {% else %}
 {% include 'Message:Mothership:Commerce::basket-empty' %}
