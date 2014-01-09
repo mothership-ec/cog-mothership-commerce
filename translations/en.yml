@@ -156,10 +156,10 @@ ms.commerce:
     order:
       none: There are no orders to view.
 
-      all-orders-title: All Orders
-      shipped-orders-title: Shipped Orders
+      all-orders-title: All orders
+      shipped-orders-title: Shipped orders
       overview-title: Overview
-      summary-title: Order Summary
+      summary-title: Order summary
       detail-title: Order orderID
 
       orderID: Order orderID
