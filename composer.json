@@ -30,6 +30,7 @@
 		"php": ">=5.4.0",
 
 		"message/cog-user"                   : "~1.0",
+		"message/cog-imageresize"            : "~1.0",
 		"message/cog-mothership-file-manager": "~1.0",
 		"message/cog-mothership-cp"          : "~1.0"
 	},

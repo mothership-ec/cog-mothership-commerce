@@ -2,9 +2,11 @@
 
 namespace Message\Mothership\Commerce\Product\Image;
 
-use Message\Cog\ImageResize\ResizableInterface;
-use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\FileManager\File\File;
+
+use Message\ImageResize\ResizableInterface;
+
+use Message\Cog\ValueObject\Authorship;
 
 use Exception;
 
