@@ -5,7 +5,7 @@ ms.commerce:
         label: Please select an option...
       button: Add to basket
     button:
-      save: Save product
+      save: Save changes
       create: Create product
       sku: Add SKU
     attributes:
