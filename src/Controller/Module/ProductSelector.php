@@ -80,7 +80,7 @@ class ProductSelector extends Controller
 			// Don't show option names that were passed as criteria to avoid weird-looking duplication
 			$optionsToShow = ($options) ? array_diff_assoc($unit->options, $options) : $unit->options;
 
-			$choices[$unit->id] = implode(', ', $optionsToShow);
+			$choices[$unit->id] = implode(', ', array_filter($optionsToShow));
 		}
 
 		// If there's only one unit available to choose, add it as a hidden field
