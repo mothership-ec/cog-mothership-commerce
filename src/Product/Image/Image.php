@@ -2,9 +2,11 @@
 
 namespace Message\Mothership\Commerce\Product\Image;
 
-use Message\Cog\ImageResize\ResizableInterface;
-use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\FileManager\File\File;
+
+use Message\ImageResize\ResizableInterface;
+
+use Message\Cog\ValueObject\Authorship;
 
 use Exception;
 
@@ -14,12 +16,12 @@ class Image implements ResizableInterface
 	public $authorship;
 	public $type;
 	public $locale;
-	public $file;
 	public $fileID;
 	public $options = array();
 
 	public $product;
 
+	protected $_file;
 	protected $_fileLoader;
 
 	public function __construct()
@@ -59,7 +61,11 @@ class Image implements ResizableInterface
 	public function __get($key)
 	{
 		if ('file' == $key) {
-			return $this->_fileLoader->getByID($this->fileID);
+			if (!$this->_file) {
+				$this->_file = $this->_fileLoader->getByID($this->fileID);
+			}
+
+			return $this->_file;
 		}
 	}
 
@@ -72,11 +78,7 @@ class Image implements ResizableInterface
 			'locale',
 			'options',
 			'product',
+			'_file',
 		);
-	}
-
-	public function __wakeup()
-	{
-		$this->file = \Message\Cog\Service\Container::get('file_manager.file.loader')->getByID($this->id);
 	}
 }

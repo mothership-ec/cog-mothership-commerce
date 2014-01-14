@@ -4,7 +4,7 @@
 	<div class="listing">
 		{% for image in product.images %}
 			<div class="product-image">
-				{{ getResizedImage(image.file, 200, 200) }}
+				{{ getResizedImage(image, 200, 200) }}
 				<div class="file-overlay">
 					<dl>
 						<dt>{{ 'ms.commerce.product.image.type.label'|trans }}</dt>
@@ -13,7 +13,7 @@
 							<dt>{{ name }}</dt>
 								<dd>{{ value }}</dd>
 						{% endfor %}
-					</dl>					
+					</dl>
 				</div>
 			</div>
 		{% endfor %}
@@ -24,13 +24,13 @@
 		<div class="content">
 			{{ form_row(form.image) }}
 			{{ form_row(form.type) }}
-			{{ option.renderRepeatable(form.options) }}	
+			{{ option.renderRepeatable(form.options) }}
 			{{ form_rest(form) }}
 			<button type="submit" class="button small save" id="save-content">
 				{{ 'ms.commerce.product.button.save'|trans }}
 			</button>
 		</div>
-		
+
 	</div>
 		{{ form_end(form) }}
 

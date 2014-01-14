@@ -18,7 +18,7 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = null)
+	public function index(Product $product, array $options = array())
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
@@ -80,7 +80,7 @@ class ProductSelector extends Controller
 			// Don't show option names that were passed as criteria to avoid weird-looking duplication
 			$optionsToShow = ($options) ? array_diff_assoc($unit->options, $options) : $unit->options;
 
-			$choices[$unit->id] = implode(', ', $optionsToShow);
+			$choices[$unit->id] = implode(', ', array_filter($optionsToShow));
 		}
 
 		// If there's only one unit available to choose, add it as a hidden field
@@ -107,7 +107,7 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	protected function _getAvailableUnits(Product $product, array $options = null)
+	protected function _getAvailableUnits(Product $product, array $options = array())
 	{
 		$key = md5(serialize(array($product, $options)));
 
