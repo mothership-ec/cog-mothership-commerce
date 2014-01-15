@@ -227,7 +227,7 @@ ms.commerce:
 
       create:
         title: Add note
-        button: Add note to the order
+        button: Create note
         notify: Notify the customer
 
     metadata:
