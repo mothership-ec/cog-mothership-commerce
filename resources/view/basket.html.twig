@@ -1,0 +1,14 @@
+{% if order.items|length > 0 %}
+	<dl>
+		{% for item in order.items.getRows %}
+		<dt>{{ item.quantity }} x {{ item.first.description }}</dt>
+			<dd>{{ item.first.listPrice|price(order.currencyID) }}</dd>
+		{% endfor %}
+	</dl>
+
+	<p class="total"><strong>Total</strong> <span class="value">{{ totalListPrice|price(order.currencyID) }}</span></p>
+
+	<p class="go-to-checkout"><a href="{{ url('ms.ecom.checkout') }}">Go to checkout</a>
+{% else %}
+{% include 'Message:Mothership:Commerce::basket-empty' %}
+{% endif %}
