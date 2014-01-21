@@ -24,16 +24,13 @@ use Message\Cog\Event\DispatcherInterface;
 class Assembler
 {
 	protected $_order;
-
-	protected $_user;
 	protected $_eventDispatcher;
 
-	public function __construct(Order $order, UserInterface $user, DispatcherInterface $event)
+	public function __construct(Order $order, DispatcherInterface $event)
 	{
 		$this->_order             = $order;
 		$this->_order->currencyID = 'GBP';
 		$this->_order->type       = 'web';
-		$this->_user              = $user;
 		$this->_eventDispatcher   = $event;
 	}
 
@@ -265,16 +262,16 @@ class Assembler
 	public function addAddress(Entity\Address\Address $address)
 	{
 		if (is_null($address->forename)) {
-			$address->forename = $this->_user->forename;
+			$address->forename = $this->_order->user->forename;
 		}
 
 		if (is_null($address->surname)) {
-			$address->surname = $this->_user->surname;
+			$address->surname = $this->_order->user->surname;
 
 		}
 
 		if (is_null($address->title)) {
-			$address->title = $this->_user->title;
+			$address->title = $this->_order->user->title;
 		}
 
 		// ID is set as the type so this will remove all the address types from the

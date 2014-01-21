@@ -56,7 +56,6 @@ class Services implements ServicesInterface
 		$services['basket'] = function($c) {
 			return new Commerce\Order\Assembler(
 				$c['basket.order'],
-				$c['user.current'],
 				$c['event.dispatcher']
 			);
 		};
