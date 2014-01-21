@@ -2,43 +2,39 @@
 
 namespace Message\Mothership\Commerce\Order;
 
+use Message\Mothership\Commerce\Order\Event\Event;
+use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
 use Message\Mothership\Commerce\User\LoaderInterface;
 use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
-use Message\User\UserInterface;
-use Message\Cog\Localisation\Locale;
-use Message\Mothership\Commerce\Order\Entity\Item\Item;
-use Message\Cog\Event\DispatcherInterface;
-use Message\Cog\HTTP\Session;
 
-use Message\Mothership\Commerce\Order\Event\Event;
-use Message\Mothership\Commerce\Order\Events;
-use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
+use Message\User\UserInterface;
+
+use Message\Cog\Localisation\Locale;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
- *
+ * Provides a simpler interface for building an instance of Order.
  *
  * @author Danny Hannah <danny@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Assembler
 {
+	protected $_order;
 
 	protected $_user;
-	protected $_locale;
-	protected $_order;
 	protected $_eventDispatcher;
-	protected $_session;
 
-	public function __construct(Order $order, UserInterface $user, Locale $locale, DispatcherInterface $event, Session $session)
+	public function __construct(Order $order, UserInterface $user, DispatcherInterface $event)
 	{
 		$this->_order             = $order;
 		$this->_order->currencyID = 'GBP';
 		$this->_order->type       = 'web';
 		$this->_user              = $user;
-		$this->_locale            = $locale;
 		$this->_eventDispatcher   = $event;
-		$this->_session           = $session;
 	}
 
 	public function addUnit(Unit $unit, $stockLocation, $fireEvent = true)
@@ -104,7 +100,7 @@ class Assembler
 		return $this;
 	}
 
-	public function removeItem(Item $item, $fireEvent = true)
+	public function removeItem(Entity\Item\Item $item, $fireEvent = true)
 	{
 		$this->_order->items->remove($item);
 
@@ -183,7 +179,7 @@ class Assembler
 		return $this->_countForUnitID($unit);
 	}
 
-	public function addUser(\Message\User\UserInterface  $user)
+	public function addUser(\Message\User\UserInterface $user)
 	{
 		$this->_order->user = $user;
 

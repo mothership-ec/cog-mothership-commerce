@@ -57,9 +57,7 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Assembler(
 				$c['basket.order'],
 				$c['user.current'],
-				$c['locale'],
-				$c['event.dispatcher'],
-				$c['http.session']
+				$c['event.dispatcher']
 			);
 		};
 
