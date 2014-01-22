@@ -29,11 +29,8 @@ class Assembler
 	 */
 	public function __construct(Order $order, DispatcherInterface $dispatcher)
 	{
-		$this->_order             = $order;
-		$this->_eventDispatcher   = $dispatcher;
-
-		$this->_order->currencyID = 'GBP';
-		$this->_order->type       = 'web';
+		$this->_order           = $order;
+		$this->_eventDispatcher = $dispatcher;
 	}
 
 	/**

@@ -41,8 +41,11 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order = $c['order'];
-				$order->locale = $c['locale']->getId();
+				$order             = $c['order'];
+				$order->locale     = $c['locale']->getId();
+				$order->currencyID = 'GBP';
+				$order->type       = 'web';
+
 				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
 					$order->user = $c['user.current'];
 				}
