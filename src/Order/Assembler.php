@@ -33,6 +33,18 @@ class Assembler
 		$this->_eventDispatcher = $dispatcher;
 	}
 
+	public function getOrder()
+	{
+		return $this->_order;
+	}
+
+	public function setOrder(Order $order)
+	{
+		$this->_order = $order;
+
+		return $this->_dispatchEvent();
+	}
+
 	/**
 	 * Add an entity to the order.
 	 *
@@ -160,23 +172,11 @@ class Assembler
 		return $this->_dispatchEvent();
 	}
 
-	public function setOrder(Order $order)
-	{
-		$this->_order = $order;
-
-		return $this->_dispatchEvent();
-	}
-
 	public function setType($type)
 	{
 		$this->_order->type = $type;
 
 		return $this;
-	}
-
-	public function getItemQuantity(Unit $unit)
-	{
-		return $this->_countForUnitID($unit);
 	}
 
 	public function setUser(User $user)
@@ -288,11 +288,6 @@ class Assembler
 		$this->_order->shippingListPrice   = $option->getPrice();
 
 		return $this->_dispatchEvent();
-	}
-
-	public function getOrder()
-	{
-		return $this->_order;
 	}
 
 	protected function _countForUnitID(Unit $unit)
