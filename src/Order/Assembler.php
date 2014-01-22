@@ -10,7 +10,7 @@ use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
 
-use Message\User\UserInterface;
+use Message\User\User;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\Event\DispatcherInterface;
@@ -29,9 +29,10 @@ class Assembler
 	public function __construct(Order $order, DispatcherInterface $event)
 	{
 		$this->_order             = $order;
+		$this->_eventDispatcher   = $event;
+
 		$this->_order->currencyID = 'GBP';
 		$this->_order->type       = 'web';
-		$this->_eventDispatcher   = $event;
 	}
 
 	public function addUnit(Unit $unit, $stockLocation, $fireEvent = true)
@@ -176,7 +177,7 @@ class Assembler
 		return $this->_countForUnitID($unit);
 	}
 
-	public function addUser(\Message\User\UserInterface $user)
+	public function setUser(User $user)
 	{
 		$this->_order->user = $user;
 
@@ -188,6 +189,15 @@ class Assembler
 		);
 
 		return $this;
+	}
+
+	/**
+	 * @see setUser
+	 * @deprecated Use setUser() instead. To be removed in 2.0.
+	 */
+	public function addUser(User $user)
+	{
+		return $this->setUser($user);
 	}
 
 	public function removeVoucher()
