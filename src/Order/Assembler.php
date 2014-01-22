@@ -2,8 +2,6 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-use Message\Mothership\Commerce\Order\Event\Event;
-use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
 use Message\Mothership\Commerce\User\LoaderInterface;
 use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
@@ -58,10 +56,7 @@ class Assembler
 		$this->_order->items->append($item);
 
 		if ($fireEvent) {
-			$this->_eventDispatcher->dispatch(
-				Events::ASSEMBLER_UPDATE,
-				new Event($this->_order)
-			);
+			$this->_dispatchEvent();
 		}
 
 		return $this;
@@ -78,6 +73,8 @@ class Assembler
 		$note->order = $this->_order;
 
 		$this->_order->notes->append($note);
+
+		// WHY DOES THIS NOT DISPATCH EVENT?
 
 		return $this;
 	}
@@ -103,12 +100,7 @@ class Assembler
 		$this->_order->items->remove($item);
 
 		if ($fireEvent) {
-			$event = new Event($this->_order);
-			// Dispatch the edit event
-			$this->_eventDispatcher->dispatch(
-				Events::ASSEMBLER_UPDATE,
-				$event
-			);
+			$this->_dispatchEvent();
 		}
 
 		return $this;
@@ -143,26 +135,14 @@ class Assembler
 			}
 		}
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
-
-		return $this;
+		return $this->_dispatchEvent();
 	}
 
 	public function setOrder(Order $order)
 	{
 		$this->_order = $order;
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
+		return $this->_dispatchEvent();
 	}
 
 	public function setType($type)
@@ -181,14 +161,7 @@ class Assembler
 	{
 		$this->_order->user = $user;
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
-
-		return $this;
+		return $this->_dispatchEvent();
 	}
 
 	/**
@@ -205,28 +178,14 @@ class Assembler
 		$discount->order = $this->_order;
 		$this->_order->discounts->append($discount);
 
-		$event = new Event($this->_order);
-
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
-
-		return $this;
+		return $this->_dispatchEvent();
 	}
 
 	public function removeDiscount(Entity\Discount\Discount $discount)
 	{
 		$this->_order->discounts->removeByCode($discount->code);
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
-
-		return $this;
+		return $this->_dispatchEvent();
 	}
 
 	public function addPayment(MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
@@ -247,16 +206,10 @@ class Assembler
 		$this->_order->payments->append($payment);
 
 		if (!$silenceEvent) {
-			$event = new Event($this->_order);
-			// Dispatch the edit event
-			$this->_eventDispatcher->dispatch(
-				Events::ASSEMBLER_UPDATE,
-				$event
-			);
+			$this->_dispatchEvent();
 		}
 
 		return $this;
-
 	}
 
 	public function addAddress(Entity\Address\Address $address)
@@ -280,14 +233,7 @@ class Assembler
 
 		$this->_order->addresses->append($address);
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_ADDRESS_UPDATE,
-			$event
-		);
-
-		return $this;
+		return $this->_dispatchEvent();
 	}
 
 	/**
@@ -313,14 +259,7 @@ class Assembler
 		$this->_order->shippingDisplayName = $option->getDisplayName();
 		$this->_order->shippingListPrice   = $option->getPrice();
 
-		$event = new Event($this->_order);
-		// Dispatch the edit event
-		$this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			$event
-		);
-
-		return $this;
+		return $this->_dispatchEvent();
 	}
 
 	public function getOrder()
@@ -333,4 +272,20 @@ class Assembler
 		return count($this->_order->items->getByProperty('unitID', $unit->id));
 	}
 
+	/**
+	 * Dispatch the ASSEMBLER_UPDATE event and set the order to whatever is
+	 * returned from the event's `getOrder()` method (this allows listeners to
+	 * overwrite the order).
+	 *
+	 * @return Assembler Returns $this for chainability
+	 */
+	protected function _dispatchEvent()
+	{
+		$this->_order = $this->_eventDispatcher->dispatch(
+			Events::ASSEMBLER_UPDATE,
+			new Event\Event($this->_order)
+		)->getOrder();
+
+		return $this;
+	}
 }
