@@ -2,13 +2,12 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
+use Message\Mothership\Commerce\Shipping;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
 
 use Message\User\User;
 
-use Message\Cog\Localisation\Locale;
 use Message\Cog\Event\DispatcherInterface;
 
 /**
@@ -285,7 +284,7 @@ class Assembler
 		return $this;
 	}
 
-	public function setShipping(ShippingInterface $option)
+	public function setShipping(Shipping\MethodInterface $option)
 	{
 		$this->_order->shippingName        = $option->getName();
 		$this->_order->shippingDisplayName = $option->getDisplayName();
