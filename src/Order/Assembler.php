@@ -200,11 +200,6 @@ class Assembler
 		return $this->setUser($user);
 	}
 
-	public function removeVoucher()
-	{
-
-	}
-
 	public function addDiscount(Entity\Discount\Discount $discount)
 	{
 		$discount->order = $this->_order;
@@ -232,11 +227,6 @@ class Assembler
 		);
 
 		return $this;
-	}
-
-	public function hasAddress()
-	{
-
 	}
 
 	public function addPayment(MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
