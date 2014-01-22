@@ -2,8 +2,6 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
-use Message\Mothership\Commerce\User\LoaderInterface;
 use Message\Mothership\Commerce\Shipping\MethodInterface as ShippingInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
@@ -24,13 +22,41 @@ class Assembler
 	protected $_order;
 	protected $_eventDispatcher;
 
-	public function __construct(Order $order, DispatcherInterface $event)
+	/**
+	 * Constructor.
+	 *
+	 * @param Order               $order      The order to assemble
+	 * @param DispatcherInterface $dispatcher The event dispatcher
+	 */
+	public function __construct(Order $order, DispatcherInterface $dispatcher)
 	{
 		$this->_order             = $order;
-		$this->_eventDispatcher   = $event;
+		$this->_eventDispatcher   = $dispatcher;
 
 		$this->_order->currencyID = 'GBP';
 		$this->_order->type       = 'web';
+	}
+
+	/**
+	 * Add an entity to the order.
+	 *
+	 * If the entity has an `order` property (they all should, really), it is
+	 * set to the order that is being assembled.
+	 *
+	 * @param string                 $name   The entity name
+	 * @param Entity\EntityInterface $entity The entity
+	 *
+	 * @return Assembler                     Returns $this for chainability
+	 */
+	public function addEntity($name, Entity\EntityInterface $entity)
+	{
+		if (property_exists($entity, 'order')) {
+			$entity->order = $this->_order;
+		}
+
+		$this->_order->{$name}->append($entity);
+
+		return $this->_dispatchEvent();
 	}
 
 	public function addUnit(Unit $unit, $stockLocation, $fireEvent = true)
@@ -173,12 +199,18 @@ class Assembler
 		return $this->setUser($user);
 	}
 
+	/**
+	 * Add a discount to the order.
+	 *
+	 * @see addEntity
+	 *
+	 * @param Entity\Discount\Discount $discount The discount to add
+	 *
+	 * @return Assembler                         Returns $this for chainability
+	 */
 	public function addDiscount(Entity\Discount\Discount $discount)
 	{
-		$discount->order = $this->_order;
-		$this->_order->discounts->append($discount);
-
-		return $this->_dispatchEvent();
+		return $this->_addEntity('discount', $discount);
 	}
 
 	public function removeDiscount(Entity\Discount\Discount $discount)
@@ -188,7 +220,7 @@ class Assembler
 		return $this->_dispatchEvent();
 	}
 
-	public function addPayment(MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
+	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
 	{
 		$payment            = new Entity\Payment\Payment;
 		$payment->method    = $paymentMethod;
