@@ -42,7 +42,7 @@ class Assembler
 	{
 		$this->_order = $order;
 
-		return $this->_dispatchEvent();
+		return $this->dispatchEvent();
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Assembler
 
 		$this->_order->{$name}->append($entity);
 
-		return $this->_dispatchEvent();
+		return $this->dispatchEvent();
 	}
 
 	public function addUnit(Unit $unit, $stockLocation, $fireEvent = true)
@@ -90,7 +90,7 @@ class Assembler
 		$this->_order->items->append($item);
 
 		if ($fireEvent) {
-			$this->_dispatchEvent();
+			$this->dispatchEvent();
 		}
 
 		return $this;
@@ -134,7 +134,7 @@ class Assembler
 		$this->_order->items->remove($item);
 
 		if ($fireEvent) {
-			$this->_dispatchEvent();
+			$this->dispatchEvent();
 		}
 
 		return $this;
@@ -169,7 +169,7 @@ class Assembler
 			}
 		}
 
-		return $this->_dispatchEvent();
+		return $this->dispatchEvent();
 	}
 
 	public function setType($type)
@@ -183,7 +183,7 @@ class Assembler
 	{
 		$this->_order->user = $user;
 
-		return $this->_dispatchEvent();
+		return $this->dispatchEvent();
 	}
 
 	/**
@@ -213,7 +213,7 @@ class Assembler
 	{
 		$this->_order->discounts->removeByCode($discount->code);
 
-		return $this->_dispatchEvent();
+		return $this->dispatchEvent();
 	}
 
 	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
@@ -234,7 +234,7 @@ class Assembler
 		$this->_order->payments->append($payment);
 
 		if (!$silenceEvent) {
-			$this->_dispatchEvent();
+			$this->dispatchEvent();
 		}
 
 		return $this;
@@ -261,7 +261,7 @@ class Assembler
 
 		$this->_order->addresses->append($address);
 
-		return $this->_dispatchEvent();
+		return $this->dispatchEvent();
 	}
 
 	/**
@@ -287,12 +287,7 @@ class Assembler
 		$this->_order->shippingDisplayName = $option->getDisplayName();
 		$this->_order->shippingListPrice   = $option->getPrice();
 
-		return $this->_dispatchEvent();
-	}
-
-	protected function _countForUnitID(Unit $unit)
-	{
-		return count($this->_order->items->getByProperty('unitID', $unit->id));
+		return $this->dispatchEvent();
 	}
 
 	/**
@@ -302,7 +297,7 @@ class Assembler
 	 *
 	 * @return Assembler Returns $this for chainability
 	 */
-	protected function _dispatchEvent()
+	public function dispatchEvent()
 	{
 		$this->_order = $this->_eventDispatcher->dispatch(
 			Events::ASSEMBLER_UPDATE,
@@ -310,5 +305,10 @@ class Assembler
 		)->getOrder();
 
 		return $this;
+	}
+
+	protected function _countForUnitID(Unit $unit)
+	{
+		return count($this->_order->items->getByProperty('unitID', $unit->id));
 	}
 }
