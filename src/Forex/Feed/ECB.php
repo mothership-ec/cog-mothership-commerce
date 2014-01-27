@@ -39,23 +39,23 @@ class ECB implements FeedInterface {
 		// Insert each rate into the table
 		foreach ($rates as $currency => $rate) {
 			$this->_query->add('
-				INSERT INTO
+				UPDATE
 					forex_rate
 				SET
-					currency   = ?s,
 					rate       = ?f,
 					updated_at = ?d
-				ON DUPLICATE KEY UPDATE
+				WHERE
+					currency = ?s
 			', array(
-				strtoupper($currency),
-				$rate,
-				new DateTime,
-			));
-		}
+            	$rate,
+            	new DateTime,
+            	strtoupper($currency),
+            ));
+        }
 
-		$this->_query->commit();
+        $this->_query->commit();
 
-		return $rates;
+        return $rates;
 	}
 
 }
