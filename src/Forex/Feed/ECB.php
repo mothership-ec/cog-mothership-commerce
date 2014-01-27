@@ -58,6 +58,8 @@ class ECB implements FeedInterface {
             ));
         }
 
+        $this->_query->commit();
+
         return $rates;
 	}
 
