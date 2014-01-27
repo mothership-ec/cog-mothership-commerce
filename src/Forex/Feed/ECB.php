@@ -2,7 +2,6 @@
 
 namespace Message\Mothership\Commerce\Forex\Feed;
 
-use Message\Cog\DB\Transaction;
 use DateTime;
 
 class ECB implements FeedInterface {
@@ -11,7 +10,7 @@ class ECB implements FeedInterface {
 
 	protected $_url = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
-	public function __construct(Transaction $query)
+	public function __construct($query)
 	{
 		$this->_query = $query;
 	}
@@ -36,24 +35,27 @@ class ECB implements FeedInterface {
 			unset($xml, $item, $key, $val);
 		}
 
+		// Truncate the rates table
+		$this->_query->run('
+			TRUNCATE TABLE
+				forex_rate
+		');
+
 		// Insert each rate into the table
 		foreach ($rates as $currency => $rate) {
-			$this->_query->add('
-				UPDATE
-					forex_rate
-				SET
-					rate       = ?f,
-					updated_at = ?d
-				WHERE
-					currency = ?s
-			', array(
-            	$rate,
-            	new DateTime,
+            $this->_query->run('
+            	INSERT INTO
+            		forex_rate
+            	SET
+            		currency   = ?s,
+            		rate       = ?f,
+            		created_at = ?d
+            ', array(
             	strtoupper($currency),
+            	$rate,
+            	new DateTime
             ));
         }
-
-        $this->_query->commit();
 
         return $rates;
 	}
