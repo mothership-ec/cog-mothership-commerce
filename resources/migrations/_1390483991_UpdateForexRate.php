@@ -16,7 +16,7 @@ class _1390483991_UpdateForexRate extends Migration
 	{
 		$this->run('
 			ALTER TABLE `forex_rate`
-			DROP COLUMN `updated_At`;
+			DROP COLUMN `updated_at`;
 		');
 	}
 }
