@@ -97,7 +97,7 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$this->load();
 
-		return \ArrayIterator($this->_items);
+		return new \ArrayIterator($this->_items);
 	}
 
 	public function load($showOutOfStock = true, $showInvisibleUnits = true)
