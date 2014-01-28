@@ -72,7 +72,7 @@ class Create
 		$this->_entityCreators[$name] = $creator;
 	}
 
-	public function create(Order $order, array $metadata = array())
+	public function create(Order $order)
 	{
 		$event = new Event\TransactionalEvent($order);
 		$event->setTransaction($this->_trans);
