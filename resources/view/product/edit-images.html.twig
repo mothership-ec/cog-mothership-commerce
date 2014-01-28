@@ -2,7 +2,9 @@
 {% import 'Message:Mothership:Commerce::options' as option %}
 {% block edit %}
 	<div class="listing">
-		{% for image in product.images %}
+		{% for type, imgs in images %}
+			<h2>{{ type }}</h2>
+			{% for image in imgs %}
 			<div class="product-image">
 				{{ getResizedImage(image, 200, 200) }}
 				<div class="file-overlay">
@@ -16,6 +18,7 @@
 					</dl>
 				</div>
 			</div>
+		{% endfor %}
 		{% endfor %}
 	</div>
 		{{ form_start(form) }}
