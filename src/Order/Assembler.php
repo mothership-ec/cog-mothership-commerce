@@ -146,17 +146,6 @@ class Assembler
 		return $this;
 	}
 
-	public function removeItem(Entity\Item\Item $item)
-	{
-		$this->_order->items->remove($item);
-
-		if ($fireEvent) {
-			$this->dispatchEvent();
-		}
-
-		return $this;
-	}
-
 	public function updateQuantity(Unit $unit, $quantity = 1)
 	{
 		// Disable event dispatching while we update the quantities
@@ -176,7 +165,7 @@ class Assembler
 		// quantity
 		if ($quantity < $unitCount) {
 			for ($i = $unitCount ; $i > $quantity; $i--) {
-				$this->removeItem(array_shift($items));
+				$this->_order->items->remove(array_shift($items));
 			}
 		}
 
