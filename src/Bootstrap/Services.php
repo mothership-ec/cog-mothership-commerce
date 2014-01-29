@@ -377,6 +377,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Category\Loader($c['db.query']);
 		};
 
+		$services['product.form.attributes'] = function($c) {
+			return new Commerce\Product\Form\ProductAttributes($c);
+		};
+
 		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
@@ -396,6 +400,12 @@ class Services implements ServicesInterface
 		$services['commerce.user.collection'] = function($c) {
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
 		};
+
+		$services['commerce.product.types']	= $services->share(function($c) {
+			return new Commerce\Product\Type\Collection(array(
+				new Commerce\Product\Type\BasicProductType($c),
+			));
+		});
 
 		$services['stock.manager'] = function($c) {
 			$trans = $c['db.transaction'];

@@ -3,11 +3,18 @@
 namespace Message\Mothership\Commerce\Product\Form;
 
 use Message\Cog\Form\Handler;
+use Message\Mothership\Commerce\Product\Product;
 
 class ProductAttributes extends Handler
 {
-	public function build()
+	public function build(Product $product)
 	{
+		$this->setName('product-details-edit')
+			->setAction($this->_container['routing.generator']
+				->generate('ms.commerce.product.edit.details.action', array('productID' => $product->id))
+			)
+			->setMethod('post');
+
 		$this->add('name');
 		$this->add('displayName');
 		$this->add('description', 'textarea');
@@ -15,7 +22,9 @@ class ProductAttributes extends Handler
 			->val()->optional();
 		$this->add('exportDescription', 'textarea')
 			->val()->optional();
-		$this->add('category', 'datalist', 'Category', $this->_getCategories());
+		$this->add('category', 'datalist', 'Category', array(
+			'choices'	=> $this->_getCategories())
+		);
 		$this->add('weight')
 			->val()->float();
 		$this->add('tags', 'textarea')
@@ -25,10 +34,10 @@ class ProductAttributes extends Handler
 		$this->add(
 			'export_manufacture_country_id',
 			'choice',
-			$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
+			$this->_container['translator']->trans('ms.commerce.product.details.export-manufacture-country.label'),
 			array(
-				'data' 	  => $this->_product->exportManufactureCountryID,
-				'choices' => $this->get('country.list')->all(),
+				'data' 	  => $product->exportManufactureCountryID,
+				'choices' => $this->_container['country.list']->all(),
 				'attr'    => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
 			)
 		);

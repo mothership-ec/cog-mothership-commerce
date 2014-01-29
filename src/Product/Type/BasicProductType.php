@@ -26,8 +26,10 @@ class BasicProductType extends AbstractProductType
 		return $this;
 	}
 
-	public function getProductDisplayName(Product $product)
+	public function getProductDisplayName(Product $product = null)
 	{
-
+		if (!$product && !$this->_product) {
+			throw new \LogicException('Product not set');
+		}
 	}
 }

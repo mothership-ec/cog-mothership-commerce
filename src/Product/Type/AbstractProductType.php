@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Product\Type;
 use Message\Cog\Form\Handler;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Service\ContainerInterface;
+use Message\Mothership\Commerce\Product\Product;
 
 abstract class AbstractProductType implements ProductTypeInterface, \Countable, ContainerAwareInterface
 {
@@ -12,6 +13,11 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	 * @var ContainerInterface
 	 */
 	protected $_services;
+
+	/**
+	 * @var Product
+	 */
+	protected $_product;
 
 	/**
 	 * @var Handler
@@ -32,26 +38,53 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	{
 		$this->setContainer($container);
 		$this->setDetailsForm($container['form']);
-		$this->setAttributesForm($container['product.form.attributes']->build());
 		$this->setFields();
+	}
+
+	public function setProduct(Product $product)
+	{
+		$this->_product	= $product;
+
+		return $this;
 	}
 
 	public function setDetailsForm(Handler $form)
 	{
 		$this->_detailsForm		= $form;
+
+		return $this;
 	}
 
 	public function setAttributesForm(Handler $form)
 	{
 		$this->_attributesForm	= $form;
+
+		return $this;
+	}
+
+	public function getDetailsForm()
+	{
+		return $this->_detailsForm;
+	}
+
+	public function getAttributesForm()
+	{
+		if (!$this->_product) {
+			throw new \LogicException('Product not set');
+		}
+		elseif (!$this->_attributesForm) {
+			$this->setAttributesForm($this->_services['product.form.attributes']->build($this->_product));
+		}
+
+		return $this->_attributesForm;
 	}
 
 	public function add($name, $type = null, $label = null, $options = array())
 	{
-		$this->_form->add($name, $type, $label, $options);
+		$this->_detailsForm->add($name, $type, $label, $options);
 		$this->_details[$label]	= $label;
 
-		return $this->_form;
+		return $this->_detailsForm;
 	}
 
 	public function count()
