@@ -96,7 +96,7 @@ class Assembler
 		return $this->addItem($item);
 	}
 
-	public function addItem(Entity\Item\Item $item, $fireEvent = true)
+	public function addItem(Entity\Item\Item $item)
 	{
 		$item->order = $this->_order;
 
@@ -106,11 +106,7 @@ class Assembler
 
 		$this->_order->items->append($item);
 
-		if ($fireEvent) {
-			$this->dispatchEvent();
-		}
-
-		return $this;
+		return $this->dispatchEvent();
 	}
 
 	/**
