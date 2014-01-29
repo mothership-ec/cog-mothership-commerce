@@ -84,14 +84,14 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function addUnit(Unit $unit, $stockLocation = false)
+	public function addUnit(Unit $unit)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
 
 		$item->populate($unit);
 
-		$item->stockLocation = $stockLocation ?: $this->_defaultStockLocation;
+		$item->stockLocation = $this->_defaultStockLocation;
 
 		return $this->addItem($item);
 	}
