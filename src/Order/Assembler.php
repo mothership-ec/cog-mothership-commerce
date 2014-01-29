@@ -146,7 +146,7 @@ class Assembler
 		return $this;
 	}
 
-	public function removeItem(Entity\Item\Item $item, $fireEvent = true)
+	public function removeItem(Entity\Item\Item $item)
 	{
 		$this->_order->items->remove($item);
 
@@ -176,7 +176,7 @@ class Assembler
 		// quantity
 		if ($quantity < $unitCount) {
 			for ($i = $unitCount ; $i > $quantity; $i--) {
-				$this->removeItem(array_shift($items), false);
+				$this->removeItem(array_shift($items));
 			}
 		}
 
