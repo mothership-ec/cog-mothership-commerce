@@ -20,17 +20,32 @@ class Assembler
 {
 	protected $_order;
 	protected $_eventDispatcher;
+	protected $_defaultStockLocation;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Order               $order      The order to assemble
-	 * @param DispatcherInterface $dispatcher The event dispatcher
+	 * @param Order               $order                The order to assemble
+	 * @param DispatcherInterface $dispatcher           The event dispatcher
+	 * @param string|int          $defaultStockLocation The default stock
+	 *                                                  location to use for items
 	 */
-	public function __construct(Order $order, DispatcherInterface $dispatcher)
+	public function __construct(Order $order, DispatcherInterface $dispatcher, $defaultStockLocation)
 	{
 		$this->_order           = $order;
 		$this->_eventDispatcher = $dispatcher;
+
+		$this->setDefaultStockLocation($defaultStockLocation);
+	}
+
+	/**
+	 * Set the default stock location to set for items added to the order.
+	 *
+	 * @param string|int $stockLocation
+	 */
+	public function setDefaultStockLocation($stockLocation)
+	{
+		$this->_defaultStockLocation = $stockLocation;
 	}
 
 	public function getOrder()
@@ -67,14 +82,14 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function addUnit(Unit $unit, $stockLocation, $fireEvent = true)
+	public function addUnit(Unit $unit, $stockLocation = false, $fireEvent = true)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
 
 		$item->populate($unit);
 
-		$item->stockLocation = $stockLocation;
+		$item->stockLocation = $stockLocation ?: $this->_defaultStockLocation;
 
 		return $this->addItem($item, $fireEvent);
 	}

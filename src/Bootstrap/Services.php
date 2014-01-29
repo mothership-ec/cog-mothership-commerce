@@ -59,7 +59,8 @@ class Services implements ServicesInterface
 		$services['basket'] = function($c) {
 			return new Commerce\Order\Assembler(
 				$c['basket.order'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
 			);
 		};
 
