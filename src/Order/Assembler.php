@@ -96,6 +96,21 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	public function setEntities($name, array $entities)
+	{
+		$this->_order->{$name}->clear();
+
+		foreach ($entities as $entity) {
+			if (property_exists($entity, 'order')) {
+				$entity->order = $this->_order;
+			}
+
+			$this->_order->{$name}->append($entity);
+		}
+
+		return $this->dispatchEvent();
+	}
+
 	public function removeEntity($name, $entity)
 	{
 		if ($entity instanceof Entity\EntityInterface) {
