@@ -13,6 +13,7 @@ use Message\Mothership\Commerce\Order\Entity\Address\Address;
 use Message\Cog\Event\Event as BaseEvent;
 use Message\Mothership\Ecommerce;
 use Message\User\User;
+use Message\User\AnonymousUser;
 
 /**
  * Basket Assembler for adding addresses and users to the basket
@@ -50,14 +51,19 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 	 */
 	public function addUserToOrder(BaseEvent $event)
 	{
-		// Add the logged in user to the basket order
-		$user = $this->get('user.current');
-		$this->get('basket')->addUser($user);
-		// Remove any addresses before we add them
-		$this->get('basket')->removeAddresses();
-		if (!$user instanceof User) {
+		$user   = $this->get('user.current');
+		$basket = $this->get('basket');
+
+		// Remove user & addresses from the basket
+		$basket->removeUser();
+		$basket->removeAddresses();
+
+		// If the user logged out, don't re-populate anything
+		if ($user instanceof AnonymousUser) {
 			return false;
 		}
+
+		$basket->addUser($user);
 
 		$addressLoader = $this->get('commerce.user.address.loader');
 		// Try and load their addresses

@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Bootstrap;
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 
+use Message\User\AnonymousUser;
+
 use Message\Cog\Bootstrap\ServicesInterface;
 
 class Services implements ServicesInterface
@@ -46,7 +48,8 @@ class Services implements ServicesInterface
 				$order->currencyID = 'GBP';
 				$order->type       = 'web';
 
-				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
+				if ($c['user.current']
+				&& !($c['user.current'] instanceof AnonymousUser)) {
 					$order->user = $c['user.current'];
 				}
 

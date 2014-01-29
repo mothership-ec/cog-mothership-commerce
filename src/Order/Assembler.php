@@ -204,6 +204,13 @@ class Assembler
 		return $this->setUser($user);
 	}
 
+	public function removeUser()
+	{
+		$this->_order->user = null;
+
+		return $this->dispatchEvent();
+	}
+
 	/**
 	 * Add a discount to the order.
 	 *
