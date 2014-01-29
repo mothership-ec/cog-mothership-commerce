@@ -256,6 +256,14 @@ class Assembler
 		return $this->addEntity('payments', $payment);
 	}
 
+	/**
+	 * Add an address to the order. This address will replace any other address
+	 * on the order of the same type.
+	 *
+	 * @param  Entity\Address\Address $address The address to add
+	 *
+	 * @return Assembler                       Returns $this for chainability
+	 */
 	public function addAddress(Entity\Address\Address $address)
 	{
 		if (is_null($address->forename)) {
@@ -264,37 +272,15 @@ class Assembler
 
 		if (is_null($address->surname)) {
 			$address->surname = $this->_order->user->surname;
-
 		}
 
 		if (is_null($address->title)) {
 			$address->title = $this->_order->user->title;
 		}
 
-		// ID is set as the type so this will remove all the address types from the
-		// basket so we only have one billing and one delivery address
-		$this->_order->addresses->remove($address->id);
+		$address->id = $address->type;
 
-		$this->_order->addresses->append($address);
-
-		return $this->dispatchEvent();
-	}
-
-	/**
-	 * This is used when the user logs out and we need to clear all the addresses
-	 * from the basket as a log out doesn't empty the basket.
-	 *
-	 * @return $this
-	 */
-	public function removeAddresses()
-	{
-		if (count($this->getOrder()->addresses)) {
-			foreach ($this->getOrder()->addresses as $address) {
-				$this->_order->addresses->remove($address->id);
-			}
-		}
-
-		return $this;
+		return $this->replaceEntity('addresses', $address);
 	}
 
 	public function setShipping(Shipping\MethodInterface $option)

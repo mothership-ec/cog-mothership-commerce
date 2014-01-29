@@ -56,7 +56,7 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 
 		// Remove user & addresses from the basket
 		$basket->removeUser();
-		$basket->removeAddresses();
+		$basket->clearEntities('addresses');
 
 		// If the user logged out, don't re-populate anything
 		if ($user instanceof AnonymousUser) {
@@ -104,7 +104,7 @@ class AssemblerListener extends BaseListener implements SubscriberInterface
 			$billingAddress->order = $this->get('basket')->getOrder();
 			$this->get('basket')->addAddress($billingAddress);
 		} else {
-			$this->get('basket')->removeAddresses();
+			$basket->clearEntities('addresses');
 		}
 	}
 
