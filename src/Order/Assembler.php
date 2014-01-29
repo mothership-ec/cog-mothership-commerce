@@ -166,39 +166,6 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	/**
-	 * Add a note to the assembler's order.
-	 *
-	 * @param Entity\Note\Note $note
-	 * @return Assembler
-	 */
-	public function addNote(Entity\Note\Note $note)
-	{
-		$note->order = $this->_order;
-
-		$this->_order->notes->append($note);
-
-		// WHY DOES THIS NOT DISPATCH EVENT?
-
-		return $this;
-	}
-
-	/**
-	 * Set the note for the order.
-	 *
-	 * @param  Entity\Note\Note $note
-	 * @return Assembler
-	 */
-	public function setNote(Entity\Note\Note $note)
-	{
-		// Clear the order notes before adding the new entity
-		$this->_order->notes->clear();
-
-		$this->addNote($note);
-
-		return $this;
-	}
-
 	public function updateQuantity(Unit $unit, $quantity = 1)
 	{
 		// Disable event dispatching while we update the quantities
