@@ -41,6 +41,30 @@ class Assembler
 	}
 
 	/**
+	 * Get the order that's being assembled.
+	 *
+	 * @return Order
+	 */
+	public function getOrder()
+	{
+		return $this->_order;
+	}
+
+	/**
+	 * Replace the order that's being assembled with a new one.
+	 *
+	 * Note this method dispatches the assembler update event.
+	 *
+	 * @param Order $order The new order
+	 */
+	public function setOrder(Order $order)
+	{
+		$this->_order = $order;
+
+		return $this->dispatchEvent();
+	}
+
+	/**
 	 * Set the default stock location to set for items added to the order.
 	 *
 	 * @param string|int $stockLocation
@@ -48,18 +72,6 @@ class Assembler
 	public function setDefaultStockLocation($stockLocation)
 	{
 		$this->_defaultStockLocation = $stockLocation;
-	}
-
-	public function getOrder()
-	{
-		return $this->_order;
-	}
-
-	public function setOrder(Order $order)
-	{
-		$this->_order = $order;
-
-		return $this->dispatchEvent();
 	}
 
 	/**
@@ -80,6 +92,36 @@ class Assembler
 		}
 
 		$this->_order->{$name}->append($entity);
+
+		return $this->dispatchEvent();
+	}
+
+	public function removeEntity($name, $entity)
+	{
+		if ($entity instanceof Entity\EntityInterface) {
+			$entity = $entity->id;
+		}
+
+		$this->_order->{$name}->remove($entity);
+
+		return $this->dispatchEvent();
+	}
+
+	public function replaceEntity($name, Entity\EntityInterface $entity)
+	{
+		$this->_dispatchEvents = false;
+
+		$this->removeEntity($name, $entity);
+		$this->addEntity($name, $entity);
+
+		$this->_dispatchEvents = true;
+
+		return $this->dispatchEvent();
+	}
+
+	public function clearEntities($name)
+	{
+		$this->_order->{$name}->clear();
 
 		return $this->dispatchEvent();
 	}
