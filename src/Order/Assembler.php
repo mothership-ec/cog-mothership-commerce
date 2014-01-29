@@ -238,7 +238,7 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference, $silenceEvent = false)
+	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
 	{
 		$payment            = new Entity\Payment\Payment;
 		$payment->method    = $paymentMethod;
@@ -253,13 +253,7 @@ class Assembler
 			}
 		}
 
-		$this->_order->payments->append($payment);
-
-		if (!$silenceEvent) {
-			$this->dispatchEvent();
-		}
-
-		return $this;
+		return $this->addEntity('payments', $payment);
 	}
 
 	public function addAddress(Entity\Address\Address $address)
