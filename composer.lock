@@ -343,16 +343,16 @@
         },
         {
             "name": "message/cog",
-            "version": "2.0.2",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog.git",
-                "reference": "2.0.2"
+                "reference": "2.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog/zipball/2.0.2",
-                "reference": "2.0.2",
+                "url": "https://api.github.com/repos/messagedigital/cog/zipball/2.1.0",
+                "reference": "2.1.0",
                 "shasum": ""
             },
             "require": {
@@ -425,9 +425,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog/issues",
-                "source": "https://github.com/messagedigital/cog/tree/2.0.2"
+                "source": "https://github.com/messagedigital/cog/tree/2.1.0"
             },
-            "time": "2014-01-16 12:30:31"
+            "time": "2014-01-21 13:12:50"
         },
         {
             "name": "message/cog-imageresize",

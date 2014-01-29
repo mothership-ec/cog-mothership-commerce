@@ -373,6 +373,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		};
 
+		$services['product.category.loader'] = function($c) {
+			return new Commerce\Product\Category\Loader($c['db.query']);
+		};
+
 		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
