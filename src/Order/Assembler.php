@@ -319,6 +319,11 @@ class Assembler
 		return $this->replaceEntity('addresses', $address);
 	}
 
+	/**
+	 * Set the shipping method to use for the order.
+	 *
+	 * @param Shipping\MethodInterface $option Shipping method to use
+	 */
 	public function setShipping(Shipping\MethodInterface $option)
 	{
 		$this->_order->shippingName        = $option->getName();
