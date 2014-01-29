@@ -84,7 +84,7 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function addUnit(Unit $unit, $stockLocation = false, $fireEvent = true)
+	public function addUnit(Unit $unit, $stockLocation = false)
 	{
 		$item = new Entity\Item\Item;
 		$item->order = $this->_order;
@@ -93,7 +93,7 @@ class Assembler
 
 		$item->stockLocation = $stockLocation ?: $this->_defaultStockLocation;
 
-		return $this->addItem($item, $fireEvent);
+		return $this->addItem($item);
 	}
 
 	public function addItem(Entity\Item\Item $item, $fireEvent = true)
@@ -159,6 +159,9 @@ class Assembler
 
 	public function updateQuantity(Unit $unit, $quantity = 1)
 	{
+		// Disable event dispatching while we update the quantities
+		$this->_dispatchEvents = false;
+
 		// Count how many times this unit is already in the basket
 		$unitCount = $this->_countForUnitID($unit);
 		// Load the items from the basket which already have this unitID
@@ -182,10 +185,14 @@ class Assembler
 		if ($quantity > $unitCount) {
 			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addUnit($unit, $item->stockLocation, false);
+				$this->addUnit($unit, $item->stockLocation);
 			}
 		}
 
+		// Re-enable event dispatching now we're done
+		$this->_dispatchEvents = false;
+
+		// Dispatch the update event
 		return $this->dispatchEvent();
 	}
 
