@@ -205,13 +205,6 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function setType($type)
-	{
-		$this->_order->type = $type;
-
-		return $this;
-	}
-
 	public function setUser(User $user)
 	{
 		$this->_order->user = $user;
