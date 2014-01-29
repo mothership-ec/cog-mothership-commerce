@@ -80,10 +80,10 @@ class Assembler
 	 * If the entity has an `order` property (they all should, really), it is
 	 * set to the order that is being assembled.
 	 *
-	 * @param string                 $name   The entity name
-	 * @param Entity\EntityInterface $entity The entity
+	 * @param  string                 $name   The entity name
+	 * @param  Entity\EntityInterface $entity The entity
 	 *
-	 * @return Assembler                     Returns $this for chainability
+	 * @return Assembler                      Returns $this for chainability
 	 */
 	public function addEntity($name, Entity\EntityInterface $entity)
 	{
@@ -96,6 +96,16 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/**
+	 * Clear all entities of a certain type, then reset them to a given set of
+	 * entities.
+	 *
+	 * @param  string                         $name     The entity name to set
+	 * @param  array[Entity\EntityInterface]  $entities Entities to set
+	 *
+	 * @return Assembler                                Returns $this for
+	 *                                                  chainability
+	 */
 	public function setEntities($name, array $entities)
 	{
 		$this->_order->{$name}->clear();
@@ -111,6 +121,16 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/**
+	 * Remove an entity from the order.
+	 *
+	 * @param  string                            $name   The entity name
+	 * @param  string|int|Entity\EntityInterface $entity The entity, or entity ID
+	 *                                                   to remove
+	 *
+	 * @return Assembler                                 Returns $this for
+	 *                                                   chainability
+	 */
 	public function removeEntity($name, $entity)
 	{
 		if ($entity instanceof Entity\EntityInterface) {
@@ -122,6 +142,15 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/**
+	 * Replace a given entity on the order. An entity of the same type with the
+	 * same ID as the given entity is replaced with the given entity.
+	 *
+	 * @param  string                 $name   The entity name
+	 * @param  Entity\EntityInterface $entity The entity to add
+	 *
+	 * @return Assembler                      Returns $this for chainability
+	 */
 	public function replaceEntity($name, Entity\EntityInterface $entity)
 	{
 		$this->_dispatchEvents = false;
@@ -134,6 +163,13 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/**
+	 * Clear all entities of a given type.
+	 *
+	 * @param  string $name The entity name to clear
+	 *
+	 * @return Assembler    Returns $this for chainability
+	 */
 	public function clearEntities($name)
 	{
 		$this->_order->{$name}->clear();
