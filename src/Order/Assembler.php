@@ -22,6 +22,8 @@ class Assembler
 	protected $_eventDispatcher;
 	protected $_defaultStockLocation;
 
+	protected $_dispatchEvents = true;
+
 	/**
 	 * Constructor.
 	 *
@@ -310,14 +312,20 @@ class Assembler
 	 * returned from the event's `getOrder()` method (this allows listeners to
 	 * overwrite the order).
 	 *
+	 * Note that the event won't dispatch if `$this->_dispatchEvents` is not
+	 * true. This allows the assembler to avoid many events being dispatched
+	 * when the item quantity is being changed, for example.
+	 *
 	 * @return Assembler Returns $this for chainability
 	 */
 	public function dispatchEvent()
 	{
-		$this->_order = $this->_eventDispatcher->dispatch(
-			Events::ASSEMBLER_UPDATE,
-			new Event\Event($this->_order)
-		)->getOrder();
+		if (true === $this->_dispatchEvents) {
+			$this->_order = $this->_eventDispatcher->dispatch(
+				Events::ASSEMBLER_UPDATE,
+				new Event\Event($this->_order)
+			)->getOrder();
+		}
 
 		return $this;
 	}
