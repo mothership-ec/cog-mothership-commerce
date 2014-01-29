@@ -205,27 +205,16 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function setUser(User $user)
+	public function setUser(User $user = null)
 	{
 		$this->_order->user = $user;
 
 		return $this->dispatchEvent();
 	}
 
-	/**
-	 * @see setUser
-	 * @deprecated Use setUser() instead. To be removed in 2.0.
-	 */
-	public function addUser(User $user)
-	{
-		return $this->setUser($user);
-	}
-
 	public function removeUser()
 	{
-		$this->_order->user = null;
-
-		return $this->dispatchEvent();
+		return $this->setUser(null);
 	}
 
 	/**
