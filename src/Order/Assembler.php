@@ -170,12 +170,12 @@ class Assembler
 		if ($quantity > $unitCount) {
 			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
-				$this->addUnit($unit, $item->stockLocation);
+				$this->addUnit($unit);
 			}
 		}
 
 		// Re-enable event dispatching now we're done
-		$this->_dispatchEvents = false;
+		$this->_dispatchEvents = true;
 
 		// Dispatch the update event
 		return $this->dispatchEvent();
