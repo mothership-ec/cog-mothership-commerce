@@ -82,7 +82,7 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	public function add($name, $type = null, $label = null, $options = array())
 	{
 		$this->_detailsForm->add($name, $type, $label, $options);
-		$this->_details[$label]	= $label;
+		$this->_details[$label]	= '';
 
 		return $this->_detailsForm;
 	}
