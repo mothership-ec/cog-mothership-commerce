@@ -331,8 +331,6 @@ class Assembler
 			$address->title = $this->_order->user->title;
 		}
 
-		$address->id = $address->type;
-
 		return $this->replaceEntity('addresses', $address);
 	}
 
