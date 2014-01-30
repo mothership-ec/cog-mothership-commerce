@@ -22,92 +22,17 @@ use Message\User\AnonymousUser;
  */
 class AssemblerListener extends BaseListener implements SubscriberInterface
 {
-
 	/**
 	 * {@inheritdoc}
 	 */
 	static public function getSubscribedEvents()
 	{
 		return array(
-			UserEvents\Event::LOGIN => array(
-				array('addUserToOrder')
-			),
-			UserEvents\Event::LOGOUT => array(
-				array('addUserToOrder')
-			),
-			Ecommerce\Event::EMPTY_BASKET => array(
-				array('addUserToOrder'),
-			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
 				array('validateItems', 500),
 			),
 		);
 	}
-
-	/**
-	 * Map user and addresses to the basket order when the user logs in
-	 *
-	 * @param BaseEvent $event Login event
-	 */
-	public function addUserToOrder(BaseEvent $event)
-	{
-		$user   = $this->get('user.current');
-		$basket = $this->get('basket');
-
-		// Remove user & addresses from the basket
-		$basket->removeUser();
-		$basket->clearEntities('addresses');
-
-		// If the user logged out, don't re-populate anything
-		if ($user instanceof AnonymousUser) {
-			return false;
-		}
-
-		$basket->addUser($user);
-
-		$addressLoader = $this->get('commerce.user.address.loader');
-		// Try and load their addresses
-		$delivery = $addressLoader->getByUserAndType($user, 'delivery');
-		$billing  = $addressLoader->getByUserAndType($user, 'billing');
-		// A billing address is all we need to continue
-		if($billing) {
-			// If there is no delivery address, set the billing to the delivery
-			// address
-			if (!$delivery) {
-				$delivery = $billing;
-			}
-			// Map the addresses to the Order Address object
-			$deliveryAddress = new Address;
-			foreach ($delivery as $property => $value) {
-				if ($property == 'authorship') {
-					continue;
-				}
-
-				$deliveryAddress->{$property} = $value;
-			}
-			$deliveryAddress->id = 'delivery';
-			$deliveryAddress->type = 'delivery';
-			$deliveryAddress->order = $this->get('basket')->getOrder();
-
-			// Save the delivery address
-			$this->get('basket')->addAddress($deliveryAddress);
-			$billingAddress = new Address;
-			// Save the billing address
-			foreach ($billing as $property => $value) {
-				if ($property == 'authorship') {
-					continue;
-				}
-
-				$billingAddress->{$property} = $value;
-			}
-			$billingAddress->id = 'billing';
-			$billingAddress->order = $this->get('basket')->getOrder();
-			$this->get('basket')->addAddress($billingAddress);
-		} else {
-			$basket->clearEntities('addresses');
-		}
-	}
-
 
 	/**
 	 * Validates all items in the assembler.
