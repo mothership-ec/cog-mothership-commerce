@@ -60,11 +60,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['basket'] = function($c) {
-			return new Commerce\Order\Assembler(
-				$c['basket.order'],
-				$c['event.dispatcher'],
-				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
-			);
+			$assembler = $c['order.assembler'];
+
+			$assembler->setOrder($c['basket.order']);
+
+			return $assembler;
 		};
 
 		$services['order.entities'] = function($c) {
@@ -102,6 +102,19 @@ class Services implements ServicesInterface
 					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
 				),
 			);
+		};
+
+		$services['order.assembler'] = function($c) {
+			$assembler = new Commerce\Order\Assembler(
+				$c['order'],
+				$c['event.dispatcher'],
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
+			);
+
+			$assembler->setEntityTemporaryIdProperty('addresses', 'type');
+			$assembler->setEntityTemporaryIdProperty('discounts', 'code');
+
+			return $assembler;
 		};
 
 		// Order decorators

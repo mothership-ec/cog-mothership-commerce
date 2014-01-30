@@ -24,10 +24,7 @@ class Assembler
 
 	protected $_dispatchEvents = true;
 
-	protected $_entityTemporaryIdFields = array(
-		'addresses' => 'type',
-		'discounts' => 'code',
-	);
+	protected $_entityTemporaryIdFields = [];
 
 	/**
 	 * Constructor.
@@ -84,7 +81,17 @@ class Assembler
 	}
 
 	/**
-	 * [setEntityTemporaryIdProperty description]
+	 * Set a property to be used on a specific collection of entities as the ID
+	 * property.
+	 *
+	 * When defined, whenever an entity is passed through this Assembler, the
+	 * "id" property value is set to the value of the property defined by this
+	 * method.
+	 *
+	 * For example, if you call `->setEntityTemporaryIdProperty('addresses', 'type');`
+	 * and then add an Address entity using `->addEntity('addresses', $address)`,
+	 * the `$address` object will have the "id" property value set to the value
+	 * of the "type" value.
 	 *
 	 * @param  string $name     The entity collection name
 	 * @param  string $property The name of the property to use
@@ -392,7 +399,7 @@ class Assembler
 
 		if (array_key_exists($name, $this->_entityTemporaryIdFields)
 		 && !$entity->id) {
-			$entity->id = $entity->{$this->_entityTemporaryIdFields[$name]}
+			$entity->id = $entity->{$this->_entityTemporaryIdFields[$name]};
 		}
 
 		return $entity;
