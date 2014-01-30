@@ -255,6 +255,15 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/**
+	 * Update the quantity of items for a given unit on the order being
+	 * assembled.
+	 *
+	 * @param  Unit $unit     The unit to change quantity for
+	 * @param  int  $quantity The quantity to set
+	 *
+	 * @return Assembler      Returns $this for chainability
+	 */
 	public function updateQuantity(Unit $unit, $quantity = 1)
 	{
 		// Disable event dispatching while we update the quantities
