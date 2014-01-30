@@ -394,7 +394,7 @@ class Assembler
 		if (true === $this->_dispatchEvents) {
 			$this->_order = $this->_eventDispatcher->dispatch(
 				Events::ASSEMBLER_UPDATE,
-				new Event\Event($this->_order)
+				new Event\AssemblerEvent($this)
 			)->getOrder();
 		}
 
