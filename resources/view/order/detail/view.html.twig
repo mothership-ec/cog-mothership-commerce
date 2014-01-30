@@ -3,7 +3,7 @@
 {% block sidebar %}
 	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#sidebar', { 'orderID': order.id } )) }}
 {% endblock %}
- 
+
 {% block main %}
 
 
@@ -12,7 +12,7 @@
 	</hgroup>
 
 	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}
-	
+
 	{% block order_content %}
 	{% endblock %}
 
