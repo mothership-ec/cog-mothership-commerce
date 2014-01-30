@@ -381,6 +381,18 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\ProductAttributes($c);
 		};
 
+		$services['product.detail.loader'] = $services->share(function($c) {
+			return new Commerce\Product\Type\Detail\Loader($c['db.query']);
+		});
+
+		$services['product.detail.create'] = $services->share(function($c) {
+			return new Commerce\Product\Type\Detail\Create($c['db.query']);
+		});
+
+		$services['product.detail.update'] = $services->share(function($c) {
+			return new Commerce\Product\Type\Detail\Update($c['db.query']);
+		});
+
 		$services['commerce.user.address.loader'] = function($c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],

@@ -18,7 +18,7 @@ class Loader
 	{
 		$result =	$this->_query->run("
 			SELECT
-				product_id,
+				product_id AS productID,
 				name,
 				value
 			FROM
