@@ -1,36 +1,47 @@
-<div class="group">
-	<h2 class="title">{{ address.type|capitalize }}</h2>
-	<div class="content">
-		<dl class="order-details">
-			<dt>{{ 'ms.commerce.order.address.name'|trans }}</dt>
+<div class="column">
+		<h2>{{ address.type|capitalize }}</h2>
+		<ul class="order-details">
+			<li>
+				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
 				{% if order %}
-				<dd><a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
+				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
 					{{ address.title }} {{ address.forename }} {{ address.surname }}
-				</a></dd>
+				</a>
 				{% else %}
-				<dd>{{ user.title }} {{ user.forename }} {{ user.surname }}</dd>
+					{{ user.title }} {{ user.forename }} {{ user.surname }}
 				{% endif %}
+			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
-			<dt>{{ 'ms.commerce.order.address.line'|trans({'number': key}) }}</dt>
-				<dd>{{ line }}</dd>
+					<li>
+						<span>{{ 'ms.commerce.order.address.line'|trans({'number': key}) }}</span>
+						{{ line }}
+					</li>
 				{% endif %}
 			{% endfor %}
-			<dt>{{ 'ms.commerce.order.address.town'|trans }}</dt>
-				<dd>{{ address.town }}</dd>
-			<dt>{{ 'ms.commerce.order.address.postcode'|trans }}</dt>
-				<dd>{{ address.postcode }}</dd>
+
+				<li><span>{{ 'ms.commerce.order.address.town'|trans }}</span>
+				{{ address.town }}
+			</li>
+			<li>
+				<span>{{ 'ms.commerce.order.address.postcode'|trans }}</span>
+				{{ address.postcode }} </li>
 			{% if not address.state is empty %}
-			<dt>{{ 'ms.commerce.order.address.state'|trans }}</dt>
-				<dd>{{ address.state }}</dd>
+				<li>
+					<span>{{ 'ms.commerce.order.address.state'|trans }}</span>
+					{{ address.state }}
+				</li>
 			{% endif %}
-			<dt>{{ 'ms.commerce.order.address.country'|trans }}</dt>
-				<dd>{{ address.country }}</dd>
+			<li>
+				<span>{{ 'ms.commerce.order.address.country'|trans }}</span>
+				{{ address.country }}
+			</li>
 			{% if not address.telephone is empty %}
-			<dt>{{ 'ms.commerce.order.address.telephone'|trans }}</dt>
-				<dd>{{ address.telephone }}</dd>
+				<li>
+					<span>{{ 'ms.commerce.order.address.telephone'|trans }}</span>
+					{{ address.telephone }}
+				</li>
 			{% endif %}
-		</dl>
-	</div>
+		</ul>
 </div>
 

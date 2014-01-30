@@ -1,39 +1,32 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 {% import 'Message:Mothership:Commerce::options' as option %}
 {% block edit %}
-	<div class="listing">
+	<div>
 		{% for image in product.images %}
 			<div class="product-image">
 				{{ getResizedImage(image, 200, 200) }}
-				<div class="file-overlay">
-					<dl>
-						<dt>{{ 'ms.commerce.product.image.type.label'|trans }}</dt>
-							<dd>{{ image.type }}</dd>
-						{% for name,value in image.options %}
-							<dt>{{ name }}</dt>
-								<dd>{{ value }}</dd>
-						{% endfor %}
-					</dl>
-				</div>
+				<dl>
+					<dt>{{ 'ms.commerce.product.image.type.label'|trans }}</dt>
+					<dd>{{ image.type }}</dd>
+					{% for name,value in image.options %}
+						<dt>{{ name }}</dt>
+						<dd>{{ value }}</dd>
+					{% endfor %}
+				</dl>
 			</div>
 		{% endfor %}
 	</div>
-		{{ form_start(form) }}
-	<div class="group">
-		<h2 class="title">Add Image</h2>
-		<div class="content">
-			{{ form_row(form.image) }}
-			{{ form_row(form.type) }}
-			{{ option.renderRepeatable(form.options) }}
-			{{ form_rest(form) }}
-			<button type="submit" class="button small save" id="save-content">
-				{{ 'ms.commerce.product.button.save'|trans }}
-			</button>
-		</div>
 
-	</div>
-		{{ form_end(form) }}
+	{{ form_start(form) }}
+		{{ form_row(form.image) }}
+		{{ form_row(form.type) }}
+		{{ option.renderRepeatable(form.options) }}
 
+		{{ form_rest(form) }}
+
+		<button type="submit" class="button small save" id="save-content">
+			{{ 'ms.commerce.product.button.save'|trans }}
+		</button>
+	{{ form_end(form) }}
 
 {% endblock %}
-
