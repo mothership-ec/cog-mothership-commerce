@@ -5,25 +5,26 @@ namespace Message\Mothership\Commerce\Product\Type\Detail;
 use Message\Cog\DB\Query;
 use Message\Mothership\Commerce\Product\Product;
 
-class Collection
+class Loader
 {
 	protected $_query;
 
 	public function __construct(Query $query)
 	{
-		$this->_query	= $	query;
+		$this->_query	= $query;
 	}
 
 	public function getDetails(Product $product)
 	{
 		$result =	$this->_query->run("
 			SELECT
-				`name`,
-				`value`
+				product_id,
+				name,
+				value
 			FROM
 				product_detail
 			WHERE
-				id	= :productID?i
+				product_id	= :productID?i
 		", array(
 			'productID'	=> $product->id,
 		));

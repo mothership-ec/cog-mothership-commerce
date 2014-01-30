@@ -19,14 +19,14 @@ class Collection implements \IteratorAggregate, \Countable
 
 	public function get($name)
 	{
-		if ($this->exists[$name]) {
+		if ($this->exists($name)) {
 			return $this->_details[$name];
 		}
 
-		throw new \Exception('Not detail with name `'. $name . '` found!');
+		throw new \Exception('No detail with name `'. $name . '` found!');
 	}
 
-	public function exists()
+	public function exists($name)
 	{
 		return isset($this->_details[$name]);
 	}

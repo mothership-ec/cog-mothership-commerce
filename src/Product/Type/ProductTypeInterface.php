@@ -31,6 +31,10 @@ interface ProductTypeInterface
 
 	public function setDetailsForm(Handler $form);
 
+	public function setDetails(Detail\Collection $details);
+
+	public function getDetails();
+
 	public function setAttributesForm(Handler $form);
 
 	public function getDetailsForm();
