@@ -24,6 +24,11 @@ class Assembler
 
 	protected $_dispatchEvents = true;
 
+	protected $_entityTemporaryIdFields = array(
+		'addresses' => 'type',
+		'discounts' => 'code',
+	);
+
 	/**
 	 * Constructor.
 	 *
@@ -55,7 +60,9 @@ class Assembler
 	 *
 	 * Note this method dispatches the assembler update event.
 	 *
-	 * @param Order $order The new order
+	 * @param  Order $order The new order
+	 *
+	 * @return Assembler    Returns $this for chainability
 	 */
 	public function setOrder(Order $order)
 	{
@@ -67,11 +74,30 @@ class Assembler
 	/**
 	 * Set the default stock location to set for items added to the order.
 	 *
-	 * @param string|int $stockLocation
+	 * @param  string|int $stockLocation
+	 *
+	 * @return Assembler Returns $this for chainability
 	 */
 	public function setDefaultStockLocation($stockLocation)
 	{
 		$this->_defaultStockLocation = $stockLocation;
+
+		return $this;
+	}
+
+	/**
+	 * [setEntityTemporaryIdProperty description]
+	 *
+	 * @param  string $name     The entity collection name
+	 * @param  string $property The name of the property to use
+	 *
+	 * @return Assembler        Returns $this for chainability
+	 */
+	public function setEntityTemporaryIdProperty($name, $property)
+	{
+		$this->_entityTemporaryIdProp[$name] = $property;
+
+		return $this;
 	}
 
 	/**
@@ -79,6 +105,10 @@ class Assembler
 	 *
 	 * If the entity has an `order` property (they all should, really), it is
 	 * set to the order that is being assembled.
+	 *
+	 * The entity is prepared before it is added.
+	 *
+	 * @see _prepareEntity
 	 *
 	 * @param  string                 $name   The entity name
 	 * @param  Entity\EntityInterface $entity The entity
@@ -100,6 +130,10 @@ class Assembler
 	 * Clear all entities of a certain type, then reset them to a given set of
 	 * entities.
 	 *
+	 * All entities are prepared before being added.
+	 *
+	 * @see _prepareEntity
+	 *
 	 * @param  string                         $name     The entity name to set
 	 * @param  array[Entity\EntityInterface]  $entities Entities to set
 	 *
@@ -111,10 +145,7 @@ class Assembler
 		$this->_order->{$name}->clear();
 
 		foreach ($entities as $entity) {
-			if (property_exists($entity, 'order')) {
-				$entity->order = $this->_order;
-			}
-
+			$this->_prepareEntity($entity);
 			$this->_order->{$name}->append($entity);
 		}
 
@@ -123,6 +154,11 @@ class Assembler
 
 	/**
 	 * Remove an entity from the order.
+	 *
+	 * If an entity object is passed, it is prepared before we try to retrieve
+	 * the value of the "id" property.
+	 *
+	 * @see _prepareEntity
 	 *
 	 * @param  string                            $name   The entity name
 	 * @param  string|int|Entity\EntityInterface $entity The entity, or entity ID
@@ -134,6 +170,8 @@ class Assembler
 	public function removeEntity($name, $entity)
 	{
 		if ($entity instanceof Entity\EntityInterface) {
+			$this->_prepareEntity($entity);
+
 			$entity = $entity->id;
 		}
 
@@ -253,20 +291,6 @@ class Assembler
 		return $this->setUser(null);
 	}
 
-	/**
-	 * Add a discount to the order.
-	 *
-	 * @see addEntity
-	 *
-	 * @param Entity\Discount\Discount $discount The discount to add
-	 *
-	 * @return Assembler                         Returns $this for chainability
-	 */
-	public function addDiscount(Entity\Discount\Discount $discount)
-	{
-		return $this->_addEntity('discount', $discount);
-	}
-
 	public function removeDiscount(Entity\Discount\Discount $discount)
 	{
 		$this->_order->discounts->removeByCode($discount->code);
@@ -354,6 +378,35 @@ class Assembler
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Prepare an entity ready to be added or used for the order.
+	 *
+	 * This sets the "order" property on the entity (if one is defined) to the
+	 * order that's being assembled.
+	 *
+	 * It also checks if we know of a "temporary id field" for the entity (such
+	 * as for addresses and discounts). If one is defined, the value of that
+	 * field is set as the value of the "id" property for easy access later.
+	 *
+	 * @param  string                 $name   The entity collection name
+	 * @param  Entity\EntityInterface $entity The entity to prepare
+	 *
+	 * @return Entity\EntityInterface         The prepared entity
+	 */
+	protected function _prepareEntity($name, Entity\EntityInterface $entity)
+	{
+		if (property_exists($entity, 'order')) {
+			$entity->order = $this->_order;
+		}
+
+		if (array_key_exists($name, $this->_entityTemporaryIdFields)
+		 && !$entity->id) {
+			$entity->id = $entity->{$this->_entityTemporaryIdFields[$name]}
+		}
+
+		return $entity;
 	}
 
 	protected function _countForUnitID(Unit $unit)
