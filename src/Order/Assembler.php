@@ -58,8 +58,6 @@ class Assembler
 	/**
 	 * Replace the order that's being assembled with a new one.
 	 *
-	 * Note this method dispatches the assembler update event.
-	 *
 	 * @param  Order $order The new order
 	 *
 	 * @return Assembler    Returns $this for chainability
@@ -68,7 +66,7 @@ class Assembler
 	{
 		$this->_order = $order;
 
-		return $this->dispatchEvent();
+		return $this;
 	}
 
 	/**
