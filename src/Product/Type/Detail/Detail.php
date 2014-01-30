@@ -8,7 +8,7 @@ class Detail
 	public $name;
 	public $value;
 
-	public function __construct($productID, $name, $value)
+	public function __construct($productID, $name, $value = '')
 	{
 		$this->productID	= $productID;
 		$this->name			= $name;

@@ -23,7 +23,7 @@ interface ProductTypeInterface
 
 	public function setFields();
 
-	public function add($name, $type = null, $label = null, $options = array());
+	public function add(Product $product, $name, $type = null, $label = null, $options = array());
 
 	public function getProductDisplayName(Product $product = null);
 

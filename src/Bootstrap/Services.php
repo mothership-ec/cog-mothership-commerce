@@ -377,6 +377,12 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Category\Loader($c['db.query']);
 		};
 
+		$services['product.types'] = $services->share(function($c) {
+			return new Commerce\Product\Type\Collection(array(
+				new Commerce\Product\Type\BasicProductType($c),
+			));
+		});
+
 		$services['product.form.attributes'] = function($c) {
 			return new Commerce\Product\Form\ProductAttributes($c);
 		};

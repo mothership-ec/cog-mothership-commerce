@@ -32,6 +32,8 @@ class Product
 	public $sizing;
 	public $notes;
 
+	public $type;
+
 	public $price 	= array();
 	public $images  = array();
 	public $tags    = array();
