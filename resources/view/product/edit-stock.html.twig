@@ -1,10 +1,13 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
 {% block edit %}
-	{{ form_start(form) }}
-		<div class="group">
+
+	<h1>Stock Adjustments</h1>
+
+		{{ form_start(form) }}
+		<div class="display-group">
 			<h2 class="title">Adjust Stock</h2>
-			<div class="content">
+			<div class="content-wrap">
 			<table>
 				<thead>
 					<tr>
@@ -43,22 +46,26 @@
 			<button type="submit" class="button small save" id="save-content">
 				{{ 'Update Stock' }}
 			</button>
+			</div>
 		</div>
-	</div>
-	{{ form_end(form) }}
-	<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
-	{% for movement in movementIterator %}
-		<section class="group">
-			<h2 class="title">
-				Stock Movement #{{ movement.id }}
-				- {{ movement.authorship.createdAt|date }}
-				{% if movement.automated %}
-					(Automated)
-				{% else %}
-					by {{ movement.authorship.createdUser.name }}
-				{% endif %}
-			</h2>
-			<div class="content">
+		{{ form_end(form) }}
+		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
+
+	<section class="display-group">
+
+		{% for movement in movementIterator %}
+
+				<h2 class="title">
+					Stock Movement #{{ movement.id }}
+					- {{ movement.authorship.createdAt|date }}
+					{% if movement.automated %}
+						(Automated)
+					{% else %}
+						by {{ movement.authorship.createdUser.name }}
+					{% endif %}
+				</h2>
+
+		<div class="content-wrap">
 				<table>
 					<thead>
 						<tr>
@@ -101,16 +108,17 @@
 						{% endfor %}
 					</tbody>
 				</table>
-				<ul class="stock-reason">
-					<li>
-						<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
-						<p>{{ movement.reason }}</li>
-					<li>
-						<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
-						<p>{{ movement.note }}</p>
-					</li>
-				</ul>
-			</div>
-		</section>
-	{% endfor %}
+
+				<div>
+					<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
+					<p>{{ movement.reason }}
+				</div>
+				<div>
+					<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
+					<p>{{ movement.note }}</p>
+				</div>
+	</div>
+		{% endfor %}
+	</section>
+
 {% endblock %}
