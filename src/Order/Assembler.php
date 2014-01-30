@@ -220,6 +220,16 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/**
+	 * Add a unit to the order.
+	 *
+	 * The unit is transformed into an Item entity and has the stock location
+	 * set to the defined default stock location and is then added to the order.
+	 *
+	 * @param  Unit $unit The unit to add
+	 *
+	 * @return Assembler  Returns $this for chainability
+	 */
 	public function addUnit(Unit $unit)
 	{
 		$item = new Entity\Item\Item;
@@ -284,18 +294,6 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
-	public function setUser(User $user = null)
-	{
-		$this->_order->user = $user;
-
-		return $this->dispatchEvent();
-	}
-
-	public function removeUser()
-	{
-		return $this->setUser(null);
-	}
-
 	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
 	{
 		$payment            = new Entity\Payment\Payment;
@@ -351,6 +349,33 @@ class Assembler
 		$this->_order->shippingListPrice   = $option->getPrice();
 
 		return $this->dispatchEvent();
+	}
+
+	/**
+	 * Set the user for this order.
+	 *
+	 * @param  User|null $user The user to set, or null to remove any previously
+	 *                         set user
+	 *
+	 * @return Assembler       Returns $this for chainability
+	 */
+	public function setUser(User $user = null)
+	{
+		$this->_order->user = $user;
+
+		return $this->dispatchEvent();
+	}
+
+	/**
+	 * Remove any user previously set on this order.
+	 *
+	 * @see setUser
+	 *
+	 * @return Assembler Returns $this for chainability
+	 */
+	public function removeUser()
+	{
+		return $this->setUser(null);
 	}
 
 	/**
