@@ -1,26 +1,23 @@
 {% extends '::order:detail:view' %}
 
 {% block order_content %}
-	<div class="container-content short">
-		{% include '::order:order:detail' %}
+
+	<div class="container-content">
+
+			{% include '::order:order:detail' %}
+		<section class="summary">
 			{% include '::order:detail:item:summary' %}
+
 			{% if order is defined %}
-				<tfoot class="total-summary">
-					<tr>
-						<th colspan="4">Subtotal</th>
-						<td>{{ order.productGross|price(order.currencyID) }}</td>
-					</tr>
-					<tr>
-						<th colspan="4">Shipping ({{ order.shippingDisplayName }} )</th>
-						<td>{{ order.shippingGross|price(	order.currencyID) }}</td>
-					</tr>
-					<tr>
-						<th colspan="4">Grand Total</th>
-						<td>{{ order.totalGross|price(order.currencyID) }}</td>
-					</tr>
-				</tfoot>
+				<ul class="summary-totals">
+					<li>Subtotal <span>{{ order.productGross|price(order.currencyID) }}</span></li>
+					<li>Shipping ({{ order.shippingDisplayName }} ) <span>{{ order.shippingGross|price(	order.currencyID) }}</span>
+					</li>
+					<li>Grand Total <span>{{ order.totalGross|price(order.currencyID) }}</span>
+					</li>
+				</ul>
 			{% endif %}
-			</table>
 		</section>
 	</div>
+
 {% endblock %}
