@@ -431,16 +431,16 @@
         },
         {
             "name": "message/cog-imageresize",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-imageresize.git",
-                "reference": "1.0.1"
+                "reference": "1.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-imageresize/zipball/1.0.1",
-                "reference": "1.0.1",
+                "url": "https://api.github.com/repos/messagedigital/cog-imageresize/zipball/1.0.2",
+                "reference": "1.0.2",
                 "shasum": ""
             },
             "require": {
@@ -477,9 +477,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-imageresize/issues",
-                "source": "https://github.com/messagedigital/cog-imageresize/tree/1.0.1"
+                "source": "https://github.com/messagedigital/cog-imageresize/tree/1.0.2"
             },
-            "time": "2014-01-10 16:00:00"
+            "time": "2014-01-30 10:40:00"
         },
         {
             "name": "message/cog-mothership-cp",
