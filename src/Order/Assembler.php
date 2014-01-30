@@ -291,13 +291,6 @@ class Assembler
 		return $this->setUser(null);
 	}
 
-	public function removeDiscount(Entity\Discount\Discount $discount)
-	{
-		$this->_order->discounts->removeByCode($discount->code);
-
-		return $this->dispatchEvent();
-	}
-
 	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
 	{
 		$payment            = new Entity\Payment\Payment;
