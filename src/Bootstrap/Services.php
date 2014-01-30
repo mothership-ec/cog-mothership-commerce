@@ -296,6 +296,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\EventListener\VatListener($c['country.list']);
 		};
 
+		$services['order.listener.assembler.stock_check'] = function($c) {
+			return new Commerce\Order\EventListener\Assembler\StockCheckListener('web');
+		};
+
 		// Product
 		$services['product'] = function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);

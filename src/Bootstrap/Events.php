@@ -19,7 +19,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 	public function registerEvents($dispatcher)
 	{
-		$dispatcher->addSubscriber(new Commerce\Order\EventListener\AssemblerListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\TotalsListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\ValidateListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\StockAdjustmentListener);
@@ -30,6 +29,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\NotificationListener);
 
 		$dispatcher->addSubscriber($this->_services['order.listener.vat']);
+		$dispatcher->addSubscriber($this->_services['order.listener.assembler.stock_check']);
 
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Address\EventListener);
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Discount\EventListener);
