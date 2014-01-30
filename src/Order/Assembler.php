@@ -270,9 +270,9 @@ class Assembler
 		$this->_dispatchEvents = false;
 
 		// Count how many times this unit is already in the basket
-		$unitCount = $this->_countForUnitID($unit);
-		// Load the items from the basket which already have this unitID
-		$items = $this->_order->items->getByProperty('unitID', $unit->id);
+		$row       = $this->_order->items->getRows()[$unit->id];
+		$items     = $row->all();
+		$unitCount = $row->getQuantity();
 
 		// If the quantities are the same then return
 		if ($unitCount == $quantity) {
@@ -290,7 +290,6 @@ class Assembler
 		// Add the item to the order as many times to make the count equal to
 		// the given quantity
 		if ($quantity > $unitCount) {
-			$item = array_shift($items);
 			for ($i = $unitCount; $i < $quantity; $i++) {
 				$this->addUnit($unit);
 			}
@@ -437,10 +436,5 @@ class Assembler
 		}
 
 		return $entity;
-	}
-
-	protected function _countForUnitID(Unit $unit)
-	{
-		return count($this->_order->items->getByProperty('unitID', $unit->id));
 	}
 }
