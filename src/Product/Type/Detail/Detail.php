@@ -6,4 +6,9 @@ class Detail
 {
 	public $name;
 	public $value;
+
+	public function __toString()
+	{
+		return (string) $value;
+	}
 }
