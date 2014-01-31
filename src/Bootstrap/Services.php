@@ -311,6 +311,7 @@ class Services implements ServicesInterface
 				$c['db.query'],
 				$c['locale'],
 				$c['file_manager.file.loader'],
+				$c['product.types'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);
@@ -418,12 +419,6 @@ class Services implements ServicesInterface
 		$services['commerce.user.collection'] = function($c) {
 			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
 		};
-
-		$services['commerce.product.types']	= $services->share(function($c) {
-			return new Commerce\Product\Type\Collection(array(
-				new Commerce\Product\Type\BasicProductType($c),
-			));
-		});
 
 		$services['stock.manager'] = function($c) {
 			$trans = $c['db.transaction'];

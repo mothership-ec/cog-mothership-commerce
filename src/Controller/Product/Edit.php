@@ -727,7 +727,7 @@ class Edit extends Controller
 
 	protected function _getProductAttributesForm()
 	{
-		return $this->get('commerce.product.types')->get('basic')->setProduct($this->_product)->getAttributesForm();
+		return $this->_product->type->getAttributesForm();
 
 		$form = $this->get('form')
 			->setName('product-attributes-edit')
@@ -805,6 +805,8 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
+		return $this->_product->type->getDetailsForm();
+
 		$form = $this->get('form')
 			->setName('product-details-edit')
 			->setAction($this->generateUrl('ms.commerce.product.edit.details.action', array('productID' => $this->_product->id)))

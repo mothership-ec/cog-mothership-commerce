@@ -30,16 +30,15 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	protected $_detailsForm;
 
 	/**
-	 * @var Detail\Collection
+	 * @var array
 	 */
-	public $_details;
+	public $_details	= array();
 
 	public function __construct(ContainerInterface $container)
 	{
 		$this->setContainer($container);
 		$this->setDetailsForm($container['form']);
 		$this->setFields();
-		$this->setDetails(new Detail\Collection);
 	}
 
 	public function setProduct(Product $product)
@@ -90,10 +89,10 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 		return $this->_attributesForm;
 	}
 
-	public function add(Product $product, $name, $type = null, $label = null, $options = array())
+	public function add($name, $type = null, $label = null, $options = array())
 	{
 		$this->_detailsForm->add($name, $type, $label, $options);
-		$this->_details[$name]	= new Detail\Detail($product->id, $name);
+		$this->_details[$name]	= $name;
 
 		return $this->_detailsForm;
 	}

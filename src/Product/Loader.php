@@ -17,19 +17,22 @@ class Loader
 	protected $_includeDeleted = false;
 
 	protected $_returnArray;
+	protected $_productTypes;
 
 	public function __construct(
 		Query $query,
 		Locale $locale,
 		FileLoader $fileLoader,
+		Type\Collection $productTypes,
 		array $entities = array(),
 		$priceTypes = array()
 	) {
-		$this->_query = $query;
-		$this->_locale = $locale;
-		$this->_entities = $entities;
-		$this->_priceTypes = $priceTypes;
-		$this->_fileLoader = $fileLoader;
+		$this->_query			= $query;
+		$this->_locale			= $locale;
+		$this->_entities		= $entities;
+		$this->_priceTypes		= $priceTypes;
+		$this->_fileLoader		= $fileLoader;
+		$this->_productTypes	= $productTypes;
 	}
 
 	/**
@@ -133,6 +136,7 @@ class Loader
 				product.updated_by   AS updatedBy,
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
+				product.type		 AS type,
 				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
@@ -275,6 +279,10 @@ class Loader
 				}
 
 				$products[$key]->images[$image->id] = $image;
+
+				$productType			= $this->_productTypes->get($data->type);
+				$productType->setProduct($products[$key]);
+				$products[$key]->type	= $productType;
 			}
 		}
 

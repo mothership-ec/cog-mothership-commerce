@@ -15,22 +15,60 @@ class ProductAttributes extends Handler
 			)
 			->setMethod('post');
 
-		$this->add('name');
-		$this->add('displayName');
-		$this->add('description', 'textarea');
-		$this->add('shortDescription', 'textarea')
+		$this->add('name', 'text', $this->_trans('ms.commerce.product.attributes.name.label'), array(
+			'data' => $product->name,
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.name.help')
+		))
+			->val()
+			->maxLength(255);
+		$this->add('display_name', 'text', $this->_trans('ms.commerce.product.attributes.display-name.label'), array(
+			'data' => $product->displayName,
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
+		))
+			->val()
+			->maxLength(255);
+		$this->add('category', 'datalist', $this->_trans('ms.commerce.product.attributes.category.label'), array(
+				'choices'	=> $this->_getCategories(),
+				'attr'		=> array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
+		));
+		$this->add('description', 'textarea', $this->_trans('ms.commerce.product.attributes.description.label'), array(
+			'data' => $product->description,
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
+		))
+			->val()
+			->optional();
+		$this->add('short_description', 'textarea', $this->_trans('ms.commerce.product.attributes.short-description.label'), array(
+			'data' => $product->shortDescription,
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.short-description.help')
+		))
 			->val()->optional();
-		$this->add('exportDescription', 'textarea')
-			->val()->optional();
-		$this->add('category', 'datalist', 'Category', array(
-			'choices'	=> $this->_getCategories())
-		);
-		$this->add('weight')
-			->val()->float();
-		$this->add('tags', 'textarea')
-			->val()->optional();
-		$this->add('notes', 'textarea')
-			->val()->optional();
+		$this->add('export_description', 'textarea', $this->_trans('ms.commerce.product.attributes.export-description.label'), array(
+			'data' => $product->exportDescription,
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
+		))
+			->val()
+			->optional();
+		$this->add('weight_grams', 'number', $this->_trans('ms.commerce.product.details.weight-grams.label'), array(
+			'data' => $product->weight,
+			'attr' => array(
+				'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
+			)
+		))
+			->val()
+			->number()
+			->optional();
+		$this->add('tags', 'textarea', $this->_trans('ms.commerce.product.details.tags.label'), array(
+			'data' => implode(',', $product->tags),
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
+		))
+			->val()
+			->optional();
+		$this->add('notes', 'textarea', $this->_trans('ms.commerce.product.details.notes.label'), array(
+			'data' => $product->notes,
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
+		))
+			->val()
+			->optional();
 		$this->add(
 			'export_manufacture_country_id',
 			'choice',
@@ -43,6 +81,12 @@ class ProductAttributes extends Handler
 		);
 
 		return $this;
+	}
+
+	protected function _trans($message, array $params = array(), $domain = null, $locale = null)
+	{
+		return $this->_container['translator']->trans($message, $params, $domain, $locale);
+
 	}
 
 	protected function _getCategories()

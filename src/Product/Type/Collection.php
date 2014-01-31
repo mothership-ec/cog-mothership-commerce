@@ -16,6 +16,8 @@ class Collection implements \IteratorAggregate, \Countable
 	public function add(ProductTypeInterface $productType)
 	{
 		$this->_productTypes[$productType->getName()]	= $productType;
+
+		return $this;
 	}
 
 	public function get($name)
