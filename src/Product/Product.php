@@ -33,6 +33,7 @@ class Product
 	public $notes;
 
 	public $type;
+	public $details;
 
 	public $price 	= array();
 	public $images  = array();

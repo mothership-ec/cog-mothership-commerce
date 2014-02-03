@@ -312,6 +312,7 @@ class Services implements ServicesInterface
 				$c['locale'],
 				$c['file_manager.file.loader'],
 				$c['product.types'],
+				$c['product.detail.loader'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);

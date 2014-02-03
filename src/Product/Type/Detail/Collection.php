@@ -17,6 +17,11 @@ class Collection implements \IteratorAggregate, \Countable
 		}
 	}
 
+	public function __get($name)
+	{
+		return (string) $this->get($name);
+	}
+
 	public function get($name)
 	{
 		if ($this->exists($name)) {
@@ -29,6 +34,16 @@ class Collection implements \IteratorAggregate, \Countable
 	public function exists($name)
 	{
 		return isset($this->_details[$name]);
+	}
+
+	public function flatten()
+	{
+		$details	= array();
+		foreach ($this->all() as $name => $detail) {
+			$details[$name]	= $detail->value;
+		}
+
+		return $details;
 	}
 
 	public function all()

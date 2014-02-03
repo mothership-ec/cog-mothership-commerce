@@ -29,8 +29,6 @@ interface ProductTypeInterface
 
 	public function setProduct(Product $product);
 
-	public function setDetailsForm(Handler $form);
-
 	public function setDetails(Detail\Collection $details);
 
 	public function getDetails();

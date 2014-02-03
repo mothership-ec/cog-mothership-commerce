@@ -18,21 +18,24 @@ class Loader
 
 	protected $_returnArray;
 	protected $_productTypes;
+	protected $_detailLoader;
 
 	public function __construct(
 		Query $query,
 		Locale $locale,
 		FileLoader $fileLoader,
 		Type\Collection $productTypes,
+		Type\Detail\Loader $detailLoader,
 		array $entities = array(),
 		$priceTypes = array()
 	) {
 		$this->_query			= $query;
 		$this->_locale			= $locale;
 		$this->_entities		= $entities;
+		$this->_productTypes	= $productTypes;
+		$this->_detailLoader	= $detailLoader;
 		$this->_priceTypes		= $priceTypes;
 		$this->_fileLoader		= $fileLoader;
-		$this->_productTypes	= $productTypes;
 	}
 
 	/**
@@ -280,9 +283,13 @@ class Loader
 
 				$products[$key]->images[$image->id] = $image;
 
+				$products[$key]->details	= $this->_detailLoader->getDetails($products[$key]);
+
 				$productType			= $this->_productTypes->get($data->type);
 				$productType->setProduct($products[$key]);
+				$productType->setFields();
 				$products[$key]->type	= $productType;
+
 			}
 		}
 

@@ -728,84 +728,13 @@ class Edit extends Controller
 	protected function _getProductAttributesForm()
 	{
 		return $this->_product->type->getAttributesForm();
-
-		$form = $this->get('form')
-			->setName('product-attributes-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.attributes.action', array('productID' => $this->_product->id)))
-			->setMethod('post');
-
-		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array(
-			'data' => $this->_product->name,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.name.help')
-		))
-			->val()
-			->maxLength(255);
-
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array(
-			'data' => $this->_product->displayName,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
-		))
-			->val()
-			->maxLength(255);
-
-		$form->add('category', 'text', $this->trans('ms.commerce.product.attributes.category.label'), array(
-			'data' => $this->_product->category,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.category.help')
-		))
-			->val()
-			->maxLength(255);
-
-		$form->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
-			'data' => $this->_product->brand,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
-		))
-			->val()
-			->maxLength(255);
-
-
-		$form->add('season', 'text', $this->trans('ms.commerce.product.attributes.season.label'), array(
-			'data' => $this->_product->season,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.season.help')
-		))
-			->val()
-			->maxLength(255)
-			->optional();
-
-
-		$form->add('year', 'text', $this->trans('ms.commerce.product.attributes.year.label'), array(
-			'data' => $this->_product->year,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.year.help')
-		))
-			->val()
-			->maxLength(4)
-			->digit()
-			->optional();
-
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array(
-			'data' => $this->_product->shortDescription,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.short-description.help')
-		));
-
-		$form->add('description', 'textarea', $this->trans('ms.commerce.product.attributes.description.label'), array(
-			'data' => $this->_product->description,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
-		))
-			->val()
-			->optional();
-
-		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.attributes.export-description.label'), array(
-			'data' => $this->_product->exportDescription,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
-		))
-			->val()
-			->optional();
-
-		return $form;
 	}
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->_product->type->getDetailsForm();
+		$form	= $this->_product->type->getDetailsForm();
+
+		return $form;
 
 		$form = $this->get('form')
 			->setName('product-details-edit')

@@ -27,7 +27,7 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	/**
 	 * @var Handler
 	 */
-	protected $_detailsForm;
+	protected $_detailForm;
 
 	/**
 	 * @var array
@@ -37,20 +37,11 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	public function __construct(ContainerInterface $container)
 	{
 		$this->setContainer($container);
-		$this->setDetailsForm($container['form']);
-		$this->setFields();
 	}
 
 	public function setProduct(Product $product)
 	{
 		$this->_product	= $product;
-
-		return $this;
-	}
-
-	public function setDetailsForm(Handler $form)
-	{
-		$this->_detailsForm		= $form;
 
 		return $this;
 	}
@@ -64,7 +55,10 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 
 	public function getDetailsForm()
 	{
-		return $this->_detailsForm;
+		if (!$this->_detailForm) {
+			$this->_createForm();
+		}
+		return $this->_detailForm;
 	}
 
 	public function setDetails(Detail\Collection $details)
@@ -91,10 +85,12 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 
 	public function add($name, $type = null, $label = null, $options = array())
 	{
-		$this->_detailsForm->add($name, $type, $label, $options);
+		if (!$this->_detailForm) {
+			$this->_createForm();
+		}
 		$this->_details[$name]	= $name;
 
-		return $this->_detailsForm;
+		return $this->_detailForm->add($name, $type, $label, $options);
 	}
 
 	public function count()
@@ -110,5 +106,16 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	public function trans($message, array $params = array(), $domain = null, $locale = null)
 	{
 		return $this->_services['translator']->trans($message, $params, $domain, $locale);
+	}
+
+	public function _createForm()
+	{
+		if (!$this->_product) {
+			throw new \LogicException('Must add a product before building the form');
+		}
+
+		$this->_detailForm	= $this->_services['form']->setName('product-details-edit');
+		$this->_detailForm->setDefaultValues($this->_product->details->flatten());
+		$this->setFields();
 	}
 }

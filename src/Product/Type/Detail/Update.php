@@ -16,13 +16,21 @@ class Update
 	public function update(Detail $detail)
 	{
 		$this->_query->run("
-			UPDATE
+			INSERT INTO
 				product_detail
-			SET
-				name		= :name?s,
+				(
+					product_id,
+					name,
+					value
+				)
+			VALUES
+				(
+					:productID?i,
+					:name?s,
+					:value?s
+				)
+			ON DUPLICATE KEY UPDATE
 				value		= :value?s
-			WHERE
-				product_id	= :productID?i
 		", array(
 			'productID'	=> $detail->productID,
 			'name'		=> $detail->name,
