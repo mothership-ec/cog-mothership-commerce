@@ -399,8 +399,8 @@ class _1391093236_ProductType extends Migration
 				product
 			ADD
 				brand VARCHAR(255)
-			BEFORE
-				name
+			AFTER
+				type
 		");
 
 		$this->run("
