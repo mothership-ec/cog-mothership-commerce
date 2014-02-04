@@ -80,7 +80,7 @@ class Product
 	 */
 	public function __isset($var)
 	{
-		return array_key_exists($var, $this->_entities);
+		return array_key_exists($var, $this->_entities) || ($this->details && $this->details->$var);
 	}
 
 	/**
