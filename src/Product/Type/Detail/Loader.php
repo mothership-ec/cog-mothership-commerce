@@ -20,7 +20,9 @@ class Loader
 			SELECT
 				product_id AS productID,
 				name,
-				value
+				value,
+				value_int AS valueInt,
+				locale
 			FROM
 				product_detail
 			WHERE

@@ -21,13 +21,17 @@ class Update
 				(
 					product_id,
 					name,
-					value
+					value,
+					value_int,
+					locale
 				)
 			VALUES
 				(
 					:productID?i,
 					:name?s,
-					:value?s
+					:value?s,
+					:valueInt?i,
+					:locale?s
 				)
 			ON DUPLICATE KEY UPDATE
 				value		= :value?s
@@ -35,6 +39,8 @@ class Update
 			'productID'	=> $detail->productID,
 			'name'		=> $detail->name,
 			'value'		=> $detail->value,
+			'valueInt'	=> $detail->valueInt,
+			'locale'	=> $detail->locale,
 		));
 	}
 }

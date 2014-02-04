@@ -36,7 +36,7 @@ class MusicProductType extends AbstractProductType
 			'choices'	=> $this->_getLabels()
 		))
 			->val()->optional();
-		$this->add('releaseDate', 'datetime');
+		$this->add('releaseDate', 'date');
 
 		return $this;
 

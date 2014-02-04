@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Message\Mothership\Commerce\Field;
+use Message\Mothership\Commerce\Product\Type\Detail;
 
 use Message\Mothership\FileManager\File;
 
@@ -36,6 +37,7 @@ class Edit extends Controller
 
 	public function productDetails($productID)
 	{
+//		de($this->get('product.loader')->getByID($productID)->details);
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		return $this->render('::product:edit-form', array(
@@ -245,6 +247,11 @@ class Edit extends Controller
 			$product = $this->_product;
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
+
+			foreach ($data as $name => $value) {
+				$detail	= new Detail\Detail($product->id, $name, $value);
+				$this->get('product.detail.update')->update($detail);
+			}
 
 			$product->supplierRef                = $data['supplier_ref'];
 			$product->weight                	 = $data['weight_grams'];
@@ -732,99 +739,7 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-		$form	= $this->_product->type->getDetailsForm();
-
-		return $form;
-
-		$form = $this->get('form')
-			->setName('product-details-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.details.action', array('productID' => $this->_product->id)))
-			->setMethod('post');
-
-		$form->add('features', 'textarea', $this->trans('ms.commerce.product.details.features.label'), array(
-			'data' => $this->_product->features,
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.features.help')
-		))
-			->val()
-			->optional();
-
-
-		$form
-			->add('sizing', 'textarea', $this->trans('ms.commerce.product.details.sizing.label'), array(
-				'data' => $this->_product->sizing,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.sizing.help')
-			))
-			->val()
-			->optional();
-
-		$form
-			->add('fabric', 'textarea', $this->trans('ms.commerce.product.details.fabric.label'), array(
-				'data' => $this->_product->fabric,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.fabric.help')
-			))
-			->val()
-			->optional();
-
-		$form
-			->add('weight_grams', 'number', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
-				'data' => $this->_product->weight,
-				'attr' => array(
-					'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
-				)
-			))
-			->val()
-			->number()
-			->optional();
-
-		$form
-			->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
-				'data' => $this->_product->careInstructions,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')
-			))
-			->val()
-			->optional();
-
-
-		$form
-			->add('tags', 'textarea', $this->trans('ms.commerce.product.details.tags.label'), array(
-				'data' => implode(',', $this->_product->tags),
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
-			))
-			->val()
-			->optional();
-
-		$form
-			->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
-				'data' => $this->_product->supplierRef,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
-			))
-			->val()
-			->maxLength(255)
-			->optional();
-
-		$form
-			->add(
-				'export_manufacture_country_id',
-				'choice',
-				$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
-				array(
-					'data' 	  => $this->_product->exportManufactureCountryID,
-					'choices' => $this->get('country.list')->all(),
-					'attr'    => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
-				)
-			)
-			->val()
-			->optional();
-
-		$form
-			->add('notes', 'textarea', $this->trans('ms.commerce.product.details.notes.label'), array(
-				'data' => $this->_product->notes,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
-			))
-			->val()
-			->optional();
-
-		return $form;
+		return $this->_product->type->getDetailsForm();
 	}
 
 	protected function _getProductPricingForm()
