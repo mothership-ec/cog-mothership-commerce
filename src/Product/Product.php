@@ -60,11 +60,15 @@ class Product
 	 */
 	public function __get($var)
 	{
-		if (!array_key_exists($var, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+		if (array_key_exists($var, $this->_entities)) {
+			return $this->_entities[$var];
+		}
+		elseif ($this->details && $this->details->$var) {
+			return $this->details->$var;
 		}
 
-		return $this->_entities[$var];
+		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+
 	}
 
 	/**
