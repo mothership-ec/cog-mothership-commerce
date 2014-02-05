@@ -7,7 +7,6 @@ class Detail
 	public $productID;
 	public $name;
 	public $value;
-	public $valueInt;
 	public $dataType;
 	public $locale;
 
@@ -16,7 +15,6 @@ class Detail
 		$this->productID	= $productID;
 		$this->name			= $name;
 		$this->value		= $value;
-		$this->valueInt		= $value;
 		$this->dataType		= $dataType;
 		$this->locale		= $locale;
 	}
