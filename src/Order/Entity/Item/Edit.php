@@ -64,7 +64,7 @@ class Edit implements DB\TransactionalInterface
 		}
 
 		// Filter out any falsey values
-		$items  = array_filter($array);
+		$items  = array_filter($items);
 		$orders = [];
 
 		// Throw exception if we don't have any items
