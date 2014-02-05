@@ -38,4 +38,24 @@ class Collection implements \IteratorAggregate, \Countable
 	{
 		return new \ArrayIterator($this->_productTypes);
 	}
+
+	public function getList()
+	{
+		$types	= array();
+
+		foreach ($this->_productTypes as $name => $type) {
+			$types[$name]	= $type->getDisplayName() . ' (' . $type->getDescription() . ')';
+		}
+
+		return $types;
+	}
+
+	public function getDefault()
+	{
+		if (empty($this->_productTypes)) {
+			throw new \LogicException('No product types registered!');
+		}
+
+		return array_shift($this->_productTypes);
+	}
 }

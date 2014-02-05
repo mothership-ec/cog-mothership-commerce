@@ -157,7 +157,6 @@ class Edit
 				name         = :name?s,
 				tax_rate     = :taxRate?sn,
 				tax_strategy = :taxStrategy?s,
-				supplier_ref = :supplierRef?sn,
 				weight_grams = :weightGrams?in,
 				category     = :category?sn
 			WHERE
@@ -169,7 +168,6 @@ class Edit
 				'name'              => $this->_product->name,
 				'taxRate'           => $this->_product->taxRate,
 				'taxStrategy'       => $this->_product->taxStrategy,
-				'supplierRef'       => $this->_product->supplierRef,
 				'weightGrams'       => $this->_product->weight,
 				'category'          => $this->_product->category,
 		));

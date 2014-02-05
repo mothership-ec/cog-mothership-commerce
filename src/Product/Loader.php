@@ -143,7 +143,6 @@ class Loader
 				product.category     AS category,
 				product.tax_strategy AS taxStrategy,
 				product.tax_rate     AS taxRate,
-				product.supplier_ref AS supplierRef,
 				product.weight_grams AS weight,
 
 				product_info.display_name      AS displayName,
@@ -276,15 +275,9 @@ class Loader
 
 				$products[$key]->images[$image->id] = $image;
 
-				$products[$key]->details	= $this->_detailLoader->getDetails($products[$key]);
 			}
 
 			$this->_loadType($products[$key], $data->type);
-
-//			$productType			= $this->_productTypes->get($data->type);
-//			$productType->setProduct($products[$key]);
-//			$productType->setFields();
-//			$products[$key]->type	= $productType;
 		}
 
 		return count($products) == 1 && !$this->_returnArray ? array_shift($products) : $products;
@@ -292,10 +285,11 @@ class Loader
 
 	protected function _loadType(Product $product, $type)
 	{
-		$productType			= $this->_productTypes->get($type);
+		$product->details	= $this->_detailLoader->getDetails($product);
+		$productType		= $this->_productTypes->get($type);
 		$productType->setProduct($product);
 		$productType->setFields();
-		$product->type	= $productType;
+		$product->type		= $productType;
 	}
 
 }

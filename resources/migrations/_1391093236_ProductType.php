@@ -95,7 +95,7 @@ class _1391093236_ProductType extends Migration
 				SELECT
 					p.product_id,
 					'supplier_ref',
-					p.year,
+					p.supplier_ref,
 					'EN',
 					'text'
 				FROM
