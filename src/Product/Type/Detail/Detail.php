@@ -8,14 +8,16 @@ class Detail
 	public $name;
 	public $value;
 	public $valueInt;
+	public $dataType;
 	public $locale;
 
-	public function __construct($productID = null, $name = '', $value = '', $locale = 'EN')
+	public function __construct($productID = null, $name = '', $value = '', $dataType = 'text', $locale = 'EN')
 	{
 		$this->productID	= $productID;
 		$this->name			= $name;
 		$this->value		= $value;
 		$this->valueInt		= $value;
+		$this->dataType		= $dataType;
 		$this->locale		= $locale;
 	}
 

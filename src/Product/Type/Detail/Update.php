@@ -23,7 +23,8 @@ class Update
 					name,
 					value,
 					value_int,
-					locale
+					locale,
+					data_type
 				)
 			VALUES
 				(
@@ -31,7 +32,8 @@ class Update
 					:name?s,
 					:value?s,
 					:valueInt?i,
-					:locale?s
+					:locale?s,
+					:dataType?s
 				)
 			ON DUPLICATE KEY UPDATE
 				value		= :value?s
@@ -41,6 +43,7 @@ class Update
 			'value'		=> $detail->value,
 			'valueInt'	=> $detail->valueInt,
 			'locale'	=> $detail->locale,
+			'dataType'	=> $detail->dataType,
 		));
 	}
 }

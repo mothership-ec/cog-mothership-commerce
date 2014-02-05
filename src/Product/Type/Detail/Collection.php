@@ -6,7 +6,7 @@ class Collection implements \IteratorAggregate, \Countable
 {
 	protected $_details	= array();
 
-	public function __construct(array $details = array())
+	public function __construct($details = array())
 	{
 		foreach ($details as $detail) {
 			if (!$detail instanceof Detail) {
@@ -39,8 +39,10 @@ class Collection implements \IteratorAggregate, \Countable
 	public function flatten()
 	{
 		$details	= array();
+
 		foreach ($this->all() as $name => $detail) {
-			if ($name == 'releaseDate') {
+			// Convert timestamp to \DateTime
+			if ($this->_isDateOrTime($detail->dataType)) {
 				$detail->value	 = new \DateTime(date('Y-m-d H:i:s', $detail->value));
 			}
 			$details[$name]	= $detail->value;
@@ -62,5 +64,16 @@ class Collection implements \IteratorAggregate, \Countable
 	public function count()
 	{
 		return count($this->_details);
+	}
+
+	protected function _isDateOrTime($data)
+	{
+		$dateTimeTypes	= array(
+			'date',
+			'time',
+			'datetime',
+		);
+
+		return in_array($data, $dateTimeTypes);
 	}
 }

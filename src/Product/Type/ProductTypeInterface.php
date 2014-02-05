@@ -38,4 +38,6 @@ interface ProductTypeInterface
 	public function getDetailsForm();
 
 	public function getAttributesForm();
+
+	public function getDataType($name);
 }

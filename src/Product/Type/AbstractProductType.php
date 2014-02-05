@@ -88,7 +88,7 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 		if (!$this->_detailForm) {
 			$this->_createForm();
 		}
-		$this->_details[$name]	= $name;
+		$this->_details[$name]	= ($type) ?: 'text';
 
 		return $this->_detailForm->add($name, $type, $label, $options);
 	}
@@ -106,6 +106,15 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 	public function trans($message, array $params = array(), $domain = null, $locale = null)
 	{
 		return $this->_services['translator']->trans($message, $params, $domain, $locale);
+	}
+
+	public function getDataType($name)
+	{
+		if (!array_key_exists($name, $this->_details)) {
+			throw new \Exception('Detail "' . $name . '" does not exist!');
+		}
+
+		return $this->_details[$name];
 	}
 
 	public function _createForm()

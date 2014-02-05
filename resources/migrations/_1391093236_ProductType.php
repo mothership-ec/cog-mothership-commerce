@@ -15,6 +15,7 @@ class _1391093236_ProductType extends Migration
 					value VARCHAR(255),
 					value_int INT(11),
 					locale VARCHAR(50) DEFAULT 'EN',
+					data_type VARCHAR(255) DEFAULT 'text',
 					PRIMARY KEY (product_id, name)
 				);
 		");

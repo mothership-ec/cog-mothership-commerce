@@ -22,7 +22,8 @@ class Loader
 				name,
 				value,
 				value_int AS valueInt,
-				locale
+				locale,
+				data_type AS dataType
 			FROM
 				product_detail
 			WHERE

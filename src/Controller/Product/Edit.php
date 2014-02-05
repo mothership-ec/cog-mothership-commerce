@@ -248,7 +248,7 @@ class Edit extends Controller
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
 			foreach ($data as $name => $value) {
-				$detail	= new Detail\Detail($product->id, $name, $value);
+				$detail	= new Detail\Detail($product->id, $name, $value, $product->type->getDataType($name));
 				$this->get('product.detail.update')->update($detail);
 			}
 //
