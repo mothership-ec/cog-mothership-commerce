@@ -56,7 +56,7 @@ class Product
 		if (array_key_exists($var, $this->_entities)) {
 			return $this->_entities[$var];
 		}
-		elseif ($this->details && isset($this->details->$var)) {
+		elseif ($this->details && $this->details->exists($var)) {
 			return $this->details->$var;
 		}
 
