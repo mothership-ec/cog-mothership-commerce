@@ -1,6 +1,6 @@
 # Mothership Commerce
 
-The `Message\Mothership\Commerce` cogule provides base commerce functionality for Mothership. This forms part of the building blocks for both `ECommerce` and `EPOS`.
+The `Message\Mothership\Commerce` cogule provides base commerce functionality for Mothership. This forms part of the building blocks for both `ECommerce` and `Epos`.
 
 ## Installation
 
@@ -16,7 +16,7 @@ You will need to add Message's private package server to the `repositories` key 
 			}
 		],
 		"require": {
-			"message/cog-mothership-commerce": "1.0.*"
+			"message/cog-mothership-commerce": "~1.0"
 		}
 	}
 
@@ -36,7 +36,3 @@ Also there is an Iterator for stock movements, which allows you to iterate over 
 	* This will require changes to how the CMS finds fields (currently it only looks within it's own cogule)
 * Revisit product options storage in `order_item`
 * Add comments to all columns in database tables
-
-## Suggestions
-
-* For backwards compatibility, we might need to add a static method to `Order\Order` to quickly get an order by ID without directly using the loader. Hopefully not, though!
