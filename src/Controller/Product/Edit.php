@@ -211,17 +211,17 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->name                       = $data['name'];
-			$product->shortDescription           = $data['short_description'];
-			$product->displayName                = $data['display_name'];
-			$product->year                       = $data['year'];
-			$product->season                     = $data['season'];
-			$product->description                = $data['description'];
-			$product->category                   = $data['category'];
-			$product->brand                   	 = $data['brand'];
-			$product->exportDescription          = $data['export_description'];
+			$product->name					= $data['name'];
+			$product->shortDescription		= $data['short_description'];
+			$product->displayName			= $data['display_name'];
+			$product->description			= $data['description'];
+			$product->category				= $data['category'];
+			$product->exportDescription		= $data['export_description'];
+			$product->tags					= $data['tags'];
 
 			$product = $this->get('product.edit')->save($product);
+			$product = $this->get('product.edit')->saveTags($product);
+
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');
@@ -251,19 +251,8 @@ class Edit extends Controller
 				$detail	= new Detail\Detail($product->id, $name, $value, $product->type->getDataType($name));
 				$this->get('product.detail.update')->update($detail);
 			}
-//
-//			$product->supplierRef                = $data['supplier_ref'];
-//			$product->weight                	 = $data['weight_grams'];
-//			$product->fabric                     = $data['fabric'];
-//			$product->features                   = $data['features'];
-//			$product->careInstructions           = $data['care_instructions'];
-//			$product->sizing                     = $data['sizing'];
-//			$product->notes                      = $data['notes'];
-//			$product->tags                       = explode(',',$data['tags']);
-//			$product->exportManufactureCountryID = $data['export_manufacture_country_id'];
 
 			$product = $this->get('product.edit')->save($product);
-			$product = $this->get('product.edit')->saveTags($product);
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');

@@ -22,7 +22,6 @@ class Update
 					product_id,
 					name,
 					value,
-					value_int,
 					locale,
 					data_type
 				)
@@ -31,7 +30,6 @@ class Update
 					:productID?i,
 					:name?s,
 					:value?s,
-					:valueInt?i,
 					:locale?s,
 					:dataType?s
 				)
@@ -41,7 +39,6 @@ class Update
 			'productID'	=> $detail->productID,
 			'name'		=> $detail->name,
 			'value'		=> $detail->value,
-			'valueInt'	=> $detail->valueInt,
 			'locale'	=> $detail->locale,
 			'dataType'	=> $detail->dataType,
 		));

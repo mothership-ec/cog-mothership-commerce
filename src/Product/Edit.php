@@ -64,6 +64,8 @@ class Edit
 			return $product;
 		}
 
+		$this->_parseTags($product);
+
 		foreach ($product->tags as $tag) {
 			$options[] = $product->id;
 			$options[] = trim($tag);
@@ -269,5 +271,28 @@ class Edit
 		));
 
 		return $this;
+	}
+
+	protected function _parseTags(Product $product)
+	{
+		if (!$product->tags) {
+			return $product;
+		}
+
+		if (!is_array($product->tags) && (!$product->tags instanceof \Traversable) && !is_string($product->tags)) {
+			throw new \LogicException('Product tags must be a traversable or a string');
+		}
+
+		if (is_string($product->tags)) {
+			$tags = explode(',', $product->tags);
+		}
+
+		foreach ($tags as &$tag) {
+			trim($tag);
+		}
+
+		$product->tags	= $tags;
+
+		return $product;
 	}
 }

@@ -21,7 +21,6 @@ class Loader
 				product_id AS productID,
 				name,
 				value,
-				value_int AS valueInt,
 				locale,
 				data_type AS dataType
 			FROM

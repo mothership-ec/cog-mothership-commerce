@@ -11,7 +11,7 @@ class ProductAttributes extends Handler
 	{
 		$this->setName('product-details-edit')
 			->setAction($this->_container['routing.generator']
-				->generate('ms.commerce.product.edit.details.action', array('productID' => $product->id))
+				->generate('ms.commerce.product.edit.attributes.action', array('productID' => $product->id))
 			)
 			->setMethod('post');
 
