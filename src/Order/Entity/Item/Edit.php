@@ -44,6 +44,12 @@ class Edit implements DB\TransactionalInterface
 	 * @param  int              $statusCode Status code to set
 	 *
 	 * @return Edit                         Returns $this for chainability
+	 *
+	 * @throws \InvalidArgumentException If the item status supplied is not
+	 *                                   set on the status collection
+	 * @throws \InvalidArgumentException If no valid Item instances are passed
+	 * @throws \InvalidArgumentException If a non-falsey value that is not an
+	 *                                   instance of Item is passed as an item
 	 */
 	public function updateStatus($items, $statusCode)
 	{
@@ -55,6 +61,15 @@ class Edit implements DB\TransactionalInterface
 
 		if (!is_array($items) && !($items instanceof Collection)) {
 			$items = array($items);
+		}
+
+		// Filter out any falsey values
+		$items  = array_filter($array);
+		$orders = [];
+
+		// Throw exception if we don't have any items
+		if (empty($items)) {
+			throw new \InvalidArgumentException('No items passed to `updateStatus()`');
 		}
 
 		foreach ($items as $key => $item) {
@@ -97,15 +112,23 @@ class Edit implements DB\TransactionalInterface
 			));
 
 			$item->status = $status;
+
+			// Collect the order if it hasn't been collected yet
+			if (!array_key_exists($item->order->id, $orders)) {
+				$orders[$item->order->id] = $item->order;
+			}
 		}
 
-		$event = new Event\TransactionalEvent($item->order);
-		$event->setTransaction($this->_query);
+		// Dispatch an event for each individual order
+		foreach ($orders as $order) {
+			$event = new Event\TransactionalEvent($order);
+			$event->setTransaction($this->_query);
 
-		$this->_eventDispatcher->dispatch(
-			OrderEvents::ITEM_STATUS_CHANGE,
-			$event
-		);
+			$this->_eventDispatcher->dispatch(
+				OrderEvents::ITEM_STATUS_CHANGE,
+				$event
+			);
+		}
 
 		if (!$this->_transOverriden) {
 			$this->_query->commit();
