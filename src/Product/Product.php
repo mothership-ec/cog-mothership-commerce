@@ -10,8 +10,6 @@ class Product
 {
 	public $id;
 	public $catalogueID;
-	public $brand;
-	public $year;
 
 	public $authorship;
 
@@ -22,14 +20,9 @@ class Product
 	public $weight;
 
 	public $displayName;
-	public $season;
 	public $description;
 	public $category;
-	public $fabric;
-	public $features;
-	public $careInstructions;
 	public $shortDescription;
-	public $sizing;
 	public $notes;
 
 	public $type;
@@ -63,7 +56,7 @@ class Product
 		if (array_key_exists($var, $this->_entities)) {
 			return $this->_entities[$var];
 		}
-		elseif ($this->details && $this->details->$var) {
+		elseif ($this->details && isset($this->details->$var)) {
 			return $this->details->$var;
 		}
 

@@ -132,7 +132,6 @@ class Loader
 			'SELECT
 				product.product_id   AS id,
 				product.product_id   AS catalogueID,
-				product.year         AS year,
 				product.created_at   AS createdAt,
 				product.created_by   AS createdBy,
 				product.updated_at   AS updatedAt,
@@ -140,7 +139,6 @@ class Loader
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
 				product.type		 AS type,
-				product.brand    	 AS brand,
 				product.name         AS name,
 				product.category     AS category,
 				product.tax_strategy AS taxStrategy,
@@ -149,13 +147,8 @@ class Loader
 				product.weight_grams AS weight,
 
 				product_info.display_name      AS displayName,
-				product_info.season            AS season,
 				product_info.description       AS description,
-				product_info.fabric            AS fabric,
-				product_info.features          AS features,
-				product_info.care_instructions AS careInstructions,
 				product_info.short_description AS shortDescription,
-				product_info.sizing            AS sizing,
 				product_info.notes             AS notes,
 
 				product_export.export_description            AS exportDescription,

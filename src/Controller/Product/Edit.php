@@ -37,7 +37,6 @@ class Edit extends Controller
 
 	public function productDetails($productID)
 	{
-//		de($this->get('product.loader')->getByID($productID)->details);
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		return $this->render('::product:edit-form', array(
@@ -252,16 +251,16 @@ class Edit extends Controller
 				$detail	= new Detail\Detail($product->id, $name, $value);
 				$this->get('product.detail.update')->update($detail);
 			}
-
-			$product->supplierRef                = $data['supplier_ref'];
-			$product->weight                	 = $data['weight_grams'];
-			$product->fabric                     = $data['fabric'];
-			$product->features                   = $data['features'];
-			$product->careInstructions           = $data['care_instructions'];
-			$product->sizing                     = $data['sizing'];
-			$product->notes                      = $data['notes'];
-			$product->tags                       = explode(',',$data['tags']);
-			$product->exportManufactureCountryID = $data['export_manufacture_country_id'];
+//
+//			$product->supplierRef                = $data['supplier_ref'];
+//			$product->weight                	 = $data['weight_grams'];
+//			$product->fabric                     = $data['fabric'];
+//			$product->features                   = $data['features'];
+//			$product->careInstructions           = $data['care_instructions'];
+//			$product->sizing                     = $data['sizing'];
+//			$product->notes                      = $data['notes'];
+//			$product->tags                       = explode(',',$data['tags']);
+//			$product->exportManufactureCountryID = $data['export_manufacture_country_id'];
 
 			$product = $this->get('product.edit')->save($product);
 			$product = $this->get('product.edit')->saveTags($product);

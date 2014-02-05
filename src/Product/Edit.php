@@ -59,6 +59,11 @@ class Edit
 	{
 		$options = array();
 		$inserts = array();
+
+		if (!$product->tags) {
+			return $product;
+		}
+
 		foreach ($product->tags as $tag) {
 			$options[] = $product->id;
 			$options[] = trim($tag);
@@ -145,10 +150,8 @@ class Edit
 			UPDATE
 				product
 		 	SET
-				year         = :year?in,
 				updated_at   = :updatedAt?d,
 				updated_by   = :updatedBy?in,
-				brand     	 = :brand?sn,
 				name         = :name?s,
 				tax_rate     = :taxRate?sn,
 				tax_strategy = :taxStrategy?s,
@@ -159,10 +162,8 @@ class Edit
 				product_id = :productID?i
 			", array(
 				'productID'         => $this->_product->id,
-				'year'              => $this->_product->year,
 				'updatedAt'         => $this->_product->authorship->updatedAt(),
 				'updatedBy'         => $this->_product->authorship->updatedBy()->id,
-				'brand'          	=> $this->_product->brand,
 				'name'              => $this->_product->name,
 				'taxRate'           => $this->_product->taxRate,
 				'taxStrategy'       => $this->_product->taxStrategy,
@@ -194,13 +195,8 @@ class Edit
 					product_id,
 					locale,
 					display_name,
-					season,
 					description,
-					fabric,
-					features,
-					care_instructions,
 					short_description,
-					sizing,
 					notes
 				)
 			VALUES
@@ -208,36 +204,21 @@ class Edit
 					:product_id?i,
 					:locale?sn,
 					:displayName?sn,
-					:season?sn,
 					:description?sn,
-					:fabric?sn,
-					:features?sn,
-					:careInstructions?sn,
 					:shortDescription?sn,
-					:sizing?sn,
 					:notes?sn
 				)
 			ON DUPLICATE KEY UPDATE
 				display_name		= :displayName?sn,
-				season				= :season?sn,
 				description			= :description?sn,
-				fabric				= :fabric?sn,
-				features			= :features?sn,
-				care_instructions	= :careInstructions?sn,
 				short_description	= :shortDescription?sn,
-				sizing				= :sizing?sn,
 				notes				= :notes?sn
 		", array(
 			'product_id'        => $this->_product->id,
 			'locale'            => $this->_locale->getID(),
 			'displayName'       => $this->_product->displayName,
-			'season'            => $this->_product->season,
 			'description'       => $this->_product->description,
-			'fabric'            => $this->_product->fabric,
-			'features'          => $this->_product->features,
-			'careInstructions'  => $this->_product->careInstructions,
 			'shortDescription'  => $this->_product->shortDescription,
-			'sizing'            => $this->_product->sizing,
 			'notes'             => $this->_product->notes,
 		));
 

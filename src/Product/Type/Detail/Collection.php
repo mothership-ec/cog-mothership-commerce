@@ -40,6 +40,9 @@ class Collection implements \IteratorAggregate, \Countable
 	{
 		$details	= array();
 		foreach ($this->all() as $name => $detail) {
+			if ($name == 'releaseDate') {
+				$detail->value	 = new \DateTime(date('Y-m-d H:i:s', $detail->value));
+			}
 			$details[$name]	= $detail->value;
 		}
 
