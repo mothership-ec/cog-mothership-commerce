@@ -211,13 +211,16 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->name					= $data['name'];
-			$product->shortDescription		= $data['short_description'];
-			$product->displayName			= $data['display_name'];
-			$product->description			= $data['description'];
-			$product->category				= $data['category'];
-			$product->exportDescription		= $data['export_description'];
-			$product->tags					= $data['tags'];
+			$product->name							= $data['name'];
+			$product->shortDescription				= $data['short_description'];
+			$product->displayName					= $data['display_name'];
+			$product->description					= $data['description'];
+			$product->category						= $data['category'];
+			$product->exportDescription				= $data['export_description'];
+			$product->tags							= $data['tags'];
+			$product->notes							= $data['notes'];
+			$product->weight						= $data['weight_grams'];
+			$product->exportManufactureCountryID	= $data['export_manufacture_country_id'];
 
 			$product = $this->get('product.edit')->save($product);
 			$product = $this->get('product.edit')->saveTags($product);

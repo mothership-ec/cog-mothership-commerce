@@ -9,6 +9,12 @@ class ProductAttributes extends Handler
 {
 	public function build(Product $product)
 	{
+		/**
+		 * So I copied the fields for this form from somewhere else and foudn that category wasn't autoloading and
+		 * that confused the hell out of me. Well, it turns out that you can add a default value using 'data'!
+		 *
+		 * The More You Know!
+		 */
 		$this->setName('product-details-edit')
 			->setAction($this->_container['routing.generator']
 				->generate('ms.commerce.product.edit.attributes.action', array('productID' => $product->id))
@@ -28,8 +34,9 @@ class ProductAttributes extends Handler
 			->val()
 			->maxLength(255);
 		$this->add('category', 'datalist', $this->_trans('ms.commerce.product.attributes.category.label'), array(
-				'choices'	=> $this->_getCategories(),
-				'attr'		=> array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
+			'choices'	=> $this->_getCategories(),
+			'data'		=> $product->category,
+			'attr'		=> array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
 		));
 		$this->add('description', 'textarea', $this->_trans('ms.commerce.product.attributes.description.label'), array(
 			'data' => $product->description,
@@ -58,7 +65,7 @@ class ProductAttributes extends Handler
 			->number()
 			->optional();
 		$this->add('tags', 'textarea', $this->_trans('ms.commerce.product.details.tags.label'), array(
-			'data' => implode(',', $product->tags),
+			'data' => implode(', ', $product->tags),
 			'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
 		))
 			->val()
