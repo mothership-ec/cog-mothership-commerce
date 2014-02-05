@@ -73,4 +73,13 @@ class MusicProductType extends AbstractProductType
 
 		return $result->flatten();
 	}
+
+	protected function _getDefaultValues()
+	{
+		$defaultValues	= parent::_getDefaultValues();
+		$defaultValues['title']	 = (!empty($defaultValues['title'])) ? $defaultValues['title'] : $this->_product->name;
+
+		return $defaultValues;
+
+	}
 }

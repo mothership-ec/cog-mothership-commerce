@@ -117,14 +117,23 @@ abstract class AbstractProductType implements ProductTypeInterface, \Countable, 
 		return $this->_details[$name];
 	}
 
-	public function _createForm()
+	protected function _createForm()
 	{
 		if (!$this->_product) {
 			throw new \LogicException('Must add a product before building the form');
 		}
 
 		$this->_detailForm	= $this->_services['form']->setName('product-details-edit');
-		$this->_detailForm->setDefaultValues($this->_product->details->flatten());
+		$this->_detailForm->setDefaultValues($this->_getDefaultValues());
 		$this->setFields();
+	}
+
+	protected function _getDefaultValues()
+	{
+		if (empty($this->_product->details)) {
+			throw new \Exception('Product details collection not set');
+		}
+
+		return $this->_product->details->flatten();
 	}
 }
