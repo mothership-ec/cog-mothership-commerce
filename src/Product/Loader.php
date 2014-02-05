@@ -277,16 +277,25 @@ class Loader
 				$products[$key]->images[$image->id] = $image;
 
 				$products[$key]->details	= $this->_detailLoader->getDetails($products[$key]);
-
-				$productType			= $this->_productTypes->get($data->type);
-				$productType->setProduct($products[$key]);
-				$productType->setFields();
-				$products[$key]->type	= $productType;
-
 			}
+
+			$this->_loadType($products[$key], $data->type);
+
+//			$productType			= $this->_productTypes->get($data->type);
+//			$productType->setProduct($products[$key]);
+//			$productType->setFields();
+//			$products[$key]->type	= $productType;
 		}
 
 		return count($products) == 1 && !$this->_returnArray ? array_shift($products) : $products;
+	}
+
+	protected function _loadType(Product $product, $type)
+	{
+		$productType			= $this->_productTypes->get($type);
+		$productType->setProduct($product);
+		$productType->setFields();
+		$product->type	= $productType;
 	}
 
 }

@@ -93,6 +93,33 @@ class _1391093236_ProductType extends Migration
 					data_type
 				)
 				SELECT
+					p.product_id,
+					'supplier_ref',
+					p.year,
+					'EN',
+					'text'
+				FROM
+					product AS p
+		");
+
+		$this->run("
+			ALTER TABLE
+				product
+			DROP
+				supplier_ref
+		");
+
+		$this->run("
+			INSERT INTO
+				product_detail
+				(
+					product_id,
+					name,
+					value,
+					locale,
+					data_type
+				)
+				SELECT
 					i.product_id,
 					'season',
 					i.season,
@@ -363,6 +390,35 @@ class _1391093236_ProductType extends Migration
 					d.name = 'season'
 			ON DUPLICATE KEY UPDATE
 				season = d.value
+		");
+
+		$this->run("
+			ALTER TABLE
+				product
+			ADD
+				supplier_ref VARCHAR(255)
+			AFTER
+				tax_strategy
+		");
+
+		$this->run("
+			INSERT INTO
+				product
+				(
+					product_id
+				)
+				SELECT
+					d.product_id
+				FROM
+					product_detail AS d
+				JOIN
+					product
+				USING
+					(product_id)
+				WHERE
+					d.name = 'supplier_ref'
+			ON DUPLICATE KEY UPDATE
+				supplier_ref = d.value
 		");
 
 		$this->run("
