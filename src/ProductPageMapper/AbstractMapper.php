@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Ecommerce\ProductPageMapper;
+namespace Message\Mothership\Commerce\ProductPageMapper;
 
 use Message\Cog\DB;
 use Message\Mothership\CMS\Page;

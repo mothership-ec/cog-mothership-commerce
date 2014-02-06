@@ -500,11 +500,11 @@ class Services implements ServicesInterface
 		};
 	}
 
-	public function regsiterProductPageMapper($services)
+	public function registerProductPageMapper($services)
 	{
 		// Service to map pages to products and vice-versa
 		$services['product.page_mapper.simple'] = function($c) {
-			$mapper = new \Message\Mothership\Ecommerce\ProductPageMapper\SimpleMapper(
+			$mapper = new \Message\Mothership\Commerce\ProductPageMapper\SimpleMapper(
 				$c['db.query'],
 				$c['cms.page.loader'],
 				$c['cms.page.authorisation'],
@@ -520,7 +520,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.page_mapper.option_criteria'] = function($c) {
-			$mapper = new \Message\Mothership\Ecommerce\ProductPageMapper\OptionCriteriaMapper(
+			$mapper = new \Message\Mothership\Commerce\ProductPageMapper\OptionCriteriaMapper(
 				$c['db.query'],
 				$c['cms.page.loader'],
 				$c['cms.page.authorisation'],
@@ -542,7 +542,7 @@ class Services implements ServicesInterface
 		// Extend twig with the product/page finders
 		$services['templating.twig.environment'] = $services->share(
 			$services->extend('templating.twig.environment', function($twig, $c) {
-				$twig->addExtension(new \Message\Mothership\Ecommerce\ProductPageMapper\Templating\TwigExtension(
+				$twig->addExtension(new \Message\Mothership\Commerce\ProductPageMapper\Templating\TwigExtension(
 					$c['page.product_mapper'],
 					$c['product.page_mapper']
 				));

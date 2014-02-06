@@ -1,9 +1,9 @@
 <?php
 
-namespace Message\Mothership\Ecommerce\ProductPageMapper\Templating;
+namespace Message\Mothership\Commerce\ProductPageMapper\Templating;
 
-use Message\Mothership\Ecommerce\ProductPageMapper\ProductPageMapperInterface;
-use Message\Mothership\Ecommerce\ProductPageMapper\PageProductMapperInterface;
+use Message\Mothership\Commerce\ProductPageMapper\ProductPageMapperInterface;
+use Message\Mothership\Commerce\ProductPageMapper\PageProductMapperInterface;
 
 use Message\Mothership\CMS\Page\Page;
 
