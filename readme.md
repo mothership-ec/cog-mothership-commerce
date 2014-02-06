@@ -32,7 +32,7 @@ Also there is an Iterator for stock movements, which allows you to iterate over 
 
 ## Product Page Mapper
 
-The ecommerce package ships with two implementations of the product page mapper: `SimpleMapper` and
+The commerce package ships with two implementations of the product page mapper: `SimpleMapper` and
 `OptionCriteriaMapper`. By default the `SimpleMapper` is aliased to `product.page_mapper`.
 
 #### Configuration
