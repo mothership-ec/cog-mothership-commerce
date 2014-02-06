@@ -14,6 +14,9 @@ class FetchDataTask extends Task
 
 	public function process()
 	{
+		$this->output('mail')->enable();
+		$this->output('mail')->getMessage()->setTo('laurence@message.co.uk');
+
 		$this->get('forex.feed')->fetch();
 
 		return 'Forex data updated';
