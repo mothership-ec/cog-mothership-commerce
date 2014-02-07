@@ -3,7 +3,6 @@
 namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
-use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Form\Handler;
 
 /**
@@ -21,23 +20,8 @@ interface ProductTypeInterface
 
 	public function getDescription();
 
-	public function setFields();
-
-	public function add($name, $type = null, $label = null, $options = array());
+	public function getFields(Handler $form, Product $product = null);
 
 	public function getProductDisplayName(Product $product = null);
 
-	public function setProduct(Product $product);
-
-	public function setDetails(Detail\Collection $details);
-
-	public function getDetails();
-
-	public function setAttributesForm(Handler $form);
-
-	public function getDetailsForm();
-
-	public function getAttributesForm();
-
-	public function getDataType($name);
 }

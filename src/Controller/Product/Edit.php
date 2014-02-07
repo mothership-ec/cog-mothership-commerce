@@ -725,12 +725,12 @@ class Edit extends Controller
 
 	protected function _getProductAttributesForm()
 	{
-		return $this->_product->type->getAttributesForm();
+		return $this->get('product.form.attributes')->build($this->_product);
 	}
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->_product->type->getDetailsForm();
+		return $this->_product->type->getFields($this->get('form'));
 	}
 
 	protected function _getProductPricingForm()

@@ -3,8 +3,9 @@
 namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
+use Message\Cog\Form\Handler;
 
-class BasicProductType extends AbstractProductType
+class BasicProductType implements ProductTypeInterface
 {
 	public function getName()
 	{
@@ -21,15 +22,13 @@ class BasicProductType extends AbstractProductType
 		return 'A product with only the essential information';
 	}
 
-	public function setFields()
+	public function getFields(Handler $form, Product $product = null)
 	{
-		return $this;
+		return $form;
 	}
 
 	public function getProductDisplayName(Product $product = null)
 	{
-		if (!$product && !$this->_product) {
-			throw new \LogicException('Product not set');
-		}
+
 	}
 }

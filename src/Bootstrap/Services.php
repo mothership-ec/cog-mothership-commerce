@@ -381,7 +381,7 @@ class Services implements ServicesInterface
 
 		$services['product.types'] = $services->share(function($c) {
 			return new Commerce\Product\Type\Collection(array(
-				new Commerce\Product\Type\BasicProductType($c),
+				new Commerce\Product\Type\BasicProductType(),
 			));
 		});
 

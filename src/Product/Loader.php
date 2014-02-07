@@ -287,8 +287,6 @@ class Loader
 	{
 		$product->details	= $this->_detailLoader->getDetails($product);
 		$productType		= $this->_productTypes->get($type);
-		$productType->setProduct($product);
-		$productType->setFields();
 		$product->type		= $productType;
 	}
 

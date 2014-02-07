@@ -3,9 +3,18 @@
 namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
+use Message\Cog\Form\Handler;
+use Message\Cog\DB\Query;
 
-class MusicProductType extends AbstractProductType
+class MusicProductType implements ProductTypeInterface
 {
+	protected $_query;
+
+	public function __construct(Query $query)
+	{
+		$this->_query	= $query;
+	}
+
 	public function getDisplayName()
 	{
 		return 'Music release';
@@ -26,25 +35,29 @@ class MusicProductType extends AbstractProductType
 
 	}
 
-	public function setFields()
+	public function getFields(Handler $form, Product $product = null)
 	{
-		$this->add('artist', 'datalist', 'Artist', array(
+		if ($product) {
+			$form->setDefaultValues($this->_getDefaultValues($product));
+		}
+
+		$form->add('artist', 'datalist', 'Artist', array(
 			'choices'	=> $this->_getArtists()
 		));
-		$this->add('title');
-		$this->add('label', 'datalist', 'Label', array(
+		$form->add('title');
+		$form->add('label', 'datalist', 'Label', array(
 			'choices'	=> $this->_getLabels()
 		))
 			->val()->optional();
-		$this->add('releaseDate', 'date');
+		$form->add('releaseDate', 'date');
 
-		return $this;
+		return $form;
 
 	}
 
 	protected function _getArtists()
 	{
-		$result	= $this->_services['db.query']->run("
+		$result	= $this->_query->run("
 			SELECT DISTINCT
 				value
 			FROM
@@ -60,7 +73,7 @@ class MusicProductType extends AbstractProductType
 
 	protected function _getLabels()
 	{
-		$result	= $this->_services['db.query']->run("
+		$result	= $this->_query->run("
 			SELECT DISTINCT
 				value
 			FROM
@@ -74,10 +87,10 @@ class MusicProductType extends AbstractProductType
 		return $result->flatten();
 	}
 
-	protected function _getDefaultValues()
+	protected function _getDefaultValues(Product $product)
 	{
-		$defaultValues	= parent::_getDefaultValues();
-		$defaultValues['title']	 = (!empty($defaultValues['title'])) ? $defaultValues['title'] : $this->_product->name;
+		$defaultValues	= $product->details->flatten();
+		$defaultValues['title']	 = (!empty($defaultValues['title'])) ? $defaultValues['title'] : $product->name;
 
 		return $defaultValues;
 
