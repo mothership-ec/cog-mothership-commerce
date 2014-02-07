@@ -8,14 +8,7 @@
 			<div class="product-image">
 				{{ getResizedImage(image, 200, 200) }}
 				<div class="file-overlay">
-					<dl>
-						<dt>{{ 'ms.commerce.product.image.type.label'|trans }}</dt>
-							<dd>{{ image.type }}</dd>
-						{% for name,value in image.options %}
-							<dt>{{ name }}</dt>
-								<dd>{{ value }}</dd>
-						{% endfor %}
-					</dl>
+					{{ image.file.name }}
 				</div>
 			</div>
 		{% endfor %}
