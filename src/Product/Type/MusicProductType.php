@@ -90,6 +90,7 @@ class MusicProductType implements ProductTypeInterface
 	protected function _getDefaultValues(Product $product)
 	{
 		$defaultValues	= $product->details->flatten();
+
 		$defaultValues['title']	 = (!empty($defaultValues['title'])) ? $defaultValues['title'] : $product->name;
 
 		return $defaultValues;

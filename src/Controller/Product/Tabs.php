@@ -14,7 +14,7 @@ class Tabs extends Controller
 			'Attributes' => 'ms.commerce.product.edit.attributes',
 		);
 
-		if (count($product->details) > 0) {
+		if ($product->details->count()) {
 			$tabs['Details']	= 'ms.commerce.product.edit.details';
 		}
 
