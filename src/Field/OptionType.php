@@ -51,7 +51,7 @@ class OptionType extends AbstractType {
     		$valueHelpKey = (isset($dataHelpKey['value']) ? $dataHelpKey['value'] : $valueHelpKey);
     	}
 
-		$builder->add('name', 'choice',
+		$builder->add('name', 'datalist',
 			array(
 				'label'    => ($this->_nameLabel ? $this->_nameLabel : 'Name'),
 				'choices'  => $this->_nameChoice,
