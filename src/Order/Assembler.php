@@ -122,9 +122,7 @@ class Assembler
 	 */
 	public function addEntity($name, Entity\EntityInterface $entity)
 	{
-		if (property_exists($entity, 'order')) {
-			$entity->order = $this->_order;
-		}
+		$this->_prepareEntity($name, $entity);
 
 		$this->_order->{$name}->append($entity);
 
@@ -150,7 +148,7 @@ class Assembler
 		$this->_order->{$name}->clear();
 
 		foreach ($entities as $entity) {
-			$this->_prepareEntity($entity);
+			$this->_prepareEntity($name, $entity);
 			$this->_order->{$name}->append($entity);
 		}
 
@@ -175,7 +173,7 @@ class Assembler
 	public function removeEntity($name, $entity)
 	{
 		if ($entity instanceof Entity\EntityInterface) {
-			$this->_prepareEntity($entity);
+			$this->_prepareEntity($name, $entity);
 
 			$entity = $entity->id;
 		}
