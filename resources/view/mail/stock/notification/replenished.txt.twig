@@ -12,7 +12,7 @@ Good news, the product(s) that you are interested in are now back in stock.
 {% if moduleExists('Message\\Mothership\\Ecommerce') %}
 {{ notification.unit.product.name }}{% for value in notification.unit.options %} {{ value }}{% endfor %}
 
-http://{{ url }}{{ getPageForUnit(notification.unit).slug }}
+http://{{ url }}{{ getPageForProductUnit(notification.unit).slug }}
 
 {% else %}
 {{ notification.unit.product.name }}{% for value in notification.unit.options %} {{ value }}{% endfor %}
