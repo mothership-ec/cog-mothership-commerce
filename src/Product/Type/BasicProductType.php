@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\Form\Handler;
+use Message\Cog\Field\Factory;
 
 class BasicProductType implements ProductTypeInterface
 {
@@ -22,9 +23,8 @@ class BasicProductType implements ProductTypeInterface
 		return 'A product with only the essential information';
 	}
 
-	public function getFields(Handler $form, Product $product = null)
-	{
-		return $form;
+	public function setFields(Factory $factory, Product $product = null)
+	{;
 	}
 
 	public function getProductDisplayName(Product $product = null)

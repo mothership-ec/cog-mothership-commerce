@@ -360,6 +360,13 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		};
 
+		$services['field.collection'] = $services->share($services->extend('field.collection', function($fields, $c) {
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['validator']));
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['validator']));
+
+			return $fields;
+		}));
+
 		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = function($c) {
 			return $c['product.option.loader'];

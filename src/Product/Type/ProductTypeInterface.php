@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\Form\Handler;
+use Message\Cog\Field\Factory;
 
 /**
  * Interface for product types
@@ -20,7 +21,7 @@ interface ProductTypeInterface
 
 	public function getDescription();
 
-	public function getFields(Handler $form, Product $product = null);
+	public function setFields(Factory $factory, Product $product = null);
 
 	public function getProductDisplayName(Product $product = null);
 

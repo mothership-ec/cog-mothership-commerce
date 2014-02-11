@@ -3,8 +3,8 @@
 namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
-use Message\Cog\Form\Handler;
 use Message\Cog\DB\Query;
+use Message\Cog\Field\Factory;
 
 class MusicProductType implements ProductTypeInterface
 {
@@ -35,24 +35,18 @@ class MusicProductType implements ProductTypeInterface
 
 	}
 
-	public function getFields(Handler $form, Product $product = null)
+	public function setFields(Factory $factory, Product $product = null)
 	{
-		if ($product) {
-			$form->setDefaultValues($this->_getDefaultValues($product));
-		}
-
-		$form->add('artist', 'datalist', 'Artist', array(
+		$factory->add($factory->getField('datalist', 'artist', 'Artist')->setOptions(array(
 			'choices'	=> $this->_getArtists()
-		));
-		$form->add('title');
-		$form->add('label', 'datalist', 'Label', array(
+		)));
+		$factory->add($factory->getField('text', 'title', 'Title'));
+		$factory->add($factory->getField('datalist', 'label', 'Label')->setOptions(array(
 			'choices'	=> $this->_getLabels()
-		))
-			->val()->optional();
-		$form->add('releaseDate', 'date');
-
-		return $form;
-
+		)))
+			->val()
+			->optional();
+		$factory->add($factory->getField('date', 'releaseDate', 'Release date'));
 	}
 
 	protected function _getArtists()
