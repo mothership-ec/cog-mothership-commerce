@@ -2,7 +2,6 @@
 
 namespace Message\Mothership\Commerce\Product;
 
-use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
 
