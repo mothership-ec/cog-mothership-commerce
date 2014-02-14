@@ -64,6 +64,7 @@ class Edit implements DB\TransactionalInterface
 		}
 
 		// Filter out any falsey values
+		$items  = ($items instanceof Collection) ? $items->all() : $items;
 		$items  = array_filter($items);
 		$orders = [];
 
