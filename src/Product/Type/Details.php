@@ -1,8 +1,10 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Type\Detail;
+namespace Message\Mothership\Commerce\Product\Type;
 
-class Collection implements \IteratorAggregate, \Countable
+use Message\Cog\Field;
+
+class Details implements \IteratorAggregate, \Countable
 {
 	protected $_details	= array();
 
@@ -17,18 +19,29 @@ class Collection implements \IteratorAggregate, \Countable
 		}
 	}
 
+	public function __set($var, $value)
+	{
+		if (!$value instanceof Field\FieldInterface) {
+			throw new \InvalidArgumentException(sprintf(
+				'Product detail must be an instance of FieldInterface, %s given',
+				get_class($value)
+			));
+		}
+	}
+
 	public function __get($name)
 	{
 		return (string) $this->get($name);
 	}
 
+	public function __isset($name)
+	{
+		return isset($this->_details[$name]);
+	}
+
 	public function get($name)
 	{
-		if ($this->exists($name)) {
-			return $this->_details[$name];
-		}
-
-		throw new \Exception('No detail with name `'. $name . '` found!');
+		return array_key_exists($name, $this->_details[]) ? $this->_details[$name] : null;
 	}
 
 	public function exists($name)
@@ -64,16 +77,5 @@ class Collection implements \IteratorAggregate, \Countable
 	public function count()
 	{
 		return count($this->_details);
-	}
-
-	protected function _isDateOrTime($data)
-	{
-		$dateTimeTypes	= array(
-			'date',
-			'time',
-			'datetime',
-		);
-
-		return in_array($data, $dateTimeTypes);
 	}
 }

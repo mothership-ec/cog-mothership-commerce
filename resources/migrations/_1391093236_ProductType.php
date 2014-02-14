@@ -13,8 +13,8 @@ class _1391093236_ProductType extends Migration
 					product_id INT(11) NOT NULL,
 					name VARCHAR(255) NOT NULL,
 					value VARCHAR(255),
+					value_int INT(11),
 					locale VARCHAR(50) DEFAULT 'EN',
-					data_type VARCHAR(255) DEFAULT 'text',
 					PRIMARY KEY (product_id, name)
 				);
 		");
@@ -35,15 +35,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int.
+					locale
 				)
 				SELECT
 					p.product_id,
 					'brand',
 					p.brand,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product AS p
 		");
@@ -62,15 +62,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int,
+					locale
 				)
 				SELECT
 					p.product_id,
 					'year',
 					p.year,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product AS p
 		");
@@ -89,15 +89,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int,
+					locale
 				)
 				SELECT
 					p.product_id,
 					'supplier_ref',
 					p.supplier_ref,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product AS p
 		");
@@ -116,15 +116,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int,
+					locale
 				)
 				SELECT
 					i.product_id,
 					'season',
 					i.season,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product_info AS i
 		");
@@ -143,15 +143,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int,
+					locale
 				)
 				SELECT
 					i.product_id,
 					'fabric',
 					i.fabric,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product_info AS i
 		");
@@ -170,15 +170,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int,
+					locale
 				)
 				SELECT
 					i.product_id,
 					'features',
 					i.features,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product_info AS i
 		");
@@ -197,15 +197,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int,
+					locale
 				)
 				SELECT
 					i.product_id,
 					'care_instructions',
 					i.care_instructions,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product_info AS i
 		");
@@ -224,15 +224,15 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					locale,
-					data_type
+					value_int
+					locale
 				)
 				SELECT
 					i.product_id,
 					'sizing',
 					i.sizing,
-					'EN',
-					'text'
+					1,
+					'EN'
 				FROM
 					product_info AS i
 		");
