@@ -29,11 +29,13 @@ class Details implements \IteratorAggregate, \Countable
 				get_class($value)
 			));
 		}
+
+		$this->_details[$var]	= $value;
 	}
 
 	public function __get($name)
 	{
-		return (string) $this->get($name);
+		return $this->exists($name) ? (string) $this->get($name) : null;
 	}
 
 	public function __isset($name)

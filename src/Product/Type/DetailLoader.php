@@ -43,7 +43,7 @@ class DetailLoader
 		$this->_fieldFactory->build($type);
 
 		foreach ($this->_fieldFactory as $name => $field) {
-			$product->$name	= $field;
+			$details->$name	= $field;
 		}
 
 		foreach ($result as $row) {
