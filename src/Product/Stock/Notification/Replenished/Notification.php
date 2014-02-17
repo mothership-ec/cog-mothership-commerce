@@ -15,6 +15,8 @@ class Notification
 	public $id;
 	public $type;
 	public $email;
+	public $user;
+	public $unit;
 	public $authorship;
 	public $notifiedAt;
 
