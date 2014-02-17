@@ -397,7 +397,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.detail.loader'] = $services->share(function($c) {
-			return new Commerce\Product\Type\DetailLoader($c['db.query'], $c['field.factory']);
+			return new Commerce\Product\Type\DetailLoader(
+				$c['db.query'],
+				$c['field.factory'],
+				$c['product.types']
+			);
 		});
 
 		$services['product.detail.edit'] = $services->share(function($c) {

@@ -24,7 +24,7 @@ class BasicProductType implements ProductTypeInterface
 	}
 
 	public function setFields(Factory $factory, Product $product = null)
-	{;
+	{
 	}
 
 	public function getProductDisplayName(Product $product = null)

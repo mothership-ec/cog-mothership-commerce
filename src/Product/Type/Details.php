@@ -3,10 +3,12 @@
 namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Cog\Field;
+use Message\Cog\Validation\Validator;
 
 class Details implements \IteratorAggregate, \Countable
 {
-	protected $_details	= array();
+	protected $_validator;
+	protected $_details		= array();
 
 	public function __construct($details = array())
 	{
@@ -41,7 +43,7 @@ class Details implements \IteratorAggregate, \Countable
 
 	public function get($name)
 	{
-		return array_key_exists($name, $this->_details[]) ? $this->_details[$name] : null;
+		return array_key_exists($name, $this->_details) ? $this->_details[$name] : null;
 	}
 
 	public function exists($name)
@@ -77,5 +79,15 @@ class Details implements \IteratorAggregate, \Countable
 	public function count()
 	{
 		return count($this->_details);
+	}
+
+	public function setValidator(Validator $validator)
+	{
+		$this->_validator	= $validator;
+	}
+
+	public function getValidator()
+	{
+		return $this->_validator;
 	}
 }

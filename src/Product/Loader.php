@@ -25,7 +25,7 @@ class Loader
 		Locale $locale,
 		FileLoader $fileLoader,
 		Type\Collection $productTypes,
-		Type\Detail\Loader $detailLoader,
+		Type\DetailLoader $detailLoader,
 		array $entities = array(),
 		$priceTypes = array()
 	) {
@@ -285,7 +285,7 @@ class Loader
 
 	protected function _loadType(Product $product, $type)
 	{
-		$product->details	= $this->_detailLoader->getDetails($product);
+		$product->details	= $this->_detailLoader->load($product);
 		$productType		= $this->_productTypes->get($type);
 		$product->type		= $productType;
 	}

@@ -10,11 +10,13 @@ class DetailLoader
 {
 	protected $_query;
 	protected $_fieldFactory;
+	protected $_types;
 
-	public function __construct(Query $query, Field\Factory $factory)
+	public function __construct(Query $query, Field\Factory $factory, Collection $types)
 	{
 		$this->_query			= $query;
 		$this->_fieldFactory	= $factory;
+		$this->_types			= $types;
 	}
 
 	public function load(Product $product)
@@ -25,7 +27,7 @@ class DetailLoader
 				name		AS field,
 				value,
 				value_int,
-				locale,
+				locale
 			FROM
 				product_detail
 			WHERE
@@ -36,13 +38,15 @@ class DetailLoader
 
 		$details	= new Details;
 
-		$this->_fieldFactory->build($product->type);
+		$type	= $this->_types->get($product->type);
+
+		$this->_fieldFactory->build($type);
 
 		foreach ($this->_fieldFactory as $name => $field) {
 			$product->$name	= $field;
 		}
 
-		foreach ($result->flatten() as $row) {
+		foreach ($result as $row) {
 			$field	= $details->{$row->field};
 
 			if ($field instanceof Field\BaseField) {
