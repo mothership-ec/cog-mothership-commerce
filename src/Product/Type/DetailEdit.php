@@ -23,9 +23,9 @@ class DetailEdit
 		$this->_currentUser	= $user;
 	}
 
-	public function save(Product $product, Details $details)
+	public function save(Product $product)
 	{
-		$flattened	= $this->_flatten($details);
+		$flattened	= $this->_flatten($product->details);
 
 		foreach ($flattened as $detail) {
 			$this->_transaction->add('
@@ -52,6 +52,15 @@ class DetailEdit
 		}
 
 		$this->_transaction->commit();
+	}
+
+	public function updateDetails($data, Details $details)
+	{
+		foreach ($data as $name => $value) {
+			$details->$name->setValue($value);
+		}
+
+		return $details;
 	}
 
 	protected function _flatten(Details $details)

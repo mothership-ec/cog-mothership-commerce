@@ -250,10 +250,8 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			foreach ($data as $name => $value) {
-				$detail	= new Detail\Detail($product->id, $name, $value, $product->type->getDataType($name));
-				$this->get('product.detail.update')->update($detail);
-			}
+			$product->details	= $this->get('product.detail.edit')->updateDetails($data, $product->details);
+			$this->get('product.detail.edit')->save($product);
 
 			$product = $this->get('product.edit')->save($product);
 
@@ -730,7 +728,6 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-//		return $this->_product->type->getFields($this->get('form'), $this->_product);
 		return $this->get('field.form')->generate($this->get('form'), $this->_product->details);
 	}
 

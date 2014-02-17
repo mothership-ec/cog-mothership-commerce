@@ -35,7 +35,7 @@ class Details implements \IteratorAggregate, \Countable
 
 	public function __get($name)
 	{
-		return $this->exists($name) ? (string) $this->get($name) : null;
+		return $this->exists($name) ? $this->get($name) : null;
 	}
 
 	public function __isset($name)
