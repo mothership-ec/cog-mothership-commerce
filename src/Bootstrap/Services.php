@@ -256,6 +256,7 @@ class Services implements ServicesInterface
 		// Available order & item statuses
 		$services['order.statuses'] = $services->share(function($c) {
 			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(OrderStatuses::PENDING,              'Pending'),
 				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,            'Cancelled'),
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,    'Awaiting Dispatch'),
 				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,           'Processing'),
@@ -278,6 +279,32 @@ class Services implements ServicesInterface
 		// Configurable/optional event listeners
 		$services['order.listener.vat'] = function($c) {
 			return new Commerce\Order\EventListener\VatListener($c['country.list']);
+		};
+
+		// Available transaction types
+		// should we use a collection here?
+		$services['order.transaction.types'] = function($c) {
+			return array(
+				'order'               => 'Order',
+				//'return' => 'Return',
+				'contract_initiation' => 'Contract Initiation',
+				'contract_payment'    => 'Contract Payment',
+			);
+		};
+
+		$services['order.transaction.loader'] = function($c) {
+			$loader = new Commerce\Order\Transaction\Loader($c['db.query'], array(
+				Commerce\Order\Order::RECORD_TYPE                  => $c['order.loader'],
+				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $c['order.item.loader'],
+				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $c['order.refund.loader'],
+				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $c['order.payment.loader'],
+			));
+
+			return $loader;
+		};
+
+		$services['order.transaction.create'] = function($c) {
+			return new Commerce\Order\Transaction\Create($c['db.transaction'], $c['user.current']);
 		};
 
 		// Product

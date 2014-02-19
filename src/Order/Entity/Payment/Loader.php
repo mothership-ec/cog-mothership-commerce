@@ -12,7 +12,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader
+class Loader extends Order\Entity\BaseLoader implements Order\Transaction\RecordLoaderInterface
 {
 	protected $_query;
 	protected $_methods;

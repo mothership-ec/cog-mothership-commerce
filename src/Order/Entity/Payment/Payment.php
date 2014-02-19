@@ -6,13 +6,17 @@ use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 
 use Message\Cog\ValueObject\Authorship;
 
+use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
+
 /**
  * Represents a payment on an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Payment implements EntityInterface
+class Payment implements EntityInterface, RecordInterface
 {
+	const RECORD_TYPE = 'payment';
+
 	public $id;
 	public $authorship;
 	public $order;
@@ -39,5 +43,21 @@ class Payment implements EntityInterface
 		}
 
 		return $this->reference;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getID()
+	{
+		return $this->id;
 	}
 }

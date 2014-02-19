@@ -10,8 +10,10 @@ use Message\Cog\ValueObject\Authorship;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Order
+class Order implements Transaction\RecordInterface
 {
+	const RECORD_TYPE = 'order';
+
 	public $id;
 	public $orderID; // alias of $id for BC
 
@@ -384,5 +386,21 @@ class Order
 		}
 
 		return $total;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getID()
+	{
+		return $this->id;
 	}
 }

@@ -16,7 +16,7 @@ use Message\User\UserInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader
+class Loader implements Transaction\RecordLoaderInterface
 {
 	protected $_query;
 	protected $_eventDispatcher;
