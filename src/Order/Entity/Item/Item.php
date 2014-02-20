@@ -22,14 +22,15 @@ class Item implements EntityInterface
 	public $authorship;
 	public $status;
 
-	public $listPrice       = 0;
-	public $net             = 0;
-	public $discount        = 0;
-	public $tax             = 0;
-	public $gross           = 0;
-	public $rrp             = 0;
-	public $taxRate         = 0;
-	public $productTaxRate  = 0;
+	public $listPrice      = 0; // Retail price of the item as advertised
+	public $actualPrice    = 0; // Price of the item for this order (before discounts)
+	public $net            = 0; // Net amount, calculated on discounted price
+	public $discount       = 0; // Discount amount for this item
+	public $tax            = 0; // Tax amount for this item
+	public $gross          = 0; // Gross amount paid for this item (after discounts)
+	public $rrp            = 0; // Recommended retail price of the item at time of purchase
+	public $taxRate        = 0; // Tax rate for this item as used on this order
+	public $productTaxRate = 0; // Tax rate of the product (regardless of tax actually being paid)
 	public $taxStrategy;
 
 	public $productID;

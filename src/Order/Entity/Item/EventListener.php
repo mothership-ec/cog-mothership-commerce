@@ -24,6 +24,7 @@ class EventListener implements SubscriberInterface
 	{
 		return array(
 			OrderEvents::ENTITY_CREATE => array(
+				array('setDefaultActualPrice'),
 				array('calculateTax'),
 				array('setDefaultStatus'),
 			),
@@ -31,6 +32,7 @@ class EventListener implements SubscriberInterface
 				array('checkItemSet')
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
+				array('setDefaultActualPrice'),
 				array('calculateAllItemsTax'),
 			),
 		);
@@ -44,6 +46,29 @@ class EventListener implements SubscriberInterface
 	public function __construct(BaseStatus $defaultStatus)
 	{
 		$this->_defaultStatus = $defaultStatus;
+	}
+
+	/**
+	 * Default the actual price to the list price unless an actual price has
+	 * been defined.
+	 *
+	 * @param Event\Event $event
+	 */
+	public function setDefaultActualPrice(Event\Event $event)
+	{
+		if ($event instanceof Event\EntityEvent
+		 && $entity = $event->getEntity()
+		 && $entity instanceof Item) {
+			$items = [$item];
+		} else {
+			$items = $event->getOrder()->items->all();
+		}
+
+		foreach ($items as $item) {
+			if (!$item->actualPrice) {
+				$item->actualPrice = $item->listPrice;
+			}
+		}
 	}
 
 	/**
@@ -101,7 +126,7 @@ class EventListener implements SubscriberInterface
 		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
-			$item->gross = round($item->listPrice - $item->discount, 2);
+			$item->gross = round($item->actualPrice - $item->discount, 2);
 
 			if ('inclusive' === $item->taxStrategy) {
 				$item->gross = round($item->gross - $this->_calculateInclusiveTax($item->gross, $item->productTaxRate), 2);
@@ -120,7 +145,7 @@ class EventListener implements SubscriberInterface
 		}
 
 		// Set the gross to the list price minus the discount
-		$item->gross = round($item->listPrice - $item->discount, 2);
+		$item->gross = round($item->actualPrice - $item->discount, 2);
 
 		// Calculate tax where the strategy is exclusive
 		if ('exclusive' === $item->taxStrategy) {
