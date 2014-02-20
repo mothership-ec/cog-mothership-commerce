@@ -17,7 +17,7 @@ use Message\Cog\ValueObject\Authorship;
  */
 class Item implements EntityInterface, RecordInterface
 {
-	const RECORD_TYPE = 'payment';
+	const RECORD_TYPE = 'item';
 
 	public $id;
 

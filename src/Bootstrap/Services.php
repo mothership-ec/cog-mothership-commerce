@@ -305,6 +305,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Transaction\Create($c['db.transaction'], $c['order.transaction.loader'], $c['user.current']);
 		};
 
+		$services['order.transaction.create_listener'] = $services->share(function($c) {
+			return new Commerce\Order\Transaction\CreateListener;
+		});
+
 		// Product
 		$services['product'] = function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);

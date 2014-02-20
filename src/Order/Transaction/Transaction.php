@@ -87,7 +87,7 @@ class Transaction
 	 * @param [type] $name  [description]
 	 * @param [type] $value [description]
 	 */
-	public function addAttribute($name, $value)
+	public function setAttribute($name, $value)
 	{
 		$this->attributes[$name] = $value;
 		return $this;
