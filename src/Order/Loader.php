@@ -25,6 +25,7 @@ class Loader
 	protected $_itemStatuses;
 	protected $_entities;
 	protected $_orderBy;
+	protected $_includeDeleted;
 
 	public function __construct(DB\Query $query, User\Loader $userLoader,
 		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
@@ -64,6 +65,18 @@ class Loader
 		$loader->setOrderLoader($this);
 
 		return $loader;
+	}
+
+	/**
+	 * Toggle whether or not to load deleted orders
+	 *
+	 * @param bool $bool 	true / false as to whether to include deleted orders
+	 * @return 	$this 		Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+		return $this;
 	}
 
 	/**
@@ -210,6 +223,7 @@ class Loader
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
 		$this->_orderBy = '';
 
 		if (!is_array($ids)) {
@@ -225,6 +239,7 @@ class Loader
 				order_summary.*,
 				order_summary.order_id         AS id,
 				order_summary.order_id         AS orderID,
+				order_summary.deleted_at       AS deletedAt,
 				order_summary.user_email	   AS userEmail,
 				order_summary.currency_id      AS currencyID,
 				order_summary.conversion_rate  AS conversionRate,
@@ -250,6 +265,7 @@ class Loader
 				order_shipping USING (order_id)
 			WHERE
 				order_summary.order_id IN (?ij)
+			' . $includeDeleted .'
 			GROUP BY
 				order_summary.order_id
 			' . ($orderBy) . '

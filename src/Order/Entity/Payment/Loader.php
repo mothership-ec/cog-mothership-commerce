@@ -16,11 +16,24 @@ class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_methods;
+	protected $_includeDeleted;
 
 	public function __construct(DB\Query $query, MethodCollection $methods)
 	{
 		$this->_query   = $query;
 		$this->_methods = $methods;
+	}
+
+	/**
+	 * Toggle whether or not to load deleted payments
+	 *
+	 * @param bool $bool 	true / false as to whether to include deleted payments
+	 * @return 	$this 		Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+		return $this;
 	}
 
 	/**
@@ -85,6 +98,8 @@ class Loader extends Order\Entity\BaseLoader
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
@@ -93,6 +108,7 @@ class Loader extends Order\Entity\BaseLoader
 				order_payment
 			WHERE
 				payment_id IN (?ij)
+			' . $includeDeleted . '
 		', array($ids));
 
 		if (0 === count($result)) {

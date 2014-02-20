@@ -18,12 +18,25 @@ class Loader extends Order\Entity\BaseLoader
 	protected $_query;
 	protected $_statusLoader;
 	protected $_stockLocations;
+	protected $_includeDeleted;
 
 	public function __construct(DB\Query $query, Status\Loader $statusLoader, LocationCollection $stockLocations)
 	{
 		$this->_query          = $query;
 		$this->_statusLoader   = $statusLoader;
 		$this->_stockLocations = $stockLocations;
+	}
+
+	/**
+	 * Toggle whether or not to load deleted items
+	 *
+	 * @param bool $bool 	true / false as to whether to include deleted items
+	 * @return 	$this 		Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+		return $this;
 	}
 
 	public function getByID($id, Order\Order $order = null)
@@ -58,11 +71,14 @@ class Loader extends Order\Entity\BaseLoader
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
 				item_id          AS id,
 				order_id         AS orderID,
+				deleted_at		 AS deletedAt,
 				list_price       AS listPrice,
 				tax_rate         AS taxRate,
 				product_tax_rate AS productTaxRate,
@@ -78,6 +94,7 @@ class Loader extends Order\Entity\BaseLoader
 				order_item_personalisation USING (item_id)
 			WHERE
 				item_id IN (?ij)
+			' . $includeDeleted . '
 		', array($ids));
 
 		if (0 === count($result)) {
