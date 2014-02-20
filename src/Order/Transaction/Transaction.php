@@ -22,9 +22,10 @@ class Transaction
 	public $voidedAt;
 	public $voidedBy;
 	public $type;
-	public $branch;
-	public $till;
 	public $records = array();
+	// necessary for adding additional information to the transaction
+	// from other cogules
+	public $attributes = array();
 
 	public function __construct()
 	{
@@ -60,6 +61,12 @@ class Transaction
 		return ($this->voidedAt !== null);
 	}
 
+	/**
+	 * Adds a record to the transaction
+	 * @param RecordInterface $record transaction to be added
+	 * @throws \InvalidArgumentException    If there's already a record with the same ID and
+	 *         								type set on the transaction
+	 */
 	public function addRecord(RecordInterface $record)
 	{
 		foreach($this->records as $curRec) {
@@ -71,5 +78,26 @@ class Transaction
 		}
 
 		$this->records[] = $record;
+		return $this;
+	}
+
+	/**
+	 * Allows you to add custom attributes to the transaction.
+	 *
+	 * @param [type] $name  [description]
+	 * @param [type] $value [description]
+	 */
+	public function addAttribute($name, $value)
+	{
+		$this->attributes[$name] = $value;
+		return $this;
+	}
+
+	public function removeAttribute($name)
+	{
+		if(!isset($this->attributes[$name])) {
+			unset($this->attributes[$name]);
+		}
+		return $this;
 	}
 }

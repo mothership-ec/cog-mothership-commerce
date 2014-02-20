@@ -28,6 +28,15 @@ class _1392653226_SetUpTransactions extends Migration
 			  PRIMARY KEY (`transaction_id`,`record_id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
+
+		$this->run("
+			CREATE TABLE `transaction_attribute` (
+			  `transaction_id` int(11) unsigned NOT NULL,
+			  `attribute_name` varchar(20) NOT NULL DEFAULT '',
+			  `attribute_value` varchar(255) NOT NULL DEFAULT '',
+			  PRIMARY KEY (`transaction_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
 	}
 
 	public function down()
@@ -40,6 +49,11 @@ class _1392653226_SetUpTransactions extends Migration
 		$this->run('
 			DROP TABLE IF EXISTS
 				`transaction_record`
+		');
+
+		$this->run('
+			DROP TABLE IF EXISTS
+				`transaction_attribute`
 		');
 	}
 }

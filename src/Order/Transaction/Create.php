@@ -20,11 +20,10 @@ class Create implements DB\TransactionalInterface
 	protected $_currentUser;
 	protected $_transOverriden = false;
 
-	// public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
-	public function __construct(DB\Transaction $query, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
 	{
 		$this->_query       = $query;
-		// $this->_loader      = $loader;
+		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
@@ -52,26 +51,20 @@ class Create implements DB\TransactionalInterface
 			INSERT INTO
 				transaction
 			SET
-				transaction_id = :transactionID?i,
 				created_at     = :createdAt?d,
 				created_by     = :createdBy?in,
-				type           = :type?s,
-				branch         = :branch?s,
-				till           = :till?i
+				type           = :type?s
 		', array(
-			'transactionID' => $transaction->id,
 			'createdAt'     => $transaction->authorship->createdAt(),
 			'createdBy'     => $transaction->authorship->createdBy(),
 			'type'          => $transaction->type,
-			'branch'        => $transaction->branch,
-			'till'          => $transaction->till,
 		));
 
 		$this->_query->setIDVariable('TRANSACTION_ID');
 		$transaction->id = '@TRANSACTION_ID';
 
-		// get ID here
 		$this->_createRecords($transaction);
+		$this->_createAttributes($transaction);
 
 		// If the query was not in a transaction, return the re-loaded item
 		if (!$this->_transOverriden) {
@@ -101,6 +94,24 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
+	}
+
+	protected function _createAttributes(Transaction $transaction)
+	{
+		foreach($transaction->attributes as $name => $val) {
+			$this->_query->run('
+				INSERT INTO
+					transaction_attribute
+				SET
+					transaction_id  = :transactionID?i,
+					attribute_name  = :name?s,
+					attribute_value = :value?s
+			', array(
+				'transactionID' => $transaction->id,
+				'name'          => $name,
+				'value'         => $val,
+			));
+		}
 	}
 
 	protected function _validate(Transaction $transaction)

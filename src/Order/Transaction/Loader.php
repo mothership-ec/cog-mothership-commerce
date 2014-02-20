@@ -13,7 +13,6 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Loader
 {
 	protected $_query;
-	protected $_methods;
 	protected $_recordLoaders;
 	protected $_includeVoided = false;
 
@@ -101,8 +100,8 @@ class Loader
 				transaction
 			WHERE
 				transaction_id IN (?ij)
-			AND voided_at is NULL
-		', array($ids));
+			' . ($this->_includeVoided ? '' : 'AND voided_at is NULL')
+			, array($ids));
 
 		if (0 === count($result)) {
 			return $alwaysReturnArray ? array() : false;
@@ -117,7 +116,8 @@ class Loader
 				$row->created_by
 			);
 
-			$entities[$key]->records = $this->_loadRecords($entities[$key]);
+			$entities[$key]->records    = $this->_loadRecords($entities[$key]);
+			$entities[$key]->attributes = $this->_loadAttributes($entities[$key]);
 
 			$return[$row->id] = $entities[$key];
 		}
@@ -148,6 +148,21 @@ class Loader
 		}
 
 		return $records;
+	}
+
+	protected function _loadAttributes(Transaction $transaction)
+	{
+		$result = $this->_query->run('
+			SELECT
+				attribute_name,
+				attribute_value
+			FROM
+				transaction_attribute
+			WHERE
+				transaction_id = ?i
+		', $transaction->id);
+
+		 return $result->hash('attribute_name', 'attribute_value');
 	}
 
 	protected function _getLoader($type)
