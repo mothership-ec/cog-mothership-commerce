@@ -18,9 +18,6 @@ use Message\Cog\Event\SubscriberInterface;
  */
 class CreateListener extends BaseListener implements SubscriberInterface
 {
-	protected $_attributes = array();
-	protected $_transaction;
-
 	/**
 	 * {@inheritdoc}
 	 */
@@ -36,44 +33,28 @@ class CreateListener extends BaseListener implements SubscriberInterface
 		);
 	}
 
-	public function setAttribute($name, $value)
-	{
-		$this->_attributes[$name] = $value;
-
-		return $this;
-	}
-
-	public function removeAttribute($name)
-	{
-		if(isset($this->_attributes[$name])) {
-			unset($this->_attributes[$name]);
-		}
-
-		return $this;
-	}
-
 	public function orderCreated(Event\Event $event)
 	{
 		$order = $event->getOrder();
 
 		// magic number!
 		if($order->status->code >= 0 || $order->status->code === Statuses::PENDING) {
-			$this->_initTransaction();
+			$transaction = new Transaction;
 
-			$this->_transaction->addRecord($order);
+			$transaction->addRecord($order);
 
 			foreach($order->items as $item) {
-				$this->_transaction->addRecord($item);
+				$transaction->addRecord($item);
 			}
 
 			foreach($order->payments as $payment) {
-				$this->_transaction->addRecord($payment);
+				$transaction->addRecord($payment);
 			}
 
 			// get type from somewhere
-			$this->_transaction->type = ($order->status->code === Statuses::PENDING ? 'contract_initiation' : 'order');
+			$transaction->type = ($order->status->code === Statuses::PENDING ? 'contract_initiation' : 'order');
 
-			$this->get('order.transaction.create')->create($this->_transaction);
+			$this->get('order.transaction.create')->create($transaction);
 		}
 	}
 
@@ -81,18 +62,12 @@ class CreateListener extends BaseListener implements SubscriberInterface
 	{
 		$payment = $event->getEntity();
 		if($payment instanceof Payment && $payment->getOrder()->status->code === Statuses::PENDING) {
-			$this->_initTransaction();
+			$transaction = new Transaction;
 
-			$this->_transaction->addRecord($payment);
-			$this->_transaction->type = 'contract_payment';
+			$transaction->addRecord($payment);
+			$transaction->type = 'contract_payment';
 
-			de($this->_transaction);
-			$this->get('order.transaction.create')->create($this->_transaction);
+			$this->get('order.transaction.create')->create($transaction);
 		}
 	}
-
-	protected function _initTransaction()
-	{
-		$this->_transaction = new Transaction;
-		$this->_transaction->attributes = $this->_attributes;
-	}}
+}

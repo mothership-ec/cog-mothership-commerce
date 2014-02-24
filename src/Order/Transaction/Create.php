@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Transaction;
 use Message\User\UserInterface;
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\Event\DispatcherInterface;
 
 use InvalidArgumentException;
 
@@ -20,11 +21,12 @@ class Create implements DB\TransactionalInterface
 	protected $_currentUser;
 	protected $_transOverriden = false;
 
-	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, Loader $loader, DispatcherInterface $eventDispatcher, UserInterface $currentUser)
 	{
-		$this->_query       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_query           = $query;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -44,6 +46,13 @@ class Create implements DB\TransactionalInterface
 				$this->_currentUser->id
 			);
 		}
+
+		$event = new Event($transaction);
+
+		$transaction = $this->_eventDispatcher->dispatch(
+			Events::CREATE,
+			$event
+		)->getTransaction();
 
 		$this->_validate($transaction);
 
