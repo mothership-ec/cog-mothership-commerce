@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Bootstrap;
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 
+use Message\User\AnonymousUser;
+
 use Message\Cog\Bootstrap\ServicesInterface;
 
 class Services implements ServicesInterface
@@ -42,9 +44,13 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order = $c['order'];
-				$order->locale = $c['locale']->getId();
-				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
+				$order             = $c['order'];
+				$order->locale     = $c['locale']->getId();
+				$order->currencyID = 'GBP';
+				$order->type       = 'web';
+
+				if ($c['user.current']
+				&& !($c['user.current'] instanceof AnonymousUser)) {
 					$order->user = $c['user.current'];
 				}
 
@@ -55,13 +61,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['basket'] = function($c) {
-			return new Commerce\Order\Assembler(
-				$c['basket.order'],
-				$c['user.current'],
-				$c['locale'],
-				$c['event.dispatcher'],
-				$c['http.session']
-			);
+			$assembler = $c['order.assembler'];
+
+			$assembler->setOrder($c['basket.order']);
+
+			return $assembler;
 		};
 
 		$services['order.entities'] = function($c) {
@@ -99,6 +103,19 @@ class Services implements ServicesInterface
 					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
 				),
 			);
+		};
+
+		$services['order.assembler'] = function($c) {
+			$assembler = new Commerce\Order\Assembler(
+				$c['order'],
+				$c['event.dispatcher'],
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
+			);
+
+			$assembler->setEntityTemporaryIdProperty('addresses', 'type');
+			$assembler->setEntityTemporaryIdProperty('discounts', 'code');
+
+			return $assembler;
 		};
 
 		// Order decorators
@@ -279,6 +296,10 @@ class Services implements ServicesInterface
 		// Configurable/optional event listeners
 		$services['order.listener.vat'] = function($c) {
 			return new Commerce\Order\EventListener\VatListener($c['country.list']);
+		};
+
+		$services['order.listener.assembler.stock_check'] = function($c) {
+			return new Commerce\Order\EventListener\Assembler\StockCheckListener('web');
 		};
 
 		// Available transaction types
