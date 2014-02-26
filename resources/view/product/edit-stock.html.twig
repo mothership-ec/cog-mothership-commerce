@@ -1,62 +1,66 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
 {% block edit %}
+
+	<h1>Stock Adjustments</h1>
+
 	{% if units is empty %}
-		<h1>{{ 'ms.commerce.product.stock.units-empty'|trans }}</h1>
+		{{ 'ms.commerce.product.stock.units-empty'|trans }}
 	{% else %}
 		{{ form_start(form) }}
-			<div class="group">
-				<h2 class="title">Adjust Stock</h2>
-				<div class="content">
-				<table>
-					<thead>
+		<div class="display-group">
+			<h2 class="title">Adjust Stock</h2>
+			<div class="content-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
+						{% for heading in headings %}
+							<th>{{ heading }}</th>
+						{% endfor %}
+						{% for location in locations %}
+							<th>{{ location.displayName }}</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+					{% for unit in units %}
 						<tr>
-							<th>{{ 'ms.commerce.product.units.sku.label'|trans }}</th>
-							{% for heading in headings %}
-								<th>{{ heading }}</th>
+							<td><span>{{ unit.sku }}</span></td>
+							{% for key, name in headings %}
+								<td>
+								{% if key in unit.options|keys %}
+									{{ unit.getOption(key) }}
+								{% endif %}
+								</td>
 							{% endfor %}
 							{% for location in locations %}
-								<th>{{ location.displayName }}</th>
+								<div class="inline">
+									<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
+								</div>
 							{% endfor %}
 						</tr>
-					</thead>
-					<tbody>
-						{% for unit in units %}
-							<tr>
-								<td><span>{{ unit.sku }}</span></td>
-								{% for key, name in headings %}
-									<td>
-									{% if key in unit.options|keys %}
-										{{ unit.getOption(key) }}
-									{% endif %}
-									</td>
-								{% endfor %}
-								{% for location in locations %}
-									<div class="inline">
-										<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
-									</div>
-								{% endfor %}
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-				<h2>Adjustment Information</h2>
-				{{ form_row(form['reason']) }}
-				{{ form_row(form['note']) }}
-				<button type="submit" class="button small save" id="save-content">
-					{{ 'Update Stock' }}
-				</button>
+					{% endfor %}
+				</tbody>
+			</table>
+			<h2>Adjustment Information</h2>
+			{{ form_row(form['reason']) }}
+			{{ form_row(form['note']) }}
+			<button type="submit" class="button small save" id="save-content">
+				{{ 'Update Stock' }}
+			</button>
 			</div>
 		</div>
 		{{ form_end(form) }}
 		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
+	<section class="display-group">
 		{% if movementIterator.movements is empty %}
 			{{ 'ms.commerce.product.stock.empty'|trans }}
 		{% endif %}
 
 		{% for movement in movementIterator %}
-			<section class="group">
+
 				<h2 class="title">
 					Stock Movement #{{ movement.id }}
 					- {{ movement.authorship.createdAt|date }}
@@ -66,60 +70,62 @@
 						by {{ movement.authorship.createdUser.name }}
 					{% endif %}
 				</h2>
-				<div class="content">
-					<table>
-						<thead>
-							<tr>
-								<th>SKU</th>
-								{% for heading in headings %}
-									<th>{{ heading }}</th>
-								{% endfor %}
-								{% for location in locations %}
-									<th>{{ location.displayName }}</th>
-								{% endfor %}
-							</tr>
-						</thead>
-						<tbody>
-							{% for adjustment in movement.adjustments %}
-							<tr>
-								<td><span>{{ adjustment.unit.sku }}</span></td>
-								{% for key, name in headings %}
+
+		<div class="content-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>SKU</th>
+							{% for heading in headings %}
+								<th>{{ heading }}</th>
+							{% endfor %}
+							{% for location in locations %}
+								<th>{{ location.displayName }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for adjustment in movement.adjustments %}
+						<tr>
+							<td><span>{{ adjustment.unit.sku }}</span></td>
+							{% for key, name in headings %}
+								<td>
+								{% if key in adjustment.unit.options|keys %}
+									{{ adjustment.unit.getOption(key) }}
+								{% endif %}
+								</td>
+							{% endfor %}
+							{% for location in locations %}
+								<div class="inline">
 									<td>
-									{% if key in adjustment.unit.options|keys %}
-										{{ adjustment.unit.getOption(key) }}
+									{% if adjustment.location == location %}
+										{{ movementIterator.getStockBefore(adjustment.unit, location) }}
+										<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
+											{{ '%+d'|format(adjustment.delta) }}
+										</span>
+										{{ movementIterator.getStockAfter(adjustment.unit, location) }}
+									{% else %}
+										{{ movementIterator.getLastStock(adjustment.unit, location) }}
 									{% endif %}
 									</td>
-								{% endfor %}
-								{% for location in locations %}
-									<div class="inline">
-										<td>
-										{% if adjustment.location == location %}
-											{{ movementIterator.getStockBefore(adjustment.unit, location) }}
-											<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
-												{{ '%+d'|format(adjustment.delta) }}
-											</span>
-											{{ movementIterator.getStockAfter(adjustment.unit, location) }}
-										{% else %}
-											{{ movementIterator.getLastStock(adjustment.unit, location) }}
-										{% endif %}
-										</td>
-									</div>
-								{% endfor %}
-							</tr>
+								</div>
 							{% endfor %}
-						</tbody>
-					</table>
-					<ul class="stock-reason">
-						<li>
-							<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
-							<p>{{ movement.reason }}</li>
-						<li>
-							<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
-							<p>{{ movement.note }}</p>
-						</li>
-					</ul>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+				<div>
+					<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
+					<p>{{ movement.reason }}
 				</div>
-			</section>
+				<div>
+					<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
+					<p>{{ movement.note }}</p>
+				</div>
+	</div>
 		{% endfor %}
+	</section>
+
 	{% endif %}
 {% endblock %}
