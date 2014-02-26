@@ -135,9 +135,9 @@ ms.commerce:
         button:
           create: Add unit
     stock:
-      page-title: Stock Movements
       empty: No stock has been moved yet.
       units-empty: To control stock, you first have to add units.
+      page-title: Stock Movements
       reason:
         label: Reason
         help: Select the reason you need to adjust stock.
