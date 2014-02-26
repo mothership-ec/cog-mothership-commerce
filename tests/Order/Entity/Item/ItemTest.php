@@ -81,4 +81,47 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse(is_int($item->productTaxRate));
 	}
 
+	public function testPopulateMatchingTaxStrategy()
+	{
+		$var = 'test';
+		$this->_unit->product->taxStrategy = $var;
+
+		$item = new Item;
+		$item->populate($this->_unit);
+
+		$this->assertSame($var, $item->taxStrategy);
+	}
+
+	public function testPopulateMatchingProductID()
+	{
+		$var = 1337;
+		$this->_unit->product->id = $var;
+
+		$item = new Item;
+		$item->populate($this->_unit);
+
+		$this->assertSame($var, $item->productID);
+	}
+
+	public function testPopulateMatchingProductName()
+	{
+		$var = 'test';
+		$this->_unit->product->id = $var;
+
+		$item = new Item;
+		$item->populate($this->_unit);
+
+		$this->assertSame($var, $item->productName);
+	}
+
+	public function testPopulateMatchingUnitID()
+	{
+		$var = 1337;
+		$this->_unit->id = $var;
+
+		$item = new Item;
+		$item->populate($this->_unit);
+
+		$this->assertSame($var, $item->unitID);
+	}
 }
