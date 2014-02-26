@@ -60,7 +60,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function resetDiscountAmounts(Event\Event $event)
 	{
-		foreach ($event->getOrder()->getItems() as $item) {
+		foreach ($event->getOrder()->items as $item) {
 			$item->discount = 0;
 		}
 
@@ -93,8 +93,12 @@ class EventListener extends BaseListener implements SubscriberInterface
 			}
 			else {
 				$totalListPrice = 0;
-				foreach($discount->items->all() as $item) {
+				foreach($discount->items as $item) {
 					$totalListPrice += $item->listPrice;
+				}
+
+				if ($totalListPrice == 0 ) {
+					continue;
 				}
 
 				$prorateHelper = $this->get('helper.prorate')
