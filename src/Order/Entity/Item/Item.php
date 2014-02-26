@@ -86,7 +86,7 @@ class Item implements EntityInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = $unit->product->taxRate;
+		$this->productTaxRate  = (float) $unit->product->taxRate;
 		$this->taxStrategy     = $unit->product->taxStrategy;
 		$this->productID       = $unit->product->id;
 		$this->productName     = $unit->product->name;
