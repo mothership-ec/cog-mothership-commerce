@@ -5,7 +5,7 @@ ms.commerce:
         label: Please select an option...
       button: Add to basket
     button:
-      save: Save product
+      save: Save changes
       create: Create product
       sku: Add SKU
     attributes:
@@ -107,6 +107,7 @@ ms.commerce:
           label: Option Value
           help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
     units:
+      empty: No units have been added yet.
       sku:
         label: SKU
         placeholder: SKU
@@ -135,6 +136,8 @@ ms.commerce:
           create: Add unit
     stock:
       page-title: Stock Movements
+      empty: No stock has been moved yet.
+      units-empty: To control stock, you first have to add units.
       reason:
         label: Reason
         help: Select the reason you need to adjust stock.
@@ -156,10 +159,10 @@ ms.commerce:
     order:
       none: There are no orders to view.
 
-      all-orders-title: All Orders
-      shipped-orders-title: Shipped Orders
+      all-orders-title: All orders
+      shipped-orders-title: Shipped orders
       overview-title: Overview
-      summary-title: Order Summary
+      summary-title: Order summary
       detail-title: Order orderID
 
       orderID: Order orderID
@@ -227,7 +230,7 @@ ms.commerce:
 
       create:
         title: Add note
-        button: Add note to the order
+        button: Create note
         notify: Notify the customer
 
     metadata:

@@ -76,6 +76,11 @@ class Iterator implements \Iterator
         return $this;
     }
 
+    public function getMovements()
+    {
+        return $this->_movements;
+    }
+
     /**
      * Resests the pointer of the iteration and returns first movement
      */
@@ -256,7 +261,7 @@ class Iterator implements \Iterator
     protected function _checkUnitsSet()
     {
         if(is_array($this->_units) && count($this->_units) === 0) {
-            throw new \LogicException('To use the iterator you first have to add units to iterate over!');
+            throw new \LogicException('To use the movement iterator you first have to add units to iterate over!');
         }
     }
 
