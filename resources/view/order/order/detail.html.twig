@@ -19,13 +19,17 @@
 		<ul class="order-details">
 			<li>
 				<span>{{ 'ms.commerce.order.address.name'|trans }}</span>
+				{% if order.user %}
 				<a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
 					{{ address.title }} {{ address.forename }} {{ address.surname }}
 				</a>
+				{% else %}
+				<em>Unknown</em>
+				{% endif %}
 			</li>
 			<li>
 				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>
-				{{ order.userEmail }}
+				{{ order.userEmail|default('<em>Unknown</em>') }}
 			</li>
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
