@@ -280,7 +280,7 @@ class Assembler
 		// Remove the item as many times needed to make the count equal the given
 		// quantity
 		if ($quantity < $unitCount) {
-			for ($i = $unitCount ; $i > $quantity; $i--) {
+			for ($i = $unitCount; $i > $quantity; $i--) {
 				$this->_order->items->remove(array_shift($items));
 			}
 		}
@@ -291,6 +291,40 @@ class Assembler
 			for ($i = $unitCount; $i < $quantity; $i++) {
 				$this->addUnit($unit);
 			}
+		}
+
+		// Re-enable event dispatching now we're done
+		$this->_dispatchEvents = true;
+
+		// Dispatch the update event
+		return $this->dispatchEvent();
+	}
+
+		/**
+	 * Update the quantity of items for a given unit on the order being
+	 * assembled.
+	 *
+	 * @param  Unit $unit     The unit to change quantity for
+	 * @param  int  $quantity The quantity to set
+	 *
+	 * @return Assembler      Returns $this for chainability
+	 */
+	public function updateActualPrice(Unit $unit, $actualPrice)
+	{
+		// Disable event dispatching while we update the quantities
+		$this->_dispatchEvents = false;
+
+		// Count how many times this unit is already in the basket
+		$row       = $this->_order->items->getRows()[$unit->id];
+		$items     = $row->all();
+
+		// If the quantities are the same then return
+		if ($row->first()->actualPrice === $actualPrice) {
+			return $this;
+		}
+
+		foreach($items as $item) {
+			$item->actualPrice = $actualPrice;
 		}
 
 		// Re-enable event dispatching now we're done
