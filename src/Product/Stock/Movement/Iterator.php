@@ -87,7 +87,7 @@ class Iterator implements \Iterator
 
     /**
      * Moves the pointer forward and returns the next stock movement.
-     * Uses _checkUnitsSet-method to make sure a product was already set!
+     * Uses _checkUnitsSet-method to make sure a product was already set.
      *
      * @return Movement new current movement
      */
