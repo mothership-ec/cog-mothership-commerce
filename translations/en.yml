@@ -5,7 +5,7 @@ ms.commerce:
         label: Please select an option...
       button: Add to basket
     button:
-      save: Save changes
+      save: Save product
       create: Create product
       sku: Add SKU
     attributes:
@@ -159,10 +159,10 @@ ms.commerce:
     order:
       none: There are no orders to view.
 
-      all-orders-title: All orders
-      shipped-orders-title: Shipped orders
+      all-orders-title: All Orders
+      shipped-orders-title: Shipped Orders
       overview-title: Overview
-      summary-title: Order summary
+      summary-title: Order Summary
       detail-title: Order orderID
 
       orderID: Order orderID
@@ -230,7 +230,7 @@ ms.commerce:
 
       create:
         title: Add note
-        button: Create note
+        button: Add note to the order
         notify: Notify the customer
 
     metadata:
