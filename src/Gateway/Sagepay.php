@@ -62,7 +62,7 @@ class Sagepay extends Wrapper
 			'currency'      => $this->_currencyID,
 			'returnUrl'     => $this->_redirect,
 			'transactionId' => $this->_transactionID,
-			'description'   => 'Uniform Wares payment',
+			'description'   => 'Payment',
 		);
 
 		$this->_request = $this->_gateway->purchase($this->_data);
