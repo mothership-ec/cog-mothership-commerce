@@ -107,6 +107,7 @@ ms.commerce:
           label: Option Value
           help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
     units:
+      empty: No units have been added yet.
       sku:
         label: SKU
         placeholder: SKU
@@ -134,6 +135,8 @@ ms.commerce:
         button:
           create: Add unit
     stock:
+      empty: No stock has been moved yet.
+      units-empty: To control stock, you first have to add units.
       page-title: Stock Movements
       reason:
         label: Reason

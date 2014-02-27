@@ -4,6 +4,9 @@
 
 	<h1>Stock Adjustments</h1>
 
+	{% if units is empty %}
+		{{ 'ms.commerce.product.stock.units-empty'|trans }}
+	{% else %}
 		{{ form_start(form) }}
 		<div class="display-group">
 			<h2 class="title">Adjust Stock</h2>
@@ -52,6 +55,9 @@
 		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
 
 	<section class="display-group">
+		{% if movementIterator.movements is empty %}
+			{{ 'ms.commerce.product.stock.empty'|trans }}
+		{% endif %}
 
 		{% for movement in movementIterator %}
 
@@ -122,4 +128,5 @@
 		{% endfor %}
 	</section>
 
+	{% endif %}
 {% endblock %}
