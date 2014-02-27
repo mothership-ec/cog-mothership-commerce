@@ -97,7 +97,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 					$totalListPrice += $item->listPrice;
 				}
 
-				if ($totalListPrice == 0 ) {
+				if ($totalListPrice === 0 ) {
 					continue;
 				}
 
