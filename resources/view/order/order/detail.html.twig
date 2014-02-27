@@ -68,12 +68,14 @@
 	<section class="group small-box">
 		<h2 class="title">Information</h2>
 		<ul class="order-details">
+			{% if order.authorship.createdBy %}
 			<li>
 				<span>{{ 'Created by'|trans }}</span>
 				<a href="{{ url('ms.cp.user.admin.detail.edit', {userID: order.authorship.createdBy}) }}">
 					{{ order.authorship.createdUser.name }}
 				</a>
 			</li>
+			{% endif %}
 			<li>
 				<span>{{ 'ms.commerce.order.order.user-email'|trans }}</span>
 				{{ order.email }}
