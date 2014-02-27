@@ -1,6 +1,9 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
 {% block edit %}
+	{% if units is empty %}
+		{{ 'ms.commerce.product.stock.units-empty'|trans }}
+	{% else %}
 	{{ form_start(form) }}
 		<div class="group">
 			<h2 class="title">Adjust Stock</h2>
@@ -47,6 +50,9 @@
 	</div>
 	{{ form_end(form) }}
 	<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
+		{% if movementIterator.movements is empty %}
+			{{ 'ms.commerce.product.stock.empty'|trans }}
+		{% endif %}
 	{% for movement in movementIterator %}
 		<section class="group">
 			<h2 class="title">
@@ -72,27 +78,28 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for adjustment in movement.adjustments %}
+						{% for adjustmentPresenter in movement.adjustmentPresenters %}
 						<tr>
-							<td><span>{{ adjustment.unit.sku }}</span></td>
+							<td><span>{{ adjustmentPresenter.unit.sku }}</span></td>
 							{% for key, name in headings %}
 								<td>
-								{% if key in adjustment.unit.options|keys %}
-									{{ adjustment.unit.getOption(key) }}
+								{% if key in adjustmentPresenter.unit.options|keys %}
+									{{ adjustmentPresenter.unit.getOption(key) }}
 								{% endif %}
 								</td>
 							{% endfor %}
 							{% for location in locations %}
 								<div class="inline">
 									<td>
-									{% if adjustment.location == location %}
-										{{ movementIterator.getStockBefore(adjustment.unit, location) }}
+									{% set adjustment = adjustmentPresenter.getAdjustment(location) %}
+									{% if adjustment %}
+										{{ movementIterator.getStockBefore(adjustmentPresenter.unit, location) }}
 										<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
 											{{ '%+d'|format(adjustment.delta) }}
 										</span>
-										{{ movementIterator.getStockAfter(adjustment.unit, location) }}
+										{{ movementIterator.getStockAfter(adjustmentPresenter.unit, location) }}
 									{% else %}
-										{{ movementIterator.getLastStock(adjustment.unit, location) }}
+										{{ movementIterator.getLastStock(adjustmentPresenter.unit, location) }}
 									{% endif %}
 									</td>
 								</div>
@@ -113,4 +120,5 @@
 			</div>
 		</section>
 	{% endfor %}
+	{% endif %}
 {% endblock %}
