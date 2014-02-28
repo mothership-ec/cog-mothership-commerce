@@ -57,9 +57,8 @@ class EventListener implements SubscriberInterface
 	public function setDefaultActualPrice(Event\Event $event)
 	{
 		if ($event instanceof Event\EntityEvent
-		 && $entity = $event->getEntity()
-		 && $entity instanceof Item) {
-			$items = [$item];
+		 && $event->getEntity() instanceof Item) {
+			$items = [$event->getEntity()];
 		} else {
 			$items = $event->getOrder()->items->all();
 		}
