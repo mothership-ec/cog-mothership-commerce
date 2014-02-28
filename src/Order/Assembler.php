@@ -262,7 +262,7 @@ class Assembler
 	 *
 	 * @return Assembler      Returns $this for chainability
 	 */
-	public function updateQuantity(Unit $unit, $quantity = 1)
+	public function setQuantity(Unit $unit, $quantity = 1)
 	{
 		// Disable event dispatching while we update the quantities
 		$this->_dispatchEvents = false;
@@ -298,6 +298,15 @@ class Assembler
 
 		// Dispatch the update event
 		return $this->dispatchEvent();
+	}
+
+	/**
+	 * @see setQuantity
+	 * @deprecated Use `setQuantity()` instead. To be removed.
+	 */
+	public function updateQuantity(Unit $unit, $quantity = 1)
+	{
+		return $this->setQuantity($unit, $quantity);
 	}
 
 	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
