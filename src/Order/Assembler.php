@@ -240,6 +240,22 @@ class Assembler
 		return $this->addItem($item);
 	}
 
+	/**
+	 * Add an item to the order being assembled.
+	 *
+	 * @todo Consider removing this method: it is weird that it exists as well
+	 *       as addEntity. For the custom validation, maybe allow Assembler to
+	 *       have new validation set by a method using a lambda, or just move it
+	 *       to listeners on ASSEMBLER_UPDATE event
+	 *
+	 * @see addEntity
+	 *
+	 * @param Entity\Item\Item $item The item to add
+	 *
+	 * @return Assembler             Returns $this for chainability
+	 *
+	 * @throws \InvalidArgumentException If the item has no valid stock location set
+	 */
 	public function addItem(Entity\Item\Item $item)
 	{
 		$item->order = $this->_order;
@@ -248,7 +264,7 @@ class Assembler
 			throw new \InvalidArgumentException('Cannot add item to order: must have a valid stock location set');
 		}
 
-		$this->_order->items->append($item);
+		$this->addEntity('items', $item);
 
 		return $this->dispatchEvent();
 	}
