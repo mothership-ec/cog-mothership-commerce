@@ -7,13 +7,24 @@
 	<h1>Add a new product</h1>
 </hgroup>
 <div class="container-content create-product">
-	{{ form_start(form) }}
-		{{ form_row(form.name) }}
-		{{ form_row(form.display_name) }}
-		{{ form_row(form.short_description) }}
+	<form action="/">
+		<section class="group">
+			<h1 class="title">Information</h1>
+			<div class="content">
+				<div class="field required">
+					<label for="name">Name</label>
+					<input type="text" id="name" placeholder="Name">
+				</div>
+				<div class="field required">
+					<label for="brand">Brand</label>
+					<input type="text" id="brand" placeholder="Brand">
+				</div>
+			</div>
+		</section>
 		<button type="submit" class="button small save" id="save-content">
 			{{ 'ms.commerce.product.button.create'|trans }}
 		</button>
-	{{ form_end(form) }}
+	</form>
 </div>
+
 {% endblock %}
