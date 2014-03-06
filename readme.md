@@ -42,7 +42,7 @@ To enable the mapper to correctly relate products to pages you must set the vali
 page types. You can change these using:
 
 ```php
-$services['product.page_mapper'] = $services->extend('product.page_mapper', function($mapper, $c) {
+$services->extend('product.page_mapper', function($mapper, $c) {
 	$mapper->setValidFieldNames('product');
 
 	// Passing an array to either method will match against all values
@@ -121,7 +121,7 @@ You can optionally pass in filter callbacks that are applied after the results a
 #### Usage
 
 ```php
-$services['product.page_mapper'] = $services->extend('product.page_mapper', function($mapper, $c) {
+$services->extend('product.page_mapper', function($mapper, $c) {
 	$mapper->addFilter(function($obj) {
 		if ($obj instanceof Page) {
 			return (false !== stristr($obj->title, "foo"));

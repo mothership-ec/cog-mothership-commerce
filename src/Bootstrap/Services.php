@@ -540,7 +540,7 @@ class Services implements ServicesInterface
 		$services['page.product_mapper'] = $services->raw('product.page_mapper.simple');
 
 		// Extend twig with the product/page finders
-		$services['templating.twig.environment'] = $services->extend('templating.twig.environment', function($twig, $c) {
+		$services->extend('templating.twig.environment', function($twig, $c) {
 			$twig->addExtension(new \Message\Mothership\Commerce\ProductPageMapper\Templating\TwigExtension(
 				$c['page.product_mapper'],
 				$c['product.page_mapper']
