@@ -283,11 +283,11 @@ class Services implements ServicesInterface
 		// Product
 		$services['product'] = $services->factory(function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
-		};
+		});
 
 		$services['product.unit'] = $services->factory(function($c) {
 			return new Commerce\Product\Unit\Unit($c['locale'], $c['product.price.types']);
-		};
+		});
 
 		$services['product.price.types'] = function($c) {
 			return array(
@@ -407,7 +407,7 @@ class Services implements ServicesInterface
 				$c['product.unit.edit'],
 				$c['event.dispatcher']
 			);
-		};
+		});
 
 		$services['stock.locations'] = function() {
 			return new Commerce\Product\Stock\Location\Collection;
