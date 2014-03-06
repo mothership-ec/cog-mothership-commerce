@@ -40,6 +40,14 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$services['form.factory.builder'] = $services->share(
+			$services->extend('form.factory.builder', function($factory, $c) {
+				$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP', 'EUR']));
+
+				return $factory;
+			})
+		);
+
 		$services['basket.order'] = function($c) {
 			if (!$c['http.session']->get('basket.order')) {
 				$order = $c['order'];
