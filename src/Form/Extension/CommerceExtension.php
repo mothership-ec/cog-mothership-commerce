@@ -12,17 +12,23 @@ use Symfony\Component\Form\AbstractExtension;
 class CommerceExtension extends AbstractExtension
 {
 
-    protected $_currencies;
+	protected $_currencies;
 
-    public function __construct(array $currencies)
-    {
-        $this->_currencies = $currencies;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public function __construct(array $currencies)
+	{
+		$this->_currencies = $currencies;
+	}
 
-    protected function loadTypes()
-    {
-        return array(
-            new Type\CurrencySetType($this->_currencies),
-        );
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function loadTypes()
+	{
+		return array(
+			new Type\CurrencySetType($this->_currencies),
+		);
+	}
 }
