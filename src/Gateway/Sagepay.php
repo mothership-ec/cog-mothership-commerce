@@ -84,6 +84,7 @@ class Sagepay extends Wrapper
 	public function saveResponse()
 	{
 		$data = $this->_response->getData();
+
 		$data['transactionId'] = $this->_data['transactionId'];
 		$data['VendorTxCode']  = $this->_data['transactionId'];
 
