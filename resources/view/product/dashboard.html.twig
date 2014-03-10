@@ -1,10 +1,11 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-{% block main %}
+{% extends 'Message:Mothership:ControlPanel::_templates/cp' %}
+{% block content %}
 <hgroup class="title">
-	<h1>Add products</h1>
+	<h1>Products</h1>
+	<div class="controls">
+		<a href="{{ url('ms.commerce.product.create')}}" class="button small create product" data-live>Add a new product</a>
+		<a href="#" class="button small create product" data-live>Import products</a>
+	</div>
 </hgroup>
 	<div class="container-content">
 		<table class="table-filter products">
@@ -20,12 +21,12 @@
 			<thead>
 				<tr>
 					<th>ID</th>
-					<th>Photo</th>
+					<th data-disable>Photo</th>
 					<th>Name</th>
 					<th>Catagory</th>
 					<th>Price</th>
 					<th>Quantity</th>
-					<th>Actions</th>
+					<th data-disable>Actions</th>
 				</tr>
 			</thead>
 			<tfoot>
