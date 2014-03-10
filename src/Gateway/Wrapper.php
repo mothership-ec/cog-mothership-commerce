@@ -84,7 +84,6 @@ class Wrapper implements GatewayInterface
 		$this->_card->setShippingPostcode($address->postcode);
 		$this->_card->setShippingState($address->stateID);
 		$this->_card->setShippingCountry($address->countryID);
-		$this->_card->setShippingPhone($address->telephone);
 
 	}
 
@@ -101,7 +100,6 @@ class Wrapper implements GatewayInterface
 		$this->_card->setPostcode($address->postcode);
 		$this->_card->setState($address->stateID);
 		$this->_card->setCountry($address->countryID);
-		$this->_card->setPhone($address->telephone);
 	}
 
 	public function send()

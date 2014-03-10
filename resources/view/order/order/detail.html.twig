@@ -23,9 +23,13 @@
 				{% set address = order.addresses.getByType('delivery') %}
 				<dl class="order-details">
 					<dt>{{ 'ms.commerce.order.address.name'|trans }}</dt>
+						{% if order.user %}
 						<dd><a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
 							{{ address.title }} {{ address.forename }} {{ address.surname }}
 						</a></dd>
+					{% else %}
+					<dd><em>Unknown</em></dd>
+					{% endif %}
 					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
 						<dd>{{ order.userEmail }}</dd>
 					{% for key, line in address.lines %}
@@ -57,11 +61,13 @@
 			<div class="content">
 				<dl class="order-details">
 					<dt>{{ 'Created by'|trans }}</dt>
+						{% if order.authorship.createdBy %}
 						<dd><a href="{{ url('ms.cp.user.admin.detail.edit', {userID: order.authorship.createdBy}) }}">
 							{{ order.authorship.createdUser.name }}
 						</a></dd>
+						{% endif %}
 					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
-						<dd>{{ order.authorship.createdUser.email }}</dd>
+						<dd>{{ order.email }}</dd>
 					<dt>{{ 'Created at'|trans }}</dt>
 						<dd>{{ order.authorship.createdAt|date }}</dd>
 				</ul>
@@ -69,4 +75,3 @@
 		</section>
 	</div>
 </div>
-
