@@ -1,6 +1,6 @@
 # Mothership Commerce
 
-The `Message\Mothership\Commerce` cogule provides base commerce functionality for Mothership. This forms part of the building blocks for both `ECommerce` and `Epos`.
+The `Message\Mothership\Commerce` cogule provides base commerce functionality for Mothership. This forms part of the building blocks for both `ECommerce` and `EPOS`.
 
 ## Installation
 
@@ -16,7 +16,7 @@ You will need to add Message's private package server to the `repositories` key 
 			}
 		],
 		"require": {
-			"message/cog-mothership-commerce": "~1.0"
+			"message/cog-mothership-commerce": "1.0.*"
 		}
 	}
 

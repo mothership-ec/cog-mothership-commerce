@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Bootstrap;
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 
+use Message\User\AnonymousUser;
+
 use Message\Cog\Bootstrap\ServicesInterface;
 
 class Services implements ServicesInterface
@@ -12,7 +14,6 @@ class Services implements ServicesInterface
 	public function registerServices($services)
 	{
 		$this->registerEmails($services);
-		$this->registerProductPageMapper($services);
 
 		$services['order'] = $services->factory(function($c) {
 			return new Commerce\Order\Order($c['order.entities']);
@@ -42,9 +43,13 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order = $c['order'];
-				$order->locale = $c['locale']->getId();
-				if ($c['user.current'] and ! $c['user.current'] instanceof \Message\User\AnonymousUser) {
+				$order             = $c['order'];
+				$order->locale     = $c['locale']->getId();
+				$order->currencyID = 'GBP';
+				$order->type       = 'web';
+
+				if ($c['user.current']
+				&& !($c['user.current'] instanceof AnonymousUser)) {
 					$order->user = $c['user.current'];
 				}
 
@@ -55,13 +60,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['basket'] = $services->factory(function($c) {
-			return new Commerce\Order\Assembler(
-				$c['basket.order'],
-				$c['user.current'],
-				$c['locale'],
-				$c['event.dispatcher'],
-				$c['http.session']
-			);
+			$assembler = $c['order.assembler'];
+
+			$assembler->setOrder($c['basket.order']);
+
+			return $assembler;
 		});
 
 		$services['order.entities'] = $services->factory(function($c) {
@@ -100,6 +103,19 @@ class Services implements ServicesInterface
 				),
 			);
 		});
+
+		$services['order.assembler'] = function($c) {
+			$assembler = new Commerce\Order\Assembler(
+				$c['order'],
+				$c['event.dispatcher'],
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
+			);
+
+			$assembler->setEntityTemporaryIdProperty('addresses', 'type');
+			$assembler->setEntityTemporaryIdProperty('discounts', 'code');
+
+			return $assembler;
+		};
 
 		// Order decorators
 		$services['order.loader'] = $services->factory(function($c) {
@@ -280,6 +296,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\EventListener\VatListener($c['country.list']);
 		});
 
+		$services['order.listener.assembler.stock_check'] = function($c) {
+			return new Commerce\Order\EventListener\Assembler\StockCheckListener('web');
+		};
+
 		// Product
 		$services['product'] = $services->factory(function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
@@ -447,7 +467,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['forex.feed'] = function($c) {
-			return new Commerce\Forex\Feed\ECB($c['db.transaction']);
+			return new Commerce\Forex\Feed\ECB($c['db.query']);
 		};
 
 		/*

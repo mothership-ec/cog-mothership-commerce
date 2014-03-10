@@ -5,7 +5,7 @@ ms.commerce:
         label: Please select an option...
       button: Add to basket
     button:
-      save: Save product
+      save: Save changes
       create: Create product
       sku: Add SKU
     attributes:
@@ -43,7 +43,7 @@ ms.commerce:
       retail:
         label: Retail Price
         label-sans: Retail
-        help: The price customers will pay on youru website.
+        help: The price customers will pay on your website.
       cost:
         label: Cost Price
         label-sans: Cost
@@ -159,10 +159,10 @@ ms.commerce:
     order:
       none: There are no orders to view.
 
-      all-orders-title: All Orders
-      shipped-orders-title: Shipped Orders
+      all-orders-title: All orders
+      shipped-orders-title: Shipped orders
       overview-title: Overview
-      summary-title: Order Summary
+      summary-title: Order summary
       detail-title: Order orderID
 
       orderID: Order orderID
@@ -230,7 +230,7 @@ ms.commerce:
 
       create:
         title: Add note
-        button: Add note to the order
+        button: Create note
         notify: Notify the customer
 
     metadata:
