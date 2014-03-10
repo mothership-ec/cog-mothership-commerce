@@ -63,7 +63,7 @@ class AttachUserListener extends BaseListener implements SubscriberInterface
 			return false;
 		}
 
-		$basket->addUser($user);
+		$basket->getOrder()->user = $user;
 
 		$addressLoader = $this->get('commerce.user.address.loader');
 		// Try and load their addresses
