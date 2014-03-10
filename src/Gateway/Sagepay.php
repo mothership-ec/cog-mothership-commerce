@@ -84,7 +84,7 @@ class Sagepay extends Wrapper
 	public function saveResponse()
 	{
 		$data = $this->_response->getData();
-		$this->_validate($data);
+
 		$data['transactionId'] = $this->_data['transactionId'];
 		$data['VendorTxCode']  = $this->_data['transactionId'];
 
@@ -135,20 +135,5 @@ class Sagepay extends Wrapper
 			$data = $response->getData();
 			throw new \Exception($data['StatusDetail']);
 		}
-	}
-
-	protected function _validate(array $data)
-	{
-		if (array_key_exists('Status', $data)) {
-			switch ($data['Status']) {
-				case 'INVALID' :
-					throw new \Exception($data['StatusDetail']);
-					break;
-				default :
-					return true;
-			}
-		}
-
-		return true;
 	}
 }
