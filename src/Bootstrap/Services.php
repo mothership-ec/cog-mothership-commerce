@@ -390,10 +390,6 @@ class Services implements ServicesInterface
 			return new Commerce\User\Address\Edit($c['db.query'], $c['user.current']);
 		});
 
-		$services['commerce.user.collection'] = $services->factory(function($c) {
-			return new Commerce\User\Collection($c['user.current'], $c['commerce.user.address.loader']);
-		});
-
 		$services['stock.manager'] = $services->factory(function($c) {
 			$trans = $c['db.transaction'];
 			return new Commerce\Product\Stock\StockManager(
