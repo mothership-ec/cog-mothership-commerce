@@ -141,8 +141,8 @@ class Loader extends Order\Entity\BaseLoader
 		$return   = array();
 
 		foreach ($result as $key => $row) {
-			// Cast decimals to float
-			$entities[$key]->cost = (float) $row->cost;
+			// Cast decimals to float (unless they're null)
+			$entities[$key]->cost = is_null($row->cost) ? null : (float) $row->cost;
 
 			$entities[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
