@@ -107,7 +107,7 @@ class Assembler
 
 	/**
 	 * Add an entity to the order. If an entity of the same type with the same
-     * ID exists, it is replaced with the given entity
+	 * ID exists, it is replaced with the given entity
 	 *
 	 * If the entity has an `order` property (they all should, really), it is
 	 * set to the order that is being assembled.
@@ -123,17 +123,17 @@ class Assembler
 	 */
 	public function addEntity($name, Entity\EntityInterface $entity)
 	{
-        $this->_dispatchEvents = false;
+		$this->_dispatchEvents = false;
 
-        $this->_prepareEntity($name, $entity);
+		$this->_prepareEntity($name, $entity);
 
-        $this->removeEntity($name, $entity);
-        $this->_order->{$name}->append($entity);
+		$this->removeEntity($name, $entity);
+		$this->_order->{$name}->append($entity);
 
-        $this->_dispatchEvents = true;
+		$this->_dispatchEvents = true;
 
-        return $this->dispatchEvent();
-    }
+		return $this->dispatchEvent();
+	}
 
 	/**
 	 * Clear all entities of a certain type, then reset them to a given set of
