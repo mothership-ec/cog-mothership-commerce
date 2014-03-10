@@ -70,6 +70,37 @@ class Loader implements LoaderInterface
 		return $this->_load($unitID, false, $product, $revisionID);
 	}
 
+	/**
+	 * Get unit(s) by their barcode.
+	 *
+	 * Return value is always an array (an empty array of no `Unit`s found) if
+	 * the `$barcode` parameter is passed as an array.
+	 *
+	 * @param  string|array $barcode Single barcode or array of barcodes
+	 *
+	 * @return array|Unit|false      Single unit or array of units, false or
+	 *                               empty array if none found
+	 */
+	public function getByBarcode($barcode)
+	{
+		$alwaysReturnArray = is_array($barcode);
+
+		if (!is_array($barcode)) {
+			$barcode = array($barcode);
+		}
+
+		$result = $this->_query->run('
+			SELECT
+				unit_id
+			FROM
+				product_unit
+			WHERE
+				barcode IN (?js)
+		', array($barcode));
+
+		return count($result) ? $this->_load($result->flatten(), $alwaysReturnArray) : false;
+	}
+
 	public function includeInvisible($bool)
 	{
 		$this->_loadInvisible = $bool;
