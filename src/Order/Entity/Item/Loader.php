@@ -31,11 +31,12 @@ class Loader extends Order\Entity\BaseLoader
 	 * Toggle whether or not to load deleted items
 	 *
 	 * @param bool $bool 	true / false as to whether to include deleted items
-	 * @return 	$this 		Loader object in order to chain the methods
+	 * @return 	Loader 		Loader object in order to chain the methods
 	 */
 	public function includeDeleted($bool)
 	{
 		$this->_includeDeleted = $bool;
+
 		return $this;
 	}
 
