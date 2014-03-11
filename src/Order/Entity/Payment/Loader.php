@@ -27,12 +27,13 @@ class Loader extends Order\Entity\BaseLoader
 	/**
 	 * Toggle whether or not to load deleted payments
 	 *
-	 * @param bool $bool 	true / false as to whether to include deleted payments
-	 * @return 	$this 		Loader object in order to chain the methods
+	 * @param bool $bool    true / false as to whether to include deleted payments
+	 * @return Loader       Loader object in order to chain the methods
 	 */
 	public function includeDeleted($bool)
 	{
 		$this->_includeDeleted = $bool;
+
 		return $this;
 	}
 
