@@ -14,6 +14,7 @@ class Services implements ServicesInterface
 	public function registerServices($services)
 	{
 		$this->registerEmails($services);
+		$this->registerProductPageMapper($services);
 
 		$services['order'] = $services->factory(function($c) {
 			return new Commerce\Order\Order($c['order.entities']);
@@ -39,6 +40,12 @@ class Services implements ServicesInterface
 				$c['basket.order'],
 				$c['cfg']
 			);
+		});
+
+		$services->extend('form.factory.builder', function($factory, $c) {
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
+
+			return $factory;
 		});
 
 		$services['basket.order'] = $services->factory(function($c) {
