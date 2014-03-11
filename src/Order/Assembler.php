@@ -106,7 +106,8 @@ class Assembler
 	}
 
 	/**
-	 * Add an entity to the order.
+	 * Add an entity to the order. If an entity of the same type with the same
+	 * ID exists, it is replaced with the given entity
 	 *
 	 * If the entity has an `order` property (they all should, really), it is
 	 * set to the order that is being assembled.
@@ -122,9 +123,14 @@ class Assembler
 	 */
 	public function addEntity($name, Entity\EntityInterface $entity)
 	{
+		$this->_dispatchEvents = false;
+
 		$this->_prepareEntity($name, $entity);
 
+		$this->removeEntity($name, $entity);
 		$this->_order->{$name}->append($entity);
+
+		$this->_dispatchEvents = true;
 
 		return $this->dispatchEvent();
 	}
@@ -179,27 +185,6 @@ class Assembler
 		}
 
 		$this->_order->{$name}->remove($entity);
-
-		return $this->dispatchEvent();
-	}
-
-	/**
-	 * Replace a given entity on the order. An entity of the same type with the
-	 * same ID as the given entity is replaced with the given entity.
-	 *
-	 * @param  string                 $name   The entity name
-	 * @param  Entity\EntityInterface $entity The entity to add
-	 *
-	 * @return Assembler                      Returns $this for chainability
-	 */
-	public function replaceEntity($name, Entity\EntityInterface $entity)
-	{
-		$this->_dispatchEvents = false;
-
-		$this->removeEntity($name, $entity);
-		$this->addEntity($name, $entity);
-
-		$this->_dispatchEvents = true;
 
 		return $this->dispatchEvent();
 	}
@@ -402,7 +387,7 @@ class Assembler
 			$address->title = $this->_order->user->title;
 		}
 
-		return $this->replaceEntity('addresses', $address);
+		return $this->addEntity('addresses', $address);
 	}
 
 	/**
