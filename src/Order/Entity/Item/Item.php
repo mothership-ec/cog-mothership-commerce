@@ -90,7 +90,7 @@ class Item implements EntityInterface, RecordInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = $unit->product->taxRate;
+		$this->productTaxRate  = (float) $unit->product->taxRate;
 		$this->taxStrategy     = $unit->product->taxStrategy;
 		$this->productID       = $unit->product->id;
 		$this->productName     = $unit->product->name;
@@ -100,7 +100,7 @@ class Item implements EntityInterface, RecordInterface
 		$this->barcode         = $unit->barcode;
 		$this->options         = implode($unit->options, ', ');
 		$this->brand           = $unit->product->brand;
-		$this->weight          = $unit->weight;
+		$this->weight          = (int) $unit->weight;
 
 		return $this;
 	}

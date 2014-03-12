@@ -24,8 +24,7 @@ class Movement
 	{
 		$adjustment->movement = $this;
 
-		foreach($this->adjustments as $curAdjustment)
-		{
+		foreach($this->adjustments as $curAdjustment) {
 			if($curAdjustment->unit === $adjustment->unit && $curAdjustment->location === $adjustment->location) {
 				$curAdjustment->delta = $curAdjustment->delta + $adjustment->delta;
 
@@ -35,5 +34,40 @@ class Movement
 
 		$this->adjustments[] = $adjustment;
 		return $this;
+	}
+
+	public function getAdjustmentPresenters()
+	{
+		$adjustmentPresenters = array();
+		$localAdjustments = $this->adjustments;
+		$alreadyAdded = array();
+
+		foreach($localAdjustments as $i => $iAdjustment) {
+			if(in_array($i, $alreadyAdded)) {
+				continue;
+			}
+
+			$adjustmentPresenter = new Adjustment\AdjustmentPresenter;
+			$adjustmentPresenter->addAdjustment($iAdjustment);
+
+			foreach($localAdjustments as $j => $jAdjustment) {
+				if(in_array($j, $alreadyAdded)) {
+					continue;
+				}
+
+				$jAdjustment = $localAdjustments[$j];
+				if($iAdjustment->unit === $jAdjustment->unit && $iAdjustment->delta === (-1 * $jAdjustment->delta)) {
+					$adjustmentPresenter->addAdjustment($jAdjustment);
+
+					$alreadyAdded[] = $j;
+					break;
+				}
+			}
+			$alreadyAdded[] = $i;
+
+			$adjustmentPresenters[] = $adjustmentPresenter;
+		}
+
+		return $adjustmentPresenters;
 	}
 }

@@ -1,13 +1,13 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 
 {% block edit %}
-
-	<h1>Stock Adjustments</h1>
-
-		{{ form_start(form) }}
-		<div class="display-group">
+	{% if units is empty %}
+		{{ 'ms.commerce.product.stock.units-empty'|trans }}
+	{% else %}
+	{{ form_start(form) }}
+		<div class="group">
 			<h2 class="title">Adjust Stock</h2>
-			<div class="content-wrap">
+			<div class="content">
 			<table>
 				<thead>
 					<tr>
@@ -46,26 +46,25 @@
 			<button type="submit" class="button small save" id="save-content">
 				{{ 'Update Stock' }}
 			</button>
-			</div>
 		</div>
-		{{ form_end(form) }}
-		<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
-
-	<section class="display-group">
-
-		{% for movement in movementIterator %}
-
-				<h2 class="title">
-					Stock Movement #{{ movement.id }}
-					- {{ movement.authorship.createdAt|date }}
-					{% if movement.automated %}
-						(Automated)
-					{% else %}
-						by {{ movement.authorship.createdUser.name }}
-					{% endif %}
-				</h2>
-
-		<div class="content-wrap">
+	</div>
+	{{ form_end(form) }}
+	<h1>{{ 'ms.commerce.product.stock.page-title'|trans }}</h1>
+		{% if movementIterator.movements is empty %}
+			{{ 'ms.commerce.product.stock.empty'|trans }}
+		{% endif %}
+	{% for movement in movementIterator %}
+		<section class="group">
+			<h2 class="title">
+				Stock Movement #{{ movement.id }}
+				- {{ movement.authorship.createdAt|date }}
+				{% if movement.automated %}
+					(Automated)
+				{% else %}
+					by {{ movement.authorship.createdUser.name }}
+				{% endif %}
+			</h2>
+			<div class="content">
 				<table>
 					<thead>
 						<tr>
@@ -79,27 +78,28 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for adjustment in movement.adjustments %}
+						{% for adjustmentPresenter in movement.adjustmentPresenters %}
 						<tr>
-							<td><span>{{ adjustment.unit.sku }}</span></td>
+							<td><span>{{ adjustmentPresenter.unit.sku }}</span></td>
 							{% for key, name in headings %}
 								<td>
-								{% if key in adjustment.unit.options|keys %}
-									{{ adjustment.unit.getOption(key) }}
+								{% if key in adjustmentPresenter.unit.options|keys %}
+									{{ adjustmentPresenter.unit.getOption(key) }}
 								{% endif %}
 								</td>
 							{% endfor %}
 							{% for location in locations %}
 								<div class="inline">
 									<td>
-									{% if adjustment.location == location %}
-										{{ movementIterator.getStockBefore(adjustment.unit, location) }}
+									{% set adjustment = adjustmentPresenter.getAdjustment(location) %}
+									{% if adjustment %}
+										{{ movementIterator.getStockBefore(adjustmentPresenter.unit, location) }}
 										<span class="{{ adjustment.delta > 0 ? 'positive' : 'negative' }}">
 											{{ '%+d'|format(adjustment.delta) }}
 										</span>
-										{{ movementIterator.getStockAfter(adjustment.unit, location) }}
+										{{ movementIterator.getStockAfter(adjustmentPresenter.unit, location) }}
 									{% else %}
-										{{ movementIterator.getLastStock(adjustment.unit, location) }}
+										{{ movementIterator.getLastStock(adjustmentPresenter.unit, location) }}
 									{% endif %}
 									</td>
 								</div>
@@ -108,17 +108,17 @@
 						{% endfor %}
 					</tbody>
 				</table>
-
-				<div>
-					<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
-					<p>{{ movement.reason }}
-				</div>
-				<div>
-					<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
-					<p>{{ movement.note }}</p>
-				</div>
-	</div>
-		{% endfor %}
-	</section>
-
+				<ul class="stock-reason">
+					<li>
+						<h3>{{ 'ms.commerce.product.stock.reason.label'|trans }}</h3>
+						<p>{{ movement.reason }}</li>
+					<li>
+						<h3>{{ 'ms.commerce.product.stock.note.label'|trans }}</h3>
+						<p>{{ movement.note }}</p>
+					</li>
+				</ul>
+			</div>
+		</section>
+	{% endfor %}
+	{% endif %}
 {% endblock %}

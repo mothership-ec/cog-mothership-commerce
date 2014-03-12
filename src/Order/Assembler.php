@@ -106,7 +106,8 @@ class Assembler
 	}
 
 	/**
-	 * Add an entity to the order.
+	 * Add an entity to the order. If an entity of the same type with the same
+	 * ID exists, it is replaced with the given entity
 	 *
 	 * If the entity has an `order` property (they all should, really), it is
 	 * set to the order that is being assembled.
@@ -122,9 +123,14 @@ class Assembler
 	 */
 	public function addEntity($name, Entity\EntityInterface $entity)
 	{
+		$this->_dispatchEvents = false;
+
 		$this->_prepareEntity($name, $entity);
 
+		$this->removeEntity($name, $entity);
 		$this->_order->{$name}->append($entity);
+
+		$this->_dispatchEvents = true;
 
 		return $this->dispatchEvent();
 	}
@@ -174,32 +180,9 @@ class Assembler
 	{
 		if ($entity instanceof Entity\EntityInterface) {
 			$this->_prepareEntity($name, $entity);
-
-			$entity = $entity->id;
 		}
 
 		$this->_order->{$name}->remove($entity);
-
-		return $this->dispatchEvent();
-	}
-
-	/**
-	 * Replace a given entity on the order. An entity of the same type with the
-	 * same ID as the given entity is replaced with the given entity.
-	 *
-	 * @param  string                 $name   The entity name
-	 * @param  Entity\EntityInterface $entity The entity to add
-	 *
-	 * @return Assembler                      Returns $this for chainability
-	 */
-	public function replaceEntity($name, Entity\EntityInterface $entity)
-	{
-		$this->_dispatchEvents = false;
-
-		$this->removeEntity($name, $entity);
-		$this->addEntity($name, $entity);
-
-		$this->_dispatchEvents = true;
 
 		return $this->dispatchEvent();
 	}
@@ -240,6 +223,22 @@ class Assembler
 		return $this->addItem($item);
 	}
 
+	/**
+	 * Add an item to the order being assembled.
+	 *
+	 * @todo Consider removing this method: it is weird that it exists as well
+	 *       as addEntity. For the custom validation, maybe allow Assembler to
+	 *       have new validation set by a method using a lambda, or just move it
+	 *       to listeners on ASSEMBLER_UPDATE event
+	 *
+	 * @see addEntity
+	 *
+	 * @param Entity\Item\Item $item The item to add
+	 *
+	 * @return Assembler             Returns $this for chainability
+	 *
+	 * @throws \InvalidArgumentException If the item has no valid stock location set
+	 */
 	public function addItem(Entity\Item\Item $item)
 	{
 		$item->order = $this->_order;
@@ -248,7 +247,7 @@ class Assembler
 			throw new \InvalidArgumentException('Cannot add item to order: must have a valid stock location set');
 		}
 
-		$this->_order->items->append($item);
+		$this->addEntity('items', $item);
 
 		return $this->dispatchEvent();
 	}
@@ -262,7 +261,7 @@ class Assembler
 	 *
 	 * @return Assembler      Returns $this for chainability
 	 */
-	public function updateQuantity(Unit $unit, $quantity = 1)
+	public function setQuantity(Unit $unit, $quantity = 1)
 	{
 		// Disable event dispatching while we update the quantities
 		$this->_dispatchEvents = false;
@@ -337,6 +336,15 @@ class Assembler
 		return $this->dispatchEvent();
 	}
 
+	/*
+	 * @see setQuantity
+	 * @deprecated Use `setQuantity()` instead. To be removed.
+	 */
+	public function updateQuantity(Unit $unit, $quantity = 1)
+	{
+		return $this->setQuantity($unit, $quantity);
+	}
+
 	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
 	{
 		$payment            = new Entity\Payment\Payment;
@@ -365,19 +373,21 @@ class Assembler
 	 */
 	public function addAddress(Entity\Address\Address $address)
 	{
-		if (is_null($address->forename)) {
-			$address->forename = $this->_order->user->forename;
+		if ($this->_order->user) {
+			if (is_null($address->forename)) {
+				$address->forename = $this->_order->user->forename;
+			}
+
+			if (is_null($address->surname)) {
+				$address->surname = $this->_order->user->surname;
+			}
+
+			if (is_null($address->title)) {
+				$address->title = $this->_order->user->title;
+			}
 		}
 
-		if (is_null($address->surname)) {
-			$address->surname = $this->_order->user->surname;
-		}
-
-		if (is_null($address->title)) {
-			$address->title = $this->_order->user->title;
-		}
-
-		return $this->replaceEntity('addresses', $address);
+		return $this->addEntity('addresses', $address);
 	}
 
 	/**
