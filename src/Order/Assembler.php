@@ -180,8 +180,6 @@ class Assembler
 	{
 		if ($entity instanceof Entity\EntityInterface) {
 			$this->_prepareEntity($name, $entity);
-
-			$entity = $entity->id;
 		}
 
 		$this->_order->{$name}->remove($entity);
