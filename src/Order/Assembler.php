@@ -336,16 +336,18 @@ class Assembler
 	 */
 	public function addAddress(Entity\Address\Address $address)
 	{
-		if (is_null($address->forename)) {
-			$address->forename = $this->_order->user->forename;
-		}
+		if ($this->_order->user) {
+			if (is_null($address->forename)) {
+				$address->forename = $this->_order->user->forename;
+			}
 
-		if (is_null($address->surname)) {
-			$address->surname = $this->_order->user->surname;
-		}
+			if (is_null($address->surname)) {
+				$address->surname = $this->_order->user->surname;
+			}
 
-		if (is_null($address->title)) {
-			$address->title = $this->_order->user->title;
+			if (is_null($address->title)) {
+				$address->title = $this->_order->user->title;
+			}
 		}
 
 		return $this->addEntity('addresses', $address);
