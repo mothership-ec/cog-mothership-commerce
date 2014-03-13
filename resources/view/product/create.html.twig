@@ -1,8 +1,5 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-{% block main %}
+{% extends 'Message:Mothership:ControlPanel::_templates/cp' %}
+{% block content %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
 </hgroup>
@@ -26,11 +23,11 @@
 				<h2>Variants</h2>
 				<div class="field required">
 					<label for="colour">Colour</label>
-					<input type="hidden" id="colour" style="width: 70%;" tabindex="-1" class="select2-offscreen">
+					<input type="hidden" id="colour" style="width: 70%;" tabindex="-1" placeholder="Colour" class="select2-offscreen">
 				</div>
 				<div class="field required">
 					<label for="colour">Size</label>
-					<input type="hidden" id="size" style="width: 70%;" tabindex="-1" class="select2-offscreen">
+					<input type="hidden" id="size" style="width: 70%;" tabindex="-1" placeholder="Sizes" class="select2-offscreen">
 				</div>
 				<div class="field required">
 					<label for="category">Price</label>
