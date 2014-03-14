@@ -115,7 +115,7 @@ class Create implements DB\TransactionalInterface
 					type           = :type?s
 			', array(
 				'transactionID' => $transaction->id,
-				'recordID'      => $record->getID(),
+				'recordID'      => $record->getRecordID(),
 				'type'          => $record->getRecordType(),
 			));
 		}

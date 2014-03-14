@@ -74,9 +74,9 @@ class Transaction
 	public function addRecord(RecordInterface $record)
 	{
 		foreach ($this->records as $curRec) {
-			if ($curRec->getID() === $record->getID() && $curRec->getRecordType() === $record->getRecordType()) {
+			if ($curRec->getRecordID() === $record->getRecordID() && $curRec->getRecordType() === $record->getRecordType()) {
 				throw new \InvalidArgumentException(
-					sprintf('The record with ID `%s` and record-type `%s` has already been added.', $record->getID(), $record->getRecordType())
+					sprintf('The record with ID `%s` and record-type `%s` has already been added.', $record->getRecordID(), $record->getRecordType())
 				);
 			}
 		}

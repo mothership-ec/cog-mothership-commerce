@@ -8,6 +8,7 @@ use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Order payment creator.

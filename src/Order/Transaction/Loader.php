@@ -194,7 +194,7 @@ class Loader
 		$records = array();
 		foreach($results as $key => $row) {
 			$loader = $this->_getLoader($row->type);
-			$records[$row->record_id] = $loader->getByID($row->record_id);
+			$records[$row->record_id] = $loader->getByRecordID($row->record_id);
 		}
 
 		return $records;
