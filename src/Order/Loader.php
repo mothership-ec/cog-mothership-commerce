@@ -274,9 +274,9 @@ class Loader implements Transaction\RecordLoaderInterface
 				}
 			}
 
-			// Cast integers incase mysqlnd is not installed
+			// Cast integers to integers (for when MySQLnd not installed)
 			$order->id      = (int) $row->id;
-			$order->orderID = (int) $row->orderID;
+			$order->orderID = (int) $row->id;
 
 			// Cast decimals to float
 			$order->conversionRate    = (float) $row->conversionRate;
