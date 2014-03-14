@@ -20,5 +20,5 @@ interface RecordInterface
 	 * Returns id of record
 	 * @return int
 	 */
-	public function getID();
+	public function getRecordID();
 }

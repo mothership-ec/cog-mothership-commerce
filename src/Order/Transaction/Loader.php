@@ -22,6 +22,12 @@ class Loader
 		$this->setRecordLoaders($loaders);
 	}
 
+	/**
+	 * Sets $_includeVoided to true, which will result in the loaded transactions
+	 * to include voided ones.
+	 *
+	 * @return $this for chainability
+	 */
 	public function includeVoided()
 	{
 		$this->_includeVoided = true;
@@ -29,6 +35,11 @@ class Loader
 		return $this;
 	}
 
+	/**
+	 * Sets $_includeVoided to false, which will result in the loaded transactions
+	 * to not include voided transactions.
+	 * @return $this for chainability
+	 */
 	public function excludeVoided()
 	{
 		$this->_includeVoided = false;
@@ -36,6 +47,12 @@ class Loader
 		return $this;
 	}
 
+	/**
+	 * Adds record loader class to $_recordLoaders.
+	 * @param string                $type   Type of record loaded by $loader
+	 * @param RecordLoaderInterface $loader Loader which loads records of type
+	 *                                      $type
+	 */
 	public function addRecordLoader($type, RecordLoaderInterface $loader)
 	{
 		$this->_recordLoaders[$type] = $loader;
@@ -43,13 +60,23 @@ class Loader
 		return $this;
 	}
 
+	/**
+	 * Resets $_recordLoaders and replaces them by the $loaders.
+	 * Uses addRecordLoader() to add the loaders in $loaders.
+	 * @param array[RecordLoaderInterface] $loaders array of loaders
+	 */
 	public function setRecordLoaders(array $loaders)
 	{
+		$this->_recordLoaders = [];
 		foreach($loaders as $type => $loader) {
 			$this->addRecordLoader($type, $loader);
 		}
 	}
 
+	/**
+	 * Returns all transactions
+	 * @return array[Transaction]
+	 */
 	public function getAll()
 	{
 		$result = $this->_query->run('
@@ -62,6 +89,11 @@ class Loader
 		return $this->_load($result->flatten(), true);
 	}
 
+	/**
+	 * Returns all transaction of type $type
+	 * @param  string $type       Type of transactions that should be returned
+	 * @return array[Transaction] All transactions of type $type
+	 */
 	public function getByRecordType($type)
 	{
 		$result = $this->_query->run('
@@ -76,12 +108,25 @@ class Loader
 		return $this->_load($result->flatten(), true);
 	}
 
-
+	/**
+	 * Returns Transaction(s) with id(s) $id
+	 * @param  int|array[int] $id id(s)
+	 * @return Transaction|array[Transaction]|false  transaction(s) or false, if
+	 *                                               id(s) are not found
+	 */
 	public function getByID($id)
 	{
 		return $this->_load($id, false);
 	}
 
+	/**
+	 * Does the actual loading of Transactions using their ids
+	 * @param  int|arrray[int]  $ids                id(s) used for fetching data
+	 * @param  boolean          $alwaysReturnArray  whether result should always
+	 *                                              be array
+	 * @return array[Transaction]|Transaction|false resulting transactions or false
+	 *                                              if none were found
+	 */
 	protected function _load($ids, $alwaysReturnArray = false)
 	{
 		if (!is_array($ids)) {
@@ -125,6 +170,11 @@ class Loader
 		return $alwaysReturnArray || count($return) > 1 ? $return : reset($return);
 	}
 
+	/**
+	 * Loads all records for a given transaction
+	 * @param  Transaction $transaction transaction to get records for
+	 * @return array[Transaction]       All records for $transaction
+	 */
 	protected function _loadRecords(Transaction $transaction)
 	{
 		$results = $this->_query->run('
@@ -150,12 +200,17 @@ class Loader
 		return $records;
 	}
 
+	/**
+	 * Loads all attributes for a given transaction
+	 * @param  Transaction $transaction transaction to get attributes for
+	 * @return array[Transaction]       Array of key-value pairs
+	 */
 	protected function _loadAttributes(Transaction $transaction)
 	{
 		$result = $this->_query->run('
 			SELECT
-				attribute_name,
-				attribute_value
+				name,
+				value
 			FROM
 				transaction_attribute
 			WHERE
@@ -165,10 +220,16 @@ class Loader
 		 return $result->hash('attribute_name', 'attribute_value');
 	}
 
+	/**
+	 * Gets the loader for a given $type
+	 * @param  string                $type Type loader should be returned for
+	 * @return RecordLoaderInterface       Loader for $type
+	 * @throws \LogicException             if no loader exists for $type
+	 */
 	protected function _getLoader($type)
 	{
 		if(!isset($this->_recordLoaders[$type])) {
-			throw new \Exception(sprintf('Cannot load records, because no loader is defined for records of type %s.', $type));
+			throw new \LogicException(sprintf('Cannot load records, because no loader is defined for records of type %s.', $type));
 		}
 
 		return $this->_recordLoaders[$type];

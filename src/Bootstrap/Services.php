@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
+use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
 
 use Message\User\AnonymousUser;
 
@@ -222,7 +223,12 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.payment.create'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Payment\Create($c['db.query'], $c['order.payment.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Payment\Create(
+				$c['db.transaction'],
+				$c['order.payment.loader'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
 		});
 
 		// Order refund entity
@@ -279,7 +285,7 @@ class Services implements ServicesInterface
 		// Available order & item statuses
 		$services['order.statuses'] = function($c) {
 			return new Commerce\Order\Status\Collection(array(
-				new Commerce\Order\Status\Status(OrderStatuses::PENDING,              'Pending'),
+				new Commerce\Order\Status\Status(OrderStatuses::PAYMENT_PENDING,      'Payment Pending'),
 				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,            'Cancelled'),
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,    'Awaiting Dispatch'),
 				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,           'Processing'),
@@ -309,13 +315,11 @@ class Services implements ServicesInterface
 		};
 
 		// Available transaction types
-		// should we use a collection here?
 		$services['order.transaction.types'] = function($c) {
 			return array(
-				'order'               => 'Order',
-				//'return' => 'Return',
-				'contract_initiation' => 'Contract Initiation',
-				'contract_payment'    => 'Contract Payment',
+				TransactionTypes::ORDER               => 'Order',
+				TransactionTypes::CONTRACT_INITIATION => 'Contract Initiation',
+				TransactionTypes::CONTRACT_PAYMENT    => 'Contract Payment',
 			);
 		};
 

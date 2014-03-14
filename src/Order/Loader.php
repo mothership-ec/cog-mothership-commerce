@@ -82,6 +82,18 @@ class Loader implements Transaction\RecordLoaderInterface
 		return $this->_load($id);
 	}
 
+
+	/**
+	 * Alias of getByID for Transaction\RecordLoaderInterface
+	 * @param  int $id record id
+	 * @return Order|array[Order]|false The order, or false if it doesn't exist
+	 */
+	public function getByRecordID($id)
+	{
+		return $this->getByID($id);
+	}
+
+
 	/**
 	 * Get all orders placed by a specific user.
 	 *

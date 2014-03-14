@@ -29,6 +29,10 @@ class Create implements DB\TransactionalInterface
 		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverriden to true
+	 * @param DBTransaction $trans transaction
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
@@ -37,6 +41,16 @@ class Create implements DB\TransactionalInterface
 		return $this;
 	}
 
+	/**
+	 * Creates the transaction.
+	 * If a DB\Transaction has been explicitly set, adds the Transaction to the
+	 * DB\Transaction. Otherwise commits $_query.
+	 *
+	 * @param  Transaction $transaction transaction to be created
+	 * @return Transaction              if transaction wasn't overridden
+	 *                                  re-loaded $transaction, otherwise just
+	 *                                  $transaction
+	 */
 	public function create(Transaction $transaction)
 	{
 		// Set create authorship data if not already set
@@ -48,11 +62,10 @@ class Create implements DB\TransactionalInterface
 		}
 
 		$event = new Event($transaction);
+		$event->setDbTransaction($this->_query);
 
-		$transaction = $this->_eventDispatcher->dispatch(
-			Events::CREATE,
-			$event
-		)->getTransaction();
+		$transaction = $this->_eventDispatcher->dispatch(Events::CREATE, $event)
+			->getTransaction();
 
 		$this->_validate($transaction);
 
@@ -75,7 +88,7 @@ class Create implements DB\TransactionalInterface
 		$this->_createRecords($transaction);
 		$this->_createAttributes($transaction);
 
-		// If the query was not in a transaction, return the re-loaded item
+		// If the query was not in a db transaction, return the re-loaded transaction
 		if (!$this->_transOverriden) {
 			$this->_query->commit();
 
@@ -85,9 +98,13 @@ class Create implements DB\TransactionalInterface
 		return $transaction;
 	}
 
+	/**
+	 * Creates all records for $transaction
+	 * @param  Transaction $transaction transaction
+	 */
 	protected function _createRecords(Transaction $transaction)
 	{
-		foreach($transaction->records as $record)
+		foreach ($transaction->records as $record)
 		{
 			$this->_query->run('
 				INSERT INTO
@@ -105,16 +122,20 @@ class Create implements DB\TransactionalInterface
 
 	}
 
+	/**
+	 * Creates all attributes for $transaction
+	 * @param  Transaction $transaction transaction
+	 */
 	protected function _createAttributes(Transaction $transaction)
 	{
-		foreach($transaction->attributes as $name => $val) {
+		foreach ($transaction->attributes as $name => $val) {
 			$this->_query->run('
 				INSERT INTO
 					transaction_attribute
 				SET
-					transaction_id  = :transactionID?i,
-					attribute_name  = :name?s,
-					attribute_value = :value?s
+					transaction_id = :transactionID?i,
+					name           = :name?s,
+					value          = :value?s
 			', array(
 				'transactionID' => $transaction->id,
 				'name'          => $name,
@@ -123,6 +144,10 @@ class Create implements DB\TransactionalInterface
 		}
 	}
 
+	/**
+	 * Validates $transaction by checking whether it contains records.
+	 * @param  Transaction $transaction transaction
+	 */
 	protected function _validate(Transaction $transaction)
 	{
 		if (count($transaction->records) === 0) {

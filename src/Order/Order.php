@@ -399,7 +399,7 @@ class Order implements Transaction\RecordInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getID()
+	public function getRecordID()
 	{
 		return $this->id;
 	}

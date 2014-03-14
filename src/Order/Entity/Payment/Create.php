@@ -19,17 +19,31 @@ class Create implements DB\TransactionalInterface
 	protected $_query;
 	protected $_loader;
 	protected $_currentUser;
+	protected $_transOverriden = false;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
+	public function __construct(
+		DB\Transaction $query,
+		Loader $loader,
+		DispatcherInterface $eventDispatcher,
+		UserInterface $currentUser
+	)
 	{
-		$this->_query       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_query           = $query;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverriden to true
+	 * @param DBTransaction $trans transaction
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
+		$this->_transOverriden = true;
+
+		return $this;
 	}
 
 	public function create(Payment $payment)
@@ -41,6 +55,14 @@ class Create implements DB\TransactionalInterface
 				$this->_currentUser->id
 			);
 		}
+
+		$event = new Order\Event\EntityEvent($payment->order, $payment);
+		$event->setTransaction($this->_query);
+
+		$payment = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE,
+			$event
+		)->getEntity();
 
 		$result = $this->_query->run('
 			INSERT INTO
@@ -63,10 +85,24 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $payment->reference,
 		));
 
-		if ($this->_query instanceof DB\Transaction) {
-			return $payment;
+
+		$this->_query->setIDVariable('PAYMENT_ID');
+		$payment->id = '@PAYMENT_ID';
+
+		$event = new Order\Event\EntityEvent($payment->order, $payment);
+		$event->setTransaction($this->_query);
+
+		$payment = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE_END,
+			$event
+		)->getEntity();
+
+		if (!$this->_transOverriden) {
+			$this->_query->commit();
+
+			return $this->_loader->getByID($this->_query->getIDVariable('PAYMENT_ID'), $payment->order);
 		}
 
-		return $this->_loader->getByID($result->id(), $payment->order);
+		return $payment;
 	}
 }
