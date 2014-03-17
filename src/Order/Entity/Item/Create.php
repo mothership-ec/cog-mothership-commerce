@@ -118,8 +118,10 @@ class Create implements DB\TransactionalInterface
 			'stockLocation'  => $item->stockLocation->name,
 		));
 
-		$this->_query->setIDVariable('ITEM_ID');
-		$item->id = '@ITEM_ID';
+		$sqlVariable = 'ITEM_ID_' . spl_object_hash($item);
+
+		$this->_query->setIDVariable($sqlVariable);
+		$item->id = '@' . $sqlVariable;
 
 		// Set the initial status, if defined
 		if ($item->status) {
@@ -176,7 +178,7 @@ class Create implements DB\TransactionalInterface
 		if (!$this->_transOverriden) {
 			$this->_query->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable('ITEM_ID'), $item->order);
+			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $item->order);
 		}
 
 		return $item;
