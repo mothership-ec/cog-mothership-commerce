@@ -7,6 +7,9 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 
 use Message\User\UserInterface;
 
+/**
+ * Class used for voiding a transaction
+ */
 class Void
 {
 	protected $_query;
@@ -18,8 +21,17 @@ class Void
 		$this->_user	= $user;
 	}
 
+	/**
+	 * Voids the given transaction
+	 * @param  Transaction $transaction Transaction to be voided
+	 * @return Transaction              $transaction
+	 */
 	public function void(Transaction $transaction)
 	{
+		if ($transaction->isVoided()) {
+			return $transaction;
+		}
+
 		$transaction->void(new DateTimeImmutable(), $this->_user->id);
 
 		$result = $this->_query->run(
@@ -27,7 +39,7 @@ class Void
 				transaction
 			SET
 				voided_at = ?d,
-				voided_by = ?i
+				voided_by = ?in
 			WHERE
 				transaction_id = ?i',
 			array(
@@ -37,6 +49,6 @@ class Void
 			)
 		);
 
-		return $result->affected() ? $transaction : false;
+		return $transaction;
 	}
 }
