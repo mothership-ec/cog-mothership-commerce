@@ -32,7 +32,7 @@ class _1392653226_SetUpTransactions extends Migration
 			  `transaction_id` int(11) unsigned NOT NULL,
 			  `name` varchar(20) NOT NULL DEFAULT '',
 			  `value` varchar(255) NOT NULL DEFAULT '',
-			  PRIMARY KEY (`transaction_id`)
+			  PRIMARY KEY (`transaction_id`,`name`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 	}
