@@ -32,7 +32,7 @@ class MusicProductType implements ProductTypeInterface
 
 	public function getProductDisplayName(Product $product = null)
 	{
-
+		return $product->details->artist . ' - ' . $product->details->title;
 	}
 
 	public function setFields(Factory $factory, Product $product = null)
