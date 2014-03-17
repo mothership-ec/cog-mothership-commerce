@@ -79,8 +79,7 @@ class RecordCollection implements \IteratorAggregate, \Countable
 	public function exists(RecordInterface $record)
 	{
 		foreach ($this->_records as $curRecord) {
-			if ($curRecord->getRecordID() == $record->getRecordID() &&
-				$curRecord->getRecordType() == $record->getRecordType()) {
+			if ($curRecord == $record) {
 				return true;
 			}
 		}
