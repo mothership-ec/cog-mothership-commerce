@@ -23,8 +23,11 @@ class Transaction
 	public $voidedBy;
 	public $type;
 	public $records = array();
-	// necessary for adding additional information to the transaction
-	// from other cogules
+
+	/**
+	 * Additional information for the transaction
+	 * @var array
+	 */
 	public $attributes = array();
 
 	public function __construct()
@@ -39,9 +42,9 @@ class Transaction
 	 *
 	 * @param  DateTimeImmutable|null $datetime The date & time of voiding,
 	 *                                          null to use current date & time
-	 * @param  mixed $user                      The user responsible
+	 * @param  mixed                  $user     The user responsible
 	 *
-	 * @return Authorship                       Returns $this for chainability
+	 * @return Transaction                      Returns $this for chainability
 	 *
 	 * @todo   Move this to own decorator
 	 *
@@ -63,41 +66,51 @@ class Transaction
 
 	/**
 	 * Adds a record to the transaction
-	 * @param RecordInterface $record transaction to be added
-	 * @throws \InvalidArgumentException    If there's already a record with the same ID and
-	 *         								type set on the transaction
+	 * @param  RecordInterface           $record transaction to be added
+	 * @throws \InvalidArgumentException         If there's already a record with
+	 *                                           the same ID and type set on the
+	 *                                           transaction
 	 */
 	public function addRecord(RecordInterface $record)
 	{
-		foreach($this->records as $curRec) {
-			if($curRec->getID() === $record->getID() && $curRec->getRecordType() === $record->getRecordType()) {
+		foreach ($this->records as $curRec) {
+			if ($curRec->getRecordID() === $record->getRecordID() && $curRec->getRecordType() === $record->getRecordType()) {
 				throw new \InvalidArgumentException(
-					sprintf('The record with ID `%s` and record-type `%s` has already been added.', $record->getID(), $record->getRecordType())
+					sprintf('The record with ID `%s` and record-type `%s` has already been added.', $record->getRecordID(), $record->getRecordType())
 				);
 			}
 		}
 
 		$this->records[] = $record;
+
 		return $this;
 	}
 
 	/**
 	 * Allows you to add custom attributes to the transaction.
 	 *
-	 * @param [type] $name  [description]
-	 * @param [type] $value [description]
+	 * @param  string      $name  name of attribute
+	 * @param  mixed       $value value of attribute
+	 * @return Transaction $this for chainability
 	 */
 	public function setAttribute($name, $value)
 	{
 		$this->attributes[$name] = $value;
+
 		return $this;
 	}
 
+	/**
+	 * Removes attribute with name $name
+	 * @param  string      $name name of attribute to be removed
+	 * @return Transaction $this for chainability
+	 */
 	public function removeAttribute($name)
 	{
-		if(!isset($this->attributes[$name])) {
+		if (!isset($this->attributes[$name])) {
 			unset($this->attributes[$name]);
 		}
+
 		return $this;
 	}
 }

@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Transaction;
 
 use Message\Cog\Event\Event as BaseEvent;
+use Message\Cog\DB;
 
 /**
  * Base event for the transaction system. Allows an transaction to be set & get.
@@ -11,7 +12,17 @@ use Message\Cog\Event\Event as BaseEvent;
  */
 class Event extends BaseEvent
 {
+	/**
+	 * Order Transaction
+	 * @var Transaction
+	 */
 	protected $_transaction;
+
+	/**
+	 * Database transaction
+	 * @var DB\Transaction
+	 */
+	protected $_dbTransaction;
 
 	/**
 	 * Constructor.
@@ -26,7 +37,7 @@ class Event extends BaseEvent
 	/**
 	 * Get the transaction relating to this event.
 	 *
-	 * @return Order
+	 * @return Transaction transaction relating to this event
 	 */
 	public function getTransaction()
 	{
@@ -35,11 +46,34 @@ class Event extends BaseEvent
 
 	/**
 	 * Set the transaction relating to this event.
-	 *
-	 * @param Transaction $transaction
+	 * @param  Transaction $transaction transaction
+	 * @return Event                    $this for chainability
 	 */
 	public function setTransaction(Transaction $transaction)
 	{
 		$this->_transaction = $transaction;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the database transaction
+	 * @return DB\Transaction database transaction
+	 */
+	public function getDbTransaction(DB\Transaction $transaction)
+	{
+		return $this->_dbTransaction;
+	}
+
+	/**
+	 * Sets the database transaction
+	 * @param  DB\Transaction $dbTransaction Database transaction
+	 * @return Event                         $this for chainability
+	 */
+	public function setDbTransaction(DB\Transaction $dbTransaction)
+	{
+		$this->_dbTransaction = $dbTransaction;
+
+		return $this;
 	}
 }

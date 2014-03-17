@@ -32,6 +32,16 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	}
 
 	/**
+	 * Alias of getByID for Order\Transaction\RecordLoaderInterface
+	 * @param  int $id record id
+	 * @return Item|false The item, or false if it doesn't exist
+	 */
+	public function getByRecordID($id)
+	{
+		return $this->getByID($id);
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function getByOrder(Order\Order $order)

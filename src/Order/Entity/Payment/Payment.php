@@ -56,7 +56,7 @@ class Payment implements EntityInterface, RecordInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getID()
+	public function getRecordID()
 	{
 		return $this->id;
 	}
