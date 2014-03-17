@@ -60,7 +60,7 @@ class Event extends BaseEvent
 	 * Gets the database transaction
 	 * @return DB\Transaction database transaction
 	 */
-	public function getDbTransaction(DB\Transaction $transaction)
+	public function getDbTransaction()
 	{
 		return $this->_dbTransaction;
 	}
