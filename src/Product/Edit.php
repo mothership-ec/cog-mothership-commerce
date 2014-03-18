@@ -154,9 +154,11 @@ class Edit
 		 	SET
 				updated_at   = :updatedAt?d,
 				updated_by   = :updatedBy?in,
+				brand        = :brand?sn,
 				name         = :name?s,
 				tax_rate     = :taxRate?sn,
 				tax_strategy = :taxStrategy?s,
+				supplier_ref = :supplierRef?sn
 				weight_grams = :weightGrams?in,
 				category     = :category?sn
 			WHERE
@@ -165,9 +167,11 @@ class Edit
 				'productID'         => $this->_product->id,
 				'updatedAt'         => $this->_product->authorship->updatedAt(),
 				'updatedBy'         => $this->_product->authorship->updatedBy()->id,
+				'brand'             => $this->_product->brand,
 				'name'              => $this->_product->name,
 				'taxRate'           => $this->_product->taxRate,
 				'taxStrategy'       => $this->_product->taxStrategy,
+				'supplierRef'       => $this->_product->supplierRef,
 				'weightGrams'       => $this->_product->weight,
 				'category'          => $this->_product->category,
 		));

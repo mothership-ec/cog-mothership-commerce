@@ -95,6 +95,7 @@ class Item implements EntityInterface
 		$this->sku             = $unit->sku;
 		$this->barcode         = $unit->barcode;
 		$this->options         = implode($unit->options, ', ');
+		$this->brand           = $unit->product->brand;
 		$this->weight          = $unit->weight;
 
 		return $this;

@@ -36,8 +36,14 @@ class ProductAttributes extends Handler
 		$this->add('category', 'datalist', $this->_trans('ms.commerce.product.attributes.category.label'), array(
 			'choices'	=> $this->_getCategories(),
 			'data'		=> $product->category,
-			'attr'		=> array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
+			'attr'		=> array('data-help-key' => 'ms.commerce.product.attributes.category.help')
 		));
+		$this->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
+			'data' => $product->brand,
+			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
+		))
+			->val()
+			->maxLength(255);
 		$this->add('description', 'textarea', $this->_trans('ms.commerce.product.attributes.description.label'), array(
 			'data' => $product->description,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
@@ -54,6 +60,13 @@ class ProductAttributes extends Handler
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
 		))
 			->val()
+			->optional();
+		$this->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
+			'data' => $product->supplierRef,
+			'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
+		))
+			->val()
+			->maxLength(255)
 			->optional();
 		$this->add('weight_grams', 'number', $this->_trans('ms.commerce.product.details.weight-grams.label'), array(
 			'data' => $product->weight,

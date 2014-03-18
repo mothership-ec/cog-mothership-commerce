@@ -9,6 +9,7 @@ class Product
 {
 	public $id;
 	public $catalogueID;
+	public $brand;
 
 	public $authorship;
 

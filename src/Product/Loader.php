@@ -138,11 +138,13 @@ class Loader
 				product.updated_by   AS updatedBy,
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
+				product.brand        AS brand.
 				product.type		 AS type,
 				product.name         AS name,
 				product.category     AS category,
 				product.tax_strategy AS taxStrategy,
 				product.tax_rate     AS taxRate,
+				product.supplier_ref AS supplierRef,
 				product.weight_grams AS weight,
 
 				product_info.display_name      AS displayName,
