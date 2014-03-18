@@ -1,1 +1,3 @@
 default-tax-strategy: inclusive
+search:
+	min-term-length: 3
