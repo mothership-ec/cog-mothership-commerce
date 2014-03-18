@@ -28,32 +28,32 @@ class _1391093236_ProductType extends Migration
 				deleted_by
 		");
 
-		$this->run("
-			INSERT INTO
-				product_detail
-				(
-					product_id,
-					name,
-					value,
-					value_int.
-					locale
-				)
-				SELECT
-					p.product_id,
-					'brand',
-					p.brand,
-					1,
-					'EN'
-				FROM
-					product AS p
-		");
-
-		$this->run("
-			ALTER TABLE
-				product
-			DROP
-				brand
-		");
+//		$this->run("
+//			INSERT INTO
+//				product_detail
+//				(
+//					product_id,
+//					name,
+//					value,
+//					value_int.
+//					locale
+//				)
+//				SELECT
+//					p.product_id,
+//					'brand',
+//					p.brand,
+//					1,
+//					'EN'
+//				FROM
+//					product AS p
+//		");
+//
+//		$this->run("
+//			ALTER TABLE
+//				product
+//			DROP
+//				brand
+//		");
 
 		$this->run("
 			INSERT INTO
@@ -80,33 +80,6 @@ class _1391093236_ProductType extends Migration
 				product
 			DROP
 				year
-		");
-
-		$this->run("
-			INSERT INTO
-				product_detail
-				(
-					product_id,
-					name,
-					value,
-					value_int,
-					locale
-				)
-				SELECT
-					p.product_id,
-					'supplier_ref',
-					p.supplier_ref,
-					1,
-					'EN'
-				FROM
-					product AS p
-		");
-
-		$this->run("
-			ALTER TABLE
-				product
-			DROP
-				supplier_ref
 		");
 
 		$this->run("
@@ -396,35 +369,6 @@ class _1391093236_ProductType extends Migration
 			ALTER TABLE
 				product
 			ADD
-				supplier_ref VARCHAR(255)
-			AFTER
-				tax_strategy
-		");
-
-		$this->run("
-			INSERT INTO
-				product
-				(
-					product_id
-				)
-				SELECT
-					d.product_id
-				FROM
-					product_detail AS d
-				JOIN
-					product
-				USING
-					(product_id)
-				WHERE
-					d.name = 'supplier_ref'
-			ON DUPLICATE KEY UPDATE
-				supplier_ref = d.value
-		");
-
-		$this->run("
-			ALTER TABLE
-				product
-			ADD
 				year YEAR(4)
 			AFTER
 				product_id
@@ -448,35 +392,6 @@ class _1391093236_ProductType extends Migration
 					d.name = 'year'
 			ON DUPLICATE KEY UPDATE
 				year = d.value
-		");
-
-		$this->run("
-			ALTER TABLE
-				product
-			ADD
-				brand VARCHAR(255)
-			AFTER
-				type
-		");
-
-		$this->run("
-			INSERT INTO
-				product
-				(
-					product_id
-				)
-				SELECT
-					d.product_id
-				FROM
-					product_detail AS d
-				JOIN
-					product
-				USING
-					(product_id)
-				WHERE
-					d.name = 'brand'
-			ON DUPLICATE KEY UPDATE
-				brand = d.value
 		");
 
 		$this->run("
