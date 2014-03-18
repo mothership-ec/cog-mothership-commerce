@@ -26,6 +26,7 @@ class Transaction
 
 	/**
 	 * Additional information for the transaction
+	 *
 	 * @var array
 	 */
 	public $attributes = array();
@@ -61,6 +62,11 @@ class Transaction
 		return $this;
 	}
 
+	/**
+	 * Whether transaction has already been voided or not.
+	 *
+	 * @return boolean Whether transaction has been voided
+	 */
 	public function isVoided()
 	{
 		return ($this->voidedAt !== null);
@@ -71,6 +77,7 @@ class Transaction
 	 *
 	 * @param  string      $name  name of attribute
 	 * @param  mixed       $value value of attribute
+	 *
 	 * @return Transaction $this for chainability
 	 */
 	public function setAttribute($name, $value)
@@ -82,7 +89,9 @@ class Transaction
 
 	/**
 	 * Removes attribute with name $name
+	 *
 	 * @param  string      $name name of attribute to be removed
+	 *
 	 * @return Transaction $this for chainability
 	 */
 	public function removeAttribute($name)

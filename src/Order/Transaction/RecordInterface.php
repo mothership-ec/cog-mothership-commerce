@@ -12,12 +12,14 @@ interface RecordInterface
 
 	/**
 	 * Returns type of record
+	 *
 	 * @return string type
 	 */
 	public function getRecordType();
 
 	/**
 	 * Returns id of record
+	 *
 	 * @return int
 	 */
 	public function getRecordID();

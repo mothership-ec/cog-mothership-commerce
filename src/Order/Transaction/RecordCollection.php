@@ -13,6 +13,7 @@ class RecordCollection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Constructor adding initial records.
+	 *
 	 * @param array $records An array of records to add
 	 */
 	public function __construct(array $records = array())
@@ -24,6 +25,7 @@ class RecordCollection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Adds a record to the collection.
+	 *
 	 * @param RecordInterface $record Record to be added
 	 */
 	public function add(RecordInterface $record)
@@ -45,7 +47,9 @@ class RecordCollection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Returns all elements of the collection filtered by type.
+	 *
 	 * @param  string $type           Type to be searched for
+	 *
 	 * @return array[RecordInterface] Array of records of type $type
 	 */
 	public function getByType($type)
@@ -73,7 +77,9 @@ class RecordCollection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Check whether $record already exists in collection
+	 *
 	 * @param  RecordInterface $record Record to be checked
+	 *
 	 * @return boolean                 true if it exists
 	 */
 	public function exists(RecordInterface $record)
@@ -89,6 +95,7 @@ class RecordCollection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Get the number of records registered on this collection.
+	 *
 	 * @return int The number of records registered
 	 */
 	public function count()

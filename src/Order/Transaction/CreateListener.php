@@ -35,6 +35,7 @@ class CreateListener extends BaseListener implements SubscriberInterface
 
 	/**
 	 * Creates a transaction with records for the order, all items and payments
+	 *
 	 * @param  Event\Event $event event carrying information about order
 	 */
 	public function createOrderTransaction(Event\TransactionalEvent $event)

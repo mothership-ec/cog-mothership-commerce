@@ -23,13 +23,16 @@ class Void
 
 	/**
 	 * Voids the given transaction
-	 * @param  Transaction $transaction Transaction to be voided
-	 * @return Transaction              $transaction
+	 *
+	 * @param  Transaction               $transaction Transaction to be voided
+	 * @throws \InvalidArgumentException If transaction is already voided
+	 *
+	 * @return Transaction                            $transaction
 	 */
 	public function void(Transaction $transaction)
 	{
 		if ($transaction->isVoided()) {
-			return $transaction;
+			throw new \InvalidArgumentException('Transaction has already been voided.');
 		}
 
 		$transaction->void(new DateTimeImmutable(), $this->_user->id);
