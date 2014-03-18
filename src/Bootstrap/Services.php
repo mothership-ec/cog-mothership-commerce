@@ -402,7 +402,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.category.loader'] = $services->factory(function($c) {
-			return new Commerce\Product\CategoryLoader($c['db.query']);
+			return new Commerce\Product\CategoryLoader($c['db.query'], $c['product.loader']);
 		});
 
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
