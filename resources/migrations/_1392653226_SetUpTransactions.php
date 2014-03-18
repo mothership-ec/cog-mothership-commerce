@@ -10,12 +10,12 @@ class _1392653226_SetUpTransactions extends Migration
 			CREATE TABLE `transaction` (
 			  `transaction_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `type` varchar(255) NOT NULL DEFAULT '',
-			  `created_at` int(11) NOT NULL,
-			  `created_by` int(11) DEFAULT NULL,
-			  `voided_at` int(11) DEFAULT NULL,
-			  `voided_by` int(11) DEFAULT NULL,
+			  `created_at` int(11) unsigned NOT NULL,
+			  `created_by` int(11) unsigned DEFAULT NULL,
+			  `voided_at` int(11) unsigned DEFAULT NULL,
+			  `voided_by` int(11) unsigned DEFAULT NULL,
 			  PRIMARY KEY (`transaction_id`)
-			) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+			) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 		");
 
 		$this->run("
@@ -30,7 +30,7 @@ class _1392653226_SetUpTransactions extends Migration
 		$this->run("
 			CREATE TABLE `transaction_attribute` (
 			  `transaction_id` int(11) unsigned NOT NULL,
-			  `name` varchar(20) NOT NULL DEFAULT '',
+			  `name` varchar(255) NOT NULL DEFAULT '',
 			  `value` varchar(255) NOT NULL DEFAULT '',
 			  PRIMARY KEY (`transaction_id`,`name`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
