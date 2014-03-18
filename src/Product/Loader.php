@@ -138,7 +138,7 @@ class Loader
 				product.updated_by   AS updatedBy,
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
-				product.brand        AS brand.
+				product.brand        AS brand,
 				product.type		 AS type,
 				product.name         AS name,
 				product.category     AS category,

@@ -38,12 +38,14 @@ class ProductAttributes extends Handler
 			'data'		=> $product->category,
 			'attr'		=> array('data-help-key' => 'ms.commerce.product.attributes.category.help')
 		));
-		$this->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
-			'data' => $product->brand,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
+		$this->add('brand', 'datalist', $this->_trans('ms.commerce.product.attributes.brand.label'), array(
+			'data'    => $product->brand,
+			'choices' => $this->_getBrands(),
+			'attr'    => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
 		))
 			->val()
-			->maxLength(255);
+			->maxLength(255)
+			->optional();
 		$this->add('description', 'textarea', $this->_trans('ms.commerce.product.attributes.description.label'), array(
 			'data' => $product->description,
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
@@ -61,7 +63,7 @@ class ProductAttributes extends Handler
 		))
 			->val()
 			->optional();
-		$this->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
+		$this->add('supplier_ref', 'text', $this->_trans('ms.commerce.product.details.supplier-ref.label'), array(
 			'data' => $product->supplierRef,
 			'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
 		))
@@ -112,5 +114,18 @@ class ProductAttributes extends Handler
 	protected function _getCategories()
 	{
 		return $this->_container['product.category.loader']->getCategories();
+	}
+
+
+	protected function _getBrands()
+	{
+		$result	= $this->_container['db.query']->run("
+			SELECT DISTINCT
+				brand
+			FROM
+				product
+		");
+
+		return $result->flatten();
 	}
 }

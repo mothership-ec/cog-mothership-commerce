@@ -32,10 +32,6 @@ class ApparelProductType implements ProductTypeInterface
 
 	public function setFields(Factory $factory)
 	{
-		$factory->add($factory->getField('datalist', 'brand', 'Brand')->setOptions([
-			'choices' => $this->_getBrands(),
-		]));
-
 		$factory->add($factory->getField('text', 'year', 'Year'))
 			->val()->optional();
 
@@ -54,9 +50,6 @@ class ApparelProductType implements ProductTypeInterface
 
 		$factory->add($factory->getField('richtext', 'sizing', 'Sizing'))
 			->val()->optional();
-
-		$factory->add($factory->getField('text', 'supplier_ref', 'Supplier reference'))
-			->val()->optional();
 	}
 
 	public function getProductDisplayName(Product $product = null)
@@ -64,21 +57,6 @@ class ApparelProductType implements ProductTypeInterface
 		return $product->details->brand . ' - ' . $product->name;
 	}
 
-	protected function _getBrands()
-	{
-		$result	= $this->_query->run("
-			SELECT DISTINCT
-				value
-			FROM
-				product_detail
-			WHERE
-				name = :brand?s
-		", array(
-			'brand'  => 'brand',
-		));
-
-		return $result->flatten();
-	}
 
 	protected function _getSeasons()
 	{
