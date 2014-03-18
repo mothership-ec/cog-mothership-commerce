@@ -158,7 +158,7 @@ class Edit
 				name         = :name?s,
 				tax_rate     = :taxRate?sn,
 				tax_strategy = :taxStrategy?s,
-				supplier_ref = :supplierRef?sn
+				supplier_ref = :supplierRef?sn,
 				weight_grams = :weightGrams?in,
 				category     = :category?sn
 			WHERE

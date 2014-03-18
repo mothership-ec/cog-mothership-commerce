@@ -48,6 +48,7 @@ class Create
 				product.weight_grams	= ?i,
 				product.tax_rate		= ?f,
 				product.tax_strategy	= ?s,
+				product.supplier_ref    = ?s,
 				product.created_at		= ?d,
 				product.created_by		= ?i',
 			array(
@@ -56,6 +57,7 @@ class Create
 				$product->weight,
 				$product->taxRate,
 				$this->_defaultTaxStrategy,
+				$product->supplierRef,
 				$product->authorship->createdAt(),
 				$product->authorship->createdBy()->id
 			)
