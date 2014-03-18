@@ -69,6 +69,11 @@ class Image implements ResizableInterface
 		}
 	}
 
+	public function __isset($key)
+	{
+		return ('file' === $key);
+	}
+
 	public function __sleep()
 	{
 		return array(
