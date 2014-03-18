@@ -401,6 +401,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		});
 
+		$services['product.category.loader'] = $services->factory(function($c) {
+			return new Commerce\Product\CategoryLoader($c['db.query']);
+		});
+
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
