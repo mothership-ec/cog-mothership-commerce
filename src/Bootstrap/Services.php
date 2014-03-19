@@ -373,6 +373,14 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$services['product.searcher'] = $services->factory(function($c) {
+			return new Commerce\Product\Searcher(
+				$c['db.query'],
+				$c['product.loader'],
+				$c['cfg']->product->search->minTermLength
+			);
+		});
+
 		$services['product.create'] = $services->factory(function($c) {
 			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
 
@@ -431,7 +439,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.category.loader'] = $services->factory(function($c) {
-			return new Commerce\Product\CategoryLoader($c['db.query'], $c['product.loader']);
+			return new Commerce\Product\CategoryLoader($c['db.query']);
 		});
 
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
