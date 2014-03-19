@@ -14,12 +14,14 @@ class Event extends BaseEvent
 {
 	/**
 	 * Order Transaction
+	 *
 	 * @var Transaction
 	 */
 	protected $_transaction;
 
 	/**
 	 * Database transaction
+	 *
 	 * @var DB\Transaction
 	 */
 	protected $_dbTransaction;
@@ -46,7 +48,9 @@ class Event extends BaseEvent
 
 	/**
 	 * Set the transaction relating to this event.
+	 *
 	 * @param  Transaction $transaction transaction
+	 *
 	 * @return Event                    $this for chainability
 	 */
 	public function setTransaction(Transaction $transaction)
@@ -58,6 +62,7 @@ class Event extends BaseEvent
 
 	/**
 	 * Gets the database transaction
+	 *
 	 * @return DB\Transaction database transaction
 	 */
 	public function getDbTransaction()
@@ -67,7 +72,9 @@ class Event extends BaseEvent
 
 	/**
 	 * Sets the database transaction
+	 *
 	 * @param  DB\Transaction $dbTransaction Database transaction
+	 *
 	 * @return Event                         $this for chainability
 	 */
 	public function setDbTransaction(DB\Transaction $dbTransaction)
