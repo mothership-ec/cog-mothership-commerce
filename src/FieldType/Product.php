@@ -36,11 +36,7 @@ class Product extends Field implements ContainerAwareInterface
 
 	public function getFormField(Handler $form)
 	{
-		$form->add($this->getName(), 'choice', $this->getLabel(), array(
-			'attr'          => array('data-help-key' => $this->_getHelpKeys()),
-			'choices'       => $this->_getChoices(),
-			'empty_value'   => 'Please select a product...',
-		));
+		$form->add($this->getName(), 'choice', $this->getLabel(), $this->_getOptions());
 	}
 
 	public function getProduct()
@@ -52,10 +48,15 @@ class Product extends Field implements ContainerAwareInterface
 		return $this->_product;
 	}
 
-	// public function getValue()
-	// {
-	// 	return $this->getProduct();
-	// }
+	protected function _getOptions()
+	{
+		$defaults = [
+			'choices'       => $this->_getChoices(),
+			'empty_value'   => 'Please select a product...',
+		];
+
+		return array_merge($defaults, $this->getFieldOptions());
+	}
 
 	protected function _getChoices()
 	{

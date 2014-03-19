@@ -35,7 +35,7 @@ class ApparelProductType implements ProductTypeInterface
 		$factory->add($factory->getField('text', 'year', 'Year'))
 			->val()->optional();
 
-		$factory->add($factory->getField('datalist', 'season', 'Season')->setOptions([
+		$factory->add($factory->getField('datalist', 'season', 'Season')->setFieldOptions([
 			'choices' => $this->_getSeasons()
 		]))->val()->optional();
 

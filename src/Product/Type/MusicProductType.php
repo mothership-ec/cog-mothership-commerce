@@ -37,16 +37,20 @@ class MusicProductType implements ProductTypeInterface
 
 	public function setFields(Factory $factory, Product $product = null)
 	{
-		$factory->add($factory->getField('datalist', 'artist', 'Artist')->setOptions(array(
+		$factory->add($factory->getField('datalist', 'artist', 'Artist')->setFieldOptions(array(
 			'choices'	=> $this->_getArtists()
-		)));
+		)))
+			->val()
+			->optional();
 		$factory->add($factory->getField('text', 'title', 'Title'));
-		$factory->add($factory->getField('datalist', 'label', 'Label')->setOptions(array(
+		$factory->add($factory->getField('datalist', 'label', 'Label')->setFieldOptions(array(
 			'choices'	=> $this->_getLabels()
 		)))
 			->val()
 			->optional();
-		$factory->add($factory->getField('date', 'releaseDate', 'Release date'));
+		$factory->add($factory->getField('date', 'releaseDate', 'Release date'))
+			->val()
+			->optional();
 	}
 
 	protected function _getArtists()

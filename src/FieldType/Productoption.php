@@ -40,9 +40,8 @@ class Productoption extends Field\MultipleValueField implements ContainerAwareIn
 			'value' => array_combine($values, $values),
 		));
 
-		$form->add($this->getName(), $field, $this->getLabel(), array(
-			'attr' => array('data-help-key' => $this->_getHelpKeys()),
-		))->val()->optional();
+		$form->add($this->getName(), $field, $this->getLabel(), $this->getFieldOptions())
+			->val()->optional();
 	}
 
 	/**
