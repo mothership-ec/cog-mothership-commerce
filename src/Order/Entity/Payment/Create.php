@@ -52,7 +52,7 @@ class Create implements DB\TransactionalInterface
 				created_by = :createdBy?in,
 				method     = :method?sn,
 				amount     = :amount?f,
-				change     = :change?fn,
+				`change`   = :change?fn,
 				reference  = :reference?sn
 		', array(
 			'orderID'     => $payment->order->id,
