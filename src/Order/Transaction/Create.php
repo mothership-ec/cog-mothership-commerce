@@ -31,6 +31,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Sets transaction and sets $_transOverriden to true
+	 *
 	 * @param DBTransaction $trans transaction
 	 */
 	public function setTransaction(DB\Transaction $trans)
@@ -47,6 +48,7 @@ class Create implements DB\TransactionalInterface
 	 * DB\Transaction. Otherwise commits $_query.
 	 *
 	 * @param  Transaction $transaction transaction to be created
+	 *
 	 * @return Transaction              if transaction wasn't overridden
 	 *                                  re-loaded $transaction, otherwise just
 	 *                                  $transaction
@@ -100,6 +102,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Creates all records for $transaction
+	 *
 	 * @param  Transaction $transaction transaction
 	 */
 	protected function _createRecords(Transaction $transaction)
@@ -124,6 +127,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Creates all attributes for $transaction
+	 *
 	 * @param  Transaction $transaction transaction
 	 */
 	protected function _createAttributes(Transaction $transaction)
@@ -146,6 +150,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Validates $transaction by checking whether it contains records.
+	 *
 	 * @param  Transaction $transaction transaction
 	 */
 	protected function _validate(Transaction $transaction)

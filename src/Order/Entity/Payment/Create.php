@@ -88,9 +88,10 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $payment->reference,
 		));
 
+		$sqlVariable = 'PAYMENT_ID_' . spl_object_hash($payment);
 
-		$this->_query->setIDVariable('PAYMENT_ID');
-		$payment->id = '@PAYMENT_ID';
+		$this->_query->setIDVariable($sqlVariable);
+		$payment->id = '@' . $sqlVariable;
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
 		$event->setTransaction($this->_query);
@@ -103,7 +104,7 @@ class Create implements DB\TransactionalInterface
 		if (!$this->_transOverriden) {
 			$this->_query->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable('PAYMENT_ID'), $payment->order);
+			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $payment->order);
 		}
 
 		return $payment;

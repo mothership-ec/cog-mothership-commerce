@@ -22,10 +22,11 @@ class Transaction
 	public $voidedAt;
 	public $voidedBy;
 	public $type;
-	public $records = array();
+	public $records;
 
 	/**
 	 * Additional information for the transaction
+	 *
 	 * @var array
 	 */
 	public $attributes = array();
@@ -35,6 +36,8 @@ class Transaction
 		$this->authorship = new Authorship;
 		$this->authorship->disableUpdate();
 		$this->authorship->disableDelete();
+
+		$this->records = new RecordCollection;
 	}
 
 	/**
@@ -59,31 +62,14 @@ class Transaction
 		return $this;
 	}
 
+	/**
+	 * Whether transaction has already been voided or not.
+	 *
+	 * @return boolean Whether transaction has been voided
+	 */
 	public function isVoided()
 	{
 		return ($this->voidedAt !== null);
-	}
-
-	/**
-	 * Adds a record to the transaction
-	 * @param  RecordInterface           $record transaction to be added
-	 * @throws \InvalidArgumentException         If there's already a record with
-	 *                                           the same ID and type set on the
-	 *                                           transaction
-	 */
-	public function addRecord(RecordInterface $record)
-	{
-		foreach ($this->records as $curRec) {
-			if ($curRec->getRecordID() === $record->getRecordID() && $curRec->getRecordType() === $record->getRecordType()) {
-				throw new \InvalidArgumentException(
-					sprintf('The record with ID `%s` and record-type `%s` has already been added.', $record->getRecordID(), $record->getRecordType())
-				);
-			}
-		}
-
-		$this->records[] = $record;
-
-		return $this;
 	}
 
 	/**
@@ -91,6 +77,7 @@ class Transaction
 	 *
 	 * @param  string      $name  name of attribute
 	 * @param  mixed       $value value of attribute
+	 *
 	 * @return Transaction $this for chainability
 	 */
 	public function setAttribute($name, $value)
@@ -102,7 +89,9 @@ class Transaction
 
 	/**
 	 * Removes attribute with name $name
+	 *
 	 * @param  string      $name name of attribute to be removed
+	 *
 	 * @return Transaction $this for chainability
 	 */
 	public function removeAttribute($name)

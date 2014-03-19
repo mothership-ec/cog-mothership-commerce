@@ -11,6 +11,7 @@ interface RecordLoaderInterface
 {
 	/**
 	 * Returns record by its ID
+	 *
 	 * @return RecordInterface
 	 */
 	public function getByRecordID($id);

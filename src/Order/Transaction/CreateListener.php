@@ -35,6 +35,7 @@ class CreateListener extends BaseListener implements SubscriberInterface
 
 	/**
 	 * Creates a transaction with records for the order, all items and payments
+	 *
 	 * @param  Event\Event $event event carrying information about order
 	 */
 	public function createOrderTransaction(Event\TransactionalEvent $event)
@@ -44,18 +45,18 @@ class CreateListener extends BaseListener implements SubscriberInterface
 		if ($order->status->code >= Statuses::AWAITING_DISPATCH || $order->status->code === Statuses::PAYMENT_PENDING) {
 			$transaction = new Transaction;
 
-			$transaction->addRecord($order);
+			$transaction->records->add($order);
 
 			foreach ($order->items as $item) {
-				$transaction->addRecord($item);
+				$transaction->records->add($item);
 			}
 
 			foreach ($order->payments as $payment) {
-				$transaction->addRecord($payment);
+				$transaction->records->add($payment);
 			}
 
 			$transaction->type =
-				($order->status->code === Statuses::PAYMENT_PENDING ? Types::CONTRACT_INITIAITION : Types::ORDER);
+				($order->status->code === Statuses::PAYMENT_PENDING ? Types::CONTRACT_INITIATION : Types::ORDER);
 
 			$this->get('order.transaction.create')
 				->setTransaction($event->getTransaction())
@@ -82,7 +83,7 @@ class CreateListener extends BaseListener implements SubscriberInterface
 
 			$transaction = new Transaction;
 
-			$transaction->addRecord($payment);
+			$transaction->records->add($payment);
 			$transaction->type = Types::CONTRACT_PAYMENT;
 
 			$this->get('order.transaction.create')
