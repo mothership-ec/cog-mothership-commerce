@@ -23,6 +23,7 @@ class Payment implements EntityInterface, RecordInterface
 	public $return;
 	public $method;
 	public $amount;
+	public $change;
 	public $reference;
 
 	public function __construct()
@@ -32,6 +33,17 @@ class Payment implements EntityInterface, RecordInterface
 		$this->authorship
 			->disableUpdate()
 			->disableDelete();
+	}
+
+	/**
+	 * Get the amount tendered for this transaction. This is the actual amount
+	 * given to the merchant with the payment (amount + change).
+	 *
+	 * @return float
+	 */
+	public function getTenderedAmount()
+	{
+		return $this->amount + ($this->change ?: 0);
 	}
 
 	public function getCustomerFacingReference()
