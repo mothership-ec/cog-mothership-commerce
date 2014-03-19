@@ -19,7 +19,6 @@ class Collection extends BaseCollection
 		return $return;
 	}
 
-
 	public function removeByCode($code)
 	{
 		foreach ($this->_items as $key => $item) {

@@ -1,19 +1,31 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Basket;
+namespace Message\Mothership\Commerce\Order\Basket\EventListener;
+
+use Message\Mothership\Ecommerce;
+
+use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Event\EventListener as BaseListener;
+use Message\Cog\HTTP\Cookie;
+use Message\Cog\Event\Event as BaseEvent;
 
 use Symfony\Component\HttpKernel\Event;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-use Message\Cog\Event\SubscriberInterface;
-use Message\Cog\Event\EventListener as BaseListener;
-use Message\Cog\HTTP\Cookie;
-use Message\Mothership\Ecommerce;
-use Message\Cog\Event\Event as BaseEvent;
-
-class EventListener extends BaseListener implements SubscriberInterface
+/**
+ * Event listener class for handling the persistence functionality of customer
+ * baskets.
+ *
+ * There are listeners to retrieve the basket from the database based on the
+ * customer's cookie; save any changes back to the database; and clear the saved
+ * basket data when the customer clears their basket.
+ */
+class PersistenceListener extends BaseListener implements SubscriberInterface
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	static public function getSubscribedEvents()
 	{
 		return array(

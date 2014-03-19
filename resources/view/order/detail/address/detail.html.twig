@@ -3,12 +3,14 @@
 	<div class="content">
 		<dl class="order-details">
 			<dt>{{ 'ms.commerce.order.address.name'|trans }}</dt>
-				{% if order %}
+				{% if order.user %}
 				<dd><a href="{{ url('ms.cp.user.admin.detail.edit', {'userID': order.user.id }) }}">
 					{{ address.title }} {{ address.forename }} {{ address.surname }}
 				</a></dd>
+				{% elseif user %}
+					<dd>{{ user.title }} {{ user.forename }} {{ user.surname }}</dd>
 				{% else %}
-				<dd>{{ user.title }} {{ user.forename }} {{ user.surname }}</dd>
+					<dd><em>Unknown</em></dd>
 				{% endif %}
 			{% for key, line in address.lines %}
 				{% if not line is empty %}
