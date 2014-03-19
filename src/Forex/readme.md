@@ -7,17 +7,17 @@ Configuration
 ```php
 // app/my_project/commerce/src/MyProject/Commerce/Bootstrap/Services.php
 
-$services['forex'] = $services->share(function($c) {
+$services['forex'] = function($c) {
 	return new Commerce\Forex\Forex(
 		$c['db.query'],                   // DB query
 		'GBP',                            // Base currency
 		array('GBP', 'USD', 'EUR', 'JPY') // Available currencies
 	);
-});
+};
 
-$services['forex.feed'] = $services->share(function($c) {
+$services['forex.feed'] = function($c) {
 	return new Commerce\Forex\Feeds\ECB;
-});
+};
 ```
 
 Usage

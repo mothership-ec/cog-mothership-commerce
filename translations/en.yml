@@ -5,7 +5,7 @@ ms.commerce:
         label: Please select an option...
       button: Add to basket
     button:
-      save: Save product
+      save: Save changes
       create: Create product
       sku: Add SKU
     attributes:
@@ -46,7 +46,7 @@ ms.commerce:
       retail:
         label: Retail Price
         label-sans: Retail
-        help: The price customers will pay on youru website.
+        help: The price customers will pay on your website.
       cost:
         label: Cost Price
         label-sans: Cost
@@ -110,6 +110,7 @@ ms.commerce:
           label: Option Value
           help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
     units:
+      empty: No units have been added yet.
       sku:
         label: SKU
         placeholder: SKU
@@ -137,6 +138,8 @@ ms.commerce:
         button:
           create: Add unit
     stock:
+      empty: No stock has been moved yet.
+      units-empty: To control stock, you first have to add units.
       page-title: Stock Movements
       reason:
         label: Reason
@@ -159,10 +162,10 @@ ms.commerce:
     order:
       none: There are no orders to view.
 
-      all-orders-title: All Orders
-      shipped-orders-title: Shipped Orders
+      all-orders-title: All orders
+      shipped-orders-title: Shipped orders
       overview-title: Overview
-      summary-title: Order Summary
+      summary-title: Order summary
       detail-title: Order orderID
 
       orderID: Order orderID
@@ -230,7 +233,7 @@ ms.commerce:
 
       create:
         title: Add note
-        button: Add note to the order
+        button: Create note
         notify: Notify the customer
 
     metadata:

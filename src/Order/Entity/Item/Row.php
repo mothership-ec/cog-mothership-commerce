@@ -144,6 +144,16 @@ class Row implements \IteratorAggregate, \Countable
 	}
 
 	/**
+	 * Get all rows.
+	 *
+	 * @return array[Item]
+	 */
+	public function all()
+	{
+		return $this->_items;
+	}
+
+	/**
 	 * @see count
 	 */
 	public function getQuantity()

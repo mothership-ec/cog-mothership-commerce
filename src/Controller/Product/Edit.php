@@ -119,11 +119,24 @@ class Edit extends Controller
 	public function images($productID)
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
+		$images = [];
+		$types  = $this->get('product.image.types');
+
+		foreach ($this->_product->images as $image) {
+			$label = $types->get($image->type);
+
+			if (!array_key_exists($label, $images)) {
+				$images[$label] = [];
+			}
+
+			$images[$label][] = $image;
+		}
 
 		return $this->render('::product:edit-images', array(
 			'locale'  => $this->get('locale'),
 			'product' => $this->_product,
 			'form'	  => $this->_getImageForm(),
+			'images'  => $images,
 		));
 	}
 
@@ -504,7 +517,7 @@ class Edit extends Controller
 
 		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.image.file.label'), array(
 			'choices' => $choices,
-			'empty_value' => 'Pleae select&hellip;',
+			'empty_value' => 'Please select&hellip;',
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.file.help'),
 		));
 
