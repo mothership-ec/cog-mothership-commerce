@@ -76,6 +76,8 @@ class Search extends Form\AbstractType
     public function buildForm(Form\FormBuilderInterface $builder, array $options)
     {
         $categories = $options['product_categories'];
+        $minTermLength = $options['min_term_length'] ?: 0;
+
         // we want to get the category name back by the form
         $choices = [];
         foreach($categories as $category) {
@@ -84,17 +86,16 @@ class Search extends Form\AbstractType
 
         $builder->add('name', 'text', [
             'label' => 'Product Name',
-            'constraints' => new Constraints\Length(['min' => self::MIN_TERM_LENGTH]),
+            'constraints' => new Constraints\Length(['min' => $minTermLength]),
         ]);
 
         $builder->add('description', 'text', [
             'label' => 'Product Description',
-            'constraints' => new Constraints\Length(['min' => self::MIN_TERM_LENGTH]),
+            'constraints' => new Constraints\Length(['min' => $minTermLength]),
         ]);
 
         $builder->add('category', 'choice', [
             'label'   => 'Product Category',
-            'constraints' => new Constraints\Length(['min' => self::MIN_TERM_LENGTH]),
             'choices' => $choices,
         ]);
     }
