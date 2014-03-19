@@ -43,17 +43,17 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$services->extend('form.factory.builder', function($factory, $c) {
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
+
+			return $factory;
+		});
+
 		$services['commerce.form.product.search'] = $services->factory(function($c) {
 			return new Commerce\Form\Product\Search(
 				$c['product.category.loader']->getAll(),
 				$c['cfg']->product->search->minTermLength
 			);
-		});
-
-		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
-
-			return $factory;
 		});
 
 		$services['basket.order'] = $services->factory(function($c) {
