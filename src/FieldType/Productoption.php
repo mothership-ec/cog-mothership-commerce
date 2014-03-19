@@ -4,10 +4,11 @@ namespace Message\Mothership\Commerce\FieldType;
 
 use Message\Cog\Field;
 
-use Message\Cog\Form\Handler;
 use Message\Cog\Form\Extension\Type\LinkedChoice;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * A field for a link to an internal or external page.
@@ -31,7 +32,7 @@ class Productoption extends Field\MultipleValueField implements ContainerAwareIn
 		return 'productoption';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
 		$names  = $this->_services['product.option.loader']->getAllOptionNames();
 		$values = $this->_services['product.option.loader']->getAllOptionValues();
@@ -40,8 +41,11 @@ class Productoption extends Field\MultipleValueField implements ContainerAwareIn
 			'value' => array_combine($values, $values),
 		));
 
-		$form->add($this->getName(), $field, $this->getLabel(), $this->getFieldOptions())
-			->val()->optional();
+		$this->_options['constraints'] = [
+			new Constraints\NotBlank,
+		];
+
+		$form->add($this->getName(), $field, $this->getFieldOptions());
 	}
 
 	/**

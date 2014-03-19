@@ -36,9 +36,9 @@ class DetailLoader
 			'productID'	=> $product->id,
 		));
 
-		$details	= new Details;
+		$details = new Details;
 
-		$type	= $this->_types->get($product->type);
+		$type    = $this->_types->get($product->type);
 
 		$this->_fieldFactory->build($type);
 

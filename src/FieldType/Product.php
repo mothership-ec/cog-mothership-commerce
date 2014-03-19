@@ -6,10 +6,10 @@ use Message\Cog\Field\Field;
 
 use Message\Mothership\FileManager\File\Type as FileType;
 
-use Message\Cog\Form\Handler;
 use Message\Cog\Filesystem;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Symfony\Component\Form\FormBuilder;
 
 /**
  * A field for a product from the products database.
@@ -34,9 +34,9 @@ class Product extends Field implements ContainerAwareInterface
 		return 'product';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'choice', $this->getLabel(), $this->_getOptions());
+		$form->add($this->getName(), 'choice', $this->_getOptions());
 	}
 
 	public function getProduct()

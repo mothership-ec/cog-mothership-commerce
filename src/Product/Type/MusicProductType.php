@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Product\Type;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\DB\Query;
 use Message\Cog\Field\Factory;
+use Symfony\Component\Validator\Constraints;
 
 class MusicProductType implements ProductTypeInterface
 {
@@ -37,20 +38,18 @@ class MusicProductType implements ProductTypeInterface
 
 	public function setFields(Factory $factory, Product $product = null)
 	{
-		$factory->add($factory->getField('datalist', 'artist', 'Artist')->setFieldOptions(array(
-			'choices'	=> $this->_getArtists()
-		)))
-			->val()
-			->optional();
+		$factory->add($factory->getField('datalist', 'artist', 'Artist')->setFieldOptions([
+			'choices'	  => $this->_getArtists(),
+			'constraints' => new Constraints\NotBlank,
+		]));
 		$factory->add($factory->getField('text', 'title', 'Title'));
-		$factory->add($factory->getField('datalist', 'label', 'Label')->setFieldOptions(array(
-			'choices'	=> $this->_getLabels()
-		)))
-			->val()
-			->optional();
-		$factory->add($factory->getField('date', 'releaseDate', 'Release date'))
-			->val()
-			->optional();
+		$factory->add($factory->getField('datalist', 'label', 'Label')->setFieldOptions([
+			'choices'	=> $this->_getLabels(),
+			'constraints' => new Constraints\NotBlank,
+		]));
+		$factory->add($factory->getField('date', 'releaseDate', 'Release date')->setFieldOptions([
+			'constraints' => new Constraints\NotBlank,
+		]));
 	}
 
 	protected function _getArtists()
