@@ -85,18 +85,26 @@ class Search extends Form\AbstractType
         }
 
         $builder->add('name', 'text', [
-            'label' => 'Product Name',
+            'label'       => 'Product Name',
             'constraints' => new Constraints\Length(['min' => $minTermLength]),
+            'attr' => [
+                'placeholder' => 'Product Name',
+            ]
         ]);
 
         $builder->add('description', 'text', [
-            'label' => 'Product Description',
+            'label'       => 'Product Description',
             'constraints' => new Constraints\Length(['min' => $minTermLength]),
-        ]);
+            'attr' => [
+                'placeholder' => 'Product Name',
+            ]        ]);
 
         $builder->add('category', 'choice', [
-            'label'   => 'Product Category',
-            'choices' => $choices,
+            'label'       => 'Product Category',
+            'choices'     => $choices,
+            'attr' => [
+                'placeholder' => 'Product Name',
+            ]
         ]);
     }
 
