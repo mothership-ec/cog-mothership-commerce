@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Product\Type;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\DB\Query;
 use Message\Cog\Field\Factory;
+use Symfony\Component\Validator\Constraints;
 
 class ApparelProductType implements ProductTypeInterface
 {
@@ -32,24 +33,40 @@ class ApparelProductType implements ProductTypeInterface
 
 	public function setFields(Factory $factory)
 	{
-		$factory->add($factory->getField('text', 'year', 'Year'))
-			->val()->optional();
+		$factory->add($factory->getField('text', 'year', 'Year')->setFieldOptions([
+			'constraints' => new Constraints\NotBlank,
+		]));
 
 		$factory->add($factory->getField('datalist', 'season', 'Season')->setFieldOptions([
-			'choices' => $this->_getSeasons()
-		]))->val()->optional();
+			'choices'     => $this->_getSeasons(),
+			'constraints' => [
+				new Constraints\NotBlank,
+			],
+		]));
 
-		$factory->add($factory->getField('richtext', 'fabric', 'Fabric'))
-			->val()->optional();
+		$factory->add($factory->getField('richtext', 'fabric', 'Fabric')->setFieldOptions([
+			'constraints' => [
+				new Constraints\NotBlank,
+			],
+		]));
 
-		$factory->add($factory->getField('richtext', 'features', 'Features'))
-			->val()->optional();
+		$factory->add($factory->getField('richtext', 'features', 'Features')->setFieldOptions([
+			'constraints' => [
+				new Constraints\NotBlank,
+			],
+		]));
 
-		$factory->add($factory->getField('richtext', 'care_instructions', 'Care instructions'))
-			->val()->optional();
+		$factory->add($factory->getField('richtext', 'care_instructions', 'Care instructions')->setFieldOptions([
+			'constraints' => [
+				new Constraints\NotBlank,
+			],
+		]));
 
-		$factory->add($factory->getField('richtext', 'sizing', 'Sizing'))
-			->val()->optional();
+		$factory->add($factory->getField('richtext', 'sizing', 'Sizing')->setFieldOptions([
+			'constraints' => [
+				new Constraints\NotBlank,
+			],
+		]));
 	}
 
 	public function getProductDisplayName(Product $product = null)
