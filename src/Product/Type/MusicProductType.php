@@ -44,18 +44,15 @@ class MusicProductType implements ProductTypeInterface
 				new Constraints\NotBlank,
 			],
 		]));
-		$factory->add($factory->getField('text', 'title', 'Title'));
+		$factory->add($factory->getField('text', 'title', 'Title')->setFieldOptions([
+			'constraints' => [
+				new Constraints\NotBlank,
+			],
+		]));
 		$factory->add($factory->getField('datalist', 'label', 'Label')->setFieldOptions([
 			'choices'	=> $this->_getLabels(),
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
 		]));
-		$factory->add($factory->getField('date', 'releaseDate', 'Release date')->setFieldOptions([
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
-		]));
+		$factory->add($factory->getField('date', 'releaseDate', 'Release date'));
 	}
 
 	protected function _getArtists()

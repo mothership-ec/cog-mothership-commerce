@@ -260,7 +260,9 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		$form = $this->_getProductDetailsForm();
-		if ($form->isValid() && $data = $form->getFilteredData()) {
+		$form->handleRequest();
+
+		if ($form->isValid() && $data = $form->getData()) {
 			$product = $this->_product;
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
@@ -331,6 +333,7 @@ class Edit extends Controller
 		$stockManager 		= $this->get('stock.manager');
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
+
 			$note = $data['note'];
 			$reason = $this->get('stock.movement.reasons')->get($data['reason']);
 

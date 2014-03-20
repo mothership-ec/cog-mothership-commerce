@@ -33,40 +33,19 @@ class ApparelProductType implements ProductTypeInterface
 
 	public function setFields(Factory $factory)
 	{
-		$factory->add($factory->getField('text', 'year', 'Year')->setFieldOptions([
-			'constraints' => new Constraints\NotBlank,
-		]));
+		$factory->add($factory->getField('text', 'year', 'Year'));
 
 		$factory->add($factory->getField('datalist', 'season', 'Season')->setFieldOptions([
 			'choices'     => $this->_getSeasons(),
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
 		]));
 
-		$factory->add($factory->getField('richtext', 'fabric', 'Fabric')->setFieldOptions([
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
-		]));
+		$factory->add($factory->getField('richtext', 'fabric', 'Fabric'));
 
-		$factory->add($factory->getField('richtext', 'features', 'Features')->setFieldOptions([
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
-		]));
+		$factory->add($factory->getField('richtext', 'features', 'Features'));
 
-		$factory->add($factory->getField('richtext', 'care_instructions', 'Care instructions')->setFieldOptions([
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
-		]));
+		$factory->add($factory->getField('richtext', 'care_instructions', 'Care instructions'));
 
-		$factory->add($factory->getField('richtext', 'sizing', 'Sizing')->setFieldOptions([
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
-		]));
+		$factory->add($factory->getField('richtext', 'sizing', 'Sizing'));
 	}
 
 	public function getProductDisplayName(Product $product = null)
