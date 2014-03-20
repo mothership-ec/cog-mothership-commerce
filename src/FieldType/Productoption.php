@@ -32,7 +32,7 @@ class Productoption extends Field\MultipleValueField implements ContainerAwareIn
 		return 'productoption';
 	}
 
-	public function getFormField(FormBuilder $form)
+	public function getFormType()
 	{
 		$names  = $this->_services['product.option.loader']->getAllOptionNames();
 		$values = $this->_services['product.option.loader']->getAllOptionValues();
@@ -40,6 +40,13 @@ class Productoption extends Field\MultipleValueField implements ContainerAwareIn
 			'name'  => array_combine($names, $names),
 			'value' => array_combine($values, $values),
 		));
+
+		return $field;
+	}
+
+	public function getFormField(FormBuilder $form)
+	{
+		$field = $this->getFormType();
 
 		$this->_options['constraints'] = [
 			new Constraints\NotBlank,

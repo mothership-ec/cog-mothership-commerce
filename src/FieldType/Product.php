@@ -36,7 +36,12 @@ class Product extends Field implements ContainerAwareInterface
 
 	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'choice', $this->_getOptions());
+		$form->add($this->getName(), 'choice', $this->getFieldOptions());
+	}
+
+	public function getFormType()
+	{
+		return 'choice';
 	}
 
 	public function getProduct()
@@ -48,14 +53,14 @@ class Product extends Field implements ContainerAwareInterface
 		return $this->_product;
 	}
 
-	protected function _getOptions()
+	public function getFieldOptions()
 	{
 		$defaults = [
 			'choices'       => $this->_getChoices(),
 			'empty_value'   => 'Please select a product...',
 		];
 
-		return array_merge($defaults, $this->getFieldOptions());
+		return array_merge($defaults, parent::getFieldOptions());
 	}
 
 	protected function _getChoices()
