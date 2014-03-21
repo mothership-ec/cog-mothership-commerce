@@ -52,7 +52,7 @@ class Listing extends Controller
 
 	public function searchAction()
 	{
-		$form = $this->createForm($this->get('commerce.form.order.search'), null, [
+		$form = $this->createForm($this->get('commerce.form.order.simple_search'), null, [
 			'action' => $this->generateUrl('ms.commerce.order.search.action'),
 		]);
 
@@ -73,13 +73,13 @@ class Listing extends Controller
 			if (count($orders)) {
 				return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
 					'orders' => $orders,
-					'heading' => sprintf('Orders matching tracking code "%s"', $term),
+					'heading' => sprintf('Orders matching tracking code "%s".', $term),
 				));
 			}
 
 		}
 		// If there were no matches return the error
-		$this->addFlash('warning', sprintf('No search results were found for "%s"', $term));
+		$this->addFlash('warning', sprintf('No search results were found for "%s".', $term));
 		return $this->redirectToReferer();
 	}
 
@@ -94,7 +94,7 @@ class Listing extends Controller
 	 */
 	public function sidebar()
 	{
-		$form = $this->createForm($this->get('commerce.form.order.search'), null, [
+		$form = $this->createForm($this->get('commerce.form.order.simple_search'), null, [
 			'action' => $this->generateUrl('ms.commerce.order.search.action'),
 		]);
 		$event = new BuildMenuEvent;
