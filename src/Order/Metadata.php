@@ -107,18 +107,16 @@ class Metadata implements \ArrayAccess, \IteratorAggregate, \Countable
 	/**
 	 * Set a metadata value.
 	 *
-	 * @param string $name  The metadata key name
-	 * @param mixed  $value The metadata value
+	 * @param  string $name  The metadata key name
+	 * @param  mixed  $value The metadata value
 	 *
-	 * @throws \InvalidArgumentException If the metadata key has already been set
+	 * @return Assembler     Returns $this for chainability
 	 */
 	public function set($name, $value)
 	{
-		if ($this->exists($name)) {
-			throw new \InvalidArgumentException(sprintf('Cannot set order metadata key `%s` as it has already been set', $name));
-		}
-
 		$this->_data[$name] = $value;
+
+		return $this;
 	}
 
 	/**
