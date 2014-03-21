@@ -6,7 +6,7 @@ use Symfony\Component\Form;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class Search extends Form\AbstractType
+class AdvancedSearch extends Form\AbstractType
 {
     protected $_minTermLength;
     protected $_categories;
