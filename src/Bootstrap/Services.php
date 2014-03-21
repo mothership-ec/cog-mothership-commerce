@@ -111,7 +111,7 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$services['order.assembler'] = function($c) {
+		$services['order.assembler'] = $services->factory(function($c) {
 			$assembler = new Commerce\Order\Assembler(
 				$c['order'],
 				$c['event.dispatcher'],
@@ -122,7 +122,7 @@ class Services implements ServicesInterface
 			$assembler->setEntityTemporaryIdProperty('discounts', 'code');
 
 			return $assembler;
-		};
+		});
 
 		// Order decorators
 		$services['order.loader'] = $services->factory(function($c) {
