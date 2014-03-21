@@ -48,6 +48,10 @@ class Services implements ServicesInterface
 			return $factory;
 		});
 
+		$services['commerce.form.order.search'] = $services->factory(function($c) {
+			return new Commerce\Form\Order\Search;
+		});
+
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
 				$order             = $c['order'];
