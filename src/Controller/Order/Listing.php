@@ -52,31 +52,35 @@ class Listing extends Controller
 
 	public function searchAction()
 	{
-		$form = $this->_getSearchForm();
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$term = $data['term'];
+		$form = $this->createForm($this->get('commerce.form.order.simple_search'), null, [
+			'action' => $this->generateUrl('ms.commerce.order.search.action'),
+		]);
+
+		$form->handleRequest();
+
+		if ($form->isValid()) {
+			$term = $form->get('term')->getData();
 
 			$order = $this->get('order.loader')->getById($term);
 
 			if ($order) {
 				return $this->redirectToRoute('ms.commerce.order.detail.view', array('orderID' => $order->id));
-			} else {
-
-				// If search did not match an ID instead look for a tracking code match.
-				$orders = $this->get('order.loader')->getByTrackingCode($term);
-
-				if (count($orders)) {
-					return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
-						'orders' => $orders,
-						'heading' => sprintf('Orders matching tracking code "%s"', $term),
-					));
-				}
-
-				// If there were no matches return the error
-				$this->addFlash('warning', sprintf('No search results were found for "%s"', $term));
-				return $this->redirectToReferer();
 			}
+
+			// If search did not match an ID instead look for a tracking code match.
+			$orders = $this->get('order.loader')->getByTrackingCode($term);
+
+			if (count($orders)) {
+				return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
+					'orders' => $orders,
+					'heading' => sprintf('Orders matching tracking code "%s".', $term),
+				));
+			}
+
 		}
+		// If there were no matches return the error
+		$this->addFlash('warning', sprintf('No search results were found for "%s".', $term));
+		return $this->redirectToReferer();
 	}
 
 	/**
@@ -90,6 +94,9 @@ class Listing extends Controller
 	 */
 	public function sidebar()
 	{
+		$form = $this->createForm($this->get('commerce.form.order.simple_search'), null, [
+			'action' => $this->generateUrl('ms.commerce.order.search.action'),
+		]);
 		$event = new BuildMenuEvent;
 
 		$this->get('event.dispatcher')->dispatch(
@@ -100,7 +107,7 @@ class Listing extends Controller
 		$event->setClassOnCurrent($this->get('http.request.master'), 'current');
 
 		return $this->render('Message:Mothership:Commerce::order:listing:sidebar', array(
-			'search_form' => $this->_getSearchForm(),
+			'search_form' => $form,
 			'items' => $event->getItems(),
 		));
 	}
