@@ -48,13 +48,6 @@ class Services implements ServicesInterface
 			return $factory;
 		});
 
-		$services['commerce.form.product.advanced_search'] = $services->factory(function($c) {
-			return new Commerce\Form\Product\AdvancedSearch(
-				$c['product.category.loader']->getAll(),
-				$c['cfg']->product->search->minTermLength
-			);
-		});
-
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
 				$order             = $c['order'];
@@ -355,7 +348,7 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Searcher(
 				$c['db.query'],
 				$c['product.loader'],
-				$c['cfg']->product->search->minTermLength
+				3
 			);
 		});
 
