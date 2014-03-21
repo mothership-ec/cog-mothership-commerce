@@ -105,12 +105,13 @@ class Metadata implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 	/**
-	 * Set a metadata value.
+	 * Set a metadata value. If a metadata value with the same key has
+	 * previously been set, it will be overwritten with the new value.
 	 *
 	 * @param  string $name  The metadata key name
 	 * @param  mixed  $value The metadata value
 	 *
-	 * @return Assembler     Returns $this for chainability
+	 * @return Metadata      Returns $this for chainability
 	 */
 	public function set($name, $value)
 	{
