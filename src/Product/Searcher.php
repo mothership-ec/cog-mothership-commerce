@@ -86,6 +86,16 @@ class Searcher {
 	}
 
 	/**
+	 * Returns all requirements set on this searcher
+	 *
+	 * @return array all requirements set
+	 */
+	public function getRequirements()
+	{
+		return $this->_requirements;
+	}
+
+	/**
 	 * Returns an array of products that match all requirements.
 	 *
 	 * @return array[Product] Array of products matching $_requirements
