@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints;
 class ApparelProductType implements ProductTypeInterface
 {
 	protected $_query;
+	protected $_seasons;
 
 	public function __construct(Query $query)
 	{
@@ -53,20 +54,23 @@ class ApparelProductType implements ProductTypeInterface
 		return $product->details->brand . ' - ' . $product->name;
 	}
 
-
 	protected function _getSeasons()
 	{
-		$result	= $this->_query->run("
-			SELECT DISTINCT
-				value
-			FROM
-				product_detail
-			WHERE
-				name = :season?s
-		", array(
-			'season' => 'season',
-		));
+		if ($this->_seasons === NULL) {
+			$result	= $this->_query->run("
+				SELECT DISTINCT
+					value
+				FROM
+					product_detail
+				WHERE
+					name = :season?s
+			", array(
+				'season' => 'season',
+			));
 
-		return $result->flatten();
+			$this->_seasons = $result->flatten();
+		}
+
+		return $this->_seasons;
 	}
 }

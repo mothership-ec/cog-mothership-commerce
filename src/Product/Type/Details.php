@@ -7,7 +7,6 @@ use Message\Cog\Validation\Validator;
 
 class Details implements \IteratorAggregate, \Countable
 {
-	protected $_validator;
 	protected $_details		= array();
 
 	public function __construct($details = array())
@@ -55,7 +54,7 @@ class Details implements \IteratorAggregate, \Countable
 
 	public function flatten()
 	{
-		$details	= array();
+		$details = array();
 
 		foreach ($this->all() as $name => $detail) {
 			// Convert timestamp to \DateTime
@@ -83,13 +82,4 @@ class Details implements \IteratorAggregate, \Countable
 		return count($this->_details);
 	}
 
-	public function setValidator(Validator $validator)
-	{
-		$this->_validator	= $validator;
-	}
-
-	public function getValidator()
-	{
-		return $this->_validator;
-	}
 }

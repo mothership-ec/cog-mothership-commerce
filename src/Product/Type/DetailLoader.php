@@ -57,8 +57,6 @@ class DetailLoader
 			}
 		}
 
-		$details->setValidator($this->_fieldFactory->getValidator());
-
 		return $details;
 	}
 }
