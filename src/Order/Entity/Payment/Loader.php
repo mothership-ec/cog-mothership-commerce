@@ -105,6 +105,7 @@ class Loader extends Order\Entity\BaseLoader
 		foreach ($result as $key => $row) {
 			// Cast decimals to float
 			$entities[$key]->amount = (float) $row->amount;
+			$entities[$key]->change = $row->change ? (float) $row->change : null;
 
 			$entities[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),

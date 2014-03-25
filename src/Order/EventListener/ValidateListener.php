@@ -32,17 +32,23 @@ class ValidateListener implements SubscriberInterface
 	 */
 	public function checkProperties(Event\ValidateEvent $event)
 	{
-		if (!$event->getOrder()->status) {
+		$order = $event->getOrder();
+
+		if (!$order->status) {
 			$event->addError('Order must have a status set');
 		}
 		else {
-			if (!($event->getOrder()->status instanceof Status)) {
+			if (!($order->status instanceof Status)) {
 				$event->addError('Order status must be an instance of Order\Status\Status');
 			}
 		}
 
-		if (!$event->getOrder()->type) {
+		if (!$order->type) {
 			$event->addError('Order must have a type set');
+		}
+
+		if (!$order->currencyID) {
+			$event->addError('Order must have a currency ID');
 		}
 	}
 }

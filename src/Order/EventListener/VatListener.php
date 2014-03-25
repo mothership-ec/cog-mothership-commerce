@@ -30,8 +30,8 @@ class VatListener implements SubscriberInterface
 			OrderEvents::CREATE_START => array(
 				array('setTaxable', 100),
 			),
-			OrderEvents::ASSEMBLER_ADDRESS_UPDATE => array(
-				array('setTaxable', 100),
+			OrderEvents::ASSEMBLER_UPDATE => array(
+				array('setTaxable', 500),
 			),
 		);
 	}
@@ -50,12 +50,20 @@ class VatListener implements SubscriberInterface
 	 * Set the order to taxable if the delivery country is within the EU.
 	 * Otherwise, set it to not taxable.
 	 *
+	 * If there is no delivery address, nothing is changed.
+	 *
 	 * @param Event $event The event object
 	 */
 	public function setTaxable(Event\Event $event)
 	{
-		$order           = $event->getOrder();
-		$deliveryCountry = $order->getAddress(Address::DELIVERY)->countryID;
+		$order   = $event->getOrder();
+		$address = $order->getAddress(Address::DELIVERY);
+
+		if (!$address) {
+			return false;
+		}
+
+		$deliveryCountry = $address->countryID;
 		$order->taxable  = (bool) $this->_countries->isInEU($deliveryCountry);
 	}
 }
