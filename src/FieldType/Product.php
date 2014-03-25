@@ -45,7 +45,7 @@ class Product extends Field
 	public function getProduct()
 	{
 		if (null === $this->_product) {
-			$this->_product = $this->_services['product.loader']->getByID((int) $this->_value);
+			$this->_product = $this->_loader->getByID((int) $this->_value);
 		}
 
 		return $this->_product;
