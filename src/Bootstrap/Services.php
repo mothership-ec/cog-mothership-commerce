@@ -112,8 +112,13 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.assembler'] = $services->factory(function($c) {
+			$order = $c['order'];
+
+			$order->locale     = $c['locale']->getId();
+			$order->currencyID = 'GBP';
+
 			$assembler = new Commerce\Order\Assembler(
-				$c['order'],
+				$order,
 				$c['event.dispatcher'],
 				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
 			);
