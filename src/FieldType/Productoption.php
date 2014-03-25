@@ -4,6 +4,8 @@ namespace Message\Mothership\Commerce\FieldType;
 
 use Message\Cog\Field;
 
+use Message\Mothership\Commerce\Product\OptionLoader;
+
 use Message\Cog\Form\Extension\Type\LinkedChoice;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
@@ -15,17 +17,15 @@ use Symfony\Component\Validator\Constraints;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Productoption extends Field\MultipleValueField implements ContainerAwareInterface
+class Productoption extends Field\MultipleValueField
 {
-	protected $_services;
+	protected $_loader;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setContainer(ContainerInterface $container)
+	public function __construct(OptionLoader $loader)
 	{
-		$this->_services = $container;
+		$this->_loader = $loader;
 	}
+
 
 	public function getFieldType()
 	{
@@ -34,8 +34,8 @@ class Productoption extends Field\MultipleValueField implements ContainerAwareIn
 
 	public function getFormType()
 	{
-		$names  = $this->_services['product.option.loader']->getAllOptionNames();
-		$values = $this->_services['product.option.loader']->getAllOptionValues();
+		$names  = $this->_loader->getAllOptionNames();
+		$values = $this->_loader->getAllOptionValues();
 		$field  = new LinkedChoice(array(
 			'name'  => array_combine($names, $names),
 			'value' => array_combine($values, $values),

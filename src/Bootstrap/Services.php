@@ -389,8 +389,8 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('field.collection', function($fields, $c) {
-			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['validator']));
-			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['validator']));
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader']));
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));
 
 			return $fields;
 		});

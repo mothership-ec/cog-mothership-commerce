@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\FieldType;
 
 use Message\Cog\Field\Field;
 
-use Message\Mothership\FileManager\File\Type as FileType;
+use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 
 use Message\Cog\Filesystem;
 use Message\Cog\Service\ContainerInterface;
@@ -16,17 +16,15 @@ use Symfony\Component\Form\FormBuilder;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Product extends Field implements ContainerAwareInterface
+class Product extends Field
 {
-	protected $_services;
 	protected $_product;
+	protected $_products;
+	protected $_loader;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setContainer(ContainerInterface $container)
+	public function __construct(ProductLoader $loader)
 	{
-		$this->_services = $container;
+		$this->_loader = $loader;
 	}
 
 	public function getFieldType()
@@ -67,10 +65,19 @@ class Product extends Field implements ContainerAwareInterface
 	{
 		$choices = array();
 
-		foreach ($this->_services['product.loader']->getAll() as $product) {
+		foreach ($this->_getProducts() as $product) {
 			$choices[$product->id] = $product->displayName ?: $product->name;
 		}
 
 		return $choices;
+	}
+
+	protected function _getProducts()
+	{
+		if (null === $this->_products) {
+			$this->_products = $this->_loader->getAll();
+		}
+
+		return $this->_products;
 	}
 }
