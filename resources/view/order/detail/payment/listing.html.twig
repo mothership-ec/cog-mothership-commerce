@@ -4,7 +4,7 @@
 	<section class="container-content short">
 		{% if not payments is empty %}
 			{% for payment in payments %}
-				{% include '::order:detail:payment:detail' %}
+				{% include 'Message:Mothership:Commerce::order:detail:payment:detail' %}
 			{% endfor %}
 		{% else %}
 			<p>{{ 'ms.commerce.order.payment.none'|trans }}</p>
