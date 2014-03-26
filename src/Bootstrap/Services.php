@@ -569,8 +569,6 @@ class Services implements ServicesInterface
 				$message->setView('Message:Mothership:Commerce::mail:stock:notification:replenished', array(
 					'notifications' => $factory->notifications,
 					'appName'       => $appName,
-
-					// @TODO: Make this link to the product rather than the homepage
 					'url'           => $appUrl,
 				));
 			});
