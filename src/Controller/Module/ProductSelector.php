@@ -19,28 +19,42 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = array(), $collapseFullyOos = false)
+	/**
+	 * Render the product selector form.
+	 *
+	 * @param  Product $product
+	 * @param  array   $options  Product options to display, passing an empty
+	 *                           array defaults to all available options.
+	 * @param  array   $settings Settings for the product selector.
+	 *                           - 'showNotificationForm', set to true to
+	 *                              display the notification form when the
+	 *                              product has out of stock options.
+	 *                           - 'collapseFullyOutOfStock', set to true to
+	 *                              only show one input when all options are
+	 *                              out of stock.
+	 * @return \Message\Cog\HTTP\Response
+	 */
+	public function index(Product $product, array $options = array(), array $settings = array())
 	{
+		$settings += [
+			'showNotificationForm' => false,
+			'collapseFullyOutOfStock' => false
+		];
+
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
 		$oosUnits = $this->_filterInStockUnits($units);
 
-		if (count($units) === count($oosUnits)) {
-			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
-				'product' => $product,
-				'units'   => $units,
-				'replenishedNotificationForm' => $this->_getReplenishedNotificationForm($product, $oosUnits, $collapseFullyOos)
-			));
-		}
+		$notificationForm = $this->_getReplenishedNotificationForm(
+			$product, $units, $oosUnits, $settings
+		);
 
-		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
+		return $this->render('Message:Mothership:Commerce::product:product-selector', [
 			'product' => $product,
 			'units'   => $units,
 			'form'    => $this->_getForm($product, $options),
-			'replenishedNotificationForm' => count($oosUnits) ?
-				$this->_getReplenishedNotificationForm($product, $oosUnits, false) :
-				false
-		));
+			'replenishedNotificationForm' => $notificationForm,
+		]);
 	}
 
 	public function process($productID)
@@ -154,11 +168,23 @@ class ProductSelector extends Controller
 	 * is able to choose from a list as to which they would like notification(s)
 	 * for.
 	 *
-	 * @param  array[Unit] $units Out of stock units to choose from.
+	 * @param  Product $product
+	 * @param  array   $units
+	 * @param  array   $oosUnits
+	 * @param  array   $settings  See index()
 	 * @return Message\Cog\Form\Handler
 	 */
-	protected function _getReplenishedNotificationForm($product, $units, $collapse = false)
+	protected function _getReplenishedNotificationForm($product, $units, $oosUnits, $settings)
 	{
+		if (! $settings['showNotificationForm'] or 0 == count($oosUnits)) {
+			return false;
+		}
+
+		$settings['collapseFullyOutOfStock'] = (
+			$settings['collapseFullyOutOfStock'] and
+			count($units) === count($oosUnits)
+		);
+
 		$form = $this->get('form')
 			->setName('replenished_notification')
 			->setAction($this->generateUrl('ms.commerce.product.stock.notification.replenished.signup'))
@@ -183,7 +209,7 @@ class ProductSelector extends Controller
 				$choices[$unit->id] = implode(',', $unit->options);
 			}
 
-			if ($collapse) {
+			if ($settings['collapseFullyOutOfStock']) {
 				// @fix: The label ' ' is a dirty hack to stop the label showing for
 				// these hidden fields.
 				$form->add('units', 'collection', ' ', array(
