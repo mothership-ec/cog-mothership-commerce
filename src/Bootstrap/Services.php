@@ -20,28 +20,6 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Order($c['order.entities']);
 		});
 
-		$services['commerce.gateway'] = $services->factory(function($c) {
-			return new Commerce\Gateway\Sagepay(
-				'SagePay_Server',
-				$c['user.current'],
-				$c['http.request.master'],
-				$c['cache'],
-				$c['basket.order'],
-				$c['cfg']
-			);
-		});
-
-		$services['commerce.gateway.refund'] = $services->factory(function($c) {
-			return new Commerce\Gateway\Sagepay(
-				'SagePay_Direct',
-				$c['user.current'],
-				$c['http.request.master'],
-				$c['cache'],
-				$c['basket.order'],
-				$c['cfg']
-			);
-		});
-
 		$services->extend('form.factory.builder', function($factory, $c) {
 			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
 
@@ -263,7 +241,6 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
-				new Commerce\Order\Entity\Payment\Method\Sagepay,
 
 				new Commerce\Order\Entity\Payment\Method\Paypal,
 				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
