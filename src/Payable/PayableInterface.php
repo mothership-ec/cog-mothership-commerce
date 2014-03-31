@@ -2,6 +2,13 @@
 
 namespace Message\Mothership\Commerce\Payable;
 
+/**
+ * Interface for objects that represent something for which a payment can be
+ * made. This includes purchases made by customers, refunds and arbitrary
+ * payments made by any user.
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 interface PayableInterface
 {
 	/**
@@ -12,7 +19,8 @@ interface PayableInterface
 	public function getPayableAmount();
 
 	/**
-	 * Get the total value of the payable.
+	 * Get the total value the payable object is worth. The payable amount may
+	 * be less that this total, representing a partial payment for object.
 	 *
 	 * @return float
 	 */
