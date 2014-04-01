@@ -103,6 +103,51 @@ class Loader
 		return $this->_loadProduct($result->flatten());
 	}
 
+	public function getByType($type)
+	{
+		$result = $this->_query->run("
+			SELECT
+				product_id
+			FROM
+				product
+			WHERE
+				`type` = ?s
+		", $type);
+
+		$this->_returnArray = true;
+
+		return $this->_loadProduct($result->flatten());
+	}
+
+	public function getByDetail($detailName, $detailValue)
+	{
+		if ($detailValue instanceof \DateTime) {
+			$detailValue = $detailValue->getTimestamp();
+		}
+
+		$result = $this->_query->run("
+			SELECT
+				product_id
+			FROM
+				product
+			LEFT JOIN
+				product_detail AS d
+			USING
+				(product_id)
+			WHERE
+				d.name = :detailName?s
+			AND
+				d.value = :detailValue?s
+		", [
+			'detailName'  => $detailName,
+			'detailValue' => $detailValue,
+		]);
+
+		$this->_returnArray = true;
+
+		return $this->_loadProduct($result->flatten());
+	}
+
 	public function getAll()
 	{
 		$result = $this->_query->run(
