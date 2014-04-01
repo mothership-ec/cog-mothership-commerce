@@ -4,5 +4,6 @@ namespace Message\Mothership\Commerce\Order\Transaction;
 
 final class Events
 {
-	const CREATE = 'commerce.order.transaction.create';
+	const CREATE_START    = 'commerce.order.transaction.create.start';
+	const CREATE_COMPLETE = 'commerce.order.transaction.create.complete';
 }

@@ -63,10 +63,10 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
-		$event = new Event($transaction);
+		$event = new Event\TransactionalEvent($transaction);
 		$event->setDbTransaction($this->_query);
 
-		$transaction = $this->_eventDispatcher->dispatch(Events::CREATE, $event)
+		$transaction = $this->_eventDispatcher->dispatch(Events::CREATE_START, $event)
 			->getTransaction();
 
 		$this->_validate($transaction);
@@ -90,11 +90,12 @@ class Create implements DB\TransactionalInterface
 		$this->_createRecords($transaction);
 		$this->_createAttributes($transaction);
 
-		// If the query was not in a db transaction, return the re-loaded transaction
 		if (!$this->_transOverriden) {
 			$this->_query->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable('TRANSACTION_ID'));
+			$event = new Event\Event($this->_loader->getByID($this->_query->getIDVariable('TRANSACTION_ID')));
+			$transaction = $this->_eventDispatcher->dispatch(Events::CREATE_COMPLETE, $event)
+				->getTransaction();
 		}
 
 		return $transaction;
