@@ -100,7 +100,7 @@ class Assembler
 	 */
 	public function setEntityTemporaryIdProperty($name, $property)
 	{
-		$this->_entityTemporaryIdProp[$name] = $property;
+		$this->_entityTemporaryIdFields[$name] = $property;
 
 		return $this;
 	}
