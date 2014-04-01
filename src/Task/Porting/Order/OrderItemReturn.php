@@ -15,7 +15,7 @@ class OrderItemReturn extends Porting
 		$old = new \Message\Cog\DB\Query($uwOld);
 
 		$sql = 'SELECT
-					return_id,
+					order_item_return.return_id,
 					order_item_return.order_id,
 					order_item_return.item_id,
 					UNIX_TIMESTAMP(return_datetime) AS created_at,
@@ -46,18 +46,28 @@ class OrderItemReturn extends Porting
 					item_price - IFNULL(item_discount,0) AS returned_value,
 					return_destination_id AS return_to_stock_location_id,
 					order_item_return.accepted as accepted,
+					IFNULL(order_refund.refund_amount,0) as refund_amount
 				FROM
 					order_item_return
 				JOIN order_item ON (order_item.item_id = order_item_return.item_id)
 				JOIN order_summary ON (order_item_return.order_id = order_summary.order_id)
 				JOIN order_return_reason USING (return_reason_id)
-				JOIN order_return_resolution USING (return_resolution_id)';
+				JOIN order_return_resolution USING (return_resolution_id)
+				JOIN order_refund ON (order_item_return.order_id = order_refund.order_id)
+				GROUP BY order_item_return.return_id';
 
 		$result = $old->run($sql);
 		$output= '';
 		$new->add('TRUNCATE order_item_return');
 
 		foreach($result as $row) {
+			// If the return was refunded at all, clear out the balance. The
+			// refund may have been an amount differing from the calculated
+			// balance but it should still set the remaining balance to 0.
+			if ($row->refund_amount > 0) {
+				$row->balance = 0;
+			}
+
 			$new->add('
 				INSERT INTO
 					order_item_return
