@@ -55,6 +55,8 @@ class Loader
 	 */
 	public function getPending()
 	{
+		$locations = $this->_stockLocations;
+
 		$result = $this->_query->run("
 			SELECT
 				sn.notification_id
@@ -68,7 +70,7 @@ class Loader
 				pus.stock > 0 AND
 				pus.location = :location?s
 		", array(
-			'location' => $this->_stockLocations->getRoleLocation('sell')->name
+			'location' => $locations->getRoleLocation($locations::SELL_ROLE)->name
 		));
 
 		return count($result) ? $this->_load($result->flatten(), true) : false;
