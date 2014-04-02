@@ -177,7 +177,7 @@ class Loader
 				$row->created_by
 			);
 
-			$entities[$key]->records    = $this->_loadRecords($entities[$key]);
+			$entities[$key]->records    = new RecordCollection($this->_loadRecords($entities[$key]));
 			$entities[$key]->attributes = $this->_loadAttributes($entities[$key]);
 
 			$return[$row->id] = $entities[$key];
