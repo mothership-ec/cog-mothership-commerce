@@ -205,7 +205,7 @@ class ProductSelector extends Controller
 			));
 		}
 		elseif (count($units) > 1) {
-			foreach ($units as $unit) {
+			foreach ($oosUnits as $unit) {
 				$choices[$unit->id] = implode(',', $unit->options);
 			}
 
