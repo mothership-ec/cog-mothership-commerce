@@ -237,7 +237,7 @@ class Loader
 				transaction_id = ?i
 		', $transaction->id);
 
-		 return $result->hash('attribute_name', 'attribute_value');
+		 return $result->hash('name', 'value');
 	}
 
 	/**
