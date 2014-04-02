@@ -26,7 +26,6 @@ class Create
 		if (! $notification->authorship->createdAt()) {
 			$notification->authorship->create(
 				new DateTimeImmutable
-				// $this->_user->id
 			);
 		}
 
@@ -37,11 +36,13 @@ class Create
 				`type`       = 'replenished',
 				`unit_id`    = :unitID?i,
 				`email`      = :email?s,
-				`created_at` = :createdAt?d
+				`created_at` = :createdAt?d,
+				`created_by` = :createdBy?i
 		", array(
 			'unitID'    => $notification->unitID,
 			'email'     => $notification->email,
-			'createdAt' => $notification->authorship->createdAt()
+			'createdAt' => $notification->authorship->createdAt(),
+			'createdBy' => $notification->authorship->createdBy()
 		));
 	}
 

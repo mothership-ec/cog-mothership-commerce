@@ -14,6 +14,7 @@ use Message\Mothership\Commerce\Field\ProductUnitInStockOnlyChoiceType;
 use Message\Mothership\CMS\Page\Content;
 
 use Message\Cog\Controller\Controller;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 class ProductSelector extends Controller
 {
@@ -107,6 +108,10 @@ class ProductSelector extends Controller
 			$notification = new Stock\Notification\Replenished\Notification;
 			$notification->email = $data['email'];
 			$notification->unitID = $unitID;
+
+			if ($user = $this->get('user.loader')->getByEmail($notification->email)) {
+				$notification->authorship->create(new DateTimeImmutable, $user->id);
+			}
 
 			$this->get('stock.notification.replenished.create')->create($notification);
 		}

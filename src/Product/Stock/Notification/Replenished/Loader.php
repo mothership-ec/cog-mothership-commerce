@@ -123,9 +123,9 @@ class Loader
 				// $result[$key]->created_by
 			);
 
-			// Try to load the user which has the email address associated with
-			// the notification.
-			$entity->user = $this->_userLoader->getByEmail($result[$key]->email);
+			if ($result[$key]->created_by) {
+				$entity->user = $this->_userLoader->getByID($result[$key]->created_by);
+			}
 
 			// Load the related unit.
 			$entity->unit = $this->_unitLoader->getByID($result[$key]->unit_id);
