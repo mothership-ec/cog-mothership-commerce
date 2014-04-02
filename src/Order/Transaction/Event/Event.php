@@ -1,8 +1,9 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Transaction;
+namespace Message\Mothership\Commerce\Order\Transaction\Event;
 
 use Message\Cog\Event\Event as BaseEvent;
+use Message\Mothership\Commerce\Order\Transaction\Transaction;
 
 /**
  * Base event for the transaction system. Allows an transaction to be set & get.

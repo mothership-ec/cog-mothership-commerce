@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Transaction;
+namespace Message\Mothership\Commerce\Order\Transaction\Event;
 
 use Message\Cog\DB;
 
