@@ -14,8 +14,8 @@ class ProcessPendingTask extends Task
 {
 	protected function configure()
     {
-        // Run every hour
-        $this->schedule('0 * * * *');
+        // Run at 9am every day
+        $this->schedule('0 9 * * *');
     }
 
 	public function process()
