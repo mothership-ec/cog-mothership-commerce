@@ -77,17 +77,6 @@ class Loader
 	}
 
 	/**
-	 * Get all notifications where the user has been informed of the available
-	 * stock.
-	 *
-	 * @return array[Notification]
-	 */
-	public function getNotified()
-	{
-
-	}
-
-	/**
 	 * Load notifications from a list of ids.
 	 *
 	 * @param  int|array  $ids
