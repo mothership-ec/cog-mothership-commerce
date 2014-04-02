@@ -4,6 +4,9 @@ ms.commerce:
       unit:
         label: Please select an option...
       button: Add to basket
+    notification:
+      replenished:
+        success: A notification will be sent to %email% when this product is back in stock
     button:
       save: Save changes
       create: Create product

@@ -112,10 +112,10 @@ class ProductSelector extends Controller
 		}
 
 		// Only add a single flash message even if multiple units are selected.
-		$this->addFlash('success', sprintf(
-			'A notification will be sent to <em>%s</em> when this product is back in stock',
-			$data['email']
-		));
+		$this->addFlash('success', $this->trans('ms.commerce.product.notification.replenished.success', [
+				'%email%' => $data['email']
+			])
+		);
 
 		return $this->redirectToReferer();
 	}
