@@ -2,8 +2,8 @@
 
 namespace Message\Mothership\Commerce\Product\Stock\Notification\Replenished;
 
-use DateTime;
 use Message\Cog\DB\Query;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
  * Edit decorator for stock replenished notifications.
@@ -22,7 +22,7 @@ class Edit
 
 	public function setNotified(Notification $notification)
 	{
-		$notification->notifiedAt = new DateTime();
+		$notification->notifiedAt = new DateTimeImmutable();
 
 		$this->_query->run("
 			UPDATE
