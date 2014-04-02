@@ -336,6 +336,10 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Transaction\Create($c['db.transaction'], $c['order.transaction.loader'], $c['event.dispatcher'], $c['user.current']);
 		};
 
+		$services['order.transaction.edit'] = function($c) {
+			return new Commerce\Order\Transaction\Edit($c['db.transaction'], $c['user.current']);
+		};
+
 		// Product
 		$services['product'] = $services->factory(function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);

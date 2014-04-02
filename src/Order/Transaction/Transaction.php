@@ -34,7 +34,6 @@ class Transaction
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
-		$this->authorship->disableUpdate();
 		$this->authorship->disableDelete();
 
 		$this->records = new RecordCollection;
