@@ -12,7 +12,8 @@ class _1386088321_CreateStockNotification extends Migration
 			  `unit_id` int(11) unsigned NOT NULL,
 			  `type` varchar(255) NOT NULL,
 			  `email` varchar(255) NOT NULL,
-			  `created_at` int(11) unsigned NULL,
+			  `created_at` int(11) unsigned NOT NULL,
+			  `created_by` int(11) unsigned NULL,
 			  `notified_at` int(11) unsigned NULL,
 			  PRIMARY KEY (`notification_id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
