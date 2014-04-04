@@ -15,6 +15,9 @@ use Message\Cog\ValueObject\Authorship;
  */
 class Address extends BaseAddress implements EntityInterface
 {
+	const DELIVERY = 'delivery';
+	const BILLING  = 'billing';
+
 	public $order;
 
 	public $title;
