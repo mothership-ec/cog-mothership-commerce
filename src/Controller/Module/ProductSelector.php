@@ -96,15 +96,15 @@ class ProductSelector extends Controller
 	{
 		$data = $this->get('request')->request->get('replenished_notification');
 
-		if (! isset($data['email']) or empty($data['email']) or ! isset($data['units']) or empty($data['units'])) {
+		if (! isset($data['email']) or empty($data['email']) or ! isset($data['product_units']) or empty($data['product_units'])) {
 			$this->addFlash('error', "Please fill all required fields");
 			return $this->redirectToReferer();
 		}
 
-		if (! is_array($data['units'])) $data['units'] = array($data['units']);
+		if (! is_array($data['product_units'])) $data['product_units'] = array($data['product_units']);
 
 		// Add a separate notification for each unit.
-		foreach ($data['units'] as $unitID) {
+		foreach ($data['product_units'] as $unitID) {
 			$notification = new Stock\Notification\Replenished\Notification;
 			$notification->email = $data['email'];
 			$notification->unitID = $unitID;
@@ -189,11 +189,19 @@ class ProductSelector extends Controller
 			$oosUnits = $loader->getByProduct($product);
 		}
 
+		$email = (! $this->get('user.current') instanceof AnonymousUser)
+		       ? $this->get('user.current')->email
+		       : '';
+
 		$form = $this->createForm($this->get('stock.notification.replenished.form'), [
 			'product'                 => $product,
 			'units'                   => $units,
 			'oosUnits'                => $oosUnits,
+			'email'                   => $email,
 			'collapseFullyOutOfStock' => $settings['collapseFullyOutOfStock'],
+		], [
+			'action' => $this->generateUrl('ms.commerce.product.stock.notification.replenished.signup'),
+			'method' => 'post',
 		]);
 
 		return $form;

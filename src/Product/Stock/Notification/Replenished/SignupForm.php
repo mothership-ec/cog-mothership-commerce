@@ -61,7 +61,7 @@ class SignupForm extends Form\AbstractType
 
 		$builder->add('email', 'text', [
 			'label' => 'Email',
-			'data' => '',//(! $this->get('user.current') instanceof AnonymousUser) ? $this->get('user.current')->email : ''
+			'data' => $email,
 		]);
 	}
 }
