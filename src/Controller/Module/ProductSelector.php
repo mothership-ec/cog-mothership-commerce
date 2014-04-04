@@ -181,59 +181,20 @@ class ProductSelector extends Controller
 	 */
 	protected function _getReplenishedNotificationForm($product, $units, $oosUnits, $settings)
 	{
-		if (! $settings['showNotificationForm'] or 0 == count($oosUnits)) {
-			return false;
-		}
-
-		$settings['collapseFullyOutOfStock'] = (
-			$settings['collapseFullyOutOfStock'] and
-			count($units) === count($oosUnits)
-		);
-
-		$form = $this->get('form')
-			->setName('replenished_notification')
-			->setAction($this->generateUrl('ms.commerce.product.stock.notification.replenished.signup'))
-			->setMethod('post');
-
 		// If there are no units to display, load all units for the product.
 		if (count($units) == 0) {
 			$loader = $this->get('product.unit.loader');
 			$loader->includeOutOfStock(true);
 			$loader->includeInvisible(true);
-			$units = $loader->getByProduct($product);
+			$oosUnits = $loader->getByProduct($product);
 		}
 
-		if (count($units) == 1) {
-			$unit = array_shift($units);
-			$form->add('units', 'hidden', false, array(
-				'data' => $unit->id
-			));
-		}
-		elseif (count($units) > 1) {
-			foreach ($oosUnits as $unit) {
-				$choices[$unit->id] = implode(',', $unit->options);
-			}
-
-			if ($settings['collapseFullyOutOfStock']) {
-				// @fix: The label ' ' is a dirty hack to stop the label showing for
-				// these hidden fields.
-				$form->add('units', 'collection', ' ', array(
-					'type' => 'hidden',
-					'data' => array_keys($choices)
-				));
-			}
-			else {
-				$form->add('units', 'choice', 'Choose the options you are interested in', array(
-					'choices' => $choices,
-					'expanded' => true,
-					'multiple' => true
-				));
-			}
-		}
-
-		$form->add('email', 'text', 'Email', array(
-			'data' => (! $this->get('user.current') instanceof AnonymousUser) ? $this->get('user.current')->email : ''
-		));
+		$form = $this->createForm($this->get('stock.notification.replenished.form'), [
+			'product'                 => $product,
+			'units'                   => $units,
+			'oosUnits'                => $oosUnits,
+			'collapseFullyOutOfStock' => $settings['collapseFullyOutOfStock'],
+		]);
 
 		return $form;
 	}

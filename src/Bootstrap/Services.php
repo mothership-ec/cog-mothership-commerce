@@ -483,6 +483,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Stock\Notification\Replenished\Edit($c['db.query']);
 		};
 
+		$services['stock.notification.replenished.form'] = function($c) {
+			return new Commerce\Product\Stock\Notification\Replenished\SignupForm;
+		};
+
 		$services['shipping.methods'] = function($c) {
 			return new Commerce\Shipping\MethodCollection;
 		};
