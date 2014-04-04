@@ -30,20 +30,18 @@ class SignupForm extends Form\AbstractType
 
 		if (0 == count($oosUnits)) return false;
 
-		$collapseFullyOutOfStock = (
-			$collapseFullyOutOfStock and
-			count($units) === count($oosUnits)
-		);
+		$fullyOutOfStock = count($units) === count($oosUnits);
 
 		$choices = [];
 
-		if ($collapseFullyOutOfStock) {
+		if ($fullyOutOfStock and ($collapseFullyOutOfStock or 1 == count($units))) {
 			foreach ($units as $unit) {
 				$choices[$unit->id] = implode(',', $unit->options);
 			}
 
 			$builder->add('product_units', 'collection', [
 				'type' => 'hidden',
+				'label' => ' ',
 				'data' => array_keys($choices)
 			]);
 		}
