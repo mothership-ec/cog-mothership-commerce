@@ -209,10 +209,10 @@ class Loader
 			return array();
 		}
 
-		$records = array();
+		$records = new RecordCollection;
 		foreach($results as $key => $row) {
 			$loader = $this->_getLoader($row->type);
-			$records[$row->record_id] = $loader->getByRecordID($row->record_id);
+			$records->add($loader->getByRecordID($row->record_id));
 		}
 
 		return $records;
@@ -237,7 +237,7 @@ class Loader
 				transaction_id = ?i
 		', $transaction->id);
 
-		 return $result->hash('attribute_name', 'attribute_value');
+		 return $result->hash('name', 'value');
 	}
 
 	/**
