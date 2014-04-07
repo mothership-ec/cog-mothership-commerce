@@ -19,7 +19,7 @@ class Create implements DB\TransactionalInterface
 	protected $_query;
 	protected $_loader;
 	protected $_currentUser;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	public function __construct(DB\Transaction $query, Loader $loader, DispatcherInterface $eventDispatcher, UserInterface $currentUser)
 	{
@@ -30,14 +30,14 @@ class Create implements DB\TransactionalInterface
 	}
 
 	/**
-	 * Sets transaction and sets $_transOverriden to true
+	 * Sets transaction and sets $_transOverridden to true
 	 *
 	 * @param DBTransaction $trans transaction
 	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
-		$this->_transOverriden = true;
+		$this->_transOverridden = true;
 
 		return $this;
 	}
@@ -101,7 +101,7 @@ class Create implements DB\TransactionalInterface
 			}
 		);
 
-		if (!$this->_transOverriden) {
+		if (!$this->_transOverridden) {
 			$this->_query->commit();
 		}
 

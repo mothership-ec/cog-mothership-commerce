@@ -19,7 +19,7 @@ class RecordCollection implements \IteratorAggregate, \Countable
 	public function __construct(array $records = array())
 	{
 		foreach ($records as $record) {
-			$this->add($records);
+			$this->add($record);
 		}
 	}
 
