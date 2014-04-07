@@ -90,12 +90,19 @@ class Create implements DB\TransactionalInterface
 		$this->_createRecords($transaction);
 		$this->_createAttributes($transaction);
 
+		$loader = $this->_loader;
+
+		$this->_query->attachEvent(
+			Events::CREATE_COMPLETE,
+			function ($dbTrans) use ($loader) {
+				return new Event\Event(
+					$loader->getByID($dbTrans->getIDVariable('TRANSACTION_ID'))
+				);
+			}
+		);
+
 		if (!$this->_transOverridden) {
 			$this->_query->commit();
-
-			$event = new Event\Event($this->_loader->getByID($this->_query->getIDVariable('TRANSACTION_ID')));
-			$transaction = $this->_eventDispatcher->dispatch(Events::CREATE_COMPLETE, $event)
-				->getTransaction();
 		}
 
 		return $transaction;
