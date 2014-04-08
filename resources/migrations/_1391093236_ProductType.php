@@ -23,7 +23,7 @@ class _1391093236_ProductType extends Migration
 			ALTER TABLE
 				product
 			ADD
-				type VARCHAR(30)
+				type VARCHAR(30) DEFAULT 'apparel'
 			AFTER
 				deleted_by
 		");
