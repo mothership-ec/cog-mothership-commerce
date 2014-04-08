@@ -209,10 +209,10 @@ class Loader
 			return array();
 		}
 
-		$records = new RecordCollection;
+		$records = [];
 		foreach($results as $key => $row) {
 			$loader = $this->_getLoader($row->type);
-			$records->add($loader->getByRecordID($row->record_id));
+			$records[] = $loader->getByRecordID($row->record_id);
 		}
 
 		return $records;
