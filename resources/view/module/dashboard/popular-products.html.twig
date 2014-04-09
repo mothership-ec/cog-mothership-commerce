@@ -1,0 +1,38 @@
+<div class="module landscape">
+	<h2 class="title">
+		Popular products (week)
+	</h2>
+	<div class="wrap">
+		<table
+			title="Popular products"
+			id="popularProducts"
+			summary="Most popular products"
+			data-attc-createChart="true"
+			data-attc-colDescription="product"
+			data-attc-colValues="purchased"
+			data-attc-location="productsArea"
+			data-attc-hideTable="true"
+			data-attc-type="bar"
+			data-attc-googleOptions='{"is3D":false, "width": "600", "height": 250, "fontSize": 16, "legend": "none", "chartArea.width": "100%", "colors":["#528cb6", "#26537c", "#3f759f", "#999", "#666"], "chartArea":{"left":110,"top":15,"width":"500","height":"175"}, "animation":{"duration": 1000,"easing":"out"}}'
+			data-attc-controls='{"showHide":false,"create":false,"chartType":false}'
+			>
+			<thead>
+				<tr>
+					<th id="product">Product</th>
+					<th id="purchased">Purchased</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for product in products %}
+					<tr>
+						<td>{{ product.product.name }}</td>
+						<td>{{ product.count }}</td>
+					</tr>
+				{% else %}
+
+				{% endfor %}
+			</tbody>
+		</table>
+		<div id="productsArea"></div>
+	</div>
+</div>

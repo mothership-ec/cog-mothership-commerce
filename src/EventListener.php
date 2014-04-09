@@ -8,9 +8,10 @@ use Message\Cog\HTTP\RedirectResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
-use Message\Mothership\Commerce\Order\Event;
+use Message\Mothership\ControlPanel\Event\Dashboard\DashboardIndexEvent;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -33,6 +34,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			Events::BUILD_ORDER_TABS => array(
 				array('registerTabItems'),
+			),
+			DashboardIndexEvent::DASHBOARD_INDEX => array(
+				'buildDashboardIndex'
 			),
 		);
 	}
@@ -73,5 +77,13 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$event->addItem('ms.commerce.order.detail.view.dispatches', 'ms.commerce.order.dispatch.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.notes', 		'ms.commerce.order.note.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.documents', 	'ms.commerce.order.document.listing-title');
+	}
+
+	public function buildDashboardIndex(DashboardIndexEvent $event)
+	{
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index');
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:DiscountRevenue#index');
 	}
 }
