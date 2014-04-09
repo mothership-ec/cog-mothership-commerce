@@ -4,14 +4,20 @@ namespace Message\Mothership\Commerce\Controller\Module\Dashboard;
 
 use Message\Cog\Controller\Controller;
 
+/**
+ * Total sales dashboard module
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class TotalSales extends Controller
 {
 	const CACHE_KEY = 'dashboard.module.total-sales';
 	const CACHE_TTL = 3600;
 
 	/**
+	 * Get the daily sales for the past 7 days.
 	 *
-	 * @return
+	 * @return Message\Cog\HTTP\Response
 	 */
 	public function index()
 	{
@@ -20,7 +26,15 @@ class TotalSales extends Controller
 
 			$since = strtotime(date('Y-m-d')) - (60 * 60 * 24 * 6);
 
-			$data = $this->get('db.query')->run("SELECT DAYNAME(FROM_UNIXTIME(created_at)) as dow, SUM(total_net) as net, SUM(total_gross) as gross FROM order_summary WHERE created_at > {$since} GROUP BY DATE(FROM_UNIXTIME(created_at))");
+			$data = $this->get('db.query')->run("
+				SELECT
+					DAYNAME(FROM_UNIXTIME(created_at)) as dow,
+					SUM(total_net) as net,
+					SUM(total_gross) as gross
+				FROM order_summary
+				WHERE created_at > {$since}
+				GROUP BY DATE(FROM_UNIXTIME(created_at))
+			");
 
 			$total = 0;
 			$days = [];
@@ -37,6 +51,9 @@ class TotalSales extends Controller
 			$this->get('cache')->store(self::CACHE_KEY, $data, self::CACHE_TTL);
 		}
 
-		return $this->render('Message:Mothership:Commerce::module:dashboard:total-sales', $data);
+		return $this->render(
+			'Message:Mothership:Commerce::module:dashboard:total-sales',
+			$data
+		);
 	}
 }

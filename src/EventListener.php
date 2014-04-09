@@ -79,6 +79,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$event->addItem('ms.commerce.order.detail.view.documents', 	'ms.commerce.order.document.listing-title');
 	}
 
+	/**
+	 * Add controller references to the dashboard index.
+	 *
+	 * @param  DashboardIndexEvent $event
+	 */
 	public function buildDashboardIndex(DashboardIndexEvent $event)
 	{
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
