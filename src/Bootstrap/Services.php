@@ -389,11 +389,15 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('field.collection', function($fields, $c) {
-			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader']));
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));
 
 			return $fields;
 		});
+
+		$services['commerce.field.product_list'] = function($c) {
+			return new \Message\Mothership\Commerce\FieldType\Helper\ProductList($c['db.query']);
+		};
 
 		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = $services->factory(function($c) {

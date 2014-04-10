@@ -3,12 +3,11 @@
 namespace Message\Mothership\Commerce\FieldType;
 
 use Message\Cog\Field\Field;
+use Message\Cog\DB\Query;
 
 use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 
 use Message\Cog\Filesystem;
-use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Service\ContainerAwareInterface;
 use Symfony\Component\Form\FormBuilder;
 
 /**
@@ -22,9 +21,10 @@ class Product extends Field
 	protected $_products;
 	protected $_loader;
 
-	public function __construct(ProductLoader $loader)
+	public function __construct(ProductLoader $loader, Helper\ProductList $products)
 	{
-		$this->_loader = $loader;
+		$this->_loader    = $loader;
+		$this->_products  = $products->getProductList();
 	}
 
 	public function getFieldType()
@@ -54,30 +54,29 @@ class Product extends Field
 	public function getFieldOptions()
 	{
 		$defaults = [
-			'choices'       => $this->_getChoices(),
+			'choices'       => $this->_products,
 			'empty_value'   => 'Please select a product...',
 		];
 
 		return array_merge($defaults, parent::getFieldOptions());
 	}
 
-	protected function _getChoices()
+	protected function _loadProductNames()
 	{
-		$choices = array();
+		$result = $this->_query->run("
+			SELECT
+				product_id,
+				name
+			FROM
+				product
+			ORDER BY
+				name ASC
+		");
 
-		foreach ($this->_getProducts() as $product) {
-			$choices[$product->id] = $product->displayName ?: $product->name;
+		$this->_products = [];
+
+		foreach ($result as $product) {
+			$this->_products[$product->product_id] = $product->name;
 		}
-
-		return $choices;
-	}
-
-	protected function _getProducts()
-	{
-		if (null === $this->_products) {
-			$this->_products = $this->_loader->getAll();
-		}
-
-		return $this->_products;
 	}
 }
