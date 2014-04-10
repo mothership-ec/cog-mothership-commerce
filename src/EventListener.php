@@ -10,7 +10,7 @@ use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Events;
 
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
-use Message\Mothership\ControlPanel\Event\Dashboard\DashboardIndexEvent;
+use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -40,11 +40,17 @@ class EventListener extends BaseListener implements SubscriberInterface
 			Events::BUILD_ORDER_TABS => array(
 				array('registerTabItems'),
 			),
-			DashboardIndexEvent::DASHBOARD_INDEX => array(
+			DashboardEvent::DASHBOARD_INDEX => array(
 				'buildDashboardIndex'
 			),
+			'dashboard.commerce.products' => array(
+				'buildDashboardProducts',
+			),
+			'dashboard.commerce.orders' => array(
+				'buildDashboardOrders',
+			),
 			ActivitySummaryEvent::DASHBOARD_ACTIVITY_SUMMARY => array(
-				'buildDashboardUserSummary',
+				'buildDashboardBlockUserSummary',
 			),
 		);
 	}
@@ -90,9 +96,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 	/**
 	 * Add controller references to the dashboard index.
 	 *
-	 * @param  DashboardIndexEvent $event
+	 * @param  DashboardEvent $event
 	 */
-	public function buildDashboardIndex(DashboardIndexEvent $event)
+	public function buildDashboardIndex(DashboardEvent $event)
 	{
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
@@ -101,12 +107,33 @@ class EventListener extends BaseListener implements SubscriberInterface
 	}
 
 	/**
+	 * Add controller references to the products dashboard.
+	 *
+	 * @param  DashboardEvent $event
+	 */
+	public function buildDashboardProducts(DashboardEvent $event)
+	{
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
+	}
+
+	/**
+	 * Add controller references to the orders dashboard.
+	 *
+	 * @param  DashboardEvent $event
+	 */
+	public function buildDashboardOrders(DashboardEvent $event)
+	{
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index');
+	}
+
+	/**
 	 * Add the user's last edited product and order into the user summary
 	 * dashboard block.
 	 *
 	 * @param  ActivitySummaryEvent $event
 	 */
-	public function buildDashboardUserSummary(ActivitySummaryEvent $event)
+	public function buildDashboardBlockUserSummary(ActivitySummaryEvent $event)
 	{
 		$productID = $this->get('db.query')->run("
 			SELECT product_id
