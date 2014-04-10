@@ -12,6 +12,7 @@ use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardIndexEvent;
+use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -37,6 +38,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			DashboardIndexEvent::DASHBOARD_INDEX => array(
 				'buildDashboardIndex'
+			),
+			ActivitySummaryEvent::DASHBOARD_ACTIVITY_SUMMARY => array(
+				'buildDashboardUserSummary',
 			),
 		);
 	}
@@ -90,5 +94,56 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index');
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:DiscountRevenue#index');
+	}
+
+	/**
+	 * Add the user's last edited product and order into the user summary
+	 * dashboard block.
+	 *
+	 * @param  ActivitySummaryEvent $event
+	 */
+	public function buildDashboardUserSummary(ActivitySummaryEvent $event)
+	{
+		$productID = $this->get('db.query')->run("
+			SELECT product_id
+			FROM product
+			WHERE :userID?b IS NULL OR updated_by = :userID?i
+			ORDER BY updated_at DESC
+			LIMIT 1
+		", [
+			'userID' => $event->getUser()->id
+		]);
+
+		if (count($productID)) {
+			$product = $this->get('product.loader')->getByID($productID[0]->product_id);
+
+			$event->addActivity([
+				'label' => 'Last edited product',
+				'date'  => $product->authorship->updatedAt(),
+				'name'  => $product->name,
+				'url'   => '',
+			]);
+		}
+
+		$orderID = $this->get('db.query')->run("
+			SELECT order_id
+			FROM order_summary
+			WHERE :userID?b IS NULL OR updated_by = :userID?i
+			ORDER BY updated_at DESC
+			LIMIT 1
+		", [
+			'userID' => $event->getUser()->id
+		]);
+
+		if (count($orderID)) {
+			$order = $this->get('order.loader')->getByID($orderID[0]->order_id);
+
+			$event->addActivity([
+				'label' => 'Last edited order',
+				'date'  => $order->authorship->updatedAt(),
+				'name'  => '#' . $order->id,
+				'url'   => '',
+			]);
+		}
 	}
 }
