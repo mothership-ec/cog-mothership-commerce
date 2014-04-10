@@ -2,17 +2,21 @@
 
 namespace Message\Mothership\Commerce;
 
-use Message\Cog\Event\EventListener as BaseListener;
-use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\RedirectResponse;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Event\EventListener as BaseListener;
+
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Events;
+
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardIndexEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
+
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -117,11 +121,17 @@ class EventListener extends BaseListener implements SubscriberInterface
 		if (count($productID)) {
 			$product = $this->get('product.loader')->getByID($productID[0]->product_id);
 
+			$url = $this->get('routing.generator')->generate(
+				'ms.commerce.product.edit.attributes',
+				['productID' => $product->id],
+				UrlGeneratorInterface::ABSOLUTE_PATH
+			);
+
 			$event->addActivity([
 				'label' => 'Last edited product',
 				'date'  => $product->authorship->updatedAt(),
 				'name'  => $product->name,
-				'url'   => '',
+				'url'   => $url
 			]);
 		}
 
@@ -138,11 +148,17 @@ class EventListener extends BaseListener implements SubscriberInterface
 		if (count($orderID)) {
 			$order = $this->get('order.loader')->getByID($orderID[0]->order_id);
 
+			$url = $this->get('routing.generator')->generate(
+				'ms.commerce.order.detail.view',
+				['orderID' => $order->id],
+				UrlGeneratorInterface::ABSOLUTE_PATH
+			);
+
 			$event->addActivity([
 				'label' => 'Last edited order',
 				'date'  => $order->authorship->updatedAt(),
 				'name'  => '#' . $order->id,
-				'url'   => '',
+				'url'   => $url
 			]);
 		}
 	}
