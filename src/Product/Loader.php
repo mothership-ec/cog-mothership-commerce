@@ -144,6 +144,10 @@ class Loader
 				category
 			FROM
 				product
+			WHERE
+				category IS NOT NULL
+			AND
+				category != ''
 		");
 
 		return $result->flatten();
