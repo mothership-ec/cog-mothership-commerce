@@ -1,19 +1,37 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index')) }}
+{% endblock %}
 
 {% block main %}
-	<h1>Search Results for '{{ termsString }}'</h1>
+	<h1>Search Results for '{{ terms }}'</h1>
 
-	<ul class="search-results">
-		{% for product in products %}
-			<li>
-				<a href="{{ url('ms.commerce.product.edit.attributes.action', {'productID' : product.id) }}">
-					<p>{{ product.name}}</p>
-				</a>
-			</li>
-		{% else %}
-			<li class="no-result">
-				<p>No pages found.</p>
-			</li>
-		{% endfor %}
-	</ul>
+	{% if products | length > 0 %}
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for product in products %}
+					<tr>
+						<td>
+							<a href="{{ url('ms.commerce.product.edit.attributes.action', {'productID' : product.id}) }}">
+								{{ product.id }}
+							</a>
+						</td>
+						<td>
+							<a href="{{ url('ms.commerce.product.edit.attributes.action', {'productID' : product.id}) }}">
+								{{ product.name }}
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<p>No products found</p>
+	{% endif %}
 {% endblock %}

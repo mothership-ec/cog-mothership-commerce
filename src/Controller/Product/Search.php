@@ -27,7 +27,8 @@ class Search extends Controller
 		$products = $this->get('product.loader')->getBySearchTerms($data['terms'], 50);
 
 		return $this->render('Message:Mothership:Commerce::product:search-results', array(
-			'product' => $products,
+			'terms'    => $data['terms'],
+			'products' => $products,
 		));
 	}
 
