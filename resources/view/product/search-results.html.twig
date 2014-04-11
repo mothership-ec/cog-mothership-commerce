@@ -1,0 +1,19 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block main %}
+	<h1>Search Results for '{{ termsString }}'</h1>
+
+	<ul class="search-results">
+		{% for product in products %}
+			<li>
+				<a href="{{ url('ms.commerce.product.edit.attributes.action', {'productID' : product.id) }}">
+					<p>{{ product.name}}</p>
+				</a>
+			</li>
+		{% else %}
+			<li class="no-result">
+				<p>No pages found.</p>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
