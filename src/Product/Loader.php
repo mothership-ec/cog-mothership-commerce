@@ -149,6 +149,58 @@ class Loader
 		return $result->flatten();
 	}
 
+	public function getBySearchTerms($terms, $limit = null)
+	{
+		if (null !== $limit && (!is_numeric($limit) || is_float($limit))) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
+
+		$terms = explode(' ', $terms);
+		$minTermLength = 3;
+		$searchFields = [
+			'p.name',
+			'p.category',
+			'ui.sku',
+		];
+
+		$query = '(';
+
+		foreach ($terms as $i => $term) {
+			if (strlen($term) >= $minTermLength) {
+				$terms[$i] = $term = strtolower($term);
+
+				foreach ($searchFields as $j => $field) {
+					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . ' OR ';
+				}
+
+				$searchParams['term' . $i] = '%' . $term . '%';
+			}
+		}
+
+		$query .= ')';
+
+		$result = $this->_query->run('
+			SELECT
+				p.product_id
+			FROM
+				product
+			LEFT JOIN
+				product_unit AS u
+			USING
+				(product_id)
+			LEFT JOoN
+				product_unit_info AS ui
+			USING
+				(unit_id)
+			WHERE
+				visibility_search = 1 AND
+				' . $query . '
+		');
+
+		return $this->_loadProduct($result->flatten(), $limit);
+
+	}
+
 	protected function _loadProduct($productIDs, $limit = null)
 	{
 		if (!is_array($productIDs)) {
