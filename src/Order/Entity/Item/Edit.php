@@ -34,6 +34,8 @@ class Edit implements DB\TransactionalInterface
 	{
 		$this->_query          = $trans;
 		$this->_transOverriden = true;
+
+		return $this;
 	}
 
 	/**
