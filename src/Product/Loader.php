@@ -98,7 +98,7 @@ class Loader
 
 		$this->_returnArray = true;
 
-		return $this->_loadProduct($result->flatten());
+		return $this->_loadProduct($result->flatten(), $limit);
 	}
 
 	public function getAll()
