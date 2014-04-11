@@ -165,12 +165,17 @@ class Loader
 
 		$query = '(';
 
+		$searchParams = [];
+
 		foreach ($terms as $i => $term) {
 			if (strlen($term) >= $minTermLength) {
 				$terms[$i] = $term = strtolower($term);
 
 				foreach ($searchFields as $j => $field) {
-					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . ' OR ';
+					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s';
+					if ($j != count($searchFields) - 1) {
+						$query .= ' OR ';
+					}
 				}
 
 				$searchParams['term' . $i] = '%' . $term . '%';
@@ -179,11 +184,10 @@ class Loader
 
 		$query .= ')';
 
-		$result = $this->_query->run('
-			SELECT
+		$query = 'SELECT
 				p.product_id
 			FROM
-				product
+				product AS p
 			LEFT JOIN
 				product_unit AS u
 			USING
@@ -193,9 +197,9 @@ class Loader
 			USING
 				(unit_id)
 			WHERE
-				visibility_search = 1 AND
-				' . $query . '
-		');
+				' . $query . '';
+
+		$result = $this->_query->run($query, $searchParams);
 
 		return $this->_loadProduct($result->flatten(), $limit);
 
