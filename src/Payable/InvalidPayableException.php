@@ -3,14 +3,13 @@
 namespace Message\Mothership\Commerce\Payable;
 
 use Exception;
-use InvalidArgumentException;
 
 /**
  * Exception thrown when a payable is deemed invalid by a validator.
  *
  * @author Laurence Roberts <laurence@message.co.uk>
  */
-class InvalidPayableException extends InvalidArgumentException
+class InvalidPayableException extends Exception
 {
 	/**
 	 * List of errors created by an invalid payable.
