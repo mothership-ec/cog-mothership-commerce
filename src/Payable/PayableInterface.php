@@ -40,4 +40,11 @@ interface PayableInterface
 	 * @return \Message\Mothership\Commerce\Address\Address
 	 */
 	public function getPayableAddress($type);
+
+	/**
+	 * Get a unique transaction id for this payable.
+	 *
+	 * @return string
+	 */
+	public function getPayableTransactionID();
 }

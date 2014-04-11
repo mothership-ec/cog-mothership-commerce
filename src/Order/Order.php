@@ -419,4 +419,12 @@ class Order implements PayableInterface
 	{
 		return $this->getAddress($type);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableTransactionID()
+	{
+		return 'ORDER-' . strtoupper(uniqid());
+	}
 }
