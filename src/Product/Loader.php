@@ -188,7 +188,7 @@ class Loader
 				product_unit AS u
 			USING
 				(product_id)
-			LEFT JOoN
+			LEFT JOIN
 				product_unit_info AS ui
 			USING
 				(unit_id)
