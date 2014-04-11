@@ -99,6 +99,30 @@ class Loader
 		return $this->_load($result->flatten(), true);
 	}
 
+	public function getByDay(\DateTime $day)
+	{
+		$beginning = clone $day;
+		$beginning = $beginning->setTime(0, 0, 0);
+
+		$end = $day->setTime(23, 59, 59);
+
+		$result = $this->_query->run('
+			SELECT
+				transaction_id
+			FROM
+				transaction
+			WHERE
+				created_at >= :beginning?d
+			AND
+				created_at <= :end?d
+		', [
+			'beginning' => $beginning,
+			'end'       => $end,
+		]);
+
+		return $this->_load($result->flatten(), true);
+	}
+
 	/**
 	 * Returns all transaction of type $type
 	 *
