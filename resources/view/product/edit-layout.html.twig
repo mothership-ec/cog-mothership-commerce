@@ -1,15 +1,19 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-
-{% block main %}
+{% block content %}
+	<div class="toggle-left">
+		<a href="#"></a>
+	</div>
 	<hgroup class="title">
-		<h1>{{ title is defined ? title : product.name }}</h1>
+		<h1>{{ title is defined ? title : product.name }} (Product type)</h1>
+		<div class="controls products">
+			<button class="button small">Back</button>
+			<button class="button small">Duplicate</button>
+			<button class="button small delete">Delete</button>
+		</div>
 	</hgroup>
 	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
-	<section class="container-content medium">
+	<section class="container-content products">
 		{% block edit %} {% endblock %}
 	</section>
 {% endblock %}
