@@ -1,4 +1,7 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index')) }}
+{% endblock %}
 
 {% block main %}
 	<h1>Search Results for '{{ terms }}'</h1>
