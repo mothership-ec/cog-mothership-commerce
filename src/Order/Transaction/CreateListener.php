@@ -30,6 +30,7 @@ class CreateListener extends BaseListener implements SubscriberInterface
 			OrderEvents::ENTITY_CREATE_END => array(
 				array('createPaymentTransaction'),
 			),
+
 		);
 	}
 
@@ -59,7 +60,7 @@ class CreateListener extends BaseListener implements SubscriberInterface
 				($order->status->code === Statuses::PAYMENT_PENDING ? Types::CONTRACT_INITIATION : Types::ORDER);
 
 			$this->get('order.transaction.create')
-				->setTransaction($event->getTransaction())
+				->setDbTransaction($event->getTransaction())
 				->create($transaction);
 		}
 	}
@@ -76,10 +77,12 @@ class CreateListener extends BaseListener implements SubscriberInterface
 		$payment = $event->getEntity();
 		$order   = $event->getOrder();
 
-		if ($payment instanceof Payment
-				&& $order->status->code === Statuses::PAYMENT_PENDING
-				// only if order has already been created
-				&& null !== $order->id) {
+		if (
+			$payment instanceof Payment
+			&& $order->status->code === Statuses::PAYMENT_PENDING
+			// only if order has already been created
+			&& null !== $order->id
+		) {
 
 			$transaction = new Transaction;
 
@@ -87,7 +90,7 @@ class CreateListener extends BaseListener implements SubscriberInterface
 			$transaction->type = Types::CONTRACT_PAYMENT;
 
 			$this->get('order.transaction.create')
-				->setTransaction($event->getTransaction())
+				->setDbTransaction($event->getTransaction())
 				->create($transaction);
 		}
 	}
