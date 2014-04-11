@@ -14,15 +14,19 @@ use InvalidArgumentException;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class Create implements DB\TransactionalInterface
+class Create
 {
 	protected $_query;
 	protected $_loader;
 	protected $_currentUser;
 	protected $_transOverridden = false;
 
-	public function __construct(DB\Transaction $query, Loader $loader, DispatcherInterface $eventDispatcher, UserInterface $currentUser)
-	{
+	public function __construct(
+		DB\Transaction $query,
+		Loader $loader,
+		DispatcherInterface $eventDispatcher,
+		UserInterface $currentUser
+	) {
 		$this->_query           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
@@ -34,7 +38,7 @@ class Create implements DB\TransactionalInterface
 	 *
 	 * @param DBTransaction $trans transaction
 	 */
-	public function setTransaction(DB\Transaction $trans)
+	public function setDbTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
 		$this->_transOverridden = true;
