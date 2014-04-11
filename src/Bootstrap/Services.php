@@ -111,9 +111,14 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$services['order.assembler'] = function($c) {
+		$services['order.assembler'] = $services->factory(function($c) {
+			$order = $c['order'];
+
+			$order->locale     = $c['locale']->getId();
+			$order->currencyID = 'GBP';
+
 			$assembler = new Commerce\Order\Assembler(
-				$c['order'],
+				$order,
 				$c['event.dispatcher'],
 				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE)
 			);
@@ -122,7 +127,7 @@ class Services implements ServicesInterface
 			$assembler->setEntityTemporaryIdProperty('discounts', 'code');
 
 			return $assembler;
-		};
+		});
 
 		// Order decorators
 		$services['order.loader'] = $services->factory(function($c) {

@@ -87,8 +87,12 @@ class Loader
 		return count($result) ? $this->_loadProduct($result->flatten()) : false;
 	}
 
-	public function getByCategory($name)
+	public function getByCategory($name, $limit = null)
 	{
+		if (null !== $limit && (!is_numeric($limit) || is_float($limit))) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
+
 		$result = $this->_query->run('
 			SELECT
 				product_id
@@ -150,20 +154,53 @@ class Loader
 
 	public function getAll()
 	{
-		$result = $this->_query->run(
-			'SELECT
+		$result = $this->_query->run('
+			SELECT
 				product_id
 			FROM
-				product'
-		);
+				product
+			');
 
 		$this->_returnArray = true;
 
-		return count($result) ? $this->_loadProduct($result->flatten()) : array();
+		return count($result) ? $this->_loadProduct($result->flatten()) : [];
 	}
 
+	public function getByLimit($limit)
+	{
+		if (!is_numeric($limit) || is_float($limit)) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
 
-	protected function _loadProduct($productIDs)
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			LIMIT
+				0, :limit?i
+		', [
+			'limit' => $limit,
+		]);
+
+		$this->_returnArray = true;
+
+		return count($result) ? $this->_loadProduct($result->flatten()) : [];
+	}
+
+	public function getCategories()
+	{
+		$result = $this->_query->run("
+			SELECT DISTINCT
+				category
+			FROM
+				product
+		");
+
+		return $result->flatten();
+	}
+
+	protected function _loadProduct($productIDs, $limit = null)
 	{
 		if (!is_array($productIDs)) {
 			$productIDs = (array) $productIDs;
@@ -209,6 +246,7 @@ class Loader
 			WHERE
 				product.product_id 	 IN (?ij)
 				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NULL' : '' ) . '
+			' . ($limit ? 'LIMIT 0, ' . (int) $limit : '') . '
 		', 	array(
 				(array) $productIDs,
 			)

@@ -2,8 +2,8 @@
 
 {% block order_content %}
 	<div class="container-content short">
-		{% include '::order:order:detail' %}
-			{% include '::order:detail:item:summary' %}
+		{% include 'Message:Mothership:Commerce::order:order:detail' %}
+		{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}
 			{% if order is defined %}
 				<tfoot class="total-summary">
 					<tr>
