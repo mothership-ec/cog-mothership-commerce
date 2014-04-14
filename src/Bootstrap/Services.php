@@ -321,6 +321,8 @@ class Services implements ServicesInterface
 				$c['db.query'],
 				$c['locale'],
 				$c['file_manager.file.loader'],
+				$c['product.types'],
+				$c['product.detail.loader'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);
@@ -368,6 +370,17 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		});
 
+		$services->extend('field.collection', function($fields, $c) {
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));
+
+			return $fields;
+		});
+
+		$services['commerce.field.product_list'] = function($c) {
+			return new \Message\Mothership\Commerce\FieldType\Helper\ProductList($c['db.query']);
+		};
+
 		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = $services->factory(function($c) {
 			return $c['product.option.loader'];
@@ -382,6 +395,36 @@ class Services implements ServicesInterface
 		$services['product.option.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		});
+
+		$services['product.category.loader'] = $services->factory(function($c) {
+			return new Commerce\Product\Category\Loader($c['db.query']);
+		});
+
+		$services['product.types'] = function($c) {
+			return new Commerce\Product\Type\Collection(array(
+				new Commerce\Product\Type\BasicProductType(),
+			));
+		};
+
+		$services['product.form.attributes'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\ProductAttributes($c);
+		});
+
+		$services['product.detail.loader'] = function($c) {
+			return new Commerce\Product\Type\DetailLoader(
+				$c['db.query'],
+				$c['field.factory'],
+				$c['product.types']
+			);
+		};
+
+		$services['product.detail.edit'] = function($c) {
+			return new Commerce\Product\Type\DetailEdit(
+				$c['db.transaction'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
+		};
 
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
 			return new Commerce\User\Address\Loader(
