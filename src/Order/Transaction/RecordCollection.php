@@ -54,15 +54,37 @@ class RecordCollection implements \IteratorAggregate, \Countable
 	 */
 	public function getByType($type)
 	{
-		$returnArray = [];
+		$elements = [];
 
 		foreach ($this->_records as $record) {
 			if ($type == $record->getRecordType()) {
-				$returnArray[] = $record;
+				$elements[] = $record;
 			}
 		}
 
-		return $returnArray;
+		return $elements;
+	}
+
+	/**
+	 * Returns one or none element of the collection by its type.
+	 * 
+	 * @param  string                     $type Transaction type
+	 * @throws \InvalidArgumentException        If more than one elements were found.
+	 * @return false|RecordInterface            False if no transaction was found, the element
+	 *                                          if there was exactly one match.     
+	 */
+	public function getOneByType($type)
+	{
+		$elements = $this->getByType($type);
+
+		if (count($elements) > 1) {
+			throw new \InvalidArgumentException(sprintf(
+				'More than one records of type %s exist in this collection. If you want an array of records, use `getByType()` instead.',
+				$type
+			));
+		}
+
+		return reset($elements);
 	}
 
 	/**
