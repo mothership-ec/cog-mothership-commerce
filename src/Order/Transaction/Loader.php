@@ -130,7 +130,7 @@ class Loader
 	 *
 	 * @return array[Transaction] All transactions of type $type
 	 */
-	public function getByRecordType($type)
+	public function getByType($type)
 	{
 		$result = $this->_query->run('
 			SELECT
@@ -140,6 +140,30 @@ class Loader
 			WHERE
 				type = ?s
 		', $type);
+
+		return $this->_load($result->flatten(), true);
+	}
+
+	public function getByTypeAndRecord($type, RecordInterface $record)
+	{
+		$result = $this->_query->run('
+			SELECT
+				id
+			FROM
+				transaction
+			JOIN
+				transaction_record ON transaction.id = transaction_record.transaction_id
+			WHERE
+				transaction.type = :transactionType?s
+			AND WHERE
+				transaction_record.id = :recordID?i
+			AND WHERE
+				transaction_record.type = :recordType?s
+		', [
+			'transactionType' => $type,
+			'recordID'        => $record->getRecordID(),
+			'recordType'      => $record->getRecordType(),
+		]);
 
 		return $this->_load($result->flatten(), true);
 	}
