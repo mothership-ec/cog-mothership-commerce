@@ -78,7 +78,7 @@ class RecordCollection implements \IteratorAggregate, \Countable
 		$elements = $this->getByType($type);
 
 		if (count($elements) > 1) {
-			throws new \InvalidArgumentException(sprintf(
+			throw new \InvalidArgumentException(sprintf(
 				'More than one records of type %s exist in this collection. If you want an array of records, use `getByType()` instead.',
 				$type
 			));
