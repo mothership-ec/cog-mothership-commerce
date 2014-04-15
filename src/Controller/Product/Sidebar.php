@@ -11,7 +11,7 @@ class Sidebar extends Controller
 		$listing = array_flip($this->get('product.loader')->getCategories());
 
 		foreach ($listing as $category => $list) {
-			$listing[$category] = $this->get('product.loader')->getByCategory($category, 5);
+			$listing[$category] = $this->get('product.loader')->getByCategory($category, 20);
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:sidebar', array(

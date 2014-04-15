@@ -227,10 +227,14 @@ class Loader
 				$terms[$i] = $term = strtolower($term);
 
 				foreach ($searchFields as $j => $field) {
-					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s';
-					if ($j != count($searchFields) - 1) {
+					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
+					if ($j != (count($searchFields) - 1)) {
 						$query .= ' OR ';
 					}
+				}
+
+				if ($i != (count($terms) - 1)) {
+					$query .= ' OR ';
 				}
 
 				$searchParams['term' . $i] = '%' . $term . '%';
