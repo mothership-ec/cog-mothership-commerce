@@ -4,13 +4,14 @@ namespace Message\Mothership\Commerce\Order;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
+use Message\Mothership\Commerce\Payable\PayableInterface;
 
 /**
  * Order model. Container for all information about an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Order implements Transaction\RecordInterface
+class Order implements Transaction\RecordInterface, PayableInterface
 {
 	const RECORD_TYPE = 'order';
 
@@ -402,5 +403,45 @@ class Order implements Transaction\RecordInterface
 	public function getRecordID()
 	{
 		return $this->id;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableAmount()
+	{
+		return $this->getAmountDue();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableTotal()
+	{
+		return $this->getTotal();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableCurrency()
+	{
+		return $this->currencyID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableAddress($type)
+	{
+		return $this->getAddress($type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableTransactionID()
+	{
+		return 'ORDER-' . strtoupper(uniqid());
 	}
 }

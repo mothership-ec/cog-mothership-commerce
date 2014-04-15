@@ -15,6 +15,9 @@ ms.commerce:
       display-name:
         label: Display Name
         help: The display name can be different from the 'actual' product name.
+      type:
+        label: Type
+        help: The type of product this will be. This will determine the information you can add.
       category:
         label: Category
         help: This is used for grouping products. All products with the same 'category' are linked automatically.

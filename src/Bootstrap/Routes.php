@@ -11,6 +11,9 @@ class Routes implements RoutesInterface
 		$router['ms.product']->setParent('ms.cp')->setPrefix('/product');
 		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');
 
+		$router['ms.product']->add('ms.commerce.product.search', 'search-results', 'Message:Mothership:Commerce::Controller:Product:Search#process')
+			->setMethod('GET');
+
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', 'Message:Mothership:Commerce::Controller:Product:Dashboard#index');
 
 

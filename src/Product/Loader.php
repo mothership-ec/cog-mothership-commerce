@@ -17,19 +17,25 @@ class Loader
 	protected $_includeDeleted = false;
 
 	protected $_returnArray;
+	protected $_productTypes;
+	protected $_detailLoader;
 
 	public function __construct(
 		Query $query,
 		Locale $locale,
 		FileLoader $fileLoader,
+		Type\Collection $productTypes,
+		Type\DetailLoader $detailLoader,
 		array $entities = array(),
 		$priceTypes = array()
 	) {
-		$this->_query = $query;
-		$this->_locale = $locale;
-		$this->_entities = $entities;
-		$this->_priceTypes = $priceTypes;
-		$this->_fileLoader = $fileLoader;
+		$this->_query			= $query;
+		$this->_locale			= $locale;
+		$this->_entities		= $entities;
+		$this->_productTypes	= $productTypes;
+		$this->_detailLoader	= $detailLoader;
+		$this->_priceTypes		= $priceTypes;
+		$this->_fileLoader		= $fileLoader;
 	}
 
 	/**
@@ -81,8 +87,12 @@ class Loader
 		return count($result) ? $this->_loadProduct($result->flatten()) : false;
 	}
 
-	public function getByCategory($name)
+	public function getByCategory($name, $limit = null)
 	{
+		if (null !== $limit && (!is_numeric($limit) || is_float($limit))) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
+
 		$result = $this->_query->run('
 			SELECT
 				product_id
@@ -94,25 +104,163 @@ class Loader
 
 		$this->_returnArray = true;
 
+		return $this->_loadProduct($result->flatten(), $limit);
+	}
+
+	public function getByType($type)
+	{
+		$result = $this->_query->run("
+			SELECT
+				product_id
+			FROM
+				product
+			WHERE
+				`type` = ?s
+		", $type);
+
+		$this->_returnArray = true;
+
+		return $this->_loadProduct($result->flatten());
+	}
+
+	public function getByDetail($detailName, $detailValue)
+	{
+		if ($detailValue instanceof \DateTime) {
+			$detailValue = $detailValue->getTimestamp();
+		}
+
+		$result = $this->_query->run("
+			SELECT
+				product_id
+			FROM
+				product
+			LEFT JOIN
+				product_detail AS d
+			USING
+				(product_id)
+			WHERE
+				d.name = :detailName?s
+			AND
+				d.value = :detailValue?s
+		", [
+			'detailName'  => $detailName,
+			'detailValue' => $detailValue,
+		]);
+
+		$this->_returnArray = true;
+
 		return $this->_loadProduct($result->flatten());
 	}
 
 	public function getAll()
 	{
-		$result = $this->_query->run(
-			'SELECT
+		$result = $this->_query->run('
+			SELECT
 				product_id
 			FROM
-				product'
-		);
+				product
+			');
 
 		$this->_returnArray = true;
 
-		return count($result) ? $this->_loadProduct($result->flatten()) : array();
+		return count($result) ? $this->_loadProduct($result->flatten()) : [];
 	}
 
+	public function getByLimit($limit)
+	{
+		if (!is_numeric($limit) || is_float($limit)) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
 
-	protected function _loadProduct($productIDs)
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			LIMIT
+				0, :limit?i
+		', [
+			'limit' => $limit,
+		]);
+
+		$this->_returnArray = true;
+
+		return count($result) ? $this->_loadProduct($result->flatten()) : [];
+	}
+
+	public function getCategories()
+	{
+		$result = $this->_query->run("
+			SELECT DISTINCT
+				category
+			FROM
+				product
+			WHERE
+				category IS NOT NULL
+			AND
+				category != ''
+		");
+
+		return $result->flatten();
+	}
+
+	public function getBySearchTerms($terms, $limit = null)
+	{
+		if (null !== $limit && (!is_numeric($limit) || is_float($limit))) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
+
+		$terms = explode(' ', $terms);
+		$minTermLength = 3;
+		$searchFields = [
+			'p.name',
+			'p.category',
+			'ui.sku',
+		];
+
+		$query = '(';
+
+		$searchParams = [];
+
+		foreach ($terms as $i => $term) {
+			if (strlen($term) >= $minTermLength) {
+				$terms[$i] = $term = strtolower($term);
+
+				foreach ($searchFields as $j => $field) {
+					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s';
+					if ($j != count($searchFields) - 1) {
+						$query .= ' OR ';
+					}
+				}
+
+				$searchParams['term' . $i] = '%' . $term . '%';
+			}
+		}
+
+		$query .= ')';
+
+		$query = 'SELECT
+				p.product_id
+			FROM
+				product AS p
+			LEFT JOIN
+				product_unit AS u
+			USING
+				(product_id)
+			LEFT JOIN
+				product_unit_info AS ui
+			USING
+				(unit_id)
+			WHERE
+				' . $query . '';
+
+		$result = $this->_query->run($query, $searchParams);
+
+		return $this->_loadProduct($result->flatten(), $limit);
+
+	}
+
+	protected function _loadProduct($productIDs, $limit = null)
 	{
 		if (!is_array($productIDs)) {
 			$productIDs = (array) $productIDs;
@@ -126,14 +274,14 @@ class Loader
 			'SELECT
 				product.product_id   AS id,
 				product.product_id   AS catalogueID,
-				product.year         AS year,
 				product.created_at   AS createdAt,
 				product.created_by   AS createdBy,
 				product.updated_at   AS updatedAt,
 				product.updated_by   AS updatedBy,
 				product.deleted_at   AS deletedAt,
 				product.deleted_by   AS deletedBy,
-				product.brand    	 AS brand,
+				product.brand        AS brand,
+				product.type		 AS type,
 				product.name         AS name,
 				product.category     AS category,
 				product.tax_strategy AS taxStrategy,
@@ -142,13 +290,8 @@ class Loader
 				product.weight_grams AS weight,
 
 				product_info.display_name      AS displayName,
-				product_info.season            AS season,
 				product_info.description       AS description,
-				product_info.fabric            AS fabric,
-				product_info.features          AS features,
-				product_info.care_instructions AS careInstructions,
 				product_info.short_description AS shortDescription,
-				product_info.sizing            AS sizing,
 				product_info.notes             AS notes,
 
 				product_export.export_description            AS exportDescription,
@@ -163,6 +306,7 @@ class Loader
 			WHERE
 				product.product_id 	 IN (?ij)
 				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NULL' : '' ) . '
+			' . ($limit ? 'LIMIT 0, ' . (int) $limit : '') . '
 		', 	array(
 				(array) $productIDs,
 			)
@@ -275,10 +419,20 @@ class Loader
 				}
 
 				$products[$key]->images[$image->id] = $image;
+
 			}
+
+			$this->_loadType($products[$key], $data->type);
 		}
 
 		return count($products) == 1 && !$this->_returnArray ? array_shift($products) : $products;
+	}
+
+	protected function _loadType(Product $product, $type)
+	{
+		$product->details	= $this->_detailLoader->load($product);
+		$productType		= $this->_productTypes->get($type);
+		$product->type		= $productType;
 	}
 
 }
