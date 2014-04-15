@@ -207,8 +207,6 @@ class Loader
 				(unit_id)
 			WHERE
 				' . $query . '
-			AND
-				deleted_by = NULL
 			';
 
 		$result = $this->_query->run($query, $searchParams);
