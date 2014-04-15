@@ -188,7 +188,7 @@ class Loader
 		return count($result) ? $this->_loadProduct($result->flatten()) : [];
 	}
 
-	public function getCategories()
+	public function getCategories($includeDeleted = false)
 	{
 		$result = $this->_query->run("
 			SELECT DISTINCT
@@ -199,6 +199,7 @@ class Loader
 				category IS NOT NULL
 			AND
 				category != ''
+			" . (!$includeDeleted) ? "AND deleted_at IS NULL " : "" . "
 		");
 
 		return $result->flatten();
@@ -256,7 +257,8 @@ class Loader
 			USING
 				(unit_id)
 			WHERE
-				' . $query . '';
+				' . $query . '
+			';
 
 		$result = $this->_query->run($query, $searchParams);
 
