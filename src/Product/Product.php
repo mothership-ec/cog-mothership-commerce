@@ -374,4 +374,9 @@ class Product
 	{
 		return false !== $this->getImage($type, $options);
 	}
+
+	public function hasTag($tag)
+	{
+		return in_array($tag, $this->tags);
+	}
 }
