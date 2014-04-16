@@ -10,52 +10,62 @@
 			<div class="content">
 				<div class="field required">
 					<label for="name">Name</label>
-					<input type="text" id="name" placeholder="Name">
+					<input type="text" id="name" placeholder="Enter product name">
 				</div>
 				<div class="field required">
 					<label for="brand">Brand</label>
-					<input type="text" id="brand" placeholder="Brand">
+					<input type="text" id="brand" placeholder="e.g. Addidas, Nike, Barbour..">
 				</div>
 				<div class="field required">
 					<label for="category">Category</label>
 					<input type="text" id="category" class="example-category" placeholder="category">
 				</div>
 				<h2>Variants</h2>
-				<div class="variant-options">
-					<ul>
-						<li>
-							<span class="name">Blue</span> - <span class="size">X small</span>
-							<label for="stock">Stock value</label>
-							<input type="number" id="stock" placeholder="0">
-							<a href="#" class="remove"></a>
-						</li>
-						<li>
-							<span class="name">Blue</span> - <span class="size">X small</span>
-							<label for="stock">Stock value</label>
-							<input type="number" id="stock" placeholder="0">
-							<a href="#" class="remove"></a>
-						</li>
-						<li>
-							<span class="name">Blue</span> - <span class="size">X small</span>
-							<label for="stock">Stock value</label>
-							<input type="number" id="stock" placeholder="0">
-							<a href="#" class="remove"></a>
-						</li>
-						<li>
-							<span class="name">Blue</span> - <span class="size">X small</span>
-							<label for="stock">Stock value</label>
-							<input type="number" id="stock" placeholder="0">
-							<a href="#" class="remove"></a>
-						</li>
-					</ul>
-				</div>
-				<div class="field required">
-					<label for="colour">Colour</label>
-					<input type="hidden" id="colour" style="width: 70%;" tabindex="-1" placeholder="Colour" class="select2-offscreen">
-				</div>
-				<div class="field required">
-					<label for="colour">Size</label>
-					<input type="hidden" id="size" style="width: 70%;" tabindex="-1" placeholder="Sizes" class="select2-offscreen">
+				<div class="variants">
+					<div class="field required">
+						<label for="colour">Colour</label>
+						<input type="hidden" id="colour" style="width: 90%;" tabindex="-1" placeholder="Colour" class="select2-offscreen">
+					</div>
+					<div class="field required">
+						<label for="colour">Size</label>
+						<input type="hidden" id="size" style="width: 90%;" tabindex="-1" placeholder="Sizes" class="select2-offscreen">
+					</div>
+					<div class="options">
+						<ul>
+							<li>
+								<span class="name">Blue</span> - <span class="size">X small</span>
+								<fieldset>
+									<label for="stock">Stock value</label>
+									<input type="number" id="stock" placeholder="0">
+								</fieldset>
+								<a href="#" class="remove"></a>
+							</li>
+							<li>
+								<span class="name">Blue</span> - <span class="size">X small</span>
+								<fieldset>
+									<label for="stock">Stock value</label>
+									<input type="number" id="stock" placeholder="0">
+								</fieldset>
+								<a href="#" class="remove"></a>
+							</li>
+							<li>
+								<span class="name">Blue</span> - <span class="size">X small</span>
+								<fieldset>
+									<label for="stock">Stock value</label>
+									<input type="number" id="stock" placeholder="0">
+								</fieldset>
+								<a href="#" class="remove"></a>
+							</li>
+							<li>
+								<span class="name">Blue</span> - <span class="size">X small</span>
+								<fieldset>
+									<label for="stock">Stock value</label>
+									<input type="number" id="stock" placeholder="0">
+								</fieldset>
+								<a href="#" class="remove"></a>
+							</li>
+						</ul>
+					</div>
 				</div>
 				<div class="field required">
 					<label for="category">Price</label>
@@ -67,9 +77,11 @@
 				</div>
 			</div>
 		</section>
-		<button type="submit" class="button small save" id="save-content">
-			{{ 'ms.commerce.product.button.create'|trans }}
-		</button>
+		<div class="save-content">
+			<a href="#" class="button small save">
+				{{ 'ms.commerce.product.button.create'|trans }}
+			</a>
+		</div>
 	</form>
 </div>
 
