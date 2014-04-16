@@ -746,7 +746,11 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->get('field.form')->generate($this->_product->details);
+		return $this->get('field.form')->generate($this->_product->details, [
+			'action' => $this->generateUrl('ms.commerce.product.edit.details.action', [
+					'productID' => $this->_product->id,
+				])
+		]);
 	}
 
 	protected function _getProductPricingForm()
