@@ -199,7 +199,7 @@ class Loader
 				category IS NOT NULL
 			AND
 				category != ''
-			" . (!$includeDeleted) ? "AND deleted_at IS NOT NULL " : "" . "
+			" . (!$includeDeleted ? " AND deleted_at IS NULL " : "") . "
 		");
 
 		return $result->flatten();
@@ -311,7 +311,7 @@ class Loader
 				product_export ON (product.product_id = product_export.product_id)
 			WHERE
 				product.product_id 	 IN (?ij)
-				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NOT NULL' : '' ) . '
+				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NULL' : '' ) . '
 			' . ($limit ? 'LIMIT 0, ' . (int) $limit : '') . '
 		', 	array(
 				(array) $productIDs,
