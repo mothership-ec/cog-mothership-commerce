@@ -311,7 +311,7 @@ class Loader
 				product_export ON (product.product_id = product_export.product_id)
 			WHERE
 				product.product_id 	 IN (?ij)
-				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NULL' : '' ) . '
+				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NOT NULL' : '' ) . '
 			' . ($limit ? 'LIMIT 0, ' . (int) $limit : '') . '
 		', 	array(
 				(array) $productIDs,
