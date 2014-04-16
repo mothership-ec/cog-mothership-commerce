@@ -199,7 +199,7 @@ class Loader
 				category IS NOT NULL
 			AND
 				category != ''
-			" . (!$includeDeleted) ? "AND deleted_at IS NULL " : "" . "
+			" . (!$includeDeleted) ? "AND deleted_at IS NOT NULL " : "" . "
 		");
 
 		return $result->flatten();
