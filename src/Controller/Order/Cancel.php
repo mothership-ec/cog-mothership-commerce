@@ -8,15 +8,37 @@ use Message\Mothership\Commerce\Order\Entity\Note\Note;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reasons;
 use Message\Mothership\Commerce\Product\Stock\Location;
 
+/**
+ * Controller responsible for the cancellation of whole orders and individual
+ * items of an order.
+ */
 class Cancel extends Controller
 {
 	protected $_order;
-	protected $_tasks;
 
+	/**
+	 * Collects success flashes of different actions.
+	 * 
+	 * @var array[string]
+	 */
+	protected $_successFlashes = [];
+
+	/**
+	 * Method responsible for cancelling a whole order.
+	 * 
+	 * @param  int $orderID Order ID
+	 * 
+	 * @return Message\Cog\HTTP\Response Response
+	 */
 	public function cancelOrder($orderID)
 	{
 		$this->_order = $this->_getAndCheckOrder($orderID);
-		$form = $this->createForm($this->get('order.form.cancel'));
+		$form = $this->createForm($this->get('order.form.cancel'), null, [
+			'action' => $this->generateUrl(
+				'ms.commerce.order.cancel',
+				['orderID' => $this->_order->id]
+			),
+		]);
 
 		$form->handleRequest();
 
@@ -30,10 +52,20 @@ class Cancel extends Controller
 			$orderEdit = $this->get('order.edit');
 			$orderEdit->setTransaction($transaction);
 			$this->_order = $orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
-			$this->_tasks[] = 'cancelled order';
+			$this->_successFlashes[] = sprintf('Successfully cancelled order #%s.', $this->_order->id);
 
 			if ($stock) {
-				$this->_handleOrderStock($transaction);	
+				$this->_configureStockManagerAndLocation($transaction, Reasons::CANCELLED_ORDER);	
+
+				foreach ($this->_order->items->getRows() as $row) {
+					$this->_stockManager->increment(
+						$row->first()->getUnit(),
+						$this->_stockLocation,
+						$row->getQuantity()
+					);
+				}
+
+				$this->_successFlashes[] = sprintf('Successfully moved item(s) to stock location `%s`.', $this->_stockLocation->displayName);
 			}
 
 			if ($refund) {
@@ -42,64 +74,130 @@ class Cancel extends Controller
 
 			if ($transaction->commit()) {
 				if ($notifyCustomer) {
-					$this->_handleCustomerNotification('mail.factory.order.cancellation');
+					$this->_sendCustomerNotification('mail.factory.order.cancellation');
 				}
 
-				$this->addFlash('success', sprintf('Successfully:  %s.', join($this->_tasks, ', ')));
+				$this->_addFlashes();
 			}
 		}
 
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
 			'order' => $this->_order,
 			'form'  => $form,
-			'title' => sprintf('Cancel Order #%s', $this->_order->id),
+			'title' => 'Cancel Order',
 		]);
 	}
 
+	/**
+	 * Method responsible for cancelling an item in an order.
+	 * 
+	 * @param  int $orderID Order ID
+	 * @param  int $itemID  Item ID
+	 * 
+	 * @return Message\Cog\HTTP\Response Response
+	 */
 	public function cancelItem($orderID, $itemID)
 	{
 		$this->_order = $this->_getAndCheckOrder($orderID);
-		$this->_addresses = $this->get('order.address.loader')->getByOrder($this->_order);
-		return $this->render('::order:detail:address:listing', array(
+		$item = $this->_order->items->get($itemID);
+
+		$form = $this->createForm($this->get('order.form.cancel'), null, [
+			'action' => $this->generateUrl(
+				'ms.commerce.order.item.cancel',
+				['orderID' => $this->_order->id, 'itemID' => $item->id]
+			),
+		]);
+		$form->handleRequest();
+
+		if ($form->isValid()) {
+			$stock          = $form->get('stock')->getData();
+			$refund         = $form->get('refund')->getData();
+			$notifyCustomer = $form->get('notifyCustomer')->getData();
+
+			$transaction = $this->get('db.transaction');
+
+			$itemEdit = $this->get('order.item.edit');
+			$itemEdit->setTransaction($transaction);
+			$itemEdit->updateStatus($item, Order\Statuses::CANCELLED);
+			$this->_successFlashes[] = sprintf('Successfully cancelled item `%s`.', $item->getDescription());
+
+			if ($stock) {
+				$this->_configureStockManagerAndLocation($transaction, Reasons::CANCELLED_ITEM);
+				$this->_stockManager->increment(
+					$item->getUnit(),
+					$this->_stockLocation
+				);
+
+				$this->_successFlashes[] = sprintf('Successfully moved item to stock location `%s`.', $this->_stockLocation->displayName);	
+			}
+
+			if ($refund) {
+				// do the crazy refund stuff here
+			}
+
+			if ($transaction->commit()) {
+				if ($notifyCustomer) {
+					$this->_sendCustomerNotification('mail.factory.order.item.cancellation');
+				}
+
+				$this->_addFlashes();
+			}
+		}
+
+		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
 			'order' => $this->_order,
-			'addresses' => $this->_addresses,
-		));
+			'item'  => $item,
+			'form'  => $form,
+			'title' => 'Cancel Item',
+		]);
 	}
 
-	protected function _handleOrderStock($transaction)
+	/**
+	 * Configures $_stockManager by setting its transaction, reason, note and
+	 * automated properties. Also sets $_stockLocation and sets it to the
+	 * sell stock location.
+	 * 
+	 * @param  Mothership\Cog\DB\Transaction $transaction Transaction to be used
+	 * @param  string                        $reasonName  Name of reason to be set
+	 * 
+	 */
+	protected function _configureStockManagerAndLocation($transaction, $reasonName)
 	{
+		$this->_stockLocation = $this->get('stock.locations')
+			->getRoleLocation(Location\Collection::SELL_ROLE);
+
 		$this->_stockManager = $this->get('stock.manager');
 		$this->_stockManager->setTransaction($transaction);
 
-		$reason = $this->get('stock.movement.reasons')->get(Reasons::CANCELLED_ORDER);
-
-		$stockLocation = $this->get('stock.locations')
-			->getRoleLocation(Location\Collection::SELL_ROLE);
-
+		$reason = $this->get('stock.movement.reasons')->get($reasonName);
 		$this->_stockManager->setReason($reason);
+
 		$this->_stockManager->setNote(sprintf('Order #%s', $this->_order->id));
 		$this->_stockManager->setAutomated(false);
-
-		foreach ($this->_order->items->getRows() as $row) {
-			$this->_stockManager->increment(
-				$row->first()->getUnit(),
-				$stockLocation,
-				$row->getQuantity()
-			);
-		}
-
-		$this->_tasks[] = sprintf('moved item(s) to stock location `%s`', $stockLocation->displayName);
 	}
 
-	protected function _handleCustomerNotification($factoryName)
+	/**
+	 * Sends customer notification using factory with name $factoryName.
+	 * 
+	 * @param  string $factoryName Name of the factory used to create the email.
+	 */
+	protected function _sendCustomerNotification($factoryName)
 	{
 		$factory = $this->get($factoryName)
 			->set('order', $this->_order);
 		$this->get('mail.dispatcher')->send($factory->getMessage());
 		
-		$this->_tasks[] = 'notified customer';
+		$this->_successFlashes[] = 'Successfully notified customer.';
 	}
 
+	/**
+	 *	Gets order by order id.
+	 * 
+	 * @param  int          $orderID Order ID
+	 * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no order for id exists
+	 * 
+	 * @return Order\Order  Order with ID $orderID
+	 */
 	protected function _getAndCheckOrder($orderID) {
 		$order = $this->get('order.loader')->getById($orderID);
 
@@ -115,5 +213,16 @@ class Cancel extends Controller
 		}
 
 		return $order;
+	}
+
+	/**
+	 * Collects flashes, so there can't be flash weirdness, when something goes wrong
+	 * with transactions.
+	 */
+	protected function _addFlashes()
+	{
+		foreach ($this->_successFlashes as $flash) {
+			$this->addFlash('success', $flash);
+		}
 	}
 }

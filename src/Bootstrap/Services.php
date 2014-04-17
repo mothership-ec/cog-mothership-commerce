@@ -569,7 +569,7 @@ class Services implements ServicesInterface
 			$factory->extend(function($factory, $message) use ($appName) {
 				$message->setTo($factory->order->user->email);
 				$message->setSubject(sprintf('An item of your %s order has been cancelled - %d', $appName, $factory->order->orderID));
-				$message->setView('Message:Mothership:Commerce::mail:order:cancel:order-cancellation', array(
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:item-cancellation', array(
 					'order'          => $factory->order,
 					'cancelledItems' => $factory->order->items->getByCurrentStatusCode(OrderStatuses::CANCELLED),
 					'companyName'    => $appName,
