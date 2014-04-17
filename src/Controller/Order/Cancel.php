@@ -11,6 +11,7 @@ use Message\Mothership\Commerce\Product\Stock\Location;
 class Cancel extends Controller
 {
 	protected $_order;
+	protected $_tasks;
 
 	public function cancelOrder($orderID)
 	{
@@ -29,21 +30,22 @@ class Cancel extends Controller
 			$orderEdit = $this->get('order.edit');
 			$orderEdit->setTransaction($transaction);
 			$this->_order = $orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
+			$this->_tasks[] = 'cancelled order';
 
 			if ($stock) {
-				$this->_handleOrderStock;	
+				$this->_handleOrderStock($transaction);	
 			}
 
 			if ($refund) {
 				// do the crazy refund stuff here
 			}
 
-			if ($notifyCustomer) {
-				$factory = $this->get('mail.factory.order.note.notification')
-					->set('order', $this->_order);
-				$this->get('mail.dispatcher')->send($factory->getMessage());
-				
-				$this->addFlash('success', 'Successfully notified customer.');
+			if ($transaction->commit()) {
+				if ($notifyCustomer) {
+					$this->_handleCustomerNotification('mail.factory.order.cancellation');
+				}
+
+				$this->addFlash('success', sprintf('Successfully:  %s.', join($this->_tasks, ', ')));
 			}
 		}
 
@@ -79,11 +81,22 @@ class Cancel extends Controller
 
 		foreach ($this->_order->items->getRows() as $row) {
 			$this->_stockManager->increment(
-				$row->first->getUnit(),
+				$row->first()->getUnit(),
 				$stockLocation,
 				$row->getQuantity()
 			);
 		}
+
+		$this->_tasks[] = sprintf('moved item(s) to stock location `%s`', $stockLocation->displayName);
+	}
+
+	protected function _handleCustomerNotification($factoryName)
+	{
+		$factory = $this->get($factoryName)
+			->set('order', $this->_order);
+		$this->get('mail.dispatcher')->send($factory->getMessage());
+		
+		$this->_tasks[] = 'notified customer';
 	}
 
 	protected function _getAndCheckOrder($orderID) {

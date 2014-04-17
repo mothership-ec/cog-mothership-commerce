@@ -74,7 +74,7 @@ class Edit implements DB\TransactionalInterface
 		$order = $this->_eventDispatcher->dispatch(
 			Events::STATUS_CHANGE,
 			$event
-		);
+		)->getOrder();
 
 		if (!$this->_transOverridden) {
 			$this->_query->commit();

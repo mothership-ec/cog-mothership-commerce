@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
-use Commerce\Product\Stock\Movement\Reason;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason;
 
 use Message\User\AnonymousUser;
 
@@ -550,7 +550,7 @@ class Services implements ServicesInterface
 			$factory->extend(function($factory, $message) use ($appName) {
 				$message->setTo($factory->order->user->email);
 				$message->setSubject(sprintf('Your %s order has been cancelled - %d', $appName, $factory->order->orderID));
-				$message->setView('Message:Mothership:Ecommerce::mail:order:cancel:order-cancellation', array(
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:order-cancellation', array(
 					'order'       => $factory->order,
 					'companyName' => $appName,
 				));
@@ -558,6 +558,26 @@ class Services implements ServicesInterface
 
 			return $factory;
 		});
+
+		$services['mail.factory.order.item.cancellation'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email);
+				$message->setSubject(sprintf('An item of your %s order has been cancelled - %d', $appName, $factory->order->orderID));
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:order-cancellation', array(
+					'order'          => $factory->order,
+					'cancelledItems' => $factory->order->items->getByCurrentStatusCode(OrderStatuses::CANCELLED),
+					'companyName'    => $appName,
+				));
+			});
+
+			return $factory;
+		});		
 	}
 
 	public function registerProductPageMapper($services)

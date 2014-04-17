@@ -7,7 +7,7 @@ namespace Message\Mothership\Commerce\Product\Stock\Movement\Reason;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class Reason
+class Reasons
 {
 	const NEW_ORDER       = 'new_order';
 	const CANCELLED_ORDER = 'cancelled_order';

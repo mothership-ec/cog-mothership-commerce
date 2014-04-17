@@ -5,8 +5,9 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
-use Message\Mothership\Commerce\Order\Status\Statuses;
+use Message\Mothership\Commerce\Order\Statuses;
 
+use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
 /**
@@ -14,7 +15,7 @@ use Message\Cog\Event\SubscriberInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener implements SubscriberInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
 	protected $_defaultStatus;
 
@@ -56,7 +57,7 @@ class EventListener implements SubscriberInterface
 	{
 		$order = $event->getOrder();
 
-		if (Statuses::CANCELLED === $order->status) {
+		if (Statuses::CANCELLED === $order->status->code) {
 			$itemEdit = $this->get('order.item.edit');
 			$itemEdit->setTransaction($event->getTransaction());
 			$itemEdit->updateStatus($order->items->all(), Statuses::CANCELLED);
