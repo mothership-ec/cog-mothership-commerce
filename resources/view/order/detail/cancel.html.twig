@@ -1,6 +1,12 @@
-{{ form_start(form) }}
-{{ form_rest(form) }}
+{% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
 
-<button type="submit" class="button save small">{{ title }} </button>
+{% block title title %}
+
+{% block content %}
+{{ form_start(form) }}
+	{{ form_rest(form) }}
+
+	<button type="submit" class="button save small">{{ title }}</button>
 
 {{ form_end(form) }}
+{% endblock %}
