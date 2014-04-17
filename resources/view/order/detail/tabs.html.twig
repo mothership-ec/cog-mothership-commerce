@@ -3,5 +3,8 @@
 	{% for item in items %}
 		<li class="{{ item.classes|join(' ') }}"><a href="{{ url(item.target, {orderID: orderID }) }}">{{ item.label|trans }}</a></li>
 	{% endfor %}
-</ul>
+	</ul>
+	<div class="controls">
+	    <a href="{{ url('ms.commerce.order.cancel', {'orderID': orderID }) }}" class="button small cancel">Cancel</a>
+	</div>
 </div>

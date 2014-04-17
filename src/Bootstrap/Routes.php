@@ -109,5 +109,7 @@ class Routes implements RoutesInterface
 			->setRequirement('orderID', '\d+');
 
 		$router['ms.order']->add('ms.commerce.order.document.print', 'document/{documentID}/print', 'Message:Mothership:Commerce::Controller:Order:Document#printDocument');
+
+		$router['ms.order']->add('ms.commerce.order.cancel', 'view/{orderID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel#cancelOrder');
 	}
 }

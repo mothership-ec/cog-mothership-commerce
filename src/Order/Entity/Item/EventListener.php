@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
+use Message\Mothership\Commerce\Order\Status\Statuses;
 
 use Message\Cog\Event\SubscriberInterface;
 
@@ -35,6 +36,9 @@ class EventListener implements SubscriberInterface
 				array('setDefaultActualPrice'),
 				array('calculateAllItemsTax'),
 			),
+			OrderEvents::STATUS_CHANGE => array(
+				array('updateStatus'),
+			),
 		);
 	}
 
@@ -46,6 +50,17 @@ class EventListener implements SubscriberInterface
 	public function __construct(BaseStatus $defaultStatus)
 	{
 		$this->_defaultStatus = $defaultStatus;
+	}
+
+	public function updateStatus(Event\TransactionalEvent $event)
+	{
+		$order = $event->getOrder();
+
+		if (Statuses::CANCELLED === $order->status) {
+			$itemEdit = $this->get('order.item.edit');
+			$itemEdit->setTransaction($event->getTransaction());
+			$itemEdit->updateStatus($order->items->all(), Statuses::CANCELLED);
+		}
 	}
 
 	/**

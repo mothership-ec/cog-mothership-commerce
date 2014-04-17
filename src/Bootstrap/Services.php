@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
+use Commerce\Product\Stock\Movement\Reason;
 
 use Message\User\AnonymousUser;
 
@@ -158,6 +159,15 @@ class Services implements ServicesInterface
 				$c['user.current']
 			);
 		});
+
+		// Order forms
+		$services['order.form.cancel'] = function($c) {
+			return new Commerce\Form\Order\Cancel(
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE),
+				$c['user.loader']->getUserPassword($c['user.current']),
+				$c['user.password_hash']
+			);
+		};
 
 		// Order address entity
 		$services['order.address.loader'] = $services->factory(function($c) {
@@ -455,7 +465,9 @@ class Services implements ServicesInterface
 
 		$services['stock.movement.reasons'] = function() {
 			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
-				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
+				new Reason\Reason(Reason\Reasons::NEW_ORDER, 'New Order'),
+				new Reason\Reason(Reason\Reasons::CANCELLED_ORDER, 'Cancelled Order'),
+				new Reason\Reason(Reason\Reasons::CANCELLED_ITEM, 'Cancelled Item'),
 			));
 		};
 
@@ -521,6 +533,26 @@ class Services implements ServicesInterface
 				$message->setView('Message:Mothership:Commerce::mail:order:note:customer-notification', array(
 					'order' => $factory->order,
 					'note'  => $factory->note,
+				));
+			});
+
+			return $factory;
+		});
+
+
+		$services['mail.factory.order.cancellation'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email);
+				$message->setSubject(sprintf('Your %s order has been cancelled - %d', $appName, $factory->order->orderID));
+				$message->setView('Message:Mothership:Ecommerce::mail:order:cancel:order-cancellation', array(
+					'order'       => $factory->order,
+					'companyName' => $appName,
 				));
 			});
 
