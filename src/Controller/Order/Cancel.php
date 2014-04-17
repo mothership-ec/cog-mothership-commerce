@@ -77,6 +77,7 @@ class Cancel extends Controller
 			->getRoleLocation(Location\Collection::SELL_ROLE);
 
 		$this->_stockManager->setReason($reason);
+		$this->_stockManager->setNote(sprintf('Order #%s', $this->_order->id));
 		$this->_stockManager->setAutomated(false);
 
 		foreach ($this->_order->items->getRows() as $row) {
