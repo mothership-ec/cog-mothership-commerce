@@ -30,7 +30,7 @@ class Cancel extends Controller
 			$orderEdit->setTransaction($transaction);
 			$this->_order = $orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
 
-			if ($stock)
+			if ($stock) {
 				$this->_handleOrderStock;	
 			}
 
@@ -47,11 +47,11 @@ class Cancel extends Controller
 			}
 		}
 
-		return $this->render('Message:Mothership:Commerce::order:detail:cancel', array(
+		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
 			'order' => $this->_order,
 			'form'  => $form,
 			'title' => sprintf('Cancel Order #%s', $this->_order->id),
-		));
+		]);
 	}
 
 	public function cancelItem($orderID, $itemID)
