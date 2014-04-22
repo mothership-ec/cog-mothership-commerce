@@ -19,14 +19,6 @@ interface PayableInterface
 	public function getPayableAmount();
 
 	/**
-	 * Get the total value the payable object is worth. The payable amount may
-	 * be less that this total, representing a partial payment for object.
-	 *
-	 * @return float
-	 */
-	public function getPayableTotal();
-
-	/**
 	 * Get the currency with which to make the payment.
 	 *
 	 * @return string
