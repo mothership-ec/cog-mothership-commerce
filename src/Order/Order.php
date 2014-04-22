@@ -421,6 +421,10 @@ class Order implements PayableInterface
 	}
 
 	/**
+	 * @todo This id should be unique but determinable from the order. However
+	 *       it can not use the order id since that will not exist on baskets
+	 *       that have not yet been saved into the database as an order.
+	 *
 	 * {@inheritDoc}
 	 */
 	public function getPayableTransactionID()
