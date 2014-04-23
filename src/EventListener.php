@@ -10,6 +10,7 @@ use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Events;
 
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
+use Message\Mothership\ControlPanel\Event\Dashboard\Activity;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
@@ -153,12 +154,12 @@ class EventListener extends BaseListener implements SubscriberInterface
 				UrlGeneratorInterface::ABSOLUTE_PATH
 			);
 
-			$event->addActivity([
-				'label' => 'Last edited product',
-				'date'  => $product->authorship->updatedAt(),
-				'name'  => $product->name,
-				'url'   => $url
-			]);
+			$event->addActivity(new Activity(
+				'Last edited product',
+				$product->authorship->updatedAt(),
+				$product->name,
+				$url
+			));
 		}
 
 		$orderID = $this->get('db.query')->run("
@@ -180,12 +181,12 @@ class EventListener extends BaseListener implements SubscriberInterface
 				UrlGeneratorInterface::ABSOLUTE_PATH
 			);
 
-			$event->addActivity([
-				'label' => 'Last edited order',
-				'date'  => $order->authorship->updatedAt(),
-				'name'  => '#' . $order->id,
-				'url'   => $url
-			]);
+			$event->addActivity(new Activity(
+				'Last edited order',
+				$order->authorship->updatedAt(),
+				'#' . $order->id,
+				$url
+			));
 		}
 	}
 }
