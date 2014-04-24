@@ -42,7 +42,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('registerTabItems'),
 			),
 			DashboardEvent::DASHBOARD_INDEX => array(
-				'buildDashboardIndex'
+				array('buildDashboardProducts'),
+				array('buildDashboardOrders'),
 			),
 			'dashboard.commerce.products' => array(
 				'buildDashboardProducts',
@@ -92,18 +93,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$event->addItem('ms.commerce.order.detail.view.dispatches', 'ms.commerce.order.dispatch.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.notes', 		'ms.commerce.order.note.listing-title');
 		$event->addItem('ms.commerce.order.detail.view.documents', 	'ms.commerce.order.document.listing-title');
-	}
-
-	/**
-	 * Add controller references to the dashboard index.
-	 *
-	 * @param  DashboardEvent $event
-	 */
-	public function buildDashboardIndex(DashboardEvent $event)
-	{
-		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
-		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
-		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index');
 	}
 
 	/**
