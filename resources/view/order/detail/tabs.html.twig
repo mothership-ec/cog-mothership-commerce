@@ -5,6 +5,12 @@
 	{% endfor %}
 	</ul>
 	<div class="controls">
-	    <a class="button small cancel" href="{{ url('ms.commerce.order.cancel', {'orderID': orderID }) }}" data-modal-open>Cancel</a>
+	    <a
+	    	class="button small cancel {{ isCancellable ? '' : 'disabled' }}"
+	    	href="{{ url('ms.commerce.order.cancel', {'orderID': orderID }) }}"
+	    	data-modal-open
+	    >
+	    	Cancel
+	    </a>
 	</div>
 </div>

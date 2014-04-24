@@ -1,9 +1,13 @@
 <section class="dual-column" id="item{{ item.id }}">
 	<h1 class="title">{{ item.description }}</h1>
 	<div class="controls">
-	    <a href="
-	    	{{ url('ms.commerce.order.item.cancel', {'orderID': order.id, 'itemID': item.id }) }}
-	    " data-modal-open class="button small cancel">Cancel</a>
+	    <a
+	    	href="{{ url('ms.commerce.order.item.cancel', {'orderID': order.id, 'itemID': item.id }) }}"
+	    	data-modal-open
+	    	class="button small cancel {{ itemCancellable.isSatisfiedBy(item) ? '' : 'disabled' }}"
+	    >
+	    	Cancel
+	    </a>
 	</div>
 
 	<div class="content" >

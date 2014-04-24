@@ -33,6 +33,11 @@ class Cancel extends Controller
 	public function cancelOrder($orderID)
 	{
 		$this->_order = $this->_getAndCheckOrder($orderID);
+
+		if (!$this->get('order.specification.cancellable')->isSatisfiedBy($this->_order)) {
+			throw new \InvalidArgumentException(sprintf('Order #%s cannot be cancelled.', $this->_order->id));
+		}
+
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
 				'ms.commerce.order.cancel',
@@ -100,6 +105,10 @@ class Cancel extends Controller
 	{
 		$this->_order = $this->_getAndCheckOrder($orderID);
 		$item = $this->_order->items->get($itemID);
+
+		if (!$this->get('order.item.specification.cancellable')->isSatisfiedBy($item)) {
+			throw new \InvalidArgumentException(sprintf('Item `%s` cannot be cancelled.', $item->getDescription()));
+		}
 
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(

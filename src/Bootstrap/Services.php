@@ -313,6 +313,14 @@ class Services implements ServicesInterface
 			));
 		};
 
+		$services['order.specification.cancellable'] = function($c) {
+			return new Commerce\Order\Specification\OrderCanBeCancelledSpecification;
+		};
+
+		$services['order.item.specification.cancellable'] = function($c) {
+			return new Commerce\Order\Entity\Item\ItemCanBeCancelledSpecification;
+		};
+
 		// Configurable/optional event listeners
 		$services['order.listener.vat'] = $services->factory(function($c) {
 			return new Commerce\Order\EventListener\VatListener($c['country.list']);
