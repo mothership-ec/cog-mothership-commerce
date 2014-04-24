@@ -27,16 +27,16 @@ class OrdersActivity extends Controller
 			$in = $this->get('db.query')->run("
 				SELECT COUNT(order_id) as num
 				FROM order_item_status
-				WHERE created_at > {$since}
+				WHERE created_at > ?
 				AND status_code = 0
-			");
+			", [$since]);
 
 			$out = $this->get('db.query')->run("
 				SELECT COUNT(order_id) as num
 				FROM order_item_status
-				WHERE created_at > {$since}
+				WHERE created_at > ?
 				AND status_code = 1000
-			");
+			", [$since]);
 
 			$data = [
 				'orders_in'  => $in[0]->num,

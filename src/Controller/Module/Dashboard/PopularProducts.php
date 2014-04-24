@@ -31,9 +31,9 @@ class PopularProducts extends Controller
 					product_id,
 					COUNT(item_id) as num
 				FROM order_item
-				WHERE created_at > {$since}
+				WHERE created_at > ?
 				GROUP BY product_id
-			");
+			", [$since]);
 
 			foreach ($items as $item) {
 				$products[] = [

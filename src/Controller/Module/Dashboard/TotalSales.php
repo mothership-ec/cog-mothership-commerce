@@ -32,9 +32,9 @@ class TotalSales extends Controller
 					SUM(total_net) as net,
 					SUM(total_gross) as gross
 				FROM order_summary
-				WHERE created_at > {$since}
+				WHERE created_at > ?
 				GROUP BY DATE(FROM_UNIXTIME(created_at))
-			");
+			", [$since]);
 
 			$total = 0;
 			$days = [];
