@@ -84,7 +84,7 @@ class Edit implements DB\TransactionalInterface
 
 			// Skip if the item is already at this status
 			if ($status->code === $item->status->code) {
-				return false;
+				continue;
 			}
 
 			// Get instance of item status (so we have authorship info)
