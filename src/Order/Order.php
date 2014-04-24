@@ -4,13 +4,14 @@ namespace Message\Mothership\Commerce\Order;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
+use Message\Mothership\Commerce\Payable\PayableInterface;
 
 /**
  * Order model. Container for all information about an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Order
+class Order implements PayableInterface
 {
 	public $id;
 	public $orderID; // alias of $id for BC
@@ -384,5 +385,50 @@ class Order
 		}
 
 		return $total;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableAmount()
+	{
+		return $this->getAmountDue();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableTotal()
+	{
+		return $this->getTotal();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableCurrency()
+	{
+		return $this->currencyID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableAddress($type)
+	{
+		return $this->getAddress($type);
+	}
+
+	/**
+	 * @todo This id should be unique but determinable from the order. However
+	 *       it can not use the order id since that will not exist on baskets
+	 *       that have not yet been saved into the database as an order.
+	 *
+	 * {@inheritDoc}
+	 */
+	public function getPayableTransactionID()
+	{
+		return 'ORDER-' . strtoupper(uniqid());
 	}
 }
