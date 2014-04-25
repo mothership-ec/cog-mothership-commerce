@@ -8,8 +8,7 @@ use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
-
-use InvalidArgumentException;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Order refund creator.
@@ -20,17 +19,20 @@ class Create implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
 	protected $_transOverridden = false;
 
 	public function __construct(
 		DB\Transaction $query,
 		Loader $loader,
+		DispatcherInterface $eventDispatcher,
 		UserInterface $currentUser
 	) {
-		$this->_query       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_query           = $query;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
 	/**
@@ -109,11 +111,11 @@ class Create implements DB\TransactionalInterface
 	protected function _validate(Refund $refund)
 	{
 		if (! $refund->order) {
-			throw new InvalidArgumentException('Could not create refund: no order specified');
+			throw new \InvalidArgumentException('Could not create refund: no order specified');
 		}
 
 		if ($refund->amount <= 0) {
-			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0');
+			throw new \InvalidArgumentException('Could not create refund: amount must be greater than 0');
 		}
 	}
 }
