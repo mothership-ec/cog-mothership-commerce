@@ -18,7 +18,7 @@ use Message\Cog\Event\DispatcherInterface;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
+	protected $_trans;
 	protected $_loader;
 	protected $_currentUser;
 	protected $_transOverridden = false;
@@ -30,7 +30,7 @@ class Create implements DB\TransactionalInterface
 		UserInterface $currentUser
 	)
 	{
-		$this->_query           = $query;
+		$this->_trans           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
 		$this->_currentUser     = $currentUser;
@@ -44,7 +44,7 @@ class Create implements DB\TransactionalInterface
 	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_trans = $trans;
 		$this->_transOverridden = true;
 
 		return $this;
@@ -70,14 +70,14 @@ class Create implements DB\TransactionalInterface
 		}
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE,
 			$event
 		)->getEntity();
 
-		$result = $this->_query->run('
+		$result = $this->_trans->run('
 			INSERT INTO
 				order_payment
 			SET
@@ -102,11 +102,11 @@ class Create implements DB\TransactionalInterface
 
 		$sqlVariable = 'PAYMENT_ID_' . spl_object_hash($payment);
 
-		$this->_query->setIDVariable($sqlVariable);
+		$this->_trans->setIDVariable($sqlVariable);
 		$payment->id = '@' . $sqlVariable;
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE_END,
@@ -114,9 +114,9 @@ class Create implements DB\TransactionalInterface
 		)->getEntity();
 
 		if (!$this->_transOverridden) {
-			$this->_query->commit();
+			$this->_trans->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $payment->order);
+			return $this->_loader->getByID($this->_trans->getIDVariable($sqlVariable), $payment->order);
 		}
 
 		return $payment;
