@@ -234,8 +234,8 @@ class Services implements ServicesInterface
 		$services['order.refund.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Refund\Create(
 				$c['db.transaction'],
-				$c['order.refund.loader']
-				 $c['user.current']
+				$c['order.refund.loader'],
+				$c['user.current']
 			);
 		});
 
