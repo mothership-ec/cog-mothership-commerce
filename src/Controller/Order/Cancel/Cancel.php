@@ -85,8 +85,20 @@ class Cancel extends Controller
 				if ($refund) {
 					$payable = new Order\CancellationRefund($this->_order);
 
-					return $this->_forwardToRefund($payable);
+					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
+						'payable'   => $payable,
+						'reference' => null,
+						'stages'    => [
+							'failure' => $controller . '#orderFailure',
+							'success' => $controller . '#orderSuccess',
+						],
+					]);
 				}
+
+				return $this->redirectToRoute('ms.commerce.order.detail.view', [
+					'orderID' => $this->_order->id,
+				]);
 			}
 		}
 
@@ -111,9 +123,9 @@ class Cancel extends Controller
 		$this->_order = $this->_getAndCheckOrder($orderID);
 		$item = $this->_order->items->get($itemID);
 
-		if (!$this->get('order.item.specification.cancellable')->isSatisfiedBy($item)) {
-			throw new \InvalidArgumentException(sprintf('Item `%s` cannot be cancelled.', $item->getDescription()));
-		}
+		// if (!$this->get('order.item.specification.cancellable')->isSatisfiedBy($item)) {
+		// 	throw new \InvalidArgumentException(sprintf('Item `%s` cannot be cancelled.', $item->getDescription()));
+		// }
 
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
@@ -156,9 +168,20 @@ class Cancel extends Controller
 					$payable = new Order\CancellationRefund($this->_order);
 					$payable->setPayableAmount($item->gross);
 
-					return $this->_forwardToRefund($payable);
+					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
+						'payable'   => $payable,
+						'reference' => null,
+						'stages'    => [
+							'failure' => $controller . '#itemFailure',
+							'success' => $controller . '#itemSuccess',
+						],
+					]);
 				}
 
+				return $this->redirectToRoute('ms.commerce.order.detail.view.items', [
+					'orderID' => $this->_order->id,
+				]);
 			}
 		}
 
@@ -166,7 +189,7 @@ class Cancel extends Controller
 			'order'        => $this->_order,
 			'item'         => $item,
 			'form'         => $form,
-			'refundAmount' => $item->getPayableAmount(),
+			'refundAmount' => $item->gross,
 			'title'        => 'Cancel Item',
 		]);
 	}
@@ -212,8 +235,8 @@ class Cancel extends Controller
 	/**
 	 *	Gets order by order id.
 	 * 
-	 * @param  int          $orderID Order ID
-	 * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException If no order for id exists
+	 * @param  int                                                          $orderID Order ID
+	 * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException          If no order for id exists
 	 * 
 	 * @return Order\Order  Order with ID $orderID
 	 */
@@ -233,20 +256,6 @@ class Cancel extends Controller
 		}
 
 		return $order;
-	}
-
-	protected function _forwardToRefund(Order\CancellationRefund $payable)
-	{
-		$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
-		return $this->forward($this->get('gateway')->getRefundControllerReference(), [
-			'payable'   => $payable,
-			'reference' => null,
-			'stages'    => [
-				'cancel'  => $controller . '#cancel',
-				'failure' => $controller . '#failure',
-				'success' => $controller . '#success',
-			],
-		]);
 	}
 
 	/**
