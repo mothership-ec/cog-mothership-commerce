@@ -21,17 +21,30 @@ class Create implements DB\TransactionalInterface
 	protected $_query;
 	protected $_loader;
 	protected $_currentUser;
+	protected $_transOverridden = false;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
-	{
+	public function __construct(
+		DB\Transaction $query,
+		Loader $loader,
+		UserInterface $currentUser
+	) {
 		$this->_query       = $query;
 		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverrriden to true.
+	 * 
+	 * @param  DBTransaction $trans transaction
+	 * @return Create               $this for chainability
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query = $trans;
+		$this->_transOverridden = true;
+
+		return $this;
 	}
 
 	public function create(Refund $refund)
@@ -71,11 +84,26 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $refund->reference,
 		));
 
-		if (!($this->_query instanceof DB\Transaction)) {
-			return $refund;
+		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
+
+		$this->_query->setIDVariable($sqlVariable);
+		$refund->id = '@' . $sqlVariable;
+
+		$event = new Order\Event\EntityEvent($refund->order, $refund);
+		$event->setTransaction($this->_query);
+
+		$refund = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE_END,
+			$event
+		)->getEntity();
+
+		if (!$this->_transOverridden) {
+			$this->_query->commit();
+
+			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $refund->order);
 		}
 
-		return $this->_loader->getByID($result->id(), $refund->order);
+		return $refund;
 	}
 
 	protected function _validate(Refund $refund)
