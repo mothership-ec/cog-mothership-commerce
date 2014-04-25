@@ -235,6 +235,7 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Refund\Create(
 				$c['db.transaction'],
 				$c['order.refund.loader'],
+				$c['event.dispatcher'],
 				$c['user.current']
 			);
 		});

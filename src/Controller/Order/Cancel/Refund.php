@@ -21,12 +21,53 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class Refund extends Controller implements CompleteControllerInterface
 {
+	const ORDER_URL = 'ms.commerce.order.detail.view';
+	const ITEM_URL = 'ms.commerce.order.detail.view.item';
+
+	/**
+	 * Success method for cancelled orders.
+	 */
+	public function orderSuccess(PayableInterface $payable, $reference, MethodInterface $method)
+	{
+		return $this->success($payable, $reference, $method, self::ORDER_URL);
+	}
+
+	/**
+	 * Failure method for cancelled orders.
+	 */
+	public function orderFailure(PayableInterface $payable)
+	{
+		return $this->failure($payable, self::ORDER_URL);
+	}
+
+	/**
+	 * Success method for cancelled items.
+	 */
+	public function itemSuccess(PayableInterface $payable, $reference, MethodInterface $method)
+	{
+		return $this->success($payable, $reference, $method, self::ITEM_URL);
+	}
+
+	/**
+	 * Failure method for cancelled items.
+	 */
+	public function itemFailure(PayableInterface $payable)
+	{
+		return $this->failure($payable, self::ITEM_URL);
+	}
+
 	/**
 	 * Creates payment and refund for $payable.
 	 * {@inheritdoc}
 	 */
-	public function success(PayableInterface $payable, $reference, MethodInterface $method)
-	{
+	public function success(
+		PayableInterface $payable,
+		$reference,
+		MethodInterface $method,
+		$url
+	) {
+		de($this->get('request'));
+
 		$payment            = new OrderPayment;
 		$payment->method    = $method;
 		$payment->amount    = $payable->getPayableAmount();
@@ -62,26 +103,34 @@ class Refund extends Controller implements CompleteControllerInterface
 			);
 		}
 
-		$successUrl = $this->generateUrl('ms.commerce.return.view', array(
-			'returnID' => $payable->id,
+		$this->_returnResponse($url);
+	}
+
+	public function failure(PayableInterface $payable, $url)
+	{
+		$this->addFlash(
+			'error',
+			sprintf(
+				'Could not refund %s %s to customer. Please refund the amount manually.',
+				number_format($payable->getPayableAmount(), 2),
+				$payable->getPayableCurrency()
+			)
+		);
+
+		$this->_returnResponse($url);
+	}
+
+	protected function _returnResponse($url)
+	{
+		$successUrl = $this->generateUrl($url, array(
+			'orderID' => $payable->getOrder()->id,
 		), UrlGeneratorInterface::ABSOLUTE_URL);
 
-		// Create json response with the success url
 		$response = new JsonResponse;
 		$response->setData([
 			'url' => $successUrl,
 		]);
 
 		return $response;
-	}
-
-	public function cancel(PayableInterface $payable)
-	{
-		return $this->failure($payable);
-	}
-
-	public function failure(PayableInterface $payable)
-	{
-		$this->addFlash('error', 'Could not refund ');
 	}
 }

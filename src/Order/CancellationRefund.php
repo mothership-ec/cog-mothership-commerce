@@ -58,8 +58,8 @@ class CancellationRefund implements PayableInterface
 	 */
 	public function getPayableAmount()
 	{
-		if (null !== $this->_amount) {
-			return $order->getPayableAmount();
+		if (null === $this->_amount) {
+			return $this->_order->getPayableTotal();
 		}
 
 		return $this->_amount;
@@ -70,11 +70,7 @@ class CancellationRefund implements PayableInterface
 	 */
 	public function getPayableCurrency()
 	{
-		if (null !== $this->_currencyID) {
-			return $order->getPayableCurrency();
-		}
-
-		return $this->_currencyID;
+		return $this->_order->getPayableCurrency();
 	}
 
 	/**
@@ -82,7 +78,7 @@ class CancellationRefund implements PayableInterface
 	 */
 	public function getPayableAddress($type)
 	{
-		return $this->getAddress($type);
+		return $this->_order->getPayableAddress($type);
 	}
 
 	/**
