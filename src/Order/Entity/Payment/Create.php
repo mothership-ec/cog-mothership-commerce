@@ -20,6 +20,7 @@ class Create implements DB\TransactionalInterface
 {
 	protected $_trans;
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
 	protected $_transOverridden = false;
 
