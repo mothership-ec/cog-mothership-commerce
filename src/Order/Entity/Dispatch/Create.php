@@ -29,10 +29,18 @@ class Create implements DB\TransactionalInterface
 		$this->_currentUser = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverridden to true.
+	 * 
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query          = $trans;
+		$this->_query           = $trans;
 		$this->_transOverridden = true;
+
+		return $this;
 	}
 
 	public function create(Dispatch $dispatch)

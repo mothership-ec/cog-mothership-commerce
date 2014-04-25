@@ -37,14 +37,14 @@ class Create implements DB\TransactionalInterface
 	}
 
 	/**
-	 * Sets transaction and sets $_transOverridden to true
+	 * Sets transaction and sets $_transOverridden to true.
 	 * 
-	 * @param DBTransaction $trans transaction
-	 * @return Create              $this for chainability
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
 	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_trans = $trans;
+		$this->_trans           = $trans;
 		$this->_transOverridden = true;
 
 		return $this;
