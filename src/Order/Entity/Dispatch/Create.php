@@ -20,7 +20,7 @@ class Create implements DB\TransactionalInterface
 	protected $_currentUser;
 
 	protected $_query;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
 	{
@@ -32,7 +32,7 @@ class Create implements DB\TransactionalInterface
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query          = $trans;
-		$this->_transOverriden = true;
+		$this->_transOverridden = true;
 	}
 
 	public function create(Dispatch $dispatch)
@@ -99,7 +99,7 @@ class Create implements DB\TransactionalInterface
 		}
 
 		// If the transaction was not overriden, run it & return the re-loaded dispatch
-		if (!$this->_transOverriden) {
+		if (!$this->_transOverridden) {
 			$this->_query->commit();
 
 			return $this->_loader->getByID($this->_query->getIDVariable('DISPATCH_ID'), $dispatch->order);

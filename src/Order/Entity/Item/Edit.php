@@ -15,7 +15,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	protected $_eventDispatcher;
 	protected $_statuses;
@@ -33,7 +33,7 @@ class Edit implements DB\TransactionalInterface
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_query          = $trans;
-		$this->_transOverriden = true;
+		$this->_transOverridden = true;
 	}
 
 	/**
@@ -131,7 +131,7 @@ class Edit implements DB\TransactionalInterface
 			);
 		}
 
-		if (!$this->_transOverriden) {
+		if (!$this->_transOverridden) {
 			$this->_query->commit();
 		}
 
