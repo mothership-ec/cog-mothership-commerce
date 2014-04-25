@@ -111,10 +111,10 @@ class Routes implements RoutesInterface
 		$router['ms.order']->add('ms.commerce.order.document.print', 'document/{documentID}/print', 'Message:Mothership:Commerce::Controller:Order:Document#printDocument');
 
 		// Order cancellation routes
-		$router['ms.order']->add('ms.commerce.order.cancel', 'view/{orderID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel#cancelOrder')
+		$router['ms.order']->add('ms.commerce.order.cancel', 'view/{orderID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel:Cancel#cancelOrder')
 			->setRequirement('orderID', '\d+');
 
-		$router['ms.order']->add('ms.commerce.order.item.cancel', 'view/{orderID}/item/{itemID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel#cancelItem')
+		$router['ms.order']->add('ms.commerce.order.item.cancel', 'view/{orderID}/item/{itemID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel:Cancel#cancelItem')
 			->setRequirement('orderID', '\d+')
 			->setRequirement('itemID', '\d+');
 	}

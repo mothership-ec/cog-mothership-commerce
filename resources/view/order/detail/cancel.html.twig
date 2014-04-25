@@ -4,6 +4,13 @@
 
 {% block content %}
 {{ form_start(form) }}
+	{{ form_row(form.stock) }}
+
+	<div>
+		{{ form_row(form.refund) }}
+		<span>{{ refundAmount|price }}</span>
+	</div>
+
 	{{ form_rest(form) }}
 
 	<button type="submit" class="button save small">{{ title }}</button>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Order;
+namespace Message\Mothership\Commerce\Controller\Order\Cancel;
 
 use Message\Cog\Controller\Controller;
 use Message\Mothership\Commerce\Order;
@@ -34,14 +34,14 @@ class Cancel extends Controller
 	{
 		$this->_order = $this->_getAndCheckOrder($orderID);
 
-		if (!$this->get('order.specification.cancellable')->isSatisfiedBy($this->_order)) {
-			throw new \InvalidArgumentException(sprintf('Order #%s cannot be cancelled.', $this->_order->id));
-		}
+		// if (!$this->get('order.specification.cancellable')->isSatisfiedBy($this->_order)) {
+		// 	throw new \InvalidArgumentException(sprintf('Order #%s cannot be cancelled.', $this->_order->id));
+		// }
 
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
 				'ms.commerce.order.cancel',
-				['orderID' => $this->_order->id]
+				['orderID' => $orderID]
 			),
 		]);
 
@@ -56,7 +56,7 @@ class Cancel extends Controller
 
 			$orderEdit = $this->get('order.edit');
 			$orderEdit->setTransaction($transaction);
-			$this->_order = $orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
+			$orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
 			$this->_successFlashes[] = sprintf('Successfully cancelled order #%s.', $this->_order->id);
 
 			if ($stock) {
@@ -73,9 +73,7 @@ class Cancel extends Controller
 				$this->_successFlashes[] = sprintf('Successfully moved item(s) to stock location `%s`.', $this->_stockLocation->displayName);
 			}
 
-			if ($refund) {
-				// do the crazy refund stuff here
-			}
+			$payable = new Order\CancellationRefund($this->_order);
 
 			if ($transaction->commit()) {
 				if ($notifyCustomer) {
@@ -83,13 +81,20 @@ class Cancel extends Controller
 				}
 
 				$this->_addFlashes();
+
+				if ($refund) {
+					$payable = new Order\CancellationRefund($this->_order);
+
+					return $this->_forwardToRefund($payable);
+				}
 			}
 		}
 
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
-			'order' => $this->_order,
-			'form'  => $form,
-			'title' => 'Cancel Order',
+			'order'        => $this->_order,
+			'form'         => $form,
+			'refundAmount' => $this->_order->getPayableAmount(),
+			'title'        => 'Cancel Order',
 		]);
 	}
 
@@ -113,7 +118,7 @@ class Cancel extends Controller
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
 				'ms.commerce.order.item.cancel',
-				['orderID' => $this->_order->id, 'itemID' => $item->id]
+				['orderID' => $orderID, 'itemID' => $itemID]
 			),
 		]);
 		$form->handleRequest();
@@ -140,24 +145,29 @@ class Cancel extends Controller
 				$this->_successFlashes[] = sprintf('Successfully moved item to stock location `%s`.', $this->_stockLocation->displayName);	
 			}
 
-			if ($refund) {
-				// do the crazy refund stuff here
-			}
-
 			if ($transaction->commit()) {
 				if ($notifyCustomer) {
 					$this->_sendCustomerNotification('mail.factory.order.item.cancellation');
 				}
 
 				$this->_addFlashes();
+
+				if ($refund) {
+					$payable = new Order\CancellationRefund($this->_order);
+					$payable->setPayableAmount($item->gross);
+
+					return $this->_forwardToRefund($payable);
+				}
+
 			}
 		}
 
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
-			'order' => $this->_order,
-			'item'  => $item,
-			'form'  => $form,
-			'title' => 'Cancel Item',
+			'order'        => $this->_order,
+			'item'         => $item,
+			'form'         => $form,
+			'refundAmount' => $item->getPayableAmount(),
+			'title'        => 'Cancel Item',
 		]);
 	}
 
@@ -207,7 +217,8 @@ class Cancel extends Controller
 	 * 
 	 * @return Order\Order  Order with ID $orderID
 	 */
-	protected function _getAndCheckOrder($orderID) {
+	protected function _getAndCheckOrder($orderID)
+	{
 		$order = $this->get('order.loader')->getById($orderID);
 
 		if (!$order) {
@@ -222,6 +233,20 @@ class Cancel extends Controller
 		}
 
 		return $order;
+	}
+
+	protected function _forwardToRefund(Order\CancellationRefund $payable)
+	{
+		$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+		return $this->forward($this->get('gateway')->getRefundControllerReference(), [
+			'payable'   => $payable,
+			'reference' => null,
+			'stages'    => [
+				'cancel'  => $controller . '#cancel',
+				'failure' => $controller . '#failure',
+				'success' => $controller . '#success',
+			],
+		]);
 	}
 
 	/**
