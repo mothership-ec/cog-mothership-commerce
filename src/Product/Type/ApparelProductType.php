@@ -49,7 +49,7 @@ class ApparelProductType implements ProductTypeInterface
 		$factory->add($factory->getField('richtext', 'sizing', 'Sizing'));
 	}
 
-	public function getProductDisplayName(Product $product = null)
+	public function getProductDisplayName(Product $product)
 	{
 		return $product->details->brand . ' - ' . $product->name;
 	}
