@@ -16,5 +16,5 @@ use Message\Cog\Field\ContentTypeInterface;
  */
 interface ProductTypeInterface extends ContentTypeInterface
 {
-	public function getProductDisplayName(Product $product = null);
+	public function getProductDisplayName(Product $product);
 }
