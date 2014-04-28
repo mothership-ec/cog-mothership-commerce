@@ -42,15 +42,17 @@ class Create
 			'INSERT INTO
 				product
 			SET
-				product.product_id   = null,
-				product.name         = ?s,
-				product.weight_grams = ?i,
-				product.tax_rate     = ?f,
-				product.tax_strategy = ?s,
-				product.supplier_ref = ?s,
-				product.created_at   = ?d,
-				product.created_by   = ?i',
+				product.product_id		= null,
+				product.type			= ?s,
+				product.name			= ?s,
+				product.weight_grams	= ?i,
+				product.tax_rate		= ?f,
+				product.tax_strategy	= ?s,
+				product.supplier_ref    = ?s,
+				product.created_at		= ?d,
+				product.created_by		= ?i',
 			array(
+				$product->type->getName(),
 				$product->name,
 				$product->weight,
 				$product->taxRate,

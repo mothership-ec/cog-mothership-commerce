@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Message\Mothership\Commerce\Field;
+use Message\Mothership\Commerce\Product\Type\Detail;
 
 use Message\Mothership\FileManager\File;
 
@@ -223,17 +224,22 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->name                       = $data['name'];
-			$product->shortDescription           = $data['short_description'];
-			$product->displayName                = $data['display_name'];
-			$product->year                       = $data['year'];
-			$product->season                     = $data['season'];
-			$product->description                = $data['description'];
-			$product->category                   = $data['category'];
-			$product->brand                   	 = $data['brand'];
-			$product->exportDescription          = $data['export_description'];
+			$product->name                        = $data['name'];
+			$product->shortDescription            = $data['short_description'];
+			$product->displayName                 = $data['display_name'];
+			$product->description                 = $data['description'];
+			$product->category                    = $data['category'];
+			$product->brand                       = $data['brand'];
+			$product->exportDescription           = $data['export_description'];
+			$product->tags                        = $data['tags'];
+			$product->supplierRef                 = $data['supplier_ref'];
+			$product->notes                       = $data['notes'];
+			$product->weight                      = $data['weight_grams'];
+			$product->exportManufactureCountryID  = $data['export_manufacture_country_id'];
 
 			$product = $this->get('product.edit')->save($product);
+			$product = $this->get('product.edit')->saveTags($product);
+
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');
@@ -254,23 +260,17 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		$form = $this->_getProductDetailsForm();
-		if ($form->isValid() && $data = $form->getFilteredData()) {
+		$form->handleRequest();
+
+		if ($form->isValid() && $data = $form->getData()) {
 			$product = $this->_product;
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->supplierRef                = $data['supplier_ref'];
-			$product->weight                	 = $data['weight_grams'];
-			$product->fabric                     = $data['fabric'];
-			$product->features                   = $data['features'];
-			$product->careInstructions           = $data['care_instructions'];
-			$product->sizing                     = $data['sizing'];
-			$product->notes                      = $data['notes'];
-			$product->tags                       = explode(',',$data['tags']);
-			$product->exportManufactureCountryID = $data['export_manufacture_country_id'];
+			$product->details	= $this->get('product.detail.edit')->updateDetails($data, $product->details);
+			$this->get('product.detail.edit')->save($product);
 
 			$product = $this->get('product.edit')->save($product);
-			$product = $this->get('product.edit')->saveTags($product);
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');
@@ -333,6 +333,7 @@ class Edit extends Controller
 		$stockManager 		= $this->get('stock.manager');
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
+
 			$note = $data['note'];
 			$reason = $this->get('stock.movement.reasons')->get($data['reason']);
 
@@ -740,171 +741,16 @@ class Edit extends Controller
 
 	protected function _getProductAttributesForm()
 	{
-		$form = $this->get('form')
-			->setName('product-attributes-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.attributes.action', array('productID' => $this->_product->id)))
-			->setMethod('post');
-
-		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array(
-			'data' => $this->_product->name,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.name.help')
-		))
-			->val()
-			->maxLength(255);
-
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array(
-			'data' => $this->_product->displayName,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
-		))
-			->val()
-			->maxLength(255);
-
-		$form->add('category', 'text', $this->trans('ms.commerce.product.attributes.category.label'), array(
-			'data' => $this->_product->category,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.category.help')
-		))
-			->val()
-			->maxLength(255);
-
-		$form->add('brand', 'text', $this->trans('ms.commerce.product.attributes.brand.label'), array(
-			'data' => $this->_product->brand,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.brand.help')
-		))
-			->val()
-			->maxLength(255);
-
-
-		$form->add('season', 'text', $this->trans('ms.commerce.product.attributes.season.label'), array(
-			'data' => $this->_product->season,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.season.help')
-		))
-			->val()
-			->maxLength(255)
-			->optional();
-
-
-		$form->add('year', 'text', $this->trans('ms.commerce.product.attributes.year.label'), array(
-			'data' => $this->_product->year,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.year.help')
-		))
-			->val()
-			->maxLength(4)
-			->digit()
-			->optional();
-
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array(
-			'data' => $this->_product->shortDescription,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.short-description.help')
-		));
-
-		$form->add('description', 'textarea', $this->trans('ms.commerce.product.attributes.description.label'), array(
-			'data' => $this->_product->description,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.description.help')
-		))
-			->val()
-			->optional();
-
-		$form->add('export_description', 'textarea', $this->trans('ms.commerce.product.attributes.export-description.label'), array(
-			'data' => $this->_product->exportDescription,
-			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.export-description.help')
-		))
-			->val()
-			->optional();
-
-		return $form;
+		return $this->get('product.form.attributes')->build($this->_product);
 	}
 
 	protected function _getProductDetailsForm()
 	{
-		$form = $this->get('form')
-			->setName('product-details-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.details.action', array('productID' => $this->_product->id)))
-			->setMethod('post');
-
-		$form->add('features', 'textarea', $this->trans('ms.commerce.product.details.features.label'), array(
-			'data' => $this->_product->features,
-			'attr' => array('data-help-key' => 'ms.commerce.product.details.features.help')
-		))
-			->val()
-			->optional();
-
-
-		$form
-			->add('sizing', 'textarea', $this->trans('ms.commerce.product.details.sizing.label'), array(
-				'data' => $this->_product->sizing,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.sizing.help')
-			))
-			->val()
-			->optional();
-
-		$form
-			->add('fabric', 'textarea', $this->trans('ms.commerce.product.details.fabric.label'), array(
-				'data' => $this->_product->fabric,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.fabric.help')
-			))
-			->val()
-			->optional();
-
-		$form
-			->add('weight_grams', 'number', $this->trans('ms.commerce.product.details.weight-grams.label'), array(
-				'data' => $this->_product->weight,
-				'attr' => array(
-					'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
-				)
-			))
-			->val()
-			->number()
-			->optional();
-
-		$form
-			->add('care_instructions', 'textarea', $this->trans('ms.commerce.product.details.care-instructions.label'), array(
-				'data' => $this->_product->careInstructions,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.care-instructions.help')
-			))
-			->val()
-			->optional();
-
-
-		$form
-			->add('tags', 'textarea', $this->trans('ms.commerce.product.details.tags.label'), array(
-				'data' => implode(',', $this->_product->tags),
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.tags.help')
-			))
-			->val()
-			->optional();
-
-		$form
-			->add('supplier_ref', 'text', $this->trans('ms.commerce.product.details.supplier-ref.label'), array(
-				'data' => $this->_product->supplierRef,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
-			))
-			->val()
-			->maxLength(255)
-			->optional();
-
-		$form
-			->add(
-				'export_manufacture_country_id',
-				'choice',
-				$this->trans('ms.commerce.product.details.export-manufacture-country.label'),
-				array(
-					'data' 	  => $this->_product->exportManufactureCountryID,
-					'choices' => $this->get('country.list')->all(),
-					'attr'    => array('data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'),
-				)
-			)
-			->val()
-			->optional();
-
-		$form
-			->add('notes', 'textarea', $this->trans('ms.commerce.product.details.notes.label'), array(
-				'data' => $this->_product->notes,
-				'attr' => array('data-help-key' => 'ms.commerce.product.details.notes.help')
-			))
-			->val()
-			->optional();
-
-		return $form;
+		return $this->get('field.form')->generate($this->_product->details, [
+			'action' => $this->generateUrl('ms.commerce.product.edit.details.action', [
+					'productID' => $this->_product->id,
+				])
+		]);
 	}
 
 	protected function _getProductPricingForm()
