@@ -42,6 +42,7 @@ class Cancel extends Form\AbstractType
 			'label' => 'Notify the customer by email?',
 		]);
 		$builder->add('password', 'password', [
+			'label' => 'Please confirm your account password to continue',
 			'constraints' => [
 				new Constraints\NotBlank,
 			]
@@ -53,7 +54,7 @@ class Cancel extends Form\AbstractType
 	public function onPostSubmit(Form\FormEvent $event)
 	{
 		$this->_validatePassword($event);
-	} 
+	}
 
 	protected function _validatePassword(Form\FormEvent $event)
 	{
