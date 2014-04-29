@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Order;
 use Message\Mothership\Commerce\Order\Entity\Note\Note;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reasons;
 use Message\Mothership\Commerce\Product\Stock\Location;
+use Message\Mothership\Commerce\Form\Order\Cancel as CancelForm;
 
 /**
  * Controller responsible for the cancellation of whole orders and individual
@@ -43,6 +44,7 @@ class Cancel extends Controller
 				'ms.commerce.order.cancel',
 				['orderID' => $orderID]
 			),
+			CancelForm::STOCK_LABEL_OPTION => 'all outstanding items',
 		]);
 
 		$refundAmount = $this->_order->getPayableTotal();
@@ -110,10 +112,10 @@ class Cancel extends Controller
 		}
 
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel:order', [
-			'order'        => $this->_order,
-			'form'         => $form,
-			'refundAmount' => $refundAmount,
-			'title'        => 'Cancel Order',
+			'order'         => $this->_order,
+			'form'          => $form,
+			'refundAmount'  => $refundAmount,
+			'title'         => 'Cancel Order',
 		]);
 	}
 
@@ -139,6 +141,7 @@ class Cancel extends Controller
 				'ms.commerce.order.item.cancel',
 				['orderID' => $orderID, 'itemID' => $itemID]
 			),
+			CancelForm::STOCK_LABEL_OPTION => 'item',
 		]);
 
 		$cancelledItems = $this->_order->items->getByCurrentStatusCode(Order\Statuses::CANCELLED);

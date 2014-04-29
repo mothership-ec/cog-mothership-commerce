@@ -12,6 +12,7 @@ use Message\User\User;
 class Cancel extends Form\AbstractType
 {
 	const STOCK_LOCATION_OPTION = 'stock_location';
+	const STOCK_LABEL_OPTION    = 'STOCK_LABEL_OPTION';
 
 	protected $_stockLocation;
 	protected $_password;
@@ -33,7 +34,11 @@ class Cancel extends Form\AbstractType
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
 		$builder->add('stock', 'checkbox', [
-			'label' => sprintf('Return item(s) to stock location `%s`?', $options[self::STOCK_LOCATION_OPTION]->displayName),
+			'label' => sprintf(
+				'Return %s to stock location `%s`?',
+				$options[self::STOCK_LABEL_OPTION],
+				$options[self::STOCK_LOCATION_OPTION]->displayName
+			),
 		]);
 		$builder->add('refund', 'checkbox', [
 			'label' => 'Issue a refund?',
@@ -69,13 +74,14 @@ class Cancel extends Form\AbstractType
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
-		$resolver->setRequired([self::STOCK_LOCATION_OPTION]);
+		$resolver->setRequired([self::STOCK_LOCATION_OPTION, self::STOCK_LABEL_OPTION]);
 		$resolver->setAllowedTypes([
 			self::STOCK_LOCATION_OPTION => 'Message\\Mothership\\Commerce\\Product\\Stock\\Location\\Location',
 		]);
 		$resolver->setDefaults([
 		   self::STOCK_LOCATION_OPTION => $this->_stockLocation,
 		   'errors_with_fields' => true,
+		   self::STOCK_LABEL_OPTION => 'item(s)',
 		]);
 	}
 
