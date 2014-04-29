@@ -17,5 +17,6 @@ class Barcode
 	public $price;
 	public $currency;
 	public $text;
+	public $image;
 	public $url;
 }

@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Barcode;
 
 use Message\Cog\DB\Query;
+use Message\Cog\Filesystem\File;
 use Image_Barcode2 as ImageBarcode;
 
 /**
@@ -167,8 +168,10 @@ class Generate
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
+			$code = $barcode->barcode;
 			$barcode->text = trim($barcode->text, ' ,');
-			$barcode->url  = $this->_getBarcodeUrl($barcode->barcode);
+			$barcode->file = $this->_getBarcodeImage($code);
+			$barcode->url  = $barcode->file->getPublicUrl() . '/' . $this->_getFilename($code);
 		}
 
 		return $barcodes;
@@ -187,7 +190,7 @@ class Generate
 	 *
 	 * @return string       Returns location of the barcode image file
 	 */
-	protected function _getBarcodeUrl($barcode)
+	protected function _getBarcodeImage($barcode)
 	{
 		if (!file_exists($this->_getFilePath($barcode))) {
 			$image = ImageBarcode::draw(
@@ -199,12 +202,10 @@ class Generate
 				$this->getWidth()
 			);
 
-			$filename = $this->_getFilename($barcode);
-
-			$this->_saveImage($image, $filename);
+			$this->_saveImage($image, $barcode);
 		}
 
-		return self::BARCODE_LOCATION . '/' . $this->_getFilename($barcode);
+		return new File($this->_getBarcodeLocation($barcode));
 	}
 
 	/**
@@ -237,12 +238,9 @@ class Generate
 	 */
 	protected function _getFilename($barcode)
 	{
-		return md5(
-			$barcode .
-			$this->getFileExt() .
-			$this->getHeight() .
-			$this->getWidth()
-		) . '.' . $this->getFileExt();
+		$string = $barcode . $this->getFileExt() . $this->getHeight() .	$this->getWidth();
+
+		return md5($string) . '.' . $this->getFileExt();
 	}
 
 	/**
