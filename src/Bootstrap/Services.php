@@ -459,7 +459,8 @@ class Services implements ServicesInterface
 				$c['db.query'],
 				$c['product.barcode.sheet']->getBarcodeHeight(),
 				$c['product.barcode.sheet']->getBarcodeWidth(),
-				$c['cfg']->barcode->fileType
+				$c['cfg']->barcode->fileType,
+				$c['cfg']->barcode->barcodeType
 			);
 		};
 

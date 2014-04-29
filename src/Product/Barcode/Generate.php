@@ -21,11 +21,19 @@ class Generate
 	 */
 	protected $_query;
 
-	protected $_height  = 60;
-	protected $_width   = 1;
-	protected $_fileExt = 'png';
+	protected $_height      = 60;
+	protected $_width       = 1;
+	protected $_fileExt     = 'png';
+	protected $_barcodeType = 'code39';
 
-	public function __construct(Query $query, $height, $width, $fileExt)
+	protected $_supportedImageTypes = [
+		'png',
+		'jpg',
+		'jpeg',
+		'gif',
+	];
+
+	public function __construct(Query $query, $height, $width, $fileExt, $type)
 	{
 		$this->_query = $query;
 
@@ -39,6 +47,10 @@ class Generate
 
 		if ($fileExt) {
 			$this->setFileExt($fileExt);
+		}
+
+		if ($type) {
+			$this->setBarcodeType($type);
 		}
 	}
 
@@ -67,7 +79,7 @@ class Generate
 			throw new \InvalidArgumentException('$height must be a numeric value');
 		}
 
-		$this->_height = $height;
+		$this->_height = (int) $height;
 
 		return $this;
 	}
@@ -92,7 +104,7 @@ class Generate
 			throw new \InvalidArgumentException('$width must be a numeric value');
 		}
 
-		$this->_width = $width;
+		$this->_width = (int) $width;
 
 		return $this;
 	}
@@ -107,17 +119,42 @@ class Generate
 
 	/**
 	 * @param $ext string
-	 * @throws \InvalidArgumentException
+	 * @throws \LogicException
 	 *
 	 * @return Generate
 	 */
 	public function setFileExt($ext)
 	{
-		if (!is_string($ext)) {
-			throw new \InvalidArgumentException('$ext must be a string, ' . gettype($ext) . ' given');
+		if (!in_array($ext, $this->_supportedImageTypes)) {
+			throw new \LogicException($ext . ' is not a supported file extension');
 		}
 
 		$this->_fileExt = $ext;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBarcodeType()
+	{
+		return $this->_barcodeType;
+	}
+
+	/**
+	 * @param $type
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return Generate
+	 */
+	public function setBarcodeType($type)
+	{
+		if (!is_string($type)) {
+			throw new \InvalidArgumentException('$type must be a string, ' . gettype($type) . ' given');
+		}
+
+		$this->_barcodeType = $type;
 
 		return $this;
 	}
@@ -214,19 +251,20 @@ class Generate
 	 *
 	 * @param $image
 	 * @param $barcode
-	 *
-	 * @throws \LogicException     Throws exception if the file extension is not currently supported by the system
 	 */
 	protected function _saveImage($image, $barcode)
 	{
-		$ext = $this->getFileExt();
-
-		switch ($ext) {
+		switch ($this->getFileExt()) {
 			case 'png' :
 				imagepng($image, $this->_getFilePath($barcode));
 				break;
-			default :
-				throw new \LogicException($ext .' is not a supported file extension');
+			case 'jpg':
+			case 'jpeg':
+				imagejpeg($image, $this->_getFilePath($barcode));
+				break;
+			case 'gif':
+				imagegif($image, $this->_getFilePath($barcode));
+				break;
 		}
 	}
 
@@ -239,7 +277,7 @@ class Generate
 	 */
 	protected function _getFilename($barcode)
 	{
-		$string = $barcode . $this->getFileExt() . $this->getHeight() .	$this->getWidth();
+		$string = $barcode . $this->getFileExt() . $this->getHeight() .	$this->getWidth() . $this->getBarcodeType();
 
 		return md5($string) . '.' . $this->getFileExt();
 	}
