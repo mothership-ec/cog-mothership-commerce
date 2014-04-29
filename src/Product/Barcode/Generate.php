@@ -5,9 +5,15 @@ namespace Message\Mothership\Commerce\Product\Barcode;
 use Message\Cog\DB\Query;
 use Image_Barcode2 as ImageBarcode;
 
+/**
+ * Class Generate
+ * @package Message\Mothership\Commerce\Product\Barcode
+ * @author Thomas Marchant <thomas@message.co.uk>
+ */
 class Generate
 {
-	const BARCODE_LOCATION = 'cog://public/barcodes';
+	const BARCODE_LOCATION = 'barcodes';
+	const PUBLIC_PATH      = 'cog://public';
 
 	/**
 	 * @var \Message\Cog\DB\Query
@@ -18,9 +24,26 @@ class Generate
 	protected $_width   = 1;
 	protected $_fileExt = 'png';
 
-	protected function __construct(Query $query)
+	public function __construct(Query $query, $height, $width, $fileExt)
 	{
 		$this->_query = $query;
+
+		if ($height) {
+			$this->setHeight($height);
+		}
+
+		if ($width) {
+			$this->setWidth($width);
+		}
+
+		if ($fileExt) {
+			$this->setFileExt($fileExt);
+		}
+	}
+
+	public function getOneOfEach()
+	{
+		return $this->_getBarcodes();
 	}
 
 	/**
@@ -31,10 +54,16 @@ class Generate
 		return $this->_height;
 	}
 
+	/**
+	 * @param $height int | float | string
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return Generate
+	 */
 	public function setHeight($height)
 	{
 		if (!is_numeric($height)) {
-			throw new \LogicException('$height must be a numeric value');
+			throw new \InvalidArgumentException('$height must be a numeric value');
 		}
 
 		$this->_height = $height;
@@ -50,10 +79,16 @@ class Generate
 		return $this->_width;
 	}
 
+	/**
+	 * @param $width int | float | string
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return Generate
+	 */
 	public function setWidth($width)
 	{
 		if (!is_numeric($width)) {
-			throw new \LogicException('$width must be a numeric value');
+			throw new \InvalidArgumentException('$width must be a numeric value');
 		}
 
 		$this->_width = $width;
@@ -69,10 +104,16 @@ class Generate
 		return $this->_fileExt;
 	}
 
+	/**
+	 * @param $ext string
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return Generate
+	 */
 	public function setFileExt($ext)
 	{
 		if (!is_string($ext)) {
-			throw new \LogicException('$ext must be a string, ' . gettype($ext) . ' given');
+			throw new \InvalidArgumentException('$ext must be a string, ' . gettype($ext) . ' given');
 		}
 
 		$this->_fileExt = $ext;
@@ -81,24 +122,24 @@ class Generate
 	}
 
 	/**
-	 * This loads only the information we need. In the hopefully near future we will swap this out for the normal
-	 * product loader, but as it stands it does not load the products efficiently enough and will break if the load
-	 * is too high, see https://github.com/messagedigital/cog-mothership-commerce/issues/297
+	 * This loads only the information we need, and assigns it to a Barcode object. As it stands the system does not
+	 * load the products efficiently enough and will break if the load is too high, see
+	 * https://github.com/messagedigital/cog-mothership-commerce/issues/297
 	 *
 	 * @param $unitIDs array                  Not currently used but will be useful when dealing with individual units
 	 *
 	 * @return \Message\Cog\DB\Result
 	 */
-	protected function _getUnitInfo($unitIDs = [])
+	protected function _getBarcodes($unitIDs = [])
 	{
-		return $this->_query->run("
+		$barcodes = $this->_query->run("
 			SELECT DISTINCT
 				p.brand,
 				p.name,
 				u.barcode,
 				up.price,
 				up.currency_id AS currency,
-				GROUP_CONCAT(o.option_value, ', ') AS options
+				GROUP_CONCAT(o.option_value, ', ') AS text
 			FROM
 				product_unit AS u
 			LEFT JOIN
@@ -124,6 +165,13 @@ class Generate
 		", [
 			'retail' => 'retail',
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
+
+		foreach ($barcodes as $barcode) {
+			$barcode->text = trim($barcode->text, ' ,');
+			$barcode->url  = $this->_getBarcodeUrl($barcode->barcode);
+		}
+
+		return $barcodes;
 	}
 
 	protected function _getBarcodeType()
@@ -156,7 +204,7 @@ class Generate
 			$this->_saveImage($image, $filename);
 		}
 
-		return $this->_getFilePath($barcode);
+		return self::BARCODE_LOCATION . '/' . $this->_getFilename($barcode);
 	}
 
 	/**
@@ -169,7 +217,7 @@ class Generate
 	 */
 	protected function _saveImage($image, $barcode)
 	{
-		$ext = $this->_getFileExt();
+		$ext = $this->getFileExt();
 
 		switch ($ext) {
 			case 'png' :
@@ -218,12 +266,14 @@ class Generate
 	 */
 	protected function _getBarcodeLocation()
 	{
-		if (!is_dir(self::BARCODE_LOCATION)) {
+		$location = self::PUBLIC_PATH . '/' . self::BARCODE_LOCATION;
+
+		if (!is_dir($location)) {
 			$oldMask = umask(0);
-			mkdir(self::BARCODE_LOCATION, 0777);
+			mkdir($location, 0777);
 			umask($oldMask);
 		}
 
-		return self::BARCODE_LOCATION;
+		return $location;
 	}
 }

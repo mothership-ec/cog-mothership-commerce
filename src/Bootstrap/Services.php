@@ -454,6 +454,15 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$services['product.barcode.generate'] = function($c) {
+			return new Commerce\Product\Barcode\Generate(
+				$c['db.query'],
+				$c['cfg']->barcode->height,
+				$c['cfg']->barcode->width,
+				$c['cfg']->barcode->fileType
+			);
+		};
+
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
