@@ -24,12 +24,21 @@ class Refund extends Controller implements CompleteControllerInterface
 	const ORDER_URL = 'ms.commerce.order.detail.view';
 	const ITEM_URL = 'ms.commerce.order.detail.view.item';
 
+	const ORDER_REASON = 'Cancelled Order';
+	const ITEM_REASON = 'Cancelled Item';
+
+	protected $_url;
+	protected $_reason;
+
 	/**
 	 * Success method for cancelled orders.
 	 */
 	public function orderSuccess(PayableInterface $payable, $reference, MethodInterface $method)
 	{
-		return $this->success($payable, $reference, $method, self::ORDER_URL);
+		$this->_url    = self::ORDER_URL;
+		$this->_reason = self::ORDER_REASON;
+
+		return $this->success($payable, $reference, $method);
 	}
 
 	/**
@@ -37,7 +46,9 @@ class Refund extends Controller implements CompleteControllerInterface
 	 */
 	public function orderFailure(PayableInterface $payable)
 	{
-		return $this->failure($payable, self::ORDER_URL);
+		$this->_url = self::ORDER_URL;
+
+		return $this->failure($payable);
 	}
 
 	/**
@@ -45,7 +56,10 @@ class Refund extends Controller implements CompleteControllerInterface
 	 */
 	public function itemSuccess(PayableInterface $payable, $reference, MethodInterface $method)
 	{
-		return $this->success($payable, $reference, $method, self::ITEM_URL);
+		$this->_url    = self::ITEM_URL;
+		$this->_reason = self::ITEM_REASON;
+
+		return $this->success($payable, $reference, $method);
 	}
 
 	/**
@@ -53,7 +67,9 @@ class Refund extends Controller implements CompleteControllerInterface
 	 */
 	public function itemFailure(PayableInterface $payable)
 	{
-		return $this->failure($payable, self::ITEM_URL);
+		$this->_url = self::ITEM_URL;
+
+		return $this->failure($payable);
 	}
 
 	/**
@@ -63,30 +79,19 @@ class Refund extends Controller implements CompleteControllerInterface
 	public function success(
 		PayableInterface $payable,
 		$reference,
-		MethodInterface $method,
-		$url
+		MethodInterface $method
 	) {
-		de($this->get('request'));
-
-		$payment            = new OrderPayment;
-		$payment->method    = $method;
-		$payment->amount    = $payable->getPayableAmount();
-		$payment->reference = $reference;
-
 		$refund            = new OrderRefund;
-		$refund->payment   = $payment;
-		$refund->method    = $payment->method;
-		$refund->amount    = $payment->amount;
-		$refund->reference = $payment->reference;
+		$refund->method    = $method;
+		$refund->amount    = $payable->getPayableAmount();
+		$refund->reference = $reference;
+		$refund->reason    = $this->_reason;
+		$refund->payment   = ($this->get('order.payment.loader')->getByMethodAndReference($method, $reference) ?: null);
 
 		$order = $payable->getOrder();
-		$order->payments->append($payment);
 		$order->refunds->append($refund);
 
 		$transaction = $this->get('db.transaction');
-		$this->get('order.payment.create')
-			->setTransaction($transaction)
-			->create($payment);
 
 		$this->get('order.refund.create')
 			->setTransaction($transaction)
@@ -103,10 +108,15 @@ class Refund extends Controller implements CompleteControllerInterface
 			);
 		}
 
-		$this->_returnResponse($url);
+		return $this->_returnResponse($payable);
 	}
 
-	public function failure(PayableInterface $payable, $url)
+	public function cancel(PayableInterface $payable)
+	{
+		return $this->failure($payable);
+	}
+
+	public function failure(PayableInterface $payable)
 	{
 		$this->addFlash(
 			'error',
@@ -117,12 +127,12 @@ class Refund extends Controller implements CompleteControllerInterface
 			)
 		);
 
-		$this->_returnResponse($url);
+		return $this->_returnResponse($payable);
 	}
 
-	protected function _returnResponse($url)
+	protected function _returnResponse($payable)
 	{
-		$successUrl = $this->generateUrl($url, array(
+		$successUrl = $this->generateUrl($this->_url, array(
 			'orderID' => $payable->getOrder()->id,
 		), UrlGeneratorInterface::ABSOLUTE_URL);
 
