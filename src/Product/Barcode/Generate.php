@@ -124,8 +124,8 @@ class Generate
 
 	/**
 	 * This loads only the information we need, and assigns it to a Barcode object. As it stands the system does not
-	 * load the products efficiently enough and will break if the load is too high, see
-	 * https://github.com/messagedigital/cog-mothership-commerce/issues/297
+	 * load the products efficiently enough and will break if the load is too high, so this binds to a lightweight
+	 * Barcode object to mitigate this problem, see https://github.com/messagedigital/cog-mothership-commerce/issues/297
 	 *
 	 * @param $unitIDs array                  Not currently used but will be useful when dealing with individual units
 	 *
@@ -135,6 +135,7 @@ class Generate
 	{
 		$barcodes = $this->_query->run("
 			SELECT DISTINCT
+				u.unit_id AS unitID,
 				p.brand,
 				p.name,
 				u.barcode,
@@ -168,7 +169,7 @@ class Generate
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
-			$code = $barcode->barcode;
+			$code          = $barcode->barcode;
 			$barcode->text = trim($barcode->text, ' ,');
 			$barcode->file = $this->_getBarcodeImage($code);
 			$barcode->url  = $barcode->file->getPublicUrl() . '/' . $this->_getFilename($code);

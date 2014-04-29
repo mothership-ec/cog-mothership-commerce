@@ -11,12 +11,17 @@ namespace Message\Mothership\Commerce\Product\Barcode;
  */
 class Barcode
 {
+	public $unitID;
 	public $brand;
 	public $name;
 	public $barcode;
 	public $price;
 	public $currency;
 	public $text;
-	public $image;
 	public $url;
+
+	/**
+	 * @var \Message\Cog\Filesystem\File
+	 */
+	public $file;
 }
