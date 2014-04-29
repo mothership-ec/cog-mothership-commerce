@@ -1,39 +1,83 @@
 <?php
 
-namespace Message\Mothership\Commerce\Controller\Product;
+namespace Message\Mothership\Commerce\Product\Barcode;
 
-use Message\Cog\Controller\Controller;
-use Message\Cog\DB\Result;
+use Message\Cog\DB\Query;
 use Image_Barcode2 as ImageBarcode;
 
-class Barcode extends Controller
+class Generate
 {
 	const BARCODE_LOCATION = 'cog://public/barcodes';
 
-	public function printBarcodes(Result $result)
+	/**
+	 * @var \Message\Cog\DB\Query
+	 */
+	protected $_query;
+
+	protected $_height  = 60;
+	protected $_width   = 1;
+	protected $_fileExt = 'png';
+
+	protected function __construct(Query $query)
 	{
-		$units = [];
-
-		foreach ($result as $unit) {
-			$unit->options = trim($unit->options, ' ,');
-			$unit->barcode = $this->_getBarcodeUrl($unit->barcode);
-			$units[] = $unit;
-		}
-
-		return $this->render('Message:Mothership:Commerce::product:barcodes', [
-			'units'   => $units,
-			'perPage' => $this->_getPerPage(),
-		]);
+		$this->_query = $query;
 	}
 
 	/**
-	 * Controller for printing one barcode for every unit
+	 * @return int
 	 */
-	public function stockTake()
+	public function getHeight()
 	{
-		return $this->forward('Message:Mothership:Commerce::Controller:Product:Barcode#printBarcodes', [
-			'result' => $this->_getUnitInfo(),
-		]);
+		return $this->_height;
+	}
+
+	public function setHeight($height)
+	{
+		if (!is_numeric($height)) {
+			throw new \LogicException('$height must be a numeric value');
+		}
+
+		$this->_height = $height;
+
+		return $this;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getWidth()
+	{
+		return $this->_width;
+	}
+
+	public function setWidth($width)
+	{
+		if (!is_numeric($width)) {
+			throw new \LogicException('$width must be a numeric value');
+		}
+
+		$this->_width = $width;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFileExt()
+	{
+		return $this->_fileExt;
+	}
+
+	public function setFileExt($ext)
+	{
+		if (!is_string($ext)) {
+			throw new \LogicException('$ext must be a string, ' . gettype($ext) . ' given');
+		}
+
+		$this->_fileExt = $ext;
+
+		return $this;
 	}
 
 	/**
@@ -47,7 +91,7 @@ class Barcode extends Controller
 	 */
 	protected function _getUnitInfo($unitIDs = [])
 	{
-		return $this->get('db.query')->run("
+		return $this->_query->run("
 			SELECT DISTINCT
 				p.brand,
 				p.name,
@@ -79,7 +123,7 @@ class Barcode extends Controller
 				u.unit_id
 		", [
 			'retail' => 'retail',
-		]);
+		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 	}
 
 	protected function _getBarcodeType()
@@ -101,10 +145,10 @@ class Barcode extends Controller
 			$image = ImageBarcode::draw(
 				$barcode,
 				$this->_getBarcodeType(),
-				$this->_getFileExt(),
+				$this->getFileExt(),
 				false,
-				$this->_getHeight(),
-				$this->_getWidth()
+				$this->getHeight(),
+				$this->getWidth()
 			);
 
 			$filename = $this->_getFilename($barcode);
@@ -147,42 +191,10 @@ class Barcode extends Controller
 	{
 		return md5(
 			$barcode .
-			$this->_getFileExt() .
-			$this->_getHeight() .
-			$this->_getWidth()
-		) . '.' . $this->_getFileExt();
-	}
-
-	/**
-	 * @return int
-	 */
-	protected function _getHeight()
-	{
-		return 60;
-	}
-
-	/**
-	 * @return int
-	 */
-	protected function _getWidth()
-	{
-		return 1;
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function _getFileExt()
-	{
-		return 'png';
-	}
-
-	/**
-	 * @return int
-	 */
-	protected function _getPerPage()
-	{
-		return 24;
+			$this->getFileExt() .
+			$this->getHeight() .
+			$this->getWidth()
+		) . '.' . $this->getFileExt();
 	}
 
 	/**

@@ -1,0 +1,20 @@
+<div class="page">
+	{% for key, unit in units %}
+		<div class="label">
+			<hgroup>
+				<h2>{{ unit.brand }}</h2>
+				<h3>{{ unit.name }}</h3>
+				<p>{{ unit.options }}</p>
+			</hgroup>'
+
+			<p class="price">{{ unit.price | price(unit.currency) }}</p>
+			<img src="{{ unit.barcode }}" />
+		</div>
+
+		{% if (key + 1) == perPage %}
+			</div>
+			<div class="page-break"></div>
+			<div class="page">
+		{% endif %}
+	{% endfor %}
+</div>
