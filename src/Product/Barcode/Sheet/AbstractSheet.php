@@ -16,6 +16,6 @@ abstract class AbstractSheet implements SheetInterface
 
 	public function getViewReference()
 	{
-		return 'Message:Mothership:Commerce::product:barcodes';
+		return 'Message:Mothership:Commerce::product:barcode:default';
 	}
 }

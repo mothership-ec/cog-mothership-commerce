@@ -9,8 +9,9 @@ class Barcode extends Controller
 	public function printBarcodes($barcodes)
 	{
 		return $this->render($this->get('product.barcode.sheet')->getViewReference(), [
-			'barcodes'   => $barcodes,
-			'perPage'    => $this->get('product.barcode.sheet')->getLabelsPerPage(),
+			'barcodes'      => $barcodes,
+			'sheetName'     => $this->get('product.barcode.sheet')->getName(),
+			'labelsPerPage' => $this->get('product.barcode.sheet')->getLabelsPerPage(),
 		]);
 	}
 
@@ -23,13 +24,4 @@ class Barcode extends Controller
 			'barcodes' => $this->get('product.barcode.generate')->getOneOfEach(),
 		]);
 	}
-
-	/**
-	 * @return int
-	 */
-	protected function _getPerPage()
-	{
-		return 24;
-	}
-
 }

@@ -24,6 +24,6 @@ class Size5x13 extends AbstractSheet
 
 	public function getBarcodeHeight()
 	{
-		return 60;
+		return 30;
 	}
 }
