@@ -6,9 +6,9 @@
 {{ form_start(form) }}
 	{{ form_row(form.stock) }}
 
-	<div>
+	<div class="refund">
 		{{ form_row(form.refund) }}
-		<span>{{ refundAmount|price }}</span>
+		<span><strong>{{ refundAmount|price }}</strong></span>
 	</div>
 
 	{{ form_rest(form) }}
