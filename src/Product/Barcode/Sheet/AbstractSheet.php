@@ -9,7 +9,7 @@ abstract class AbstractSheet implements SheetInterface
 		return $this->getXCount() * $this->getYCount();
 	}
 
-	public function getWidth()
+	public function getBarcodeWidth()
 	{
 		return 1;
 	}

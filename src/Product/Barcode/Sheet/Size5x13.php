@@ -17,7 +17,12 @@ class Size5x13 extends AbstractSheet
 		return self::Y_COUNT;
 	}
 
-	public function getHeight()
+	public function getName()
+	{
+		return '5x13';
+	}
+
+	public function getBarcodeHeight()
 	{
 		return 60;
 	}

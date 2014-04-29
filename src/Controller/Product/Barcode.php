@@ -8,9 +8,9 @@ class Barcode extends Controller
 {
 	public function printBarcodes($barcodes)
 	{
-		return $this->render('Message:Mothership:Commerce::product:barcodes', [
+		return $this->render($this->get('product.barcode.sheet')->getViewReference(), [
 			'barcodes'   => $barcodes,
-			'perPage'    => $this->_getPerPage(),
+			'perPage'    => $this->get('product.barcode.sheet')->getLabelsPerPage(),
 		]);
 	}
 

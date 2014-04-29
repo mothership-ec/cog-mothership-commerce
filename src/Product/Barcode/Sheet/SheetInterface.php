@@ -6,13 +6,15 @@ interface SheetInterface
 {
 	public function getLabelsPerPage();
 
+	public function getName();
+
+	public function getViewReference();
+
 	public function getXCount();
 
 	public function getYCount();
 
-	public function getViewReference();
+	public function getBarcodeHeight();
 
-	public function getHeight();
-
-	public function getWidth();
+	public function getBarcodeWidth();
 }
