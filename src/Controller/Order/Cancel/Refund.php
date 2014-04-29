@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class Refund extends Controller implements CompleteControllerInterface
 {
 	const ORDER_URL = 'ms.commerce.order.detail.view';
-	const ITEM_URL = 'ms.commerce.order.detail.view.item';
+	const ITEM_URL = 'ms.commerce.order.detail.view.items';
 
 	const ORDER_REASON = 'Cancelled Order';
 	const ITEM_REASON = 'Cancelled Item';
