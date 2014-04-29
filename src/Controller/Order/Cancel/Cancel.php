@@ -45,6 +45,13 @@ class Cancel extends Controller
 			),
 		]);
 
+		$refundAmount = $this->_order->getPayableTotal();
+		$cancelledItems = $this->_order->items->getByCurrentStatusCode(Order\Statuses::CANCELLED);
+
+		foreach ($cancelledItems as $item) {
+			$refundAmount -= $item->gross;
+		}
+
 		$form->handleRequest();
 
 		if ($form->isValid()) {
@@ -105,7 +112,7 @@ class Cancel extends Controller
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel:order', [
 			'order'        => $this->_order,
 			'form'         => $form,
-			'refundAmount' => $this->_order->getPayableTotal(),
+			'refundAmount' => $refundAmount,
 			'title'        => 'Cancel Order',
 		]);
 	}
@@ -175,7 +182,7 @@ class Cancel extends Controller
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
 						'payable'   => $payable,
-						'reference' => null,
+						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
 							'failure' => $controller . '#itemFailure',
 							'success' => $controller . '#itemSuccess',
