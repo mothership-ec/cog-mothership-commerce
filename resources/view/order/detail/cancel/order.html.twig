@@ -1,0 +1,19 @@
+{% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
+
+{% block title title %}
+
+{% block content %}
+{{ form_start(form) }}
+	{{ form_row(form.stock) }}
+
+	<div>
+		{{ form_row(form.refund) }}
+		<span><strong>{{ refundAmount|price }}</strong></span>
+	</div>
+
+	{{ form_rest(form) }}
+
+	<button type="submit" class="button save small">Cancel order</button>
+
+{{ form_end(form) }}
+{% endblock %}

@@ -102,10 +102,10 @@ class Cancel extends Controller
 			}
 		}
 
-		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
+		return $this->render('Message:Mothership:Commerce::order:detail:cancel:order', [
 			'order'        => $this->_order,
 			'form'         => $form,
-			'refundAmount' => $this->_order->getPayableAmount(),
+			'refundAmount' => $this->_order->getPayableTotal(),
 			'title'        => 'Cancel Order',
 		]);
 	}
@@ -123,9 +123,9 @@ class Cancel extends Controller
 		$this->_order = $this->_getAndCheckOrder($orderID);
 		$item = $this->_order->items->get($itemID);
 
-		// if (!$this->get('order.item.specification.cancellable')->isSatisfiedBy($item)) {
-		// 	throw new \InvalidArgumentException(sprintf('Item `%s` cannot be cancelled.', $item->getDescription()));
-		// }
+		if (!$this->get('order.item.specification.cancellable')->isSatisfiedBy($item)) {
+			throw new \InvalidArgumentException(sprintf('Item `%s` cannot be cancelled.', $item->getDescription()));
+		}
 
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
@@ -133,6 +133,10 @@ class Cancel extends Controller
 				['orderID' => $orderID, 'itemID' => $itemID]
 			),
 		]);
+
+		$cancelledItems = $this->_order->items->getByCurrentStatusCode(Order\Statuses::CANCELLED);
+		$lastUncancelledItem = 1 == ($this->_order->items->count() - count($cancelledItems));
+
 		$form->handleRequest();
 
 		if ($form->isValid()) {
@@ -185,12 +189,13 @@ class Cancel extends Controller
 			}
 		}
 
-		return $this->render('Message:Mothership:Commerce::order:detail:cancel', [
-			'order'        => $this->_order,
-			'item'         => $item,
-			'form'         => $form,
-			'refundAmount' => $item->gross,
-			'title'        => 'Cancel Item',
+		return $this->render('Message:Mothership:Commerce::order:detail:cancel:item', [
+			'order'               => $this->_order,
+			'item'                => $item,
+			'form'                => $form,
+			'refundAmount'        => $item->gross,
+			'title'               => 'Cancel Item',
+			'lastUncancelledItem' => $lastUncancelledItem,
 		]);
 	}
 
@@ -286,3 +291,4 @@ class Cancel extends Controller
 		return ($payment ? $payment->reference : null);
 	}
 }
+       
