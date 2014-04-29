@@ -2,13 +2,19 @@
 	<h1 class="title">
 		{{ item.description }}
 		<div class="controls">
+		{% if itemCancellable.isSatisfiedBy(item) %}
 		    <a
 		    	href="{{ url('ms.commerce.order.item.cancel', {'orderID': order.id, 'itemID': item.id }) }}"
 		    	data-modal-open
-		    	class="button small cancel {{ itemCancellable.isSatisfiedBy(item) ? '' : 'disabled' }}"
+		    	class="button small cancel"
 		    >
-		    	Cancel
+		       	Cancel
 		    </a>
+	    {% else %}
+			<span class="button small cancel disabled"  id="cancel-order">
+		    	Cancelled
+		    </span>
+	    {% endif %}
 		</div>
 	</h1>
 	<div class="content" >
