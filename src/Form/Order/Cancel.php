@@ -81,7 +81,6 @@ class Cancel extends Form\AbstractType
 		]);
 		$resolver->setDefaults([
 		   self::STOCK_LOCATION_OPTION => $this->_stockLocation,
-		   'errors_with_fields' => true,
 		   self::STOCK_LABEL_OPTION => 'item(s)',
 		]);
 	}

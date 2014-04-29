@@ -104,11 +104,14 @@ class Cancel extends Controller
 						],
 					]);
 				}
-
-				return $this->redirectToRoute('ms.commerce.order.detail.view', [
-					'orderID' => $this->_order->id,
-				]);
 			}
+		}
+
+		// to not redirect somewhere else when we have errors
+		if ($form->isSubmitted()) {
+			return $this->redirectToRoute('ms.commerce.order.detail.view', [
+				'orderID' => $this->_order->id,
+			]);
 		}
 
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel:order', [
@@ -192,11 +195,14 @@ class Cancel extends Controller
 						],
 					]);
 				}
-
-				return $this->redirectToRoute('ms.commerce.order.detail.view.items', [
-					'orderID' => $this->_order->id,
-				]);
 			}
+		}
+
+		// to not redirect somewhere else when we have errors
+		if ($form->isSubmitted()) {
+			return $this->redirectToRoute('ms.commerce.order.detail.view.items', [
+				'orderID' => $this->_order->id,
+			]);
 		}
 
 		return $this->render('Message:Mothership:Commerce::order:detail:cancel:item', [
