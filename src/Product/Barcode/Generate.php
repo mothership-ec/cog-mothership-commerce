@@ -119,14 +119,18 @@ class Generate
 
 	/**
 	 * @param $ext string
-	 * @throws \LogicException
+	 * @throws \InvalidArgumentException
 	 *
 	 * @return Generate
 	 */
 	public function setFileExt($ext)
 	{
 		if (!in_array($ext, $this->_supportedImageTypes)) {
-			throw new \LogicException($ext . ' is not a supported file extension');
+			$error = (is_string($ext)) ?
+				$ext . ' is not a supported file extension' :
+				'$ext must be a string, ' . gettype($ext) . ' given';
+
+			throw new \InvalidArgumentException($error);
 		}
 
 		$this->_fileExt = $ext;

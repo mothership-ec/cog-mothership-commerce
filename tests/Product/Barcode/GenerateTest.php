@@ -6,6 +6,9 @@ use Message\Mothership\Commerce\Product\Barcode\Generate;
 
 class GenerateTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Generate
+	 */
 	protected $_generate;
 
 	protected $_file;
@@ -134,5 +137,63 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	public function testSetWidthFromNull()
 	{
 		$this->_generate->setWidth(null);
+	}
+
+	public function testGetFileExt()
+	{
+		$this->assertSame($this->_fileExt, $this->_generate->getFileExt());
+	}
+
+	public function testSetFileExtPng()
+	{
+		$generate = new Generate(
+			$this->_query,
+			$this->_height,
+			$this->_width,
+			'jpg',
+			$this->_type
+		);
+
+		$ext = 'png';
+
+		$generate->setFileExt($ext);
+		$this->assertSame($ext, $generate->getFileExt());
+	}
+
+	public function testSetFileExtJpg()
+	{
+		$ext = 'jpg';
+		$this->_generate->setFileExt($ext);
+		$this->assertSame($ext, $this->_generate->getFileExt());
+	}
+
+	public function testSetFileExtJpeg()
+	{
+		$ext = 'jpeg';
+		$this->_generate->setFileExt($ext);
+		$this->assertSame($ext, $this->_generate->getFileExt());
+	}
+
+	public function testSetFileExtGif()
+	{
+		$ext = 'gif';
+		$this->_generate->setFileExt($ext);
+		$this->assertSame($ext, $this->_generate->getFileExt());
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetFileExtNotSupported()
+	{
+		$this->_generate->setFileExt('bmp');
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetFileExtInvalidType()
+	{
+		$this->_generate->setFileExt(new \stdClass);
 	}
 }
