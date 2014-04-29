@@ -34,9 +34,9 @@ class Cancel extends Controller
 	{
 		$this->_order = $this->_getAndCheckOrder($orderID);
 
-		// if (!$this->get('order.specification.cancellable')->isSatisfiedBy($this->_order)) {
-		// 	throw new \InvalidArgumentException(sprintf('Order #%s cannot be cancelled.', $this->_order->id));
-		// }
+		if (!$this->get('order.specification.cancellable')->isSatisfiedBy($this->_order)) {
+			throw new \InvalidArgumentException(sprintf('Order #%s cannot be cancelled.', $this->_order->id));
+		}
 
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
@@ -88,7 +88,7 @@ class Cancel extends Controller
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
 						'payable'   => $payable,
-						'reference' => null,
+						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
 							'failure' => $controller . '#orderFailure',
 							'success' => $controller . '#orderSuccess',
@@ -267,5 +267,22 @@ class Cancel extends Controller
 		foreach ($this->_successFlashes as $flash) {
 			$this->addFlash('success', $flash);
 		}
+	}
+
+	/**
+	 * For now just returns latest payment's reference. Should in future find
+	 * the right payment.
+	 * 
+	 * @return string Payment Reference
+	 */
+	protected function _getPaymentReference()
+	{
+		$payment = null;
+		
+		foreach ($this->_order->payments as $p) {
+			$payment = $p;
+		}
+
+		return ($payment ? $payment->reference : null);
 	}
 }
