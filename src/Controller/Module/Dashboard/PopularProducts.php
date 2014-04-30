@@ -35,12 +35,6 @@ class PopularProducts extends Controller
 			];
 		}
 
-		usort($products, function($a, $b) {
-			if ($a['count'] == $b['count']) return 0;
-			return ($a['count'] < $b['count']);
-		});
-		$products = array_slice($products, 0, 4);
-
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:bar-graph',
 			'label' => 'Popular products (week)',
 			'keys' => [
