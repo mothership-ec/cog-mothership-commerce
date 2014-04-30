@@ -1,0 +1,69 @@
+* {
+	font-size: 7pt;
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.page {
+	width: 21cm;
+	height: 29.7cm;
+	float: left;
+	border-top: 8.5mm solid #FFF;
+	border-bottom: 8.5mm solid #FFF;
+	border-left: 2mm solid #FFF;
+	border-right: 2mm solid #FFF;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.label {
+	width: 20%;
+	float: left;
+	height: 81px;
+	overflow: hidden;
+	border-left: 1mm solid #fff;
+	border-right: 1mm solid #fff;
+	padding: 10px;
+	position: relative;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+hgroup h2,
+hgroup h3,
+hgroup p {
+	float: left;
+	width: auto;
+	font-size: 7pt;
+	font-weight: normal;
+	line-height: 1;
+	margin: 0;
+	text-align: left;
+	margin-right: 2px;
+}
+
+.price {
+	text-align: center;
+	width: 100%;
+	float: left;
+	margin: 1mm 0;
+	font-weight: bold;
+	position: absolute;
+	bottom: 8mm;
+	left: 0;
+	right: 0;
+}
+
+img {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  bottom: 0.5mm;
+}
