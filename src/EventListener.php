@@ -7,7 +7,7 @@ use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 
 use Message\Mothership\Commerce\Order\Event;
-use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\Commerce\Order\Events as OrderEvents;
 
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\Activity;
@@ -35,11 +35,16 @@ class EventListener extends BaseListener implements SubscriberInterface
 			BuildMenuEvent::BUILD_MAIN_MENU => array(
 				array('registerMainMenuItems'),
 			),
-			Events::BUILD_ORDER_SIDEBAR => array(
+			OrderEvents::BUILD_ORDER_SIDEBAR => array(
 				array('registerSidebarItems'),
 			),
-			Events::BUILD_ORDER_TABS => array(
+			OrderEvents::BUILD_ORDER_TABS => array(
 				array('registerTabItems'),
+			),
+			OrderEvents::CREATE_COMPLETE => array(
+				array('recordOrderIn'),
+				array('recordSalesNet'),
+				array('recordProductsSales'),
 			),
 			DashboardEvent::DASHBOARD_INDEX => array(
 				array('buildDashboardProducts'),
@@ -176,6 +181,38 @@ class EventListener extends BaseListener implements SubscriberInterface
 				'#' . $order->id,
 				$url
 			));
+		}
+	}
+
+	/**
+	 * Increment the orders.in.weekly stat.
+	 *
+	 * @param  Event\Event $event
+	 */
+	public function recordOrderIn(Event\Event $event)
+	{
+		$this->get('stats')->increment('orders.in.weekly');
+	}
+
+	/**
+	 * Increment the sales.net.daily stat with the orders total net.
+	 *
+	 * @param  Event\Event $event
+	 */
+	public function recordSalesNet(Event\Event $event)
+	{
+		$this->get('stats')->increment('sales.net.daily', $event->getOrder()->totalNet);
+	}
+
+	/**
+	 * Increment the products.sales stat for each product ordered.
+	 *
+	 * @param  Event\Event $event
+	 */
+	public function recordProductsSales(Event\Event $event)
+	{
+		foreach ($event->getOrder()->items as $item) {
+			$this->get('stats')->incrementKey('products.sales', $item->productID);
 		}
 	}
 }
