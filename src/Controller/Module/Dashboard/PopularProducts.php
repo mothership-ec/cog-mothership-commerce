@@ -18,8 +18,6 @@ class PopularProducts extends Controller
 	 */
 	public function index()
 	{
-		// $stats->addDataset('products.sales', $stats::KEY_VALUE);
-
 		$rows         = [];
 		$productsSales = $this->get('stats')->getValues('products.sales', strtotime('7 days ago'));
 

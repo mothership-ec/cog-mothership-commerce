@@ -18,9 +18,6 @@ class TotalSales extends Controller
 	 */
 	public function index()
 	{
-		// $stats->addDataset('sales.net.daily', $stats::VALUE, $stats::DAILY);
-		// $stats->addDataset('sales.gross.daily', $stats::VALUE, $stats::DAILY);
-
 		$net = $this->get('stats')->getRange('sales.net.daily', strtotime('7 days ago'));
 
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:area-graph', [

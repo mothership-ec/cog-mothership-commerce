@@ -15,6 +15,7 @@ class Services implements ServicesInterface
 	{
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
+		$this->registerStatsDatatsets($services);
 
 		$services['order'] = $services->factory(function($c) {
 			return new Commerce\Order\Order($c['order.entities']);
@@ -575,6 +576,21 @@ class Services implements ServicesInterface
 			));
 
 			return $twig;
+		});
+	}
+
+	public function registerStatsDatasets($services)
+	{
+		$services->extend('stats', function($stats, $c) {
+			$stats->addDataset('orders.in.weekly',  $stats::VALUE, $stats::WEEKLY);
+			$stats->addDataset('orders.out.weekly', $stats::VALUE, $stats::WEEKLY);
+
+			$stats->addDataset('products.sales',    $stats::KEY_VALUE);
+
+			$stats->addDataset('sales.net.daily',   $stats::VALUE, $stats::DAILY);
+			$stats->addDataset('sales.gross.daily', $stats::VALUE, $stats::DAILY);
+
+			return $stats;
 		});
 	}
 }

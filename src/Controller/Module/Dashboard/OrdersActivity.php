@@ -18,11 +18,8 @@ class OrdersActivity extends Controller
 	 */
 	public function index()
 	{
-		// $stats->addDataset('orders.in', $stats::VALUE, $stats::WEEKLY);
-		// $stats->addDataset('orders.out', $stats::VALUE, $stats::WEEKLY);
-
-		$in  = $this->get('stats')->getValue('orders.in');
-		$out = $this->get('stats')->getValue('orders.out');
+		$in  = $this->get('stats')->getValue('orders.in.weekly');
+		$out = $this->get('stats')->getValue('orders.out.weekly');
 
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:big-numbers', [
 			'label' => 'Orders activity (week)',
