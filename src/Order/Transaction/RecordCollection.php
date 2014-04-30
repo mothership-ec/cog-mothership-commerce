@@ -67,11 +67,11 @@ class RecordCollection implements \IteratorAggregate, \Countable
 
 	/**
 	 * Returns one or none element of the collection by its type.
-	 * 
+	 *
 	 * @param  string                     $type Transaction type
 	 * @throws \InvalidArgumentException        If more than one elements were found.
 	 * @return false|RecordInterface            False if no transaction was found, the element
-	 *                                          if there was exactly one match.     
+	 *                                          if there was exactly one match.
 	 */
 	public function getOneByType($type)
 	{
@@ -107,7 +107,8 @@ class RecordCollection implements \IteratorAggregate, \Countable
 	public function exists(RecordInterface $record)
 	{
 		foreach ($this->_records as $curRecord) {
-			if ($curRecord == $record) {
+			if ($curRecord->getRecordType() === $record->getRecordType()
+			 && $curRecord->getRecordID() === $record->getRecordID()) {
 				return true;
 			}
 		}
