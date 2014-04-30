@@ -11,9 +11,6 @@ use Message\Cog\Controller\Controller;
  */
 class OrdersActivity extends Controller
 {
-	const CACHE_KEY = 'dashboard.module.orders-activity';
-	const CACHE_TTL = 3600;
-
 	/**
 	 * Get the count of orders placed and dispatched over the past 7 days.
 	 *
@@ -21,34 +18,24 @@ class OrdersActivity extends Controller
 	 */
 	public function index()
 	{
-		if (false === $data = $this->get('cache')->fetch(self::CACHE_KEY)) {
-			$since = strtotime(date('Y-m-d')) - (60 * 60 * 24 * 6);
+		// $stats->addDataset('orders.in', $stats::VALUE, $stats::WEEKLY);
+		// $stats->addDataset('orders.out', $stats::VALUE, $stats::WEEKLY);
 
-			$in = $this->get('db.query')->run("
-				SELECT COUNT(order_id) as num
-				FROM order_item_status
-				WHERE created_at > ?
-				AND status_code = 0
-			", [$since]);
+		$in  = $this->get('stats')->getValue('orders.in');
+		$out = $this->get('stats')->getValue('orders.out');
 
-			$out = $this->get('db.query')->run("
-				SELECT COUNT(order_id) as num
-				FROM order_item_status
-				WHERE created_at > ?
-				AND status_code = 1000
-			", [$since]);
-
-			$data = [
-				'orders_in'  => $in[0]->num,
-				'orders_out' => $out[0]->num,
-			];
-
-			$this->get('cache')->store(self::CACHE_KEY, $data, self::CACHE_TTL);
-		}
-
-		return $this->render(
-			'Message:Mothership:Commerce::module:dashboard:orders-activity',
-			$data
-		);
+		return $this->render('Message:Mothership:ControlPanel::module:dashboard:big-numbers', [
+			'label' => 'Orders activity (week)',
+			'numbers' => [
+				'in'  => [
+					'label' => 'In'
+					'value' => $in,
+				],
+				'out' => [
+					'label' => 'Out',
+					'value' => $out,
+				],
+			]
+		]);
 	}
 }

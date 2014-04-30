@@ -11,9 +11,6 @@ use Message\Cog\Controller\Controller;
  */
 class PopularProducts extends Controller
 {
-	const CACHE_KEY = 'dashboard.module.popular-products';
-	const CACHE_TTL = 3600;
-
 	/**
 	 * Get the most ordered products in the past 7 days.
 	 *
@@ -21,43 +18,38 @@ class PopularProducts extends Controller
 	 */
 	public function index()
 	{
-		if (false === $data = $this->get('cache')->fetch(self::CACHE_KEY)) {
-			$products = [];
+		// $stats->addDataset('products.sales', $stats::KEY_VALUE);
 
-			$since = strtotime(date('Y-m-d')) - (60 * 60 * 24 * 6);
+		$rows         = [];
+		$productsSales = $this->get('stats')->getValues('products.sales', strtotime('7 days ago'));
 
-			$items = $this->get('db.query')->run("
-				SELECT
-					product_id,
-					COUNT(item_id) as num
-				FROM order_item
-				WHERE created_at > ?
-				GROUP BY product_id
-			", [$since]);
+		uasort($productsSales, function($a, $b) {
+			if ($a == $b) return 0;
+			return $a < $b;
+		});
 
-			foreach ($items as $item) {
-				$products[] = [
-					'product' => $this->get('product.loader')->getByID($item->product_id),
-					'count'   => $item->num,
-				];
-			}
+		$productsSales = array_slice($productsSales, 0, 4);
 
-			usort($products, function($a, $b) {
-				if ($a['count'] == $b['count']) return 0;
-				return ($a['count'] < $b['count']);
-			});
-			$products = array_slice($products, 0, 4);
-
-			$data = [
-				'products' => $products,
+		foreach ($productsSales as $productID => $count) {
+			$rows[] = [
+				'label' => $this->get('product.loader')->getByID($productID)->name,
+				'value' => $count,
 			];
-
-			$this->get('cache')->store(self::CACHE_KEY, $data, self::CACHE_TTL);
 		}
 
-		return $this->render(
-			'Message:Mothership:Commerce::module:dashboard:popular-products',
-			$data
+		usort($products, function($a, $b) {
+			if ($a['count'] == $b['count']) return 0;
+			return ($a['count'] < $b['count']);
+		});
+		$products = array_slice($products, 0, 4);
+
+		return $this->render('Message:Mothership:ControlPanel::module:dashboard:bar-graph',
+			'label' => 'Popular products (week)',
+			'keys' => [
+				'label' => 'Product',
+				'value' => 'Purchased',
+			],
+			'rows'  => $rows,
 		);
 	}
 }

@@ -11,49 +11,28 @@ use Message\Cog\Controller\Controller;
  */
 class TotalSales extends Controller
 {
-	const CACHE_KEY = 'dashboard.module.total-sales';
-	const CACHE_TTL = 3600;
-
 	/**
-	 * Get the daily sales for the past 7 days.
+	 * Get the daily net sales for the past 7 days.
 	 *
 	 * @return Message\Cog\HTTP\Response
 	 */
 	public function index()
 	{
-		if (false === $data = $this->get('cache')->fetch(self::CACHE_KEY)) {
-			$products = [];
+		// $stats->addDataset('sales.net.daily', $stats::VALUE, $stats::DAILY);
+		// $stats->addDataset('sales.gross.daily', $stats::VALUE, $stats::DAILY);
 
-			$since = strtotime(date('Y-m-d')) - (60 * 60 * 24 * 6);
+		$net = $this->get('stats')->getRange('sales.net.daily', strtotime('7 days ago'));
 
-			$data = $this->get('db.query')->run("
-				SELECT
-					DAYNAME(FROM_UNIXTIME(created_at)) as dow,
-					SUM(total_net) as net,
-					SUM(total_gross) as gross
-				FROM order_summary
-				WHERE created_at > ?
-				GROUP BY DATE(FROM_UNIXTIME(created_at))
-			", [$since]);
-
-			$total = 0;
-			$days = [];
-			foreach ($data as $day) {
-				$days[] = $day;
-				$total += $day->net;
-			}
-
-			$data = [
-				'days'  => $days,
-				'total' => $total,
-			];
-
-			$this->get('cache')->store(self::CACHE_KEY, $data, self::CACHE_TTL);
-		}
-
-		return $this->render(
-			'Message:Mothership:Commerce::module:dashboard:total-sales',
-			$data
-		);
+		return $this->render('Message:Mothership:ControlPanel::module:dashboard:area-graph', [
+			'label'   => 'Total sales (week)',
+			'values'  => $net,
+			'numbers' => [
+				[
+					'label'   => false,
+					'value'   => $totalNet,
+					'filters' => 'price',
+				]
+			]
+		]);
 	}
 }
