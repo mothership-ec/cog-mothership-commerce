@@ -24,4 +24,9 @@ class Barcode
 	 * @var \Message\Cog\Filesystem\File
 	 */
 	public $file;
+
+	public function getBarcode()
+	{
+		return $this->barcode;
+	}
 }

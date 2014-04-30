@@ -457,6 +457,7 @@ class Services implements ServicesInterface
 		$services['product.barcode.generate'] = function($c) {
 			return new Commerce\Product\Barcode\Generate(
 				$c['db.query'],
+				new Commerce\Product\Barcode\Image,
 				$c['product.barcode.sheet']->getBarcodeHeight(),
 				$c['product.barcode.sheet']->getBarcodeWidth(),
 				$c['cfg']->barcode->fileType,

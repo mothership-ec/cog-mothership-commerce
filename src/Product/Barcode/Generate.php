@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Product\Barcode;
 
 use Message\Cog\DB\Query;
 use Message\Cog\Filesystem\File;
-use Image_Barcode2 as ImageBarcode;
 
 /**
  * Class Generate
@@ -21,6 +20,11 @@ class Generate
 	 */
 	protected $_query;
 
+	/**
+	 * @var Image
+	 */
+	protected $_image;
+
 	protected $_height      = 60;
 	protected $_width       = 1;
 	protected $_fileExt     = 'png';
@@ -33,9 +37,10 @@ class Generate
 		'gif',
 	];
 
-	public function __construct(Query $query, $height, $width, $fileExt, $type)
+	public function __construct(Query $query, Image $image, $height, $width, $fileExt, $type)
 	{
-		$this->_query = $query;
+		$this->_query   = $query;
+		$this->_image  = $image;
 
 		if ($height) {
 			$this->setHeight($height);
@@ -210,18 +215,13 @@ class Generate
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
-			$code          = $barcode->barcode;
+			$code          = $barcode->getBarcode();
 			$barcode->text = trim($barcode->text, ' ,');
 			$barcode->file = $this->_getBarcodeImage($code);
 			$barcode->url  = $barcode->file->getPublicUrl() . '/' . $this->_getFilename($code);
 		}
 
 		return $barcodes;
-	}
-
-	protected function _getBarcodeType()
-	{
-		return ImageBarcode::BARCODE_CODE39;
 	}
 
 	/**
@@ -234,42 +234,19 @@ class Generate
 	 */
 	protected function _getBarcodeImage($barcode)
 	{
-		if (!file_exists($this->_getFilePath($barcode))) {
-			$image = ImageBarcode::draw(
+		if (!$this->_image->exists($this->_getFilename($barcode))) {
+			$image = $this->_image->getImage(
 				$barcode,
-				$this->_getBarcodeType(),
+				$this->getBarcodeType(),
 				$this->getFileExt(),
-				false,
 				$this->getHeight(),
 				$this->getWidth()
 			);
 
-			$this->_saveImage($image, $barcode);
+			$this->_image->save($image, $this->_getFilename($barcode), $this->getFileExt());
 		}
 
-		return new File($this->_getBarcodeLocation($barcode));
-	}
-
-	/**
-	 * Saves the barcode image to the barcodes directory
-	 *
-	 * @param $image
-	 * @param $barcode
-	 */
-	protected function _saveImage($image, $barcode)
-	{
-		switch ($this->getFileExt()) {
-			case 'png' :
-				imagepng($image, $this->_getFilePath($barcode));
-				break;
-			case 'jpg':
-			case 'jpeg':
-				imagejpeg($image, $this->_getFilePath($barcode));
-				break;
-			case 'gif':
-				imagegif($image, $this->_getFilePath($barcode));
-				break;
-		}
+		return $this->_image->getFile($this->_getFilename($barcode));
 	}
 
 	/**
@@ -286,35 +263,4 @@ class Generate
 		return md5($string) . '.' . $this->getFileExt();
 	}
 
-	/**
-	 * Returns appropriate filepath for a specific barcode
-	 *
-	 * @param string $barcode      Barcode for a product unit
-	 *
-	 * @return string              Returns the location of the barcode for that product unit
-	 */
-	protected function _getFilePath($barcode)
-	{
-		return $this->_getBarcodeLocation() . '/' . $this->_getFilename($barcode);
-	}
-
-	/**
-	 * Return barcode directory, creating it if it doesn't exist
-	 * Sets the umask to ensure that the directory created is public, then resets it back once the directory has been
-	 * created
-	 *
-	 * @return string       Returns directory barcodes are saved to
-	 */
-	protected function _getBarcodeLocation()
-	{
-		$location = self::PUBLIC_PATH . '/' . self::BARCODE_LOCATION;
-
-		if (!is_dir($location)) {
-			$oldMask = umask(0);
-			mkdir($location, 0777);
-			umask($oldMask);
-		}
-
-		return $location;
-	}
 }

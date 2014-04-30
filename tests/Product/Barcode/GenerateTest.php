@@ -15,7 +15,10 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	protected $_query;
 	protected $_result;
 	protected $_barcode;
+	protected $_image;
+	protected $_fileResource;
 
+	protected $_barcodeVal = 123;
 	protected $_height = 60;
 	protected $_width = 1;
 	protected $_type = 'code39';
@@ -38,15 +41,115 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->_barcode = $this->getMock('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
+		$this->_barcode = $this->getMockBuilder('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode')
+			->setMethods(['getBarcode'])
+			->getMock();
+
+		$this->_image  = $this->getMockBuilder('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Image')
+			->setMethods(['getImage', 'getFile', 'save', 'exists', 'getDirectory', 'getPath'])
+			->getMock();
+
+		$this->_fileResource = fopen(__DIR__ . '/dummy.png', 'r');
 
 		$this->_generate = new Generate(
 			$this->_query,
+			$this->_image,
 			$this->_height,
 			$this->_width,
 			$this->_fileExt,
 			$this->_type
 		);
+	}
+
+	public function testGetOneOfEachNewImage()
+	{
+		$this->_query
+			->expects($this->once())
+			->method('run')
+			->will($this->returnValue($this->_result));
+
+		$this->_result
+			->expects($this->once())
+			->method('bindTo')
+			->will($this->returnValue([$this->_barcode]));
+
+		$this->_barcode
+			->expects($this->once())
+			->method('getBarcode')
+			->will($this->returnValue($this->_barcodeVal));
+
+		$this->_image
+			->expects($this->once())
+			->method('exists')
+			->will($this->returnValue(false));
+
+		$this->_image
+			->expects($this->once())
+			->method('getImage')
+			->will($this->returnValue($this->_fileResource));
+
+		$this->_image
+			->expects($this->once())
+			->method('save')
+			->will($this->returnValue(true));
+
+		$this->_image
+			->expects($this->once())
+			->method('getFile')
+			->will($this->returnValue($this->_file));
+
+		$barcodes = $this->_generate->getOneOfEach();
+
+		$this->assertTrue(is_array($barcodes));
+
+		$barcode = array_shift($barcodes);
+
+		$this->assertInstanceOf('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode', $barcode);
+	}
+	public function testGetOneOfEachExistingImage()
+	{
+		$this->_query
+			->expects($this->once())
+			->method('run')
+			->will($this->returnValue($this->_result));
+
+		$this->_result
+			->expects($this->once())
+			->method('bindTo')
+			->will($this->returnValue([$this->_barcode]));
+
+		$this->_barcode
+			->expects($this->once())
+			->method('getBarcode')
+			->will($this->returnValue($this->_barcodeVal));
+
+		$this->_image
+			->expects($this->once())
+			->method('exists')
+			->will($this->returnValue(true));
+
+		$this->_image
+			->expects($this->never())
+			->method('getImage')
+			->will($this->returnValue($this->_fileResource));
+
+		$this->_image
+			->expects($this->never())
+			->method('save')
+			->will($this->returnValue(true));
+
+		$this->_image
+			->expects($this->once())
+			->method('getFile')
+			->will($this->returnValue($this->_file));
+
+		$barcodes = $this->_generate->getOneOfEach();
+
+		$this->assertTrue(is_array($barcodes));
+
+		$barcode = array_shift($barcodes);
+
+		$this->assertInstanceOf('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode', $barcode);
 	}
 
 	public function testGetHeight()
@@ -89,7 +192,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testSetHeightFromNull()
+	public function testSetHeightInvalidType()
 	{
 		$this->_generate->setHeight(null);
 	}
@@ -134,7 +237,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */
-	public function testSetWidthFromNull()
+	public function testSetWidthInvalidType()
 	{
 		$this->_generate->setWidth(null);
 	}
@@ -148,6 +251,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	{
 		$generate = new Generate(
 			$this->_query,
+			$this->_image,
 			$this->_height,
 			$this->_width,
 			'jpg',
@@ -195,5 +299,25 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	public function testSetFileExtInvalidType()
 	{
 		$this->_generate->setFileExt(new \stdClass);
+	}
+
+	public function testGetBarcodeType()
+	{
+		$this->assertSame($this->_type, $this->_generate->getBarcodeType());
+	}
+
+	public function testSetBarcodeType()
+	{
+		$type = 'abc';
+		$this->_generate->setBarcodeType($type);
+		$this->assertSame($type, $this->_generate->getBarcodeType());
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testSetBarcodeTypeInvalidType()
+	{
+		$this->_generate->setBarcodeType(new \stdClass);
 	}
 }
