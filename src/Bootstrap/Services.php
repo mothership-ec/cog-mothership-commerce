@@ -15,7 +15,7 @@ class Services implements ServicesInterface
 	{
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
-		$this->registerStatsDatatsets($services);
+		$this->registerStatsDatasets($services);
 
 		$services['order'] = $services->factory(function($c) {
 			return new Commerce\Order\Order($c['order.entities']);
