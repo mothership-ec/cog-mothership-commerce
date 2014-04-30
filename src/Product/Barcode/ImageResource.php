@@ -5,7 +5,14 @@ namespace Message\Mothership\Commerce\Product\Barcode;
 use Image_Barcode2 as ImageBarcode;
 use Message\Cog\Filesystem\File;
 
-class Image
+/**
+ * Class for communicating with the barcode image resource
+ *
+ * Class Image
+ * @package Message\Mothership\Commerce\Product\Barcode
+ * @author Thomas Marchant <thomas@message.co.uk>
+ */
+class ImageResource
 {
 	const BARCODE_LOCATION = 'barcodes';
 	const PUBLIC_PATH      = 'cog://public';
@@ -19,7 +26,7 @@ class Image
 	 *
 	 * @return resource
 	 */
-	public function getImage($barcode, $type, $fileExt, $height, $width)
+	public function getResource($barcode, $type, $fileExt, $height, $width)
 	{
 		return ImageBarcode::draw(
 			$barcode,
@@ -31,6 +38,12 @@ class Image
 		);
 	}
 
+	/**
+	 * Get a File instance for the image
+	 *
+	 * @param $filename
+	 * @return File
+	 */
 	public function getFile($filename)
 	{
 		return new File($this->getPath($filename));
@@ -102,9 +115,15 @@ class Image
 		return $location;
 	}
 
+	/**
+	 * Get path of barcode image
+	 *
+	 * @param $filename
+	 *
+	 * @return string
+	 */
 	public function getPath($filename)
 	{
 		return $this->getDirectory() . '/' . $filename;
-
 	}
 }

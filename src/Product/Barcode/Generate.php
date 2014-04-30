@@ -3,7 +3,6 @@
 namespace Message\Mothership\Commerce\Product\Barcode;
 
 use Message\Cog\DB\Query;
-use Message\Cog\Filesystem\File;
 
 /**
  * Class Generate
@@ -21,9 +20,9 @@ class Generate
 	protected $_query;
 
 	/**
-	 * @var Image
+	 * @var ImageResource
 	 */
-	protected $_image;
+	protected $_imageResource;
 
 	protected $_height      = 60;
 	protected $_width       = 1;
@@ -37,10 +36,10 @@ class Generate
 		'gif',
 	];
 
-	public function __construct(Query $query, Image $image, $height, $width, $fileExt, $type)
+	public function __construct(Query $query, ImageResource $imageResource, $height, $width, $fileExt, $type)
 	{
-		$this->_query   = $query;
-		$this->_image  = $image;
+		$this->_query         = $query;
+		$this->_imageResource = $imageResource;
 
 		if ($height) {
 			$this->setHeight($height);
@@ -218,7 +217,7 @@ class Generate
 			$code          = $barcode->getBarcode();
 			$barcode->text = trim($barcode->text, ' ,');
 			$barcode->file = $this->_getBarcodeImage($code);
-			$barcode->url  = $barcode->file->getPublicUrl() . '/' . $this->_getFilename($code);
+			$barcode->url  = $barcode->file->getPublicUrl();
 		}
 
 		return $barcodes;
@@ -234,8 +233,8 @@ class Generate
 	 */
 	protected function _getBarcodeImage($barcode)
 	{
-		if (!$this->_image->exists($this->_getFilename($barcode))) {
-			$image = $this->_image->getImage(
+		if (!$this->_imageResource->exists($this->_getFilename($barcode))) {
+			$image = $this->_imageResource->getResource(
 				$barcode,
 				$this->getBarcodeType(),
 				$this->getFileExt(),
@@ -243,10 +242,10 @@ class Generate
 				$this->getWidth()
 			);
 
-			$this->_image->save($image, $this->_getFilename($barcode), $this->getFileExt());
+			$this->_imageResource->save($image, $this->_getFilename($barcode), $this->getFileExt());
 		}
 
-		return $this->_image->getFile($this->_getFilename($barcode));
+		return $this->_imageResource->getFile($this->_getFilename($barcode));
 	}
 
 	/**

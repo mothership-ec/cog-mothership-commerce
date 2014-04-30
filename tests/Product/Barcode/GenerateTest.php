@@ -15,7 +15,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	protected $_query;
 	protected $_result;
 	protected $_barcode;
-	protected $_image;
+	protected $_imageResource;
 	protected $_fileResource;
 
 	protected $_barcodeVal = 123;
@@ -45,15 +45,15 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 			->setMethods(['getBarcode'])
 			->getMock();
 
-		$this->_image  = $this->getMockBuilder('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Image')
-			->setMethods(['getImage', 'getFile', 'save', 'exists', 'getDirectory', 'getPath'])
+		$this->_imageResource = $this->getMockBuilder('\\Message\\Mothership\\Commerce\\Product\\Barcode\\ImageResource')
+			->setMethods(['getResource', 'getFile', 'save', 'exists', 'getDirectory', 'getPath'])
 			->getMock();
 
 		$this->_fileResource = fopen(__DIR__ . '/dummy.png', 'r');
 
 		$this->_generate = new Generate(
 			$this->_query,
-			$this->_image,
+			$this->_imageResource,
 			$this->_height,
 			$this->_width,
 			$this->_fileExt,
@@ -78,22 +78,22 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 			->method('getBarcode')
 			->will($this->returnValue($this->_barcodeVal));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->once())
 			->method('exists')
 			->will($this->returnValue(false));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->once())
-			->method('getImage')
+			->method('getResource')
 			->will($this->returnValue($this->_fileResource));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->once())
 			->method('save')
 			->will($this->returnValue(true));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->once())
 			->method('getFile')
 			->will($this->returnValue($this->_file));
@@ -123,22 +123,22 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 			->method('getBarcode')
 			->will($this->returnValue($this->_barcodeVal));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->once())
 			->method('exists')
 			->will($this->returnValue(true));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->never())
-			->method('getImage')
+			->method('getResource')
 			->will($this->returnValue($this->_fileResource));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->never())
 			->method('save')
 			->will($this->returnValue(true));
 
-		$this->_image
+		$this->_imageResource
 			->expects($this->once())
 			->method('getFile')
 			->will($this->returnValue($this->_file));
@@ -251,7 +251,7 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 	{
 		$generate = new Generate(
 			$this->_query,
-			$this->_image,
+			$this->_imageResource,
 			$this->_height,
 			$this->_width,
 			'jpg',
