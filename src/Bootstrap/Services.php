@@ -529,6 +529,7 @@ class Services implements ServicesInterface
 		$services['stock.movement.reasons'] = function() {
 			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
 				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
+				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
 			));
 		};
 
