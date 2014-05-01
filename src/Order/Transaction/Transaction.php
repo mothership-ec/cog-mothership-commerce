@@ -40,28 +40,6 @@ class Transaction
 	}
 
 	/**
-	 * Set the voided metadata.
-	 *
-	 * @param  DateTimeImmutable|null $datetime The date & time of voiding,
-	 *                                          null to use current date & time
-	 * @param  mixed                  $user     The user responsible
-	 *
-	 * @return Transaction                      Returns $this for chainability
-	 *
-	 * @todo   Move this to own decorator
-	 *
-	 */
-	public function void(DateTimeImmutable $datetime = null, $user = null)
-	{
-		$this->voidedAt = $datetime ?: new DateTimeImmutable('now');
-		$this->voidedBy = $user;
-
-		$this->voidedAt = $this->voidedAt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-
-		return $this;
-	}
-
-	/**
 	 * Whether transaction has already been voided or not.
 	 *
 	 * @return boolean Whether transaction has been voided
