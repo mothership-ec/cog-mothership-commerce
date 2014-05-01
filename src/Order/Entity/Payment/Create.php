@@ -39,7 +39,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Sets transaction and sets $_transOverridden to true.
-	 * 
+	 *
 	 * @param  DB\Transaction $trans transaction
 	 * @return Create                $this for chainability
 	 */
@@ -52,10 +52,10 @@ class Create implements DB\TransactionalInterface
 	}
 
 	/**
-	 * Creates a payment. Dispatches Order\Events::ENTITY_CREATE and 
+	 * Creates a payment. Dispatches Order\Events::ENTITY_CREATE and
 	 * Order\Events::ENTITY_CREATE_END events.
-	 * Commits the transaction if $_transOverridden is false. 
-	 * 
+	 * Commits the transaction if $_transOverridden is false.
+	 *
 	 * @param  Payment $payment Payment to be persisted.
 	 * @return Payment          Persisted payment. If transaction was committed,
 	 *                          payment is reloaded by its ID.

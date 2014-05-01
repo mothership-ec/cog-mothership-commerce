@@ -1,7 +1,9 @@
 <?php
 
-namespace Message\Mothership\Commerce\Order\Transaction;
+namespace Message\Mothership\Commerce\Order\Transaction\EventListener;
 
+use Message\Mothership\Commerce\Order\Transaction\Transaction;
+use Message\Mothership\Commerce\Order\Transaction\Types;
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Payment\Payment;

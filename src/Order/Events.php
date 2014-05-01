@@ -16,9 +16,9 @@ final class Events
 	const DISPATCH_SHIPPED      = 'commerce.order.dispatch.shipped';
 	const DISPATCH_NOTIFICATION = 'commerce.order.dispatch.notification';
 
-	const ENTITY_CREATE        	= 'commerce.order.entity.create';
+	const ENTITY_CREATE         = 'commerce.order.entity.create';
 	const ENTITY_CREATE_END     = 'commerce.order.entity.create.end';
-	
+
 	const BUILD_ORDER_SIDEBAR   = 'commerce.order.sidebar.create';
 	const BUILD_ORDER_TABS      = 'commerce.order.tabs.create';
 }
