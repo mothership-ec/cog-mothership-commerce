@@ -228,6 +228,10 @@ class Loader
 			$entities[$key]->records    = new RecordCollection($this->_loadRecords($entities[$key]));
 			$entities[$key]->attributes = $this->_loadAttributes($entities[$key]);
 
+			if ($row->voided_at) {
+				$entities[$key]->voidedAt = new DateTimeImmutable(date('c', $row->voided_at));
+			}
+
 			$return[$row->id] = $entities[$key];
 		}
 
