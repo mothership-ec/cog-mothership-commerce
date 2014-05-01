@@ -79,7 +79,7 @@ class Loader extends Order\Entity\BaseLoader
 				*,
 				item_id          AS id,
 				order_id         AS orderID,
-				deleted_at		 AS deletedAt,
+				deleted_at       AS deletedAt,
 				actual_price     AS actualPrice,
 				list_price       AS listPrice,
 				tax_rate         AS taxRate,
