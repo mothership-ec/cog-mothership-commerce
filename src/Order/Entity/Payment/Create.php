@@ -14,13 +14,15 @@ use Message\Cog\Event\DispatcherInterface;
  * Order payment creator.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Iris Schaffer <iris@message.co.uk>
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
+	protected $_trans;
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	public function __construct(
 		DB\Transaction $query,
@@ -29,24 +31,35 @@ class Create implements DB\TransactionalInterface
 		UserInterface $currentUser
 	)
 	{
-		$this->_query           = $query;
+		$this->_trans           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
 		$this->_currentUser     = $currentUser;
 	}
 
 	/**
-	 * Sets transaction and sets $_transOverriden to true
-	 * @param DBTransaction $trans transaction
+	 * Sets transaction and sets $_transOverridden to true.
+	 *
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
 	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
-		$this->_transOverriden = true;
+		$this->_trans           = $trans;
+		$this->_transOverridden = true;
 
 		return $this;
 	}
 
+	/**
+	 * Creates a payment. Dispatches Order\Events::ENTITY_CREATE and
+	 * Order\Events::ENTITY_CREATE_END events.
+	 * Commits the transaction if $_transOverridden is false.
+	 *
+	 * @param  Payment $payment Payment to be persisted.
+	 * @return Payment          Persisted payment. If transaction was committed,
+	 *                          payment is reloaded by its ID.
+	 */
 	public function create(Payment $payment)
 	{
 		// Set create authorship data if not already set
@@ -58,14 +71,14 @@ class Create implements DB\TransactionalInterface
 		}
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE,
 			$event
 		)->getEntity();
 
-		$result = $this->_query->run('
+		$result = $this->_trans->run('
 			INSERT INTO
 				order_payment
 			SET
@@ -75,6 +88,7 @@ class Create implements DB\TransactionalInterface
 				created_by = :createdBy?in,
 				method     = :method?sn,
 				amount     = :amount?f,
+				`change`   = :change?fn,
 				reference  = :reference?sn
 		', array(
 			'orderID'     => $payment->order->id,
@@ -83,26 +97,27 @@ class Create implements DB\TransactionalInterface
 			'createdBy'   => $payment->authorship->createdBy(),
 			'method'      => $payment->method->getName(),
 			'amount'      => $payment->amount,
+			'change'      => $payment->change,
 			'reference'   => $payment->reference,
 		));
 
 		$sqlVariable = 'PAYMENT_ID_' . spl_object_hash($payment);
 
-		$this->_query->setIDVariable($sqlVariable);
+		$this->_trans->setIDVariable($sqlVariable);
 		$payment->id = '@' . $sqlVariable;
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE_END,
 			$event
 		)->getEntity();
 
-		if (!$this->_transOverriden) {
-			$this->_query->commit();
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $payment->order);
+			return $this->_loader->getByID($this->_trans->getIDVariable($sqlVariable), $payment->order);
 		}
 
 		return $payment;

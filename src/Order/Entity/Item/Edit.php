@@ -15,7 +15,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	protected $_eventDispatcher;
 	protected $_statuses;
@@ -30,10 +30,16 @@ class Edit implements DB\TransactionalInterface
 		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverridden to true.
+	 *
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query          = $trans;
-		$this->_transOverriden = true;
+		$this->_query           = $trans;
+		$this->_transOverridden = true;
 
 		return $this;
 	}
@@ -86,7 +92,7 @@ class Edit implements DB\TransactionalInterface
 
 			// Skip if the item is already at this status
 			if ($status->code === $item->status->code) {
-				return false;
+				continue;
 			}
 
 			// Get instance of item status (so we have authorship info)
@@ -133,7 +139,7 @@ class Edit implements DB\TransactionalInterface
 			);
 		}
 
-		if (!$this->_transOverriden) {
+		if (!$this->_transOverridden) {
 			$this->_query->commit();
 		}
 
