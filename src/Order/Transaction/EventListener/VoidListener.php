@@ -26,7 +26,7 @@ class VoidListener extends BaseListener implements SubscriberInterface
 			Transaction\Events::VOID => array(
 				array('cancelItems'),
 				array('cancelOrders'),
-				// stock
+				array('returnItemsToStock'),
 			),
 		);
 	}
@@ -62,6 +62,34 @@ class VoidListener extends BaseListener implements SubscriberInterface
 
 		foreach ($transaction->records->getByType(Order\Order::RECORD_TYPE) as $order) {
 			$orderEdit->updateStatus($order, Order\Statuses::CANCELLED);
+		}
+	}
+
+	/**
+	 * Create a stock movement to put all items in a transaction that is being
+	 * voided back into stock in the stock location they were purchased from.
+	 *
+	 * @param Transaction\Event\TransactionalEvent $event
+	 */
+	public function returnItemsToStock(Transaction\Event\TransactionalEvent $event)
+	{
+		$transaction  = $event->getTransaction();
+		$stockManager = $this->get('stock.manager');
+
+		$stockManager->setTransaction($event->getDbTransaction());
+		$stockManager->createWithRawNote(true);
+
+		$stockManager->setReason($this->get('stock.movement.reasons')->get('void_transaction'));
+
+		$event->getDbTransaction()->add("
+			SET @STOCK_NOTE = CONCAT('Void transaction #', ?i)
+		", $transaction->id);
+
+		$stockManager->setNote('@STOCK_NOTE');
+		$stockManager->setAutomated(true);
+
+		foreach ($transaction->records->getByType(Item\Item::RECORD_TYPE) as $item) {
+			$stockManager->increment($item->getUnit(), $item->stockLocation);
 		}
 	}
 }
