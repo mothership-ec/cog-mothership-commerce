@@ -340,6 +340,14 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Transaction\Edit($c['db.transaction'], $c['user.current']);
 		};
 
+		$services['order.transaction.void'] = function($c) {
+			return new Commerce\Order\Transaction\Void(
+				$c['db.transaction'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
+		};
+
 		// Product
 		$services['product'] = $services->factory(function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
