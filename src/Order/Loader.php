@@ -291,6 +291,10 @@ class Loader
 				}
 			}
 
+			// Cast integers to integers (for when MySQLnd not installed)
+			$order->id      = (int) $row->id;
+			$order->orderID = (int) $row->id;
+
 			// Cast decimals to float
 			$order->conversionRate    = (float) $row->conversionRate;
 			$order->productNet        = (float) $row->productNet;

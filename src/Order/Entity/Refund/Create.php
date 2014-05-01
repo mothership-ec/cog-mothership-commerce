@@ -61,8 +61,8 @@ class Create implements DB\TransactionalInterface
 				reference  = :reference?sn
 		', array(
 			'orderID'     => $refund->order->id,
-			'paymentID'   => $refund->payment ? $payment->payment->id : null,
-			'returnID'    => $refund->return ? $payment->return->id : null,
+			'paymentID'   => $refund->payment ? $refund->payment->id : null,
+			'returnID'    => $refund->return ? $refund->return->id : null,
 			'createdAt'   => $refund->authorship->createdAt(),
 			'createdBy'   => $refund->authorship->createdBy(),
 			'method'      => $refund->method->getName(),

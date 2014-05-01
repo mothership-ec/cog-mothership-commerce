@@ -15,7 +15,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Edit implements DB\TransactionalInterface
 {
 	protected $_query;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	protected $_eventDispatcher;
 	protected $_statuses;
@@ -30,10 +30,18 @@ class Edit implements DB\TransactionalInterface
 		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverridden to true.
+	 * 
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query          = $trans;
-		$this->_transOverriden = true;
+		$this->_query           = $trans;
+		$this->_transOverridden = true;
+
+		return $this;
 	}
 
 	/**
@@ -44,6 +52,12 @@ class Edit implements DB\TransactionalInterface
 	 * @param  int              $statusCode Status code to set
 	 *
 	 * @return Edit                         Returns $this for chainability
+	 *
+	 * @throws \InvalidArgumentException If the item status supplied is not
+	 *                                   set on the status collection
+	 * @throws \InvalidArgumentException If no valid Item instances are passed
+	 * @throws \InvalidArgumentException If a non-falsey value that is not an
+	 *                                   instance of Item is passed as an item
 	 */
 	public function updateStatus($items, $statusCode)
 	{
@@ -57,6 +71,16 @@ class Edit implements DB\TransactionalInterface
 			$items = array($items);
 		}
 
+		// Filter out any falsey values
+		$items  = ($items instanceof Collection) ? $items->all() : $items;
+		$items  = array_filter($items);
+		$orders = [];
+
+		// Throw exception if we don't have any items
+		if (empty($items)) {
+			throw new \InvalidArgumentException('No items passed to `updateStatus()`');
+		}
+
 		foreach ($items as $key => $item) {
 			if (!($item instanceof Item)) {
 				$type = gettype($item);
@@ -68,7 +92,7 @@ class Edit implements DB\TransactionalInterface
 
 			// Skip if the item is already at this status
 			if ($status->code === $item->status->code) {
-				return false;
+				continue;
 			}
 
 			// Get instance of item status (so we have authorship info)
@@ -97,17 +121,25 @@ class Edit implements DB\TransactionalInterface
 			));
 
 			$item->status = $status;
+
+			// Collect the order if it hasn't been collected yet
+			if (!array_key_exists($item->order->id, $orders)) {
+				$orders[$item->order->id] = $item->order;
+			}
 		}
 
-		$event = new Event\TransactionalEvent($item->order);
-		$event->setTransaction($this->_query);
+		// Dispatch an event for each individual order
+		foreach ($orders as $order) {
+			$event = new Event\TransactionalEvent($order);
+			$event->setTransaction($this->_query);
 
-		$this->_eventDispatcher->dispatch(
-			OrderEvents::ITEM_STATUS_CHANGE,
-			$event
-		);
+			$this->_eventDispatcher->dispatch(
+				OrderEvents::ITEM_STATUS_CHANGE,
+				$event
+			);
+		}
 
-		if (!$this->_transOverriden) {
+		if (!$this->_transOverridden) {
 			$this->_query->commit();
 		}
 

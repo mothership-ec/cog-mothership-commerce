@@ -2,10 +2,10 @@
 
 {% block main %}
 	<hgroup class="title">
-		<h1>{{ heading|title }}</h1>
+		<h1>{{ heading }}</h1>
 	</hgroup>
 
-	<div class="container-content extended">
+	<div class="container-content">
 		{% set orderLink = 'ms.commerce.order.detail.view' %}
 		{% set userLink = 'ms.cp.user.admin.detail.edit' %}
 		{% include 'Message:Mothership:Commerce::order:order:summary' %}
