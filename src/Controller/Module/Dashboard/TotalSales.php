@@ -18,14 +18,15 @@ class TotalSales extends Controller
 	 */
 	public function index()
 	{
-		$net = $this->get('stats')->getRange('sales.net.daily', strtotime('7 days ago'));
+		$dataset  = $this->get('statistics')->get('sales.net.daily');
+		$net      = $dataset->getRange($dataset::WEEK);
+		$totalNet = $dataset->getTotal($dataset::WEEK);
 
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:area-graph', [
 			'label'   => 'Total sales (week)',
-			'values'  => $net,
+			'rows'  => $net,
 			'numbers' => [
 				[
-					'label'   => false,
 					'value'   => $totalNet,
 					'filters' => 'price',
 				]

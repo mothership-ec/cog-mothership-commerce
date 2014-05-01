@@ -18,19 +18,19 @@ class OrdersActivity extends Controller
 	 */
 	public function index()
 	{
-		$in  = $this->get('stats')->getValue('orders.in.weekly');
-		$out = $this->get('stats')->getValue('orders.out.weekly');
+		$in  = (int) $this->get('statistics')->get('orders.in.weekly')->getCounter();
+		$out = (int) $this->get('statistics')->get('orders.out.weekly')->getCounter();
 
-		return $this->render('Message:Mothership:ControlPanel::module:dashboard:big-numbers', [
+		return $this->render('Message:Mothership:ControlPanel::module:dashboard:two-numbers', [
 			'label' => 'Orders activity (week)',
 			'numbers' => [
 				'in'  => [
-					'label' => 'In'
-					'value' => $in,
+					'label' => 'In',
+					'value' => $in
 				],
 				'out' => [
 					'label' => 'Out',
-					'value' => $out,
+					'value' => $out
 				],
 			]
 		]);

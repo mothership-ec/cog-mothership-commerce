@@ -15,7 +15,7 @@ class Services implements ServicesInterface
 	{
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
-		$this->registerStatsDatasets($services);
+		$this->registerStatisticsDatasets($services);
 
 		$services['order'] = $services->factory(function($c) {
 			return new Commerce\Order\Order($c['order.entities']);
@@ -579,18 +579,20 @@ class Services implements ServicesInterface
 		});
 	}
 
-	public function registerStatsDatasets($services)
+	public function registerStatisticsDatasets($services)
 	{
-		$services->extend('stats', function($stats, $c) {
-			$stats->addDataset('orders.in.weekly',  $stats::VALUE, $stats::WEEKLY);
-			$stats->addDataset('orders.out.weekly', $stats::VALUE, $stats::WEEKLY);
+		$services->extend('statistics', function($statistics, $c) {
+			$factory = $c['statistics.dataset.factory'];
 
-			$stats->addDataset('products.sales',    $stats::KEY_VALUE);
+			$statistics->addDatasets([
+				$factory->create('orders.in.weekly',  $factory::COUNTER, $factory::WEEKLY),
+				$factory->create('orders.out.weekly', $factory::COUNTER, $factory::WEEKLY),
+				$factory->create('sales.net.daily',   $factory::COUNTER, $factory::DAILY),
+				$factory->create('sales.gross.daily', $factory::COUNTER, $factory::DAILY),
+				$factory->create('products.sales',    $factory::KEY_VALUE),
+			]);
 
-			$stats->addDataset('sales.net.daily',   $stats::VALUE, $stats::DAILY);
-			$stats->addDataset('sales.gross.daily', $stats::VALUE, $stats::DAILY);
-
-			return $stats;
+			return $statistics;
 		});
 	}
 }

@@ -191,7 +191,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function recordOrderIn(Event\Event $event)
 	{
-		$this->get('stats')->increment('orders.in.weekly');
+		$this->get('statistics')->get('orders.in.weekly')
+			->increment();
 	}
 
 	/**
@@ -201,7 +202,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function recordSalesNet(Event\Event $event)
 	{
-		$this->get('stats')->increment('sales.net.daily', $event->getOrder()->totalNet);
+		$this->get('statistics')->get('sales.net.daily')
+			->increment($event->getOrder()->totalNet);
 	}
 
 	/**
@@ -211,8 +213,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function recordProductsSales(Event\Event $event)
 	{
-		foreach ($event->getOrder()->items as $item) {
-			$this->get('stats')->incrementKey('products.sales', $item->productID);
+		$dataset = $this->get('statistics')->get('products.sales');
+		foreach ($event->getOrder()->getItemRows() as $unitID => $items) {
+			$dataset->add($unitID, count($items));
 		}
 	}
 }

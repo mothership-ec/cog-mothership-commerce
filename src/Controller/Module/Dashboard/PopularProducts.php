@@ -18,30 +18,34 @@ class PopularProducts extends Controller
 	 */
 	public function index()
 	{
-		$rows         = [];
-		$productsSales = $this->get('stats')->getValues('products.sales', strtotime('7 days ago'));
+		$rows          = [];
+		$dataset       = $this->get('statistics')->get('products.sales');
+		$productsSales = $dataset->getRange($dataset::WEEK);
 
 		uasort($productsSales, function($a, $b) {
 			if ($a == $b) return 0;
 			return $a < $b;
 		});
 
-		$productsSales = array_slice($productsSales, 0, 4);
+		foreach ($productsSales as $unitID => $count) {
+			$unit = $this->get('product.unit.loader')->getByID($unitID);
+			if (! $unit) continue;
 
-		foreach ($productsSales as $productID => $count) {
 			$rows[] = [
-				'label' => $this->get('product.loader')->getByID($productID)->name,
+				'label' => $unit->product->name . ', ' . implode(', ', $unit->options),
 				'value' => $count,
 			];
+
+			if (count($rows) == 4) break;
 		}
 
-		return $this->render('Message:Mothership:ControlPanel::module:dashboard:bar-graph',
+		return $this->render('Message:Mothership:ControlPanel::module:dashboard:bar-graph', [
 			'label' => 'Popular products (week)',
 			'keys' => [
 				'label' => 'Product',
 				'value' => 'Purchased',
 			],
 			'rows'  => $rows,
-		);
+		]);
 	}
 }
