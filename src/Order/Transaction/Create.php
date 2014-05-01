@@ -119,8 +119,7 @@ class Create
 	 */
 	protected function _createRecords(Transaction $transaction)
 	{
-		foreach ($transaction->records as $record)
-		{
+		foreach ($transaction->records as $record) {
 			$this->_query->run('
 				INSERT INTO
 					transaction_record
