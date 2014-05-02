@@ -5,9 +5,7 @@
 		{% for key, barcode in barcodes %}
 			<div class="label">
 				<hgroup>
-					<h2>{{ barcode.brand }}</h2>
-					<h3>{{ barcode.name }}</h3>
-					<p>{{ barcode.text }}</p>
+					<h2>{{ barcode.brand }} {{ barcode.name }} {{ barcode.text }}</h2>
 				</hgroup>
 
 				<p class="price">{{ barcode.price | price(barcode.currency) }}</p>

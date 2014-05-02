@@ -19,6 +19,12 @@
 	box-sizing: border-box;
 }
 
+.page-break {
+	float: left;
+	width: 21cm;
+	height: 10px;
+}
+
 .label {
 	width: 20%;
 	float: left;
@@ -33,9 +39,12 @@
 	box-sizing: border-box;
 }
 
-hgroup h2,
-hgroup h3,
-hgroup p {
+hgroup {
+	height: 18px;
+	overflow: hidden;
+}
+
+hgroup h2 {
 	float: left;
 	width: auto;
 	font-size: 7pt;
