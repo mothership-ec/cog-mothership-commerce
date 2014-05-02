@@ -16,7 +16,7 @@ class _1391093236_ProductType extends Migration
 					value_int INT(11),
 					locale VARCHAR(50) DEFAULT 'EN',
 					PRIMARY KEY (product_id, name)
-				);
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 
 		$this->run("
