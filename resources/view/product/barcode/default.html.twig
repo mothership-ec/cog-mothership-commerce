@@ -14,10 +14,11 @@
 				<img src="{{ barcode.url }}" />
 			</div>
 
-			{% if (key + 1) == labelsPerPage %}
+			{% if (key + 1) == pageBreak %}
 				</div>
 				<div class="page-break"></div>
 				<div class="page">
+				{% set pageBreak = pageBreak + labelsPerPage %}
 			{% endif %}
 		{% endfor %}
 	</div>

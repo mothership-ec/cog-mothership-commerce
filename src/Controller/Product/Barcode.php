@@ -8,10 +8,13 @@ class Barcode extends Controller
 {
 	public function printBarcodes($barcodes)
 	{
+		$labelsPerPage = $this->get('product.barcode.sheet')->getLabelsPerPage();
+
 		return $this->render($this->get('product.barcode.sheet')->getViewReference(), [
 			'barcodes'      => $barcodes,
 			'sheetName'     => $this->get('product.barcode.sheet')->getName(),
-			'labelsPerPage' => $this->get('product.barcode.sheet')->getLabelsPerPage(),
+			'labelsPerPage' => $labelsPerPage,
+			'pageBreak'     => $labelsPerPage,
 		]);
 	}
 
