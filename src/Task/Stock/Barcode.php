@@ -9,6 +9,11 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class Barcode extends Task
 {
+	const REASON = 'stock_take';
+
+	/**
+	 * @var string
+	 */
 	protected $_filepath;
 
 	/**
@@ -145,7 +150,7 @@ class Barcode extends Task
 		$this->writeln('Setting stock manager');
 		$this->_stockManager = $this->get('stock.manager');
 
-		$reason = new Reason('barcode_task');
+		$reason = $this->get('stock.movement.reasons')->get(self::REASON);
 		$this->_stockManager->setReason($reason);
 
 		$this->writeln('Stock manager set');
