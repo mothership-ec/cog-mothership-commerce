@@ -3,6 +3,8 @@
 namespace Message\Mothership\Commerce\Task\Stock;
 
 use Message\Cog\Console\Task\Task;
+use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Symfony\Component\Console\Input\InputArgument;
 
 class Barcode extends Task
@@ -10,15 +12,23 @@ class Barcode extends Task
 	protected $_filepath;
 
 	/**
-	 * @var \Message\Cog\DB\Transaction
+	 * @var \Message\Mothership\Commerce\Product\Stock\StockManager
 	 */
-	protected $_transaction;
+	protected $_stockManager;
+
+	/**
+	 * @var \Message\Mothership\Commerce\Product\Stock\Location\Location
+	 */
+	protected $_location;
+
+	/**
+	 * @var \Message\Mothership\Commerce\Product\Unit\Loader
+	 */
+	protected $_unitLoader;
 
 	protected $_barcodeStock = [];
 
 	protected $_clearStock = false;
-
-	protected $_location = 'web';
 
 	public function configure()
 	{
@@ -51,10 +61,11 @@ class Barcode extends Task
 				->_setLocation()
 				->_setFilePath()
 				->_parseFile()
-				->_setTransaction()
+				->_setUnitLoader()
+				->_setStockManager()
 				->_clearStock()
 				->_saveStockLevels()
-				->_commitTransaction()
+				->_commit()
 			;
 		}
 		catch (\Exception $e) {
@@ -74,11 +85,10 @@ class Barcode extends Task
 
 	public function _setLocation()
 	{
-		$location = $this->getRawInput()->getArgument('location');
-		if ($location) {
-			$this->writeln('<info>Setting location to ' . $location . '</info>');
-			$this->_location = (string) $location;
-		}
+		$location        = $this->getRawInput()->getArgument('location') ?: 'web';
+		$this->_location = $this->get('stock.locations')->get($location);
+
+		$this->writeln('<info>Setting location to ' . $this->_location->name . '</info>');
 
 		return $this;
 	}
@@ -120,29 +130,49 @@ class Barcode extends Task
 		return $this;
 	}
 
-	protected function _setTransaction()
+	protected function _setUnitLoader()
 	{
-		$this->writeln('Setting database transaction');
-		$this->_transaction = $this->get('db.transaction');
+		$this->_unitLoader = $this->get('product.unit.loader')
+			->includeOutOfStock(true)
+			->includeInvisible(true)
+		;
 
 		return $this;
+	}
+
+	protected function _setStockManager()
+	{
+		$this->writeln('Setting stock manager');
+		$this->_stockManager = $this->get('stock.manager');
+
+		$reason = new Reason('barcode_task');
+		$this->_stockManager->setReason($reason);
+
+		$this->writeln('Stock manager set');
+
+		return $this;
+	}
+
+	protected function _setQuery()
+	{
+		$this->writeln('Setting query object');
+		$this->_query = $this->get('db.query');
+		$this->writeln('Query object set');
 	}
 
 	protected function _clearStock()
 	{
 		if ($this->_clearStock) {
+			$units = $this->_loadAllUnits();
 			$this->writeln('<info>Clearing stock for all ' . $this->_location . ' products</info>');
-			$this->_transaction->add("
-				UPDATE
-					product_unit_stock
-				SET
-					stock = :zero?i
-				WHERE
-					location = :location?s
-			", [
-				'zero'     => 0,
-				'location' => $this->_location,
-			]);
+
+			foreach ($units as $unit) {
+				if (!$unit instanceof Unit) {
+					throw new \LogicException('$unit must be an instance of Unit');
+				}
+				$this->writeln('Setting `' . $this->_location->name .'` stock level for unit ' . $unit->id . ' to 0');
+				$this->_stockManager->set($unit, $this->_location, 0);
+			}
 		}
 		else {
 			$this->writeln('<info>Not clearing stock before running script</info>');
@@ -162,75 +192,39 @@ class Barcode extends Task
 
 	protected function _saveStockForBarcode($barcode, $stockLevel)
 	{
-		$this->writeln('Setting stock level of `' . $barcode . '` in `' . $this->_location . '` to ' . $stockLevel);
+		$this->writeln('Setting stock level of `' . $barcode . '` in `' . $this->_location->name . '` to ' . $stockLevel);
 
-		$this->_transaction->add("
-			INSERT INTO
-				product_unit_stock
-				(
-					unit_id,
-					location,
-					stock
-				)
-			VALUES
-				(
-					(
-						SELECT
-							unit_id
-						FROM
-							product_unit
-						WHERE
-							barcode = :barcode?s
-					),
-					:location?s,
-					:stockLevel?i
-				)
-			ON DUPLICATE KEY UPDATE
-				stock = :stockLevel?i
-		", [
-			'stockLevel' => $stockLevel,
-			'barcode'    => $barcode,
-			'location'   => $this->_location,
-		]);
+		$unit = $this->_unitLoader->getByBarcode($barcode);
 
-		$this->writeln('Saving snapshot of `' . $barcode . '` stock adjustment');
-
-		$this->_transaction->add("
-			INSERT INTO
-				product_unit_stock_snapshot
-				(
-					unit_id,
-					location,
-					stock,
-					created_at
-				)
-			VALUES
-				(
-					(
-						SELECT
-							unit_id
-						FROM
-							product_unit
-						WHERE
-							barcode = :barcode?s
-					),
-					:location?s,
-					:stockLevel?i,
-					:createdAt?d
-				)
-		", [
-			'stockLevel' => $stockLevel,
-			'barcode'    => $barcode,
-			'location'   => $this->_location,
-			'createdAt'  => new \DateTime,
-		]);
+		if (!$unit) {
+			$this->writeln('<error>Unit with a barcode of `' . $barcode .'` could not be found, so it will be skipped</error>');
+		}
+		else {
+			$this->_stockManager->set($unit, $this->_location, $stockLevel);
+		}
 	}
 
-	protected function _commitTransaction()
+	protected function _loadAllUnits()
 	{
-		$this->writeln('Committing transaction');
-		$this->_transaction->commit();
-		$this->writeln('Transaction committed');
+		$units = [];
+
+		$unitIDs = $this->get('db.query')->run("
+			SELECT
+				unit_id
+			FROM
+				product_unit
+		")->flatten();
+
+		foreach ($unitIDs as $id) {
+			$units[] = $this->_unitLoader->getByID($id);
+		}
+
+		return $units;
+	}
+
+	protected function _commit()
+	{
+		$this->_stockManager->commit();
 
 		return $this;
 	}
