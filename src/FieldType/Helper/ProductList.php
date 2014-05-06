@@ -46,6 +46,8 @@ class ProductList
 				name
 			FROM
 				product
+			WHERE
+				deleted_at IS NULL
 			ORDER BY
 				name ASC
 		");
