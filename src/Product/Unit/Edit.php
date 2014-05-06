@@ -64,7 +64,7 @@ class Edit implements DB\TransactionalInterface
 			$newRevisionID = $unit->revisionID + 1;
 			foreach ($unit->options as $optionName => $optionValue) {
 				$options[] = $unit->id;
-				$options[] = $optionName;
+				$options[] = strtolower($optionName);
 				$options[] = $optionValue;
 				$options[] = $newRevisionID;
 				$inserts[] = '(?i,?s,?s,?i)';

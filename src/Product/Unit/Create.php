@@ -81,7 +81,7 @@ class Create
 					option_value = ?s',
 				array(
 					$unitID,
-					$name,
+					strtolower($name),
 					$value
 			));
 		}
