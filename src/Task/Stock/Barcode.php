@@ -153,13 +153,6 @@ class Barcode extends Task
 		return $this;
 	}
 
-	protected function _setQuery()
-	{
-		$this->writeln('Setting query object');
-		$this->_query = $this->get('db.query');
-		$this->writeln('Query object set');
-	}
-
 	protected function _clearStock()
 	{
 		if ($this->_clearStock) {
@@ -168,7 +161,7 @@ class Barcode extends Task
 
 			foreach ($units as $unit) {
 				if (!$unit instanceof Unit) {
-					throw new \LogicException('$unit must be an instance of Unit');
+					throw new \LogicException('$unit must be an instance of Unit, ' . gettype($unit) . ' given');
 				}
 				$this->writeln('Setting `' . $this->_location->name .'` stock level for unit ' . $unit->id . ' to 0');
 				$this->_stockManager->set($unit, $this->_location, 0);
@@ -208,15 +201,23 @@ class Barcode extends Task
 	{
 		$units = [];
 
+		$this->writeln('<info>Loading units from stock table</info>');
 		$unitIDs = $this->get('db.query')->run("
 			SELECT
 				unit_id
 			FROM
-				product_unit
+				product_unit_stock
 		")->flatten();
 
 		foreach ($unitIDs as $id) {
-			$units[] = $this->_unitLoader->getByID($id);
+			$unit = $this->_unitLoader->getByID($id);
+
+			if ($unit) {
+				$units[] = $unit;
+			}
+			else {
+				$this->writeln('<error>Unit ' . $id . ' failed to load, stock has not been reset</error>');
+			}
 		}
 
 		return $units;
