@@ -35,7 +35,7 @@ class Tasks implements TasksInterface
 
 		$tasks->add(new Task\Porting\User('commerce:porting:user'), 'Ports users and user addresses from pre mothership');
 
-		$tasks->add(new Task\Stock\Barcode('commerce:stock:from-barcodes'), 'Updates stock from a text file of barcodes');
+		$tasks->add(new Task\Stock\Barcode('commerce:stock:from_barcodes'), 'Updates stock from a text file of barcodes');
 
 		$tasks->add(new Forex\FetchDataTask('commerce:forex:fetch'), 'Fetches the lastest forex data from the feed');
 
