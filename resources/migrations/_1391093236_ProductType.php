@@ -180,7 +180,7 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					value_int
+					value_int,
 					locale
 				)
 				SELECT
@@ -200,6 +200,15 @@ class _1391093236_ProductType extends Migration
 				product_info
 			DROP
 				sizing
+		");
+
+		$this->run("
+			ALTER TABLE
+				product
+			MODIFY
+				type VARCHAR(255) DEFAULT 'basic'
+			AFTER
+				deleted_by
 		");
 	}
 
