@@ -48,6 +48,8 @@ class Order implements PayableInterface
 
 	public $metadata;
 
+	public $payableTransactionID;
+
 	protected $_entities = array();
 
 	/**
@@ -421,14 +423,15 @@ class Order implements PayableInterface
 	}
 
 	/**
-	 * @todo This id should be unique but determinable from the order. However
-	 *       it can not use the order id since that will not exist on baskets
-	 *       that have not yet been saved into the database as an order.
+	 * Retrieves the payableTransactionID property, this should be set when
+	 * the order is being assembled.
+	 *
+	 * @see \Message\Mothership\Commerce\Bootstrap\Services order.assembler
 	 *
 	 * {@inheritDoc}
 	 */
 	public function getPayableTransactionID()
 	{
-		return 'ORDER-' . strtoupper(uniqid());
+		return $this->payableTransactionID;
 	}
 }

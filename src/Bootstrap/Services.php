@@ -92,8 +92,9 @@ class Services implements ServicesInterface
 		$services['order.assembler'] = $services->factory(function($c) {
 			$order = $c['order'];
 
-			$order->locale     = $c['locale']->getId();
-			$order->currencyID = 'GBP';
+			$order->locale               = $c['locale']->getId();
+			$order->currencyID           = 'GBP';
+			$order->payableTransactionID = 'ORDER-' . strtoupper(uniqid());
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
