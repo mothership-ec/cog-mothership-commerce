@@ -52,7 +52,7 @@ class Payment implements EntityInterface
 	 */
 	public function getCustomerFacingReference()
 	{
-		if ('sagepay' == $this->method) {
+		if ('sagepay' == $this->method->getName()) {
 			$reference = json_decode($this->reference);
 
 			return isset($reference->VPSTxId) ? $reference->VPSTxId : '';
