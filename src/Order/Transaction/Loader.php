@@ -148,16 +148,16 @@ class Loader
 	{
 		$result = $this->_query->run('
 			SELECT
-				id
+				transaction.transaction_id
 			FROM
 				transaction
 			JOIN
-				transaction_record ON transaction.id = transaction_record.transaction_id
+				transaction_record ON transaction.transaction_id = transaction_record.transaction_id
 			WHERE
 				transaction.type = :transactionType?s
-			AND WHERE
-				transaction_record.id = :recordID?i
-			AND WHERE
+			AND
+				transaction_record.record_id = :recordID?i
+			AND
 				transaction_record.type = :recordType?s
 		', [
 			'transactionType' => $type,
@@ -165,7 +165,7 @@ class Loader
 			'recordType'      => $record->getRecordType(),
 		]);
 
-		return $this->_load($result->flatten(), true);
+		return $this->_load($result->flatten(), false);
 	}
 
 	/**
