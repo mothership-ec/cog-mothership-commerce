@@ -14,9 +14,9 @@ class DetailLoader
 
 	public function __construct(Query $query, Field\Factory $factory, Collection $types)
 	{
-		$this->_query			= $query;
-		$this->_fieldFactory	= $factory;
-		$this->_types			= $types;
+		$this->_query        = $query;
+		$this->_fieldFactory = $factory;
+		$this->_types        = $types;
 	}
 
 	public function load(Product $product)
