@@ -35,22 +35,12 @@ class Image implements ResizableInterface
 
 	public function getUrl()
 	{
-		if (! $this->file or ! $this->file instanceof File) {
-			return "";
-			// throw new Exception(sprintf("No file set for image with id #%s", $this->id));
-		}
-
-		return $this->file->getUrl();
+		return $this->getFile()->getUrl();
 	}
 
 	public function getAltText()
 	{
-		if (! $this->file or ! $this->file instanceof File) {
-			return "";
-			// throw new Exception(sprintf("No file set for image with id #%s", $this->id));
-		}
-
-		return $this->file->getAltText();
+		return $this->getFile()->getAltText();
 	}
 
 	public function setFileLoader($fileLoader)
@@ -61,18 +51,24 @@ class Image implements ResizableInterface
 	public function __get($key)
 	{
 		if ('file' == $key) {
-			if (!$this->_file) {
-				$this->_load();
-			}
 
-			return $this->_file;
+			return $this->getFile();
 		}
 	}
 
-	protected function _load()
+	public function getFile()
+	{
+		if (!$this->_file) {
+			$this->_loadFile();
+		}
+
+		return $this->_file;
+	}
+
+	protected function _loadFile()
 	{
 		if (!$this->_fileLoader) {
-			throw new \LogicException(__CLASS__ . ': No file loader set, has thi object been serialized?');
+			throw new \LogicException(__CLASS__ . ': No file loader set, has this object been serialized?');
 		}
 
 		$this->_file = $this->_fileLoader->getByID($this->fileID);
@@ -85,9 +81,7 @@ class Image implements ResizableInterface
 
 	public function __sleep()
 	{
-		if (!$this->_file) {
-			$this->_load();
-		}
+		$this->getFile();
 
 		return array(
 			'id',
