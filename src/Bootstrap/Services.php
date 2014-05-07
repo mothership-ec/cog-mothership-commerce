@@ -28,10 +28,11 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order             = $c['order'];
-				$order->locale     = $c['locale']->getId();
-				$order->currencyID = 'GBP';
-				$order->type       = 'web';
+				$order                       = $c['order'];
+				$order->locale               = $c['locale']->getId();
+				$order->currencyID           = 'GBP';
+				$order->type                 = 'web';
+				$order->payableTransactionID = 'ORDER-' . strtoupper(uniqid());
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
