@@ -207,15 +207,15 @@ class EventListener extends BaseListener implements SubscriberInterface
 	}
 
 	/**
-	 * Increment the products.sales stat for each product ordered.
+	 * Increment the products.sales.weekly stat for each product ordered.
 	 *
 	 * @param  Event\Event $event
 	 */
 	public function recordProductsSales(Event\Event $event)
 	{
-		$dataset = $this->get('statistics')->get('products.sales');
+		$dataset = $this->get('statistics')->get('products.sales.weekly');
 		foreach ($event->getOrder()->getItemRows() as $unitID => $items) {
-			$dataset->add($unitID, count($items));
+			$dataset->incrementKey($unitID, count($items));
 		}
 	}
 }

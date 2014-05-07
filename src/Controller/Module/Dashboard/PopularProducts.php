@@ -19,7 +19,7 @@ class PopularProducts extends Controller
 	public function index()
 	{
 		$rows          = [];
-		$dataset       = $this->get('statistics')->get('products.sales');
+		$dataset       = $this->get('statistics')->get('products.sales.weekly');
 		$productsSales = $dataset->getRange($dataset::WEEK);
 
 		uasort($productsSales, function($a, $b) {

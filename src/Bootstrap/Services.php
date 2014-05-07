@@ -585,11 +585,11 @@ class Services implements ServicesInterface
 			$factory = $c['statistics.dataset.factory'];
 
 			$statistics->addDatasets([
-				$factory->create('orders.in.weekly',  $factory::COUNTER, $factory::WEEKLY),
-				$factory->create('orders.out.weekly', $factory::COUNTER, $factory::WEEKLY),
-				$factory->create('sales.net.daily',   $factory::COUNTER, $factory::DAILY),
-				$factory->create('sales.gross.daily', $factory::COUNTER, $factory::DAILY),
-				$factory->create('products.sales',    $factory::KEY_VALUE),
+				$factory->create('orders.in.weekly',      $factory::COUNTER,     $factory::WEEKLY),
+				$factory->create('orders.out.weekly',     $factory::COUNTER,     $factory::WEEKLY),
+				$factory->create('sales.net.daily',       $factory::COUNTER,     $factory::DAILY),
+				$factory->create('sales.gross.daily',     $factory::COUNTER,     $factory::DAILY),
+				$factory->create('products.sales.weekly', $factory::KEY_COUNTER, $factory::WEEKLY),
 			]);
 
 			return $statistics;

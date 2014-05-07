@@ -24,11 +24,11 @@ class TotalSales extends Controller
 
 		$rows = [];
 
-		// Pre-fill rows with a total of 0 on each day since the first to
+		// Pre-fill rows with a total of 0 on each day before the last to
 		// ensure we don't lose days where there are is no value.
-		$first = key($net);
+		$last = key(array_reverse($net, true));
 		$day = 60*60*24;
-		for ($i = $first; $i < $first + $day * 6; $i += $day) {
+		for ($i = $last - $day * 6; $i <= $last; $i += $day) {
 			$label = date('l', $i);
 			$rows[$label] = ['label' => $label, 'value' => 0.0];
 		}
