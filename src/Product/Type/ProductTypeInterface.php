@@ -9,7 +9,6 @@ use Message\Cog\Field\ContentTypeInterface;
 
 /**
  * Interface for product types
- * @todo this thing is obscenely big, my bad. We should probably trim some of the fat out of this
  *
  * Interface ProductTypeInterface
  * @package Message\Mothership\Commerce\Product\Type

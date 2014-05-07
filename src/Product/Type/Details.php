@@ -52,21 +52,6 @@ class Details implements \IteratorAggregate, \Countable
 		return isset($this->_details[$name]);
 	}
 
-	public function flatten()
-	{
-		$details = array();
-
-		foreach ($this->all() as $name => $detail) {
-			// Convert timestamp to \DateTime
-			if ($this->_isDateOrTime($detail->dataType)) {
-				$detail->value	 = new \DateTime(date('Y-m-d H:i:s', $detail->value));
-			}
-			$details[$name]	= $detail->value;
-		}
-
-		return $details;
-	}
-
 	public function all()
 	{
 		return $this->_details;
