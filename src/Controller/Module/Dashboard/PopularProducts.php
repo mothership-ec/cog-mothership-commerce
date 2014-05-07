@@ -20,7 +20,7 @@ class PopularProducts extends Controller
 	{
 		$rows          = [];
 		$dataset       = $this->get('statistics')->get('products.sales.weekly');
-		$productsSales = $dataset->getRange($dataset::WEEK);
+		$productsSales = $dataset->getKeyRange($dataset::WEEK_AGO);
 
 		uasort($productsSales, function($a, $b) {
 			if ($a == $b) return 0;
