@@ -46,6 +46,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('recordSalesNet'),
 				array('recordProductsSales'),
 			),
+			OrderEvents::DISPATCH_SHIPPED => array(
+				array('recordOrderOut'),
+			),
 			DashboardEvent::DASHBOARD_INDEX => array(
 				array('buildDashboardProducts'),
 				array('buildDashboardOrders'),
@@ -192,6 +195,17 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function recordOrderIn(Event\Event $event)
 	{
 		$this->get('statistics')->get('orders.in.weekly')
+			->increment();
+	}
+
+	/**
+	 * Increment the orders.out.weekly stat.
+	 *
+	 * @param  Event\Event $event
+	 */
+	public function recordOrderOut(Event\Event $event)
+	{
+		$this->get('statistics')->get('orders.out.weekly')
 			->increment();
 	}
 
