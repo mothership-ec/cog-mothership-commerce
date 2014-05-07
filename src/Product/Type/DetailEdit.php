@@ -28,6 +28,15 @@ class DetailEdit implements TransactionalInterface
 	{
 		$flattened	= $this->_flatten($product->details);
 
+		$this->_transaction->add("
+			DELETE FROM
+				product_detail
+			WHERE
+				product_id = :productID?i
+		", [
+			'productID' => $product->id,
+		]);
+
 		foreach ($flattened as $detail) {
 			$this->_transaction->add('
 			INSERT INTO
@@ -47,8 +56,6 @@ class DetailEdit implements TransactionalInterface
 					:value?i,
 					:locale?s
 				)
-			ON DUPLICATE KEY UPDATE
-				value		= :value?s
 			', array_merge($detail, ['productID' => $product->id]));
 		}
 
@@ -73,11 +80,13 @@ class DetailEdit implements TransactionalInterface
 		$updates	= [];
 
 		foreach ($details as $field) {
-			$updates[]	= [
-				'name'		=> $field->getName(),
-				'value'		=> $field->getValue(),
-				'locale'	=> 'EN', // @todo change this when we add localisation
-			];
+			if ($field->getValue()) {
+				$updates[]	= [
+					'name'		=> $field->getName(),
+					'value'		=> $field->getValue(),
+					'locale'	=> 'EN', // @todo change this when we add localisation
+				];
+			}
 		}
 
 		return $updates;
