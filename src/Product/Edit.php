@@ -9,12 +9,13 @@ use Message\Cog\Localisation\Locale;
 use Message\User\UserInterface;
 
 use Message\Cog\DB\Transaction;
+use Message\Cog\DB\TransactionalInterface;
 use Message\Cog\DB\Result;
 
 /**
  * Class for updating the attributes of a given Product object to the DB
  */
-class Edit
+class Edit implements TransactionalInterface
 {
 	protected $_trans;
 	protected $_user;
@@ -23,7 +24,7 @@ class Edit
 
 	public function __construct(Transaction $trans, Locale $locale, UserInterface $user)
 	{
-		$this->_trans  = $trans;
+		$this->setTransaction($trans);
 		$this->_user   = $user;
 		$this->_locale = $locale;
 	}
@@ -46,6 +47,11 @@ class Edit
 		$this->_trans->commit();
 
 		return $product;
+	}
+
+	public function setTransaction(Transaction $trans)
+	{
+		$this->_trans = $trans;
 	}
 
 	/**

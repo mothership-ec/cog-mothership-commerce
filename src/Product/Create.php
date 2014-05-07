@@ -42,7 +42,6 @@ class Create
 			'INSERT INTO
 				product
 			SET
-				product.product_id		= null,
 				product.type			= ?s,
 				product.name			= ?s,
 				product.weight_grams	= ?i,
