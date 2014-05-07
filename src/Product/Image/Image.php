@@ -24,8 +24,6 @@ class Image implements ResizableInterface
 	protected $_file;
 	protected $_fileLoader;
 
-	protected $_loaded = false;
-
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
@@ -78,7 +76,6 @@ class Image implements ResizableInterface
 		}
 
 		$this->_file = $this->_fileLoader->getByID($this->fileID);
-		$this->_loaded = true;
 	}
 
 	public function __isset($key)
@@ -88,7 +85,7 @@ class Image implements ResizableInterface
 
 	public function __sleep()
 	{
-		if (!$this->_loaded) {
+		if (!$this->_file) {
 			$this->_load();
 		}
 
@@ -100,7 +97,6 @@ class Image implements ResizableInterface
 			'options',
 			'product',
 			'_file',
-			'_loaded',
 		);
 	}
 }
