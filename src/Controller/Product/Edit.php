@@ -264,13 +264,27 @@ class Edit extends Controller
 
 		if ($form->isValid() && $data = $form->getData()) {
 			$product = $this->_product;
+			$trans   = $this->get('db.transaction');
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->details	= $this->get('product.detail.edit')->updateDetails($data, $product->details);
-			$this->get('product.detail.edit')->save($product);
+			$detailEdit = $this->get('product.detail.edit');
+			$detailEdit->setTransaction($trans);
 
-			$product = $this->get('product.edit')->save($product);
+			$product->details = $detailEdit->updateDetails($data, $product->details);
+			$detailEdit->save($product);
+
+			$productEdit = $this->get('product.edit');
+			$productEdit->setTransaction($trans);
+
+			$product = $productEdit->save($product);
+
+			/**
+			 * @todo This call to commit() doesn't do anything, as $productEdit::save() commits anyway. I didn't want to
+			 * remove that because who knows what it would break, and it might be a sizable piece of work so imma
+			 * scayered. I raised a github issue for it https://github.com/messagedigital/cog-mothership-commerce/issues/312
+			 */
+			$trans->commit();
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');

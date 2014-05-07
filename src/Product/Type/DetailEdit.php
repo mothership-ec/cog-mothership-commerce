@@ -4,11 +4,12 @@ namespace Message\Mothership\Commerce\Product\Type;
 
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\DB\Transaction;
+use Message\Cog\DB\TransactionalInterface;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\Field\FieldInterface;
 use Message\User\UserInterface;
 
-class DetailEdit
+class DetailEdit implements TransactionalInterface
 {
 	protected $_transaction;
 	protected $_dispatcher;
@@ -18,7 +19,7 @@ class DetailEdit
 
 	public function __construct(Transaction $trans, DispatcherInterface $dispatcher, UserInterface $user)
 	{
-		$this->_transaction	= $trans;
+		$this->setTransaction($trans);
 		$this->_dispatcher	= $dispatcher;
 		$this->_currentUser	= $user;
 	}
@@ -51,7 +52,11 @@ class DetailEdit
 			', array_merge($detail, ['productID' => $product->id]));
 		}
 
-		$this->_transaction->commit();
+	}
+
+	public function setTransaction(Transaction $trans)
+	{
+		$this->_transaction = $trans;
 	}
 
 	public function updateDetails($data, Details $details)
