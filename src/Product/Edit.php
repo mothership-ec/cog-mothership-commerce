@@ -310,7 +310,7 @@ class Edit implements TransactionalInterface
 			}
 		}
 
-		$product->tags	= $tags;
+		$product->tags	= array_unique($tags);
 
 		return $product;
 	}

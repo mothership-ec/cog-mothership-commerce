@@ -9,7 +9,7 @@
 		<h1>{{ title is defined ? title : product.name }}<span>{{ product.type.getDisplayName() }}</span></h1>
 	</hgroup>
 	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
-	<section class="container-content medium">
+	<section class="container-content short">
 		{% block edit %} {% endblock %}
 	</section>
 {% endblock %}
