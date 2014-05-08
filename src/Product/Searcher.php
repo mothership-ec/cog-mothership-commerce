@@ -140,7 +140,8 @@ class Searcher {
 				$wheres[] = 'LOWER(' . $field . ') LIKE :' . $field;
 			}
 
-			$this->_searchParams[$field] = str_replace('*', '%', $term);
+			// replace '*' with '%' and add '%' in end and beginning
+			$this->_searchParams[$field] = '%' . str_replace('*', '%', $term) . '%';
 		}
 
 		$where = join($wheres, ' AND ');
