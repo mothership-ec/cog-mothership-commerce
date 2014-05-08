@@ -221,6 +221,10 @@ class Edit extends Controller
 		$form = $this->_getProductAttributesForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$product = $this->_product;
+			$trans   = $this->get('db.transaction');
+
+			$productEdit = $this->get('product.edit');
+			$productEdit->setTransaction($trans);
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
@@ -237,8 +241,9 @@ class Edit extends Controller
 			$product->weight                      = $data['weight_grams'];
 			$product->exportManufactureCountryID  = $data['export_manufacture_country_id'];
 
-			$product = $this->get('product.edit')->save($product);
-			$product = $this->get('product.edit')->saveTags($product);
+			$product = $productEdit->save($product);
+			$product = $productEdit->saveTags($product);
+			$trans->commit();
 
 
 			if ($product->id) {
@@ -266,24 +271,19 @@ class Edit extends Controller
 			$product = $this->_product;
 			$trans   = $this->get('db.transaction');
 
-			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
-
 			$detailEdit = $this->get('product.detail.edit');
 			$detailEdit->setTransaction($trans);
-
-			$product->details = $detailEdit->updateDetails($data, $product->details);
-			$detailEdit->save($product);
 
 			$productEdit = $this->get('product.edit');
 			$productEdit->setTransaction($trans);
 
+			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
+
+			$product->details = $detailEdit->updateDetails($data, $product->details);
+			$detailEdit->save($product);
+
 			$product = $productEdit->save($product);
 
-			/**
-			 * @todo This call to commit() doesn't do anything, as $productEdit::save() commits anyway. I didn't want to
-			 * remove that because who knows what it would break, and it might be a sizable piece of work so imma
-			 * scayered. I raised a github issue for it https://github.com/messagedigital/cog-mothership-commerce/issues/312
-			 */
 			$trans->commit();
 
 			if ($product->id) {

@@ -22,6 +22,8 @@ class Edit implements TransactionalInterface
 	protected $_locale;
 	protected $_product;
 
+	protected $_transOverridden = false;
+
 	public function __construct(Transaction $trans, Locale $locale, UserInterface $user)
 	{
 		$this->setTransaction($trans);
@@ -44,13 +46,17 @@ class Edit implements TransactionalInterface
 			->_saveProductInfo()
 			->_saveProductExport();
 
-		$this->_trans->commit();
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+		}
 
 		return $product;
 	}
 
 	public function setTransaction(Transaction $trans)
 	{
+		$this->_transOverridden = true;
+
 		$this->_trans = $trans;
 	}
 
@@ -102,7 +108,9 @@ class Edit implements TransactionalInterface
 			$options
 		);
 
-		$this->_trans->commit();
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+		}
 
 		return $product;
 	}
@@ -143,7 +151,9 @@ class Edit implements TransactionalInterface
 			$options
 		);
 
-		$this->_trans->commit();
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+		}
 
 		return $product;
 	}
@@ -291,12 +301,13 @@ class Edit implements TransactionalInterface
 			throw new \LogicException('Product tags must be a traversable or a string');
 		}
 
-		if (is_string($product->tags)) {
-			$tags = explode(',', $product->tags);
-		}
+		$tags = is_string($product->tags) ? explode(',', $product->tags) : $product->tags;
 
-		foreach ($tags as &$tag) {
-			trim($tag);
+		foreach ($tags as $key => $tag) {
+			$tags[$key] = trim($tag);
+			if (empty($tags[$key])) {
+				unset($tags[$key]);
+			}
 		}
 
 		$product->tags	= $tags;
