@@ -17,7 +17,7 @@ class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_methods;
-	protected $_includeDeleted;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, MethodCollection $paymentMethods)
 	{
@@ -26,10 +26,11 @@ class Loader extends Order\Entity\BaseLoader
 	}
 
 	/**
-	 * Toggle whether or not to load deleted refunds
+	 * Toggle whether to load deleted refunds
 	 *
-	 * @param bool $bool    true / false as to whether to include deleted refunds
-	 * @return Loader       Loader object in order to chain the methods
+	 * @param  bool $bool    true / false as to whether to include deleted refunds
+	 *
+	 * @return Loader        Loader object in order to chain the methods
 	 */
 	public function includeDeleted($bool)
 	{
@@ -97,6 +98,11 @@ class Loader extends Order\Entity\BaseLoader
 			$entities[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
+			);
+
+			$entities[$key]->authorship->delete(
+				new DateTimeImmutable(date('c', $row->deleted_at)),
+				$row->deleted_by
 			);
 
 			if (!$order || $row->order_id != $order->id) {

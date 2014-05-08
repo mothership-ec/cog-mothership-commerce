@@ -28,10 +28,11 @@ class Loader extends Order\Entity\BaseLoader
 	}
 
 	/**
-	 * Toggle whether or not to load deleted items
+	 * Toggle whether to load deleted items
 	 *
-	 * @param bool $bool    true / false as to whether to include deleted items
-	 * @return Loader       Loader object in order to chain the methods
+	 * @param  bool $bool    true / false as to whether to include deleted items
+	 *
+	 * @return Loader        Loader object in order to chain the methods
 	 */
 	public function includeDeleted($bool)
 	{
@@ -80,6 +81,7 @@ class Loader extends Order\Entity\BaseLoader
 				item_id          AS id,
 				order_id         AS orderID,
 				deleted_at       AS deletedAt,
+				deleted_by       AS deletedBy,
 				actual_price     AS actualPrice,
 				list_price       AS listPrice,
 				tax_rate         AS taxRate,
@@ -122,6 +124,11 @@ class Loader extends Order\Entity\BaseLoader
 			$items[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
+			);
+
+			$items[$key]->authorship->delete(
+				new DateTimeImmutable(date('c', $row->deleted_at)),
+				$row->deleted_by
 			);
 
 			// Load the order if we don't have it already
