@@ -48,6 +48,8 @@ class Order implements PayableInterface
 
 	public $metadata;
 
+	protected $_payableTransactionID;
+
 	protected $_entities = array();
 
 	/**
@@ -387,6 +389,22 @@ class Order implements PayableInterface
 		return $total;
 	}
 
+	/**
+	 * Get the sum of the payment amounts on the order.
+	 *
+	 * @return float
+	 */
+	public function getAmountPaid()
+	{
+		$paid = 0;
+
+		foreach ($this->payments as $payment) {
+			$paid += $payment->amount;
+		}
+
+		return $paid;
+	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -394,14 +412,6 @@ class Order implements PayableInterface
 	public function getPayableAmount()
 	{
 		return $this->getAmountDue();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getPayableTotal()
-	{
-		return $this->getTotal();
 	}
 
 	/**
@@ -421,14 +431,17 @@ class Order implements PayableInterface
 	}
 
 	/**
-	 * @todo This id should be unique but determinable from the order. However
-	 *       it can not use the order id since that will not exist on baskets
-	 *       that have not yet been saved into the database as an order.
+	 * Retrieves the payableTransactionID property, this is set once to ensure
+	 * it remains the same between requests.
 	 *
 	 * {@inheritDoc}
 	 */
 	public function getPayableTransactionID()
 	{
-		return 'ORDER-' . strtoupper(uniqid());
+		if (! $this->_payableTransactionID) {
+			$this->_payableTransactionID = 'ORDER-' . strtoupper(uniqid());
+		}
+
+		return $this->_payableTransactionID;
 	}
 }
