@@ -39,12 +39,15 @@ class Cancel extends Controller
 			throw new \InvalidArgumentException(sprintf('Order #%s cannot be cancelled.', $this->_order->id));
 		}
 
+		$refundable = $this->_doesEcommerceExist();
+
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
 				'ms.commerce.order.cancel',
 				['orderID' => $orderID]
 			),
 			CancelForm::STOCK_LABEL_OPTION => 'all outstanding items',
+			CancelForm::REFUNDABLE_OPTION  => $refundable,
 		]);
 
 		$refundAmount = $this->_order->getPayableTotal();
@@ -58,7 +61,6 @@ class Cancel extends Controller
 
 		if ($form->isValid()) {
 			$stock          = $form->get('stock')->getData();
-			$refund         = $form->get('refund')->getData();
 			$notifyCustomer = $form->get('notifyCustomer')->getData();
 
 			$transaction = $this->get('db.transaction');
@@ -91,7 +93,7 @@ class Cancel extends Controller
 
 				$this->_addFlashes();
 
-				if ($refund) {
+				if ($refundable && true === $form->get('refund')->getData()) {
 					$payable = new Order\CancellationRefund($this->_order);
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
@@ -119,6 +121,7 @@ class Cancel extends Controller
 			'form'          => $form,
 			'refundAmount'  => $refundAmount,
 			'title'         => 'Cancel Order',
+			'refundable'    => $refundable,
 		]);
 	}
 
@@ -139,12 +142,15 @@ class Cancel extends Controller
 			throw new \InvalidArgumentException(sprintf('Item `%s` cannot be cancelled.', $item->getDescription()));
 		}
 
+		$refundable = $this->_doesEcommerceExist();
+
 		$form = $this->createForm($this->get('order.form.cancel'), null, [
 			'action' => $this->generateUrl(
 				'ms.commerce.order.item.cancel',
 				['orderID' => $orderID, 'itemID' => $itemID]
 			),
 			CancelForm::STOCK_LABEL_OPTION => 'item',
+			CancelForm::REFUNDABLE_OPTION  => $refundable,
 		]);
 
 		$cancelledItems = $this->_order->items->getByCurrentStatusCode(Order\Statuses::CANCELLED);
@@ -154,7 +160,6 @@ class Cancel extends Controller
 
 		if ($form->isValid()) {
 			$stock          = $form->get('stock')->getData();
-			$refund         = $form->get('refund')->getData();
 			$notifyCustomer = $form->get('notifyCustomer')->getData();
 
 			$transaction = $this->get('db.transaction');
@@ -181,7 +186,7 @@ class Cancel extends Controller
 
 				$this->_addFlashes();
 
-				if ($refund) {
+				if ($refundable && true === $form->get('refund')->getData()) {
 					$payable = new Order\CancellationRefund($this->_order);
 					$payable->setPayableAmount($item->gross);
 
@@ -212,6 +217,7 @@ class Cancel extends Controller
 			'refundAmount'        => $item->gross,
 			'title'               => 'Cancel Item',
 			'lastUncancelledItem' => $lastUncancelledItem,
+			'refundable'          => $refundable,
 		]);
 	}
 
@@ -305,6 +311,18 @@ class Cancel extends Controller
 		}
 
 		return ($payment ? $payment->reference : null);
+	}
+
+	protected function _doesEcommerceExist()
+	{
+		$exists = true;
+		try {
+			$this->get('module.locator')->getPath('Message\Mothership\Ecommerce');
+		} catch (\InvalidArgumentException $e) {
+			$exists = false;
+		}
+
+		return false;
 	}
 }
        

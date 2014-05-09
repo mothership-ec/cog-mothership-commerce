@@ -12,7 +12,8 @@ use Message\User\User;
 class Cancel extends Form\AbstractType
 {
 	const STOCK_LOCATION_OPTION = 'stock_location';
-	const STOCK_LABEL_OPTION    = 'STOCK_LABEL_OPTION';
+	const STOCK_LABEL_OPTION    = 'stock_label';
+	const REFUNDABLE_OPTION     = 'refundable';
 
 	protected $_stockLocation;
 	protected $_password;
@@ -40,9 +41,13 @@ class Cancel extends Form\AbstractType
 				$options[self::STOCK_LOCATION_OPTION]->displayName
 			),
 		]);
-		$builder->add('refund', 'checkbox', [
-			'label' => 'Issue a refund?',
-		]);
+
+		if ($options[self::REFUNDABLE_OPTION]) {
+			$builder->add('refund', 'checkbox', [
+				'label' => 'Issue a refund?',
+			]);	
+		}
+
 		$builder->add('notifyCustomer', 'checkbox', [
 			'label' => 'Notify the customer by email?',
 		]);
@@ -75,7 +80,11 @@ class Cancel extends Form\AbstractType
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
-		$resolver->setRequired([self::STOCK_LOCATION_OPTION, self::STOCK_LABEL_OPTION]);
+		$resolver->setRequired([
+			self::STOCK_LOCATION_OPTION,
+			self::STOCK_LABEL_OPTION,
+			self::REFUNDABLE_OPTION,
+		]);
 		$resolver->setAllowedTypes([
 			self::STOCK_LOCATION_OPTION => 'Message\\Mothership\\Commerce\\Product\\Stock\\Location\\Location',
 		]);

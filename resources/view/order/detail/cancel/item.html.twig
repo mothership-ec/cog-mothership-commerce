@@ -11,10 +11,12 @@
 {{ form_start(form) }}
 	{{ form_row(form.stock) }}
 
+	{% if refundable %}
 	<div class="refund">
 		{{ form_row(form.refund) }}
 		<span><strong>{{ refundAmount|price }}</strong></span>
 	</div>
+	{% endif %}
 
 	{{ form_rest(form) }}
 
