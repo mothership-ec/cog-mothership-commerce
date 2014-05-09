@@ -32,7 +32,6 @@ class Services implements ServicesInterface
 				$order->locale               = $c['locale']->getId();
 				$order->currencyID           = 'GBP';
 				$order->type                 = 'web';
-				$order->payableTransactionID = 'ORDER-' . strtoupper(uniqid());
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -95,7 +94,6 @@ class Services implements ServicesInterface
 
 			$order->locale               = $c['locale']->getId();
 			$order->currencyID           = 'GBP';
-			$order->payableTransactionID = 'ORDER-' . strtoupper(uniqid());
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,

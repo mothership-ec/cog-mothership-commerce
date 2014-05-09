@@ -40,6 +40,7 @@ class Assembler
 		$this->_eventDispatcher = $dispatcher;
 
 		$this->setDefaultStockLocation($defaultStockLocation);
+		$this->setDefaultPayableTransactionID();
 	}
 
 	/**
@@ -76,6 +77,20 @@ class Assembler
 	public function setDefaultStockLocation($stockLocation)
 	{
 		$this->_defaultStockLocation = $stockLocation;
+
+		return $this;
+	}
+
+	/**
+	 * Set the default payable transaction id.
+	 *
+	 * @param string $transactionID
+	 *
+	 * @return Assembler Returns $this for chainability
+	 */
+	public function setDefaultPayableTransactionID($transactionID = null)
+	{
+		$this->payableTransactionID = ($transactionID) ?: 'ORDER-' . strtoupper(uniqid());
 
 		return $this;
 	}
