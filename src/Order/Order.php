@@ -401,14 +401,6 @@ class Order implements PayableInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getPayableTotal()
-	{
-		return $this->getTotal();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getPayableCurrency()
 	{
 		return $this->currencyID;
