@@ -48,7 +48,7 @@ class Order implements PayableInterface
 
 	public $metadata;
 
-	public $payableTransactionID;
+	protected $_payableTransactionID;
 
 	protected $_entities = array();
 
@@ -415,15 +415,17 @@ class Order implements PayableInterface
 	}
 
 	/**
-	 * Retrieves the payableTransactionID property, this should be set when
-	 * the order is being assembled.
-	 *
-	 * @see \Message\Mothership\Commerce\Bootstrap\Services order.assembler
+	 * Retrieves the payableTransactionID property, this is set once to ensure
+	 * it remains the same between requests.
 	 *
 	 * {@inheritDoc}
 	 */
 	public function getPayableTransactionID()
 	{
-		return $this->payableTransactionID;
+		if (! $this->_payableTransactionID) {
+			$this->_payableTransactionID = 'ORDER-' . strtoupper(uniqid());
+		}
+
+		return $this->_payableTransactionID;
 	}
 }
