@@ -50,7 +50,7 @@ class Cancel extends Controller
 			CancelForm::REFUNDABLE_OPTION  => $refundable,
 		]);
 
-		$refundAmount = $this->_order->getPayableTotal();
+		$refundAmount = $this->_order->totalGross;
 		$cancelledItems = $this->_order->items->getByCurrentStatusCode(Order\Statuses::CANCELLED);
 
 		foreach ($cancelledItems as $item) {
@@ -322,7 +322,7 @@ class Cancel extends Controller
 			$exists = false;
 		}
 
-		return false;
+		return $exists;
 	}
 }
        

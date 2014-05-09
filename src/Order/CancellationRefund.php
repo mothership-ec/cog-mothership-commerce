@@ -59,7 +59,7 @@ class CancellationRefund implements PayableInterface
 	public function getPayableAmount()
 	{
 		if (null === $this->_amount) {
-			return $this->_order->getPayableTotal();
+			return $this->_order->totalGross;
 		}
 
 		return $this->_amount;
