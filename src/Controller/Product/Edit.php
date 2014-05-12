@@ -221,6 +221,10 @@ class Edit extends Controller
 		$form = $this->_getProductAttributesForm();
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$product = $this->_product;
+			$trans   = $this->get('db.transaction');
+
+			$productEdit = $this->get('product.edit');
+			$productEdit->setTransaction($trans);
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
@@ -237,8 +241,9 @@ class Edit extends Controller
 			$product->weight                      = $data['weight_grams'];
 			$product->exportManufactureCountryID  = $data['export_manufacture_country_id'];
 
-			$product = $this->get('product.edit')->save($product);
-			$product = $this->get('product.edit')->saveTags($product);
+			$product = $productEdit->save($product);
+			$product = $productEdit->saveTags($product);
+			$trans->commit();
 
 
 			if ($product->id) {
@@ -264,13 +269,22 @@ class Edit extends Controller
 
 		if ($form->isValid() && $data = $form->getData()) {
 			$product = $this->_product;
+			$trans   = $this->get('db.transaction');
+
+			$detailEdit = $this->get('product.detail.edit');
+			$detailEdit->setTransaction($trans);
+
+			$productEdit = $this->get('product.edit');
+			$productEdit->setTransaction($trans);
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->details	= $this->get('product.detail.edit')->updateDetails($data, $product->details);
-			$this->get('product.detail.edit')->save($product);
+			$product->details = $detailEdit->updateDetails($data, $product->details);
+			$detailEdit->save($product);
 
-			$product = $this->get('product.edit')->save($product);
+			$product = $productEdit->save($product);
+
+			$trans->commit();
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');
@@ -746,7 +760,11 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->get('field.form')->generate($this->_product->details);
+		return $this->get('field.form')->generate($this->_product->details, [
+			'action' => $this->generateUrl('ms.commerce.product.edit.details.action', [
+					'productID' => $this->_product->id,
+				])
+		]);
 	}
 
 	protected function _getProductPricingForm()

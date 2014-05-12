@@ -27,8 +27,8 @@ class BasicProductType implements ProductTypeInterface
 	{
 	}
 
-	public function getProductDisplayName(Product $product = null)
+	public function getProductDisplayName(Product $product)
 	{
-
+		return $product->name;
 	}
 }

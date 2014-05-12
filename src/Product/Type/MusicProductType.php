@@ -31,7 +31,7 @@ class MusicProductType implements ProductTypeInterface
 		return 'music';
 	}
 
-	public function getProductDisplayName(Product $product = null)
+	public function getProductDisplayName(Product $product)
 	{
 		return $product->details->artist . ' - ' . $product->details->title;
 	}
