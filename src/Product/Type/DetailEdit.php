@@ -20,9 +20,9 @@ class DetailEdit implements TransactionalInterface
 
 	public function __construct(Transaction $trans, DispatcherInterface $dispatcher, UserInterface $user)
 	{
-		$this->setTransaction($trans);
-		$this->_dispatcher	= $dispatcher;
-		$this->_currentUser	= $user;
+		$this->_transaction  = $trans;
+		$this->_dispatcher   = $dispatcher;
+		$this->_currentUser  = $user;
 	}
 
 	public function save(Product $product)

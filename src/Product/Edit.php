@@ -26,7 +26,7 @@ class Edit implements TransactionalInterface
 
 	public function __construct(Transaction $trans, Locale $locale, UserInterface $user)
 	{
-		$this->setTransaction($trans);
+		$this->_trans  = $trans;
 		$this->_user   = $user;
 		$this->_locale = $locale;
 	}
