@@ -16,12 +16,13 @@ class DetailEdit implements TransactionalInterface
 	protected $_user;
 
 	protected $_details	= [];
+	protected $_transOverridden = false;
 
 	public function __construct(Transaction $trans, DispatcherInterface $dispatcher, UserInterface $user)
 	{
-		$this->setTransaction($trans);
-		$this->_dispatcher	= $dispatcher;
-		$this->_currentUser	= $user;
+		$this->_transaction  = $trans;
+		$this->_dispatcher   = $dispatcher;
+		$this->_currentUser  = $user;
 	}
 
 	public function save(Product $product)
@@ -39,30 +40,36 @@ class DetailEdit implements TransactionalInterface
 
 		foreach ($flattened as $detail) {
 			$this->_transaction->add('
-			INSERT INTO
-				product_detail
-				(
-					product_id,
-					name,
-					value,
-					value_int,
-					locale
-				)
-			VALUES
-				(
-					:productID?i,
-					:name?s,
-					:value?s,
-					:value?i,
-					:locale?s
-				)
-			', array_merge($detail, ['productID' => $product->id]));
+				INSERT INTO
+					product_detail
+					(
+						product_id,
+						name,
+						value,
+						value_int,
+						locale
+					)
+				VALUES
+					(
+						:productID?i,
+						:name?s,
+						:value?s,
+						:value?i,
+						:locale?s
+					)
+				', array_merge($detail, ['productID' => $product->id]));
+		}
+
+		if (!$this->_transOverridden) {
+			$this->_transaction->commit();
 		}
 
 	}
 
 	public function setTransaction(Transaction $trans)
 	{
+		$this->_transOverridden = true;
+
 		$this->_transaction = $trans;
 	}
 
