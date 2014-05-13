@@ -156,6 +156,10 @@ class CollectionOrderLoader implements CollectionInterface
 				throw new \LogicException('Cannot load entity collection as no order has been set yet');
 			}
 
+			if (!$this->_loader) {
+				throw new \LogicException('Loader is not set so cannot load items for `' . get_class($this->_collection) . '`');
+			}
+
 			if ($this->_order->id && is_int($this->_order->id) && $items = $this->_loader->getByOrder($this->_order)) {
 				foreach ($items as $item) {
 					$this->_collection->append($item);
