@@ -34,6 +34,7 @@ class Loader
 		$this->_statuses     = $statuses;
 		$this->_itemStatuses = $itemStatuses;
 		$this->_entities     = $entities;
+		$this->_prepareEntities();
 	}
 
 	public function getEntities()
@@ -45,6 +46,14 @@ class Loader
 		}
 
 		return $return;
+	}
+
+	protected function _prepareEntities()
+	{
+		foreach ($this->_entities as $entity) {
+			$loader = $entity->getLoader();
+			$loader->setOrderLoader($this);
+		}
 	}
 
 	/**
@@ -61,7 +70,6 @@ class Loader
 		}
 
 		$loader = $this->_entities[$name]->getLoader();
-		$loader->setOrderLoader($this);
 
 		return $loader;
 	}
