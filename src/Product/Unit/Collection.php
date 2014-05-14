@@ -16,7 +16,8 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 	protected $_product;
 	protected $_loader;
 
-	protected $_items = null;
+	protected $_items  = null;
+	protected $_loaded = false;
 
 	public function __construct(Product $product, LoaderInterface $loader)
 	{
@@ -102,15 +103,34 @@ class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	public function load($showOutOfStock = true, $showInvisibleUnits = true)
 	{
-		$this->_loader->includeInvisible($showInvisibleUnits);
-		$this->_loader->includeOutOfStock($showOutOfStock);
+		if ($this->_loaded == false) {
 
-		if (null === $this->_items) {
+			if (!$this->_loader) {
+				throw new \LogicException(__CLASS__ . ': Loader not set, has this object been serialized?');
+			}
+
+			$this->_loader->includeInvisible($showInvisibleUnits);
+			$this->_loader->includeOutOfStock($showOutOfStock);
+
 			$this->_items = $this->_loader->getByProduct($this->_product) ?: array();
+			$this->_loaded = true;
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public function __sleep()
+	{
+		if (!$this->_loaded) {
+			$this->load();
+		}
+
+		return [
+			'_product',
+			'_items',
+			'_loaded',
+		];
 	}
 }
