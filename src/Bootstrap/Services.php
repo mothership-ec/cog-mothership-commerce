@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
+use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
 
 use Message\User\AnonymousUser;
 
@@ -266,6 +267,7 @@ class Services implements ServicesInterface
 		// Available order & item statuses
 		$services['order.statuses'] = function($c) {
 			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(OrderStatuses::PAYMENT_PENDING,      'Payment Pending'),
 				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,            'Cancelled'),
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,    'Awaiting Dispatch'),
 				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,           'Processing'),
@@ -292,6 +294,40 @@ class Services implements ServicesInterface
 
 		$services['order.listener.assembler.stock_check'] = function($c) {
 			return new Commerce\Order\EventListener\Assembler\StockCheckListener('web');
+		};
+
+		// Available transaction types
+		$services['order.transaction.types'] = function($c) {
+			return array(
+				TransactionTypes::ORDER               => 'Order',
+				TransactionTypes::CONTRACT_INITIATION => 'Contract Initiation',
+				TransactionTypes::CONTRACT_PAYMENT    => 'Contract Payment',
+			);
+		};
+
+		$services['order.transaction.loader'] = function($c) {
+			return new Commerce\Order\Transaction\Loader($c['db.query'], array(
+				Commerce\Order\Order::RECORD_TYPE                  => $c['order.loader'],
+				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $c['order.item.loader'],
+				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $c['order.refund.loader'],
+				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $c['order.payment.loader'],
+			));
+		};
+
+		$services['order.transaction.create'] = function($c) {
+			return new Commerce\Order\Transaction\Create($c['db.transaction'], $c['order.transaction.loader'], $c['event.dispatcher'], $c['user.current']);
+		};
+
+		$services['order.transaction.edit'] = function($c) {
+			return new Commerce\Order\Transaction\Edit($c['db.transaction'], $c['user.current']);
+		};
+
+		$services['order.transaction.void'] = function($c) {
+			return new Commerce\Order\Transaction\Void(
+				$c['db.transaction'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
 		};
 
 		// Product
@@ -505,6 +541,7 @@ class Services implements ServicesInterface
 		$services['stock.movement.reasons'] = function() {
 			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
 				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
+				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
 			));
 		};
 
