@@ -46,9 +46,17 @@ class Payment implements EntityInterface, RecordInterface
 		return $this->amount + ($this->change ?: 0);
 	}
 
+	/**
+	 * Get a reference for the payment that is suitable for the customer.
+	 *
+	 * @todo   Remove the direct mention of sagepay here, it should pass it to
+	 *         the sagepay module to determine the reference.
+	 *
+	 * @return string
+	 */
 	public function getCustomerFacingReference()
 	{
-		if (strpos($this->reference,'sagepay')) {
+		if ('sagepay' == $this->method->getName()) {
 			$reference = json_decode($this->reference);
 
 			return isset($reference->VPSTxId) ? $reference->VPSTxId : '';

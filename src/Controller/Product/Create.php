@@ -19,10 +19,12 @@ class Create extends Controller
 		$form = $this->_getForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$product = $this->get('product');
-			$product->name = $data['name'];
-			$product->displayName = $data['display_name'];
-			$product->shortDescription = $data['short_description'];
+			$product					= $this->get('product');
+			$product->name				= $data['name'];
+			$product->displayName		= $data['display_name'];
+			$product->shortDescription 	= $data['short_description'];
+			$product->type				= array_key_exists('type', $data) ?
+				$this->get('product.types')->get($data['type']) : $this->get('product.types')->getDefault();
 			$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 
 			$product = $this->get('product.create')->create($product);
@@ -43,6 +45,17 @@ class Create extends Controller
 			->setName('product-create')
 			->setAction($this->generateUrl('ms.commerce.product.create.action'))
 			->setMethod('post');
+
+		if (count($this->get('product.types')) > 1) {
+			$form->add('type', 'choice', $this->trans('ms.commerce.product.attributes.type.label'), array(
+				'attr'	=> array(
+					'data-help-key'	=> 'ms.commerce.product.attributes.type.help'
+				),
+				'expanded'	=> false,
+				'multiple'	=> false,
+				'choices'	=> $this->get('product.types')->getList(),
+			));
+		}
 
 		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array('attr' => array(
 			'data-help-key' => 'ms.commerce.product.attributes.name.help'
