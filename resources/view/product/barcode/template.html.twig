@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html lang="en" class="no-js ie7">
+<![endif]-->
+<!--[if IE 8]>
+<html lang="en" class="no-js ie8">
+<![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="{{ page.metaDescription|default('Union Music Store') }}">
+		<title>{% block title %}{{ 'Mothership Barcode Printing | ' ~ app.cfg.app.name }}{% endblock %}</title>
+
+		{% block stylesheets %}
+			{% stylesheets
+				'@Message:Mothership:Commerce::resources/assets/css/barcode.css'
+
+				output='/assets/css/barcode.css'
+				filter='csscogulerewrite,?cssmin'
+			%}
+
+			<link rel="stylesheet" href="{{ asset_url }}">
+			{% endstylesheets %}
+		{% endblock %}
+
+	</head>
+	<body>
+		<div class="{{ sheetName }}">
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
+</html>
