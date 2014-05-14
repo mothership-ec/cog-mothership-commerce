@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Entity\Refund;
+namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\ValueObject\Authorship;

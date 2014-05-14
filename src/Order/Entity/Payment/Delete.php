@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Entity\Payment;
+namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\ValueObject\Authorship;
