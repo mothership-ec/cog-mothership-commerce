@@ -20,28 +20,6 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Order($c['order.entities']);
 		});
 
-		$services['commerce.gateway'] = $services->factory(function($c) {
-			return new Commerce\Gateway\Sagepay(
-				'SagePay_Server',
-				$c['user.current'],
-				$c['http.request.master'],
-				$c['cache'],
-				$c['basket.order'],
-				$c['cfg']
-			);
-		});
-
-		$services['commerce.gateway.refund'] = $services->factory(function($c) {
-			return new Commerce\Gateway\Sagepay(
-				'SagePay_Direct',
-				$c['user.current'],
-				$c['http.request.master'],
-				$c['cache'],
-				$c['basket.order'],
-				$c['cfg']
-			);
-		});
-
 		$services->extend('form.factory.builder', function($factory, $c) {
 			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
 
@@ -50,10 +28,10 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order             = $c['order'];
-				$order->locale     = $c['locale']->getId();
-				$order->currencyID = 'GBP';
-				$order->type       = 'web';
+				$order                       = $c['order'];
+				$order->locale               = $c['locale']->getId();
+				$order->currencyID           = 'GBP';
+				$order->type                 = 'web';
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -114,8 +92,8 @@ class Services implements ServicesInterface
 		$services['order.assembler'] = $services->factory(function($c) {
 			$order = $c['order'];
 
-			$order->locale     = $c['locale']->getId();
-			$order->currencyID = 'GBP';
+			$order->locale               = $c['locale']->getId();
+			$order->currencyID           = 'GBP';
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
@@ -268,7 +246,6 @@ class Services implements ServicesInterface
 				new Commerce\Order\Entity\Payment\Method\Cash,
 				new Commerce\Order\Entity\Payment\Method\Cheque,
 				new Commerce\Order\Entity\Payment\Method\Manual,
-				new Commerce\Order\Entity\Payment\Method\Sagepay,
 
 				new Commerce\Order\Entity\Payment\Method\Paypal,
 				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
