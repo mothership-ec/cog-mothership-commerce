@@ -451,6 +451,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\ProductAttributes($c);
 		});
 
+		$services['product.form.barcode'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\Barcode($c['stock.locations']);
+		});
+
 		$services['product.detail.loader'] = function($c) {
 			return new Commerce\Product\Type\DetailLoader(
 				$c['db.query'],
