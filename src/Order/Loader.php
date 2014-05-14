@@ -48,14 +48,6 @@ class Loader
 		return $return;
 	}
 
-	protected function _prepareEntities()
-	{
-		foreach ($this->_entities as $entity) {
-			$loader = $entity->getLoader();
-			$loader->setOrderLoader($this);
-		}
-	}
-
 	/**
 	 * Get the loader for a specific entity.
 	 *
@@ -339,5 +331,18 @@ class Loader
 		});
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	/**
+	 * Prepares entities by setting their loaders' order loader to $this.
+	 * This is necessary to make sure the entity loaders will always have an
+	 * order loader.
+	 */
+	protected function _prepareEntities()
+	{
+		foreach ($this->_entities as $entity) {
+			$loader = $entity->getLoader();
+			$loader->setOrderLoader($this);
+		}
 	}
 }
