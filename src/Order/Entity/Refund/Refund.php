@@ -10,6 +10,8 @@ use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
 
 class Refund implements EntityInterface, RecordInterface
 {
+	const RECORD_TYPE = BaseRefund::RECORD_TYPE;
+
 	public $order;
 	public $refund;
 
@@ -35,6 +37,18 @@ class Refund implements EntityInterface, RecordInterface
 	public function __get($var)
 	{
 		return (isset($this->refund->{$var})) ? $this->refund->{$var} : null;
+	}
+
+	/**
+	 * Magic setter. Proxies property setting to the embedded actual refund
+	 * instance.
+	 *
+	 * @param  string $var Property name
+	 * @param  mixed  $val Property value
+	 */
+	public function __set($var, $val)
+	{
+		$this->refund->{$var} = $val;
 	}
 
 	/**

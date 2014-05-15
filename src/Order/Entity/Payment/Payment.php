@@ -15,6 +15,8 @@ use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
  */
 class Payment implements EntityInterface, RecordInterface
 {
+	const RECORD_TYPE = BasePayment::RECORD_TYPE;
+
 	public $order;
 	public $payment;
 
@@ -40,6 +42,18 @@ class Payment implements EntityInterface, RecordInterface
 	public function __get($var)
 	{
 		return (isset($this->payment->{$var})) ? $this->payment->{$var} : null;
+	}
+
+	/**
+	 * Magic setter. Proxies property setting to the embedded actual payment
+	 * instance.
+	 *
+	 * @param  string $var Property name
+	 * @param  mixed  $val Property value
+	 */
+	public function __set($var, $val)
+	{
+		$this->payment->{$var} = $val;
 	}
 
 	/**
