@@ -1,24 +1,29 @@
-{{ form_start(form) }}
-{{ form_widget(form['type']) }}
-{{ form_row(form['location']) }}
-<table>
-	<thead>
-		<tr>
-			<th>Variant</th>
-			<th>Number to print</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for unit in units %}
+{% extends 'Message:Mothership:ControlPanel::modal:standard' %}
+
+{% block content %}
+	<h3>Print barcode labels</h3>
+	{{ form_start(form) }}
+	{{ form_widget(form['type']) }}
+	{{ form_row(form['location']) }}
+	<table>
+		<thead>
 			<tr>
-				<td>{{ form_label(form['unit_' ~ unit.id]) }}</td>
-				<td>{{ form_widget(form['unit_' ~ unit.id]) }}</td>
+				<th>Variant</th>
+				<th>Number to print</th>
 			</tr>
-		{% endfor %}
-	</tbody>
-</table>
-{{ form_row(form['offset']) }}
-<button type="submit" class="button small save" id="save-content">
-	{{ 'ms.commerce.product.button.save'|trans }}
-</button>
-{{ form_end(form) }}
+		</thead>
+		<tbody>
+			{% for unit in units %}
+				<tr>
+					<td>{{ form_label(form['unit_' ~ unit.id]) }}</td>
+					<td>{{ form_widget(form['unit_' ~ unit.id]) }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{{ form_row(form['offset']) }}
+	<button type="submit" class="button small save" id="save-content">
+		{{ 'ms.commerce.product.button.barcodes'|trans }}
+	</button>
+	{{ form_end(form) }}
+{% endblock %}
