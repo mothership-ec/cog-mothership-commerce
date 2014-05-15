@@ -82,7 +82,10 @@ class Routes implements RoutesInterface
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 
-		$router['ms.product']->add('ms.commerce.product.barcodes', '/barcode/print/{productID}/', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodes')
+		$router['ms.product']->add('ms.commerce.product.barcodes.action', '/barcode/print/{productID}', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodesAction')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.barcodes', '/barcode/print/{productID}', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodes')
 			->setRequirement('productID', '\d+');
 
 		$router['ms.product']->add('ms.commerce.product.barcode.stock_take', '/barcode/stock-take', 'Message:Mothership:Commerce::Controller:Product:Barcode#stockTake');

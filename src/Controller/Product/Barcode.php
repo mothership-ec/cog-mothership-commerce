@@ -11,6 +11,22 @@ class Barcode extends Controller
 	{
 		$product = $this->get('product.loader')->getByID($productID);
 		$units   = $this->get('product.unit.loader')->includeOutOfStock(true)->getByProduct($product);
+		$form    = $this->createForm($this->get('product.form.barcode')->setUnits($units), null, [
+			'action' => $this->generateUrl('ms.commerce.product.barcodes.action', [
+					'productID' => $productID,
+				])
+		]);
+
+		return $this->render('Message:Mothership:Commerce::product:barcode:form', [
+			'form' => $form,
+			'units' => $units,
+		]);
+	}
+
+	public function productBarcodesAction($productID)
+	{
+		$product = $this->get('product.loader')->getByID($productID);
+		$units   = $this->get('product.unit.loader')->includeOutOfStock(true)->getByProduct($product);
 		$form    = $this->createForm($this->get('product.form.barcode')->setUnits($units));
 
 		$form->handleRequest();
@@ -32,10 +48,7 @@ class Barcode extends Controller
 			$this->addFlash('warning', 'There are no barcodes to print');
 		}
 
-		return $this->render('Message:Mothership:Commerce::product:barcode:form', [
-			'form' => $form,
-			'units' => $units,
-		]);
+		return $this->redirectToReferer();
 	}
 
 	public function printBarcodes($barcodes)
