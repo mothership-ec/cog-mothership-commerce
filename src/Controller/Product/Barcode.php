@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Controller\Product;
 
+use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\Controller\Controller;
 
 class Barcode extends Controller
@@ -17,15 +18,18 @@ class Barcode extends Controller
 		if ($form->isValid()) {
 			$data = $form->getData();
 
-			if ($data['type'] === 'manual') {
-				$units = $this->_getUnitQuantities($data);
+			if ($data['type'] === 'automatic') {
+				if (!$data['location']) {
+					throw new \LogicException('Location not set!');
+				}
+				$quantities = $this->_getQuantitiesFromStock($product, $data['location']);
 			}
 			else {
-				de('write the automatic bit');
+				$quantities = $this->_getQuantitiesFromData($data);
 			}
 
 			$offset   = (int) $data['offset'] ?: 0;
-			$barcodes = $this->get('product.barcode.generate')->getBarcodes($units, $offset);
+			$barcodes = $this->get('product.barcode.generate')->getBarcodes($quantities, $offset);
 
 			return $this->forward('Message:Mothership:Commerce::Controller:Product:Barcode#printBarcodes', [
 				'barcodes' => $barcodes,
@@ -60,18 +64,36 @@ class Barcode extends Controller
 		]);
 	}
 
-	protected function _getUnitQuantities(array $data)
+	protected function _getQuantitiesFromData(array $data)
 	{
-		$units = [];
+		$quantities = [];
 
 		foreach ($data as $key => $value) {
 			if (false !== strpos($key, 'unit_')) {
 				$unitID = explode('_', $key);
 				$unitID = (int) array_pop($unitID);
-				$units[$unitID] = (int) $value;
+
+				$quantities[$unitID] = (int) $value;
 			}
 		}
 
-		return $units;
+		return $quantities;
+	}
+
+	protected function _getQuantitiesFromStock(Product $product, $location)
+	{
+		if (!is_string($location)) {
+			throw new \InvalidArgumentException('Location must be a string!');
+		}
+
+		$units      = $this->get('product.unit.loader')->includeOutOfStock(false)->getByProduct($product);
+		$quantities = [];
+
+		foreach ($units as $unit) {
+			$stock = (array_key_exists($location, $unit->stock)) ? (int) $unit->stock[$location] : 0;
+			$quantities[$unit->id] = $stock;
+		}
+
+		return $quantities;
 	}
 }
