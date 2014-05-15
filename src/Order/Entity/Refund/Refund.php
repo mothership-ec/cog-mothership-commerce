@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
-use Message\Mothership\Commerce\Refund as BaseRefund;
+use Message\Mothership\Commerce\Refund\Refund as BaseRefund;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
