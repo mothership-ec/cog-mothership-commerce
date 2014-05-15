@@ -16,7 +16,20 @@ class Barcode extends Controller
 
 		if ($form->isValid()) {
 			$data = $form->getData();
-			de($data);
+
+			if ($data['type'] === 'manual') {
+				$units = $this->_getUnitQuantities($data);
+			}
+			else {
+				de('write the automatic bit');
+			}
+
+			$offset   = (int) $data['offset'] ?: 0;
+			$barcodes = $this->get('product.barcode.generate')->getBarcodes($units, $offset);
+
+			return $this->forward('Message:Mothership:Commerce::Controller:Product:Barcode#printBarcodes', [
+				'barcodes' => $barcodes,
+			]);
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:barcode:form', [
@@ -45,5 +58,20 @@ class Barcode extends Controller
 		return $this->forward('Message:Mothership:Commerce::Controller:Product:Barcode#printBarcodes', [
 			'barcodes' => $this->get('product.barcode.generate')->getOneOfEach(),
 		]);
+	}
+
+	protected function _getUnitQuantities(array $data)
+	{
+		$units = [];
+
+		foreach ($data as $key => $value) {
+			if (false !== strpos($key, 'unit_')) {
+				$unitID = explode('_', $key);
+				$unitID = (int) array_pop($unitID);
+				$units[$unitID] = (int) $value;
+			}
+		}
+
+		return $units;
 	}
 }

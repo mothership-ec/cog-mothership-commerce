@@ -64,6 +64,36 @@ class Generate
 	}
 
 	/**
+	 * @param $quantities array    Array of unit IDs and quanities. The key is the unit ID and the value is the quantity
+	 * @param $offset int          Number of empty barcodes to append to list
+	 */
+	public function getBarcodes(array $quantities, $offset = 0)
+	{
+		$offset   = (int) $offset;
+		$unitIDs  = array_flip($quantities);
+		$toPrint  = [];
+		$barcodes = $this->_getBarcodes($unitIDs);
+
+		for ($i = 0; $i < $offset; $i++) {
+			$toPrint[] = null;
+		}
+
+		foreach ($barcodes as $barcode) {
+			if (array_key_exists($barcode->unitID, $quantities)) {
+				$quantity = (int) $quantities[$barcode->unitID];
+				for ($i = 0; $i < $quantity; $i++) {
+					$toPrint[] = $barcode;
+				}
+			}
+			else {
+				throw new \LogicException($barcode->unitID . ' not set in quantity list');
+			}
+		}
+
+		return $toPrint;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getHeight()
@@ -172,11 +202,11 @@ class Generate
 	 * load the products efficiently enough and will break if the load is too high, so this binds to a lightweight
 	 * Barcode object to mitigate this problem, see https://github.com/messagedigital/cog-mothership-commerce/issues/297
 	 *
-	 * @param $unitIDs array                  Not currently used but will be useful when dealing with individual units
+	 * @param $unitIDs null | array                  Not currently used but will be useful when dealing with individual units
 	 *
 	 * @return \Message\Cog\DB\Result
 	 */
-	protected function _getBarcodes($unitIDs = [])
+	protected function _getBarcodes(array $unitIDs = null)
 	{
 		$barcodes = $this->_query->run("
 			SELECT DISTINCT
@@ -207,10 +237,12 @@ class Generate
 				barcode != ''
 			AND
 				up.type = :retail?s
+			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
 			GROUP BY
 				u.unit_id
 		", [
-			'retail' => 'retail',
+			'retail'  => 'retail',
+			'unitIDs' => $unitIDs,
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
