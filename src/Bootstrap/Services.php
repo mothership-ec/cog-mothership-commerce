@@ -85,7 +85,7 @@ class Services implements ServicesInterface
 				),
 				'refunds'    => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['refund.loader'])
 				),
 			);
 		});
