@@ -89,7 +89,7 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	 * @param  Order\Order|null $order The related order, if you have it. If
 	 *                                 null it will be loaded automagically
 	 *
-	 * @return Refund                   The converted refund
+	 * @return Refund                  The converted refund
 	 *
 	 * @throws \LogicException If the refund to be converted is not linked to
 	 *                         any order (and therefore cannot be converted)
@@ -118,6 +118,12 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 			if (!$order) {
 				throw new \LogicException(sprintf('Order #%s not found', $result->value()));
 			}
+		}
+
+		// Override the payment to an order payment, if there is one
+		if ($refund->payment) {
+			$paymentLoader   = $this->_orderLoader->getEntityLoader('payments');
+			$return->payment = $paymentLoader->getByID($refund->payment->id, $order);
 		}
 
 		$return->order = $order;

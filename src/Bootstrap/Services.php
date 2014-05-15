@@ -81,7 +81,7 @@ class Services implements ServicesInterface
 				),
 				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['payment.loader'])
 				),
 				'refunds'    => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
@@ -242,17 +242,7 @@ class Services implements ServicesInterface
 
 		// Available payment & despatch methods
 		$services['order.payment.methods'] = function($c) {
-			return new Commerce\Order\Entity\Payment\MethodCollection(array(
-				new Commerce\Order\Entity\Payment\Method\Card,
-				new Commerce\Order\Entity\Payment\Method\Cash,
-				new Commerce\Order\Entity\Payment\Method\Cheque,
-				new Commerce\Order\Entity\Payment\Method\Manual,
-
-				new Commerce\Order\Entity\Payment\Method\Paypal,
-				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
-				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
-				new Commerce\Order\Entity\Payment\Method\GiftVoucher,
-			));
+			return $c['payment.methods'];
 		};
 
 		$services['order.dispatch.methods'] = function($c) {

@@ -1,16 +1,14 @@
 <?php
 
-namespace Message\Mothership\Commerce\Refund;
+namespace Message\Mothership\Commerce\Payment;
 
-use Message\Mothership\Commerce\Payment\Loader as PaymentLoader;
 use Message\Mothership\Commerce\Order;
-use Message\Mothership\Commerce\Order\Entity\Payment\MethodCollection;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
- * Refund loader.
+ * Payment loader.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
@@ -18,13 +16,41 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 {
 	protected $_query;
 	protected $_methods;
-	protected $_paymentLoader;
 
-	public function __construct(DB\Query $query, MethodCollection $paymentMethods, PaymentLoader $paymentLoader)
+	public function __construct(DB\Query $query, MethodCollection $methods)
 	{
-		$this->_query         = $query;
-		$this->_methods       = $paymentMethods;
-		$this->_paymentLoader = $paymentLoader;
+		$this->_query   = $query;
+		$this->_methods = $methods;
+	}
+
+	/**
+	 * Get payments for a particular method with a particular payment reference.
+	 *
+	 * @param  string|MethodInterface $method    The payment method or method name
+	 * @param  string                 $reference The payment reference
+	 *
+	 * @return Payment|array[Payment]            Payment(s) for this method & reference
+	 */
+	public function getByMethodAndReference($method, $reference)
+	{
+		if ($method instanceof MethodInterface) {
+			$method = $method->getName();
+		}
+
+		$result = $this->_query->run('
+			SELECT
+				payment_id
+			FROM
+				payment
+			WHERE
+				method    = :method?s
+			AND reference = :reference?s
+		', array(
+			'method'    => $method,
+			'reference' => $reference,
+		));
+
+		return $this->_load($result->flatten(), false);
 	}
 
 	public function getByID($id)
@@ -37,9 +63,9 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 	 *
 	 * @see getByID
 	 *
-	 * @param  int $id      The refund ID
+	 * @param  int $id       The payment ID
 	 *
-	 * @return Refund|false The refund, or false if it doesn't exist
+	 * @return Payment|false The payment, or false if it doesn't exist
 	 */
 	public function getByRecordID($id)
 	{
@@ -59,32 +85,29 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 		$result = $this->_query->run('
 			SELECT
 				*,
-				refund_id AS id
+				payment_id AS id
 			FROM
-				refund
+				payment
 			WHERE
-				refund_id IN (?ij)
+				payment_id IN (?ij)
 		', array($ids));
 
 		if (0 === count($result)) {
 			return $alwaysReturnArray ? array() : false;
 		}
 
-		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Refund\\Refund');
+		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Payment\\Payment');
 		$return   = array();
 
 		foreach ($result as $key => $row) {
 			// Cast decimals to float
 			$entities[$key]->amount = (float) $row->amount;
+			$entities[$key]->change = $row->change ? (float) $row->change : null;
 
 			$entities[$key]->authorship->create(
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
-
-			if ($row->payment_id) {
-				$entities[$key]->payment = $this->_paymentLoader->getByID($row->payment_id);
-			}
 
 			$entities[$key]->method = $this->_methods->get($row->method);
 
