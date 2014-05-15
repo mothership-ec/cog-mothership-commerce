@@ -30,6 +30,14 @@ class PaymentAndRefund implements ServicesInterface
 			);
 		});
 
+		$services['payment.create'] = $services->factory(function($c) {
+			return new Commerce\Payment\Create(
+				$c['db.transaction'],
+				$c['payment.loader'],
+				$c['user.current']
+			);
+		});
+
 		$services['refund.loader'] = $services->factory(function($c) {
 			return new Commerce\Refund\Loader(
 				$c['db.query'],

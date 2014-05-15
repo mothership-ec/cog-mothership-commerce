@@ -208,9 +208,9 @@ class Services implements ServicesInterface
 		$services['order.payment.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Payment\Create(
 				$c['db.transaction'],
+				$c['payment.create'],
 				$c['order.payment.loader'],
-				$c['event.dispatcher'],
-				$c['user.current']
+				$c['event.dispatcher']
 			);
 		});
 
