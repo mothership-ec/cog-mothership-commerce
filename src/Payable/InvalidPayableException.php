@@ -28,7 +28,11 @@ class InvalidPayableException extends InvalidArgumentException
 	 */
 	public function __construct(array $errors, $code = 0, Exception $previous = null)
 	{
-		parent::__construct(null, $code, $previous);
+		parent::__construct(
+			sprintf("The payable was invalid: %s", implode(",", $errors)),
+			$code,
+			$previous
+		);
 
 		$this->_errors = $errors;
 	}

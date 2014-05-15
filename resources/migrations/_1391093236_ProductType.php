@@ -10,50 +10,23 @@ class _1391093236_ProductType extends Migration
 			CREATE TABLE
 				product_detail
 				(
-					product_id INT(11) NOT NULL,
+					product_id INT(11) unsigned NOT NULL,
 					name VARCHAR(255) NOT NULL,
 					value VARCHAR(255),
 					value_int INT(11),
 					locale VARCHAR(50) DEFAULT 'EN',
 					PRIMARY KEY (product_id, name)
-				);
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 
 		$this->run("
 			ALTER TABLE
 				product
 			ADD
-				type VARCHAR(30) DEFAULT 'apparel'
+				type VARCHAR(255) DEFAULT 'apparel'
 			AFTER
 				deleted_by
 		");
-
-//		$this->run("
-//			INSERT INTO
-//				product_detail
-//				(
-//					product_id,
-//					name,
-//					value,
-//					value_int.
-//					locale
-//				)
-//				SELECT
-//					p.product_id,
-//					'brand',
-//					p.brand,
-//					1,
-//					'EN'
-//				FROM
-//					product AS p
-//		");
-//
-//		$this->run("
-//			ALTER TABLE
-//				product
-//			DROP
-//				brand
-//		");
 
 		$this->run("
 			INSERT INTO
@@ -69,10 +42,12 @@ class _1391093236_ProductType extends Migration
 					p.product_id,
 					'year',
 					p.year,
-					1,
+					p.year,
 					'EN'
 				FROM
 					product AS p
+				WHERE
+					p.year != ''
 		");
 
 		$this->run("
@@ -96,10 +71,12 @@ class _1391093236_ProductType extends Migration
 					i.product_id,
 					'season',
 					i.season,
-					1,
+					i.season,
 					'EN'
 				FROM
 					product_info AS i
+				WHERE
+					i.season != ''
 		");
 
 		$this->run("
@@ -123,10 +100,12 @@ class _1391093236_ProductType extends Migration
 					i.product_id,
 					'fabric',
 					i.fabric,
-					1,
+					i.fabric,
 					'EN'
 				FROM
 					product_info AS i
+				WHERE
+					i.fabric != ''
 		");
 
 		$this->run("
@@ -150,10 +129,12 @@ class _1391093236_ProductType extends Migration
 					i.product_id,
 					'features',
 					i.features,
-					1,
+					i.features,
 					'EN'
 				FROM
 					product_info AS i
+				WHERE
+					i.features != ''
 		");
 
 		$this->run("
@@ -177,10 +158,12 @@ class _1391093236_ProductType extends Migration
 					i.product_id,
 					'care_instructions',
 					i.care_instructions,
-					1,
+					i.care_instructions,
 					'EN'
 				FROM
 					product_info AS i
+				WHERE
+					i.care_instructions != ''
 		");
 
 		$this->run("
@@ -197,17 +180,19 @@ class _1391093236_ProductType extends Migration
 					product_id,
 					name,
 					value,
-					value_int
+					value_int,
 					locale
 				)
 				SELECT
 					i.product_id,
 					'sizing',
 					i.sizing,
-					1,
+					i.sizing,
 					'EN'
 				FROM
 					product_info AS i
+				WHERE
+					i.sizing != ''
 		");
 
 		$this->run("
@@ -215,6 +200,15 @@ class _1391093236_ProductType extends Migration
 				product_info
 			DROP
 				sizing
+		");
+
+		$this->run("
+			ALTER TABLE
+				product
+			MODIFY
+				type VARCHAR(255) DEFAULT 'basic'
+			AFTER
+				deleted_by
 		");
 	}
 

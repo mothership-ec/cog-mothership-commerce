@@ -11,7 +11,7 @@ use Message\Mothership\Commerce\Payable\PayableInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Order implements Transaction\RecordInterface, PayableInterface
+class Order implements PayableInterface, Transaction\RecordInterface
 {
 	const RECORD_TYPE = 'order';
 
@@ -49,6 +49,8 @@ class Order implements Transaction\RecordInterface, PayableInterface
 	public $shippingGross     = 0;
 
 	public $metadata;
+
+	protected $_payableTransactionID;
 
 	protected $_entities = array();
 
@@ -390,6 +392,22 @@ class Order implements Transaction\RecordInterface, PayableInterface
 	}
 
 	/**
+	 * Get the sum of the payment amounts on the order.
+	 *
+	 * @return float
+	 */
+	public function getAmountPaid()
+	{
+		$paid = 0;
+
+		foreach ($this->payments as $payment) {
+			$paid += $payment->amount;
+		}
+
+		return $paid;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function getRecordType()
@@ -416,14 +434,6 @@ class Order implements Transaction\RecordInterface, PayableInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getPayableTotal()
-	{
-		return $this->getTotal();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getPayableCurrency()
 	{
 		return $this->currencyID;
@@ -438,10 +448,17 @@ class Order implements Transaction\RecordInterface, PayableInterface
 	}
 
 	/**
+	 * Retrieves the payableTransactionID property, this is set once to ensure
+	 * it remains the same between requests.
+	 *
 	 * {@inheritDoc}
 	 */
 	public function getPayableTransactionID()
 	{
-		return 'ORDER-' . strtoupper(uniqid());
+		if (! $this->_payableTransactionID) {
+			$this->_payableTransactionID = 'ORDER-' . strtoupper(uniqid());
+		}
+
+		return $this->_payableTransactionID;
 	}
 }

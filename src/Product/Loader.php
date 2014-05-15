@@ -430,9 +430,8 @@ class Loader
 
 	protected function _loadType(Product $product, $type)
 	{
-		$product->details	= $this->_detailLoader->load($product);
-		$productType		= $this->_productTypes->get($type);
-		$product->type		= $productType;
+		$product->details = $this->_detailLoader->load($product);
+		$product->type    = $this->_productTypes->get($type);
 	}
 
 }

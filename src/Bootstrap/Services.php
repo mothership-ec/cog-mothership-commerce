@@ -33,10 +33,10 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order             = $c['order'];
-				$order->locale     = $c['locale']->getId();
-				$order->currencyID = 'GBP';
-				$order->type       = 'web';
+				$order                       = $c['order'];
+				$order->locale               = $c['locale']->getId();
+				$order->currencyID           = 'GBP';
+				$order->type                 = 'web';
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -97,8 +97,8 @@ class Services implements ServicesInterface
 		$services['order.assembler'] = $services->factory(function($c) {
 			$order = $c['order'];
 
-			$order->locale     = $c['locale']->getId();
-			$order->currencyID = 'GBP';
+			$order->locale               = $c['locale']->getId();
+			$order->currencyID           = 'GBP';
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
