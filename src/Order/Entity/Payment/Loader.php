@@ -130,10 +130,12 @@ class Loader extends Order\Entity\BaseLoader
 				$row->created_by
 			);
 
-			$entities[$key]->authorship->delete(
-				new DateTimeImmutable(date('c', $row->deleted_at)),
-				$row->deleted_by
-			);
+			if ($row->deleted_at) {
+				$entities[$key]->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			if (!$order || $row->order_id != $order->id) {
 				$order = $this->_orderLoader->getByID($row->order_id);

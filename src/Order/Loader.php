@@ -323,10 +323,12 @@ class Loader
 				$row->created_by
 			);
 
-			$order->authorship->delete(
-				new DateTimeImmutable(date('c', $row->deleted_at)),
-				$row->deleted_by
-			);
+			if ($row->deleted_at) {
+				$order->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			if ($row->updated_at) {
 				$order->authorship->update(

@@ -56,8 +56,7 @@ class Item implements EntityInterface
 		$this->authorship      = new Authorship;
 
 		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+			->disableUpdate();
 	}
 
 	public function __sleep()
