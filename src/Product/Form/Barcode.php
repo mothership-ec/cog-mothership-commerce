@@ -46,17 +46,20 @@ class Barcode extends Form\AbstractType
 				'automatic' =>'For all units in stock in location',
 				'manual'    => 'Manually'
 			],
-			'attr' => [
-				'data-toggle' => true,
-			],
+			'data'     => 'automatic',
 		]);
 
 		$builder->add('location', 'choice', [
-			'multiple' => false,
-			'expanded' => false,
-			'choices'  => $this->_getLocations(),
+			'multiple'    => false,
+			'expanded'    => false,
+			'choices'     => $this->_getLocations(),
 			'empty_value' => false,
-
+			'attr'        => [
+				'data-toggle-automatic' => '',
+			],
+			'label_attr'  => [
+				'data-toggle-automatic' => '',
+			],
 		]);
 
 		$builder = $this->_addVariantFields($builder);

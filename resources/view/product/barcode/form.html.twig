@@ -1,9 +1,5 @@
 {% extends 'Message:Mothership:ControlPanel::modal:standard' %}
 
-{% block javascript %}
-
-{% endblock %}
-
 {% block content %}
 	{% javascripts
 		'@Message:Mothership:Commerce::resources:assets:js:barcode-toggle.js'
@@ -18,7 +14,7 @@
 	{{ form_start(form) }}
 	{{ form_widget(form['type']) }}
 	{{ form_row(form['location']) }}
-	<table data-toggle >
+	<table data-toggle-manual >
 		<thead>
 			<tr>
 				<th>Variant</th>
