@@ -33,10 +33,10 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order             = $c['order'];
-				$order->locale     = $c['locale']->getId();
-				$order->currencyID = 'GBP';
-				$order->type       = 'web';
+				$order                       = $c['order'];
+				$order->locale               = $c['locale']->getId();
+				$order->currencyID           = 'GBP';
+				$order->type                 = 'web';
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -85,11 +85,11 @@ class Services implements ServicesInterface
 				),
 				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['payment.loader'])
 				),
 				'refunds'    => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['refund.loader'])
 				),
 			);
 		});
@@ -97,8 +97,8 @@ class Services implements ServicesInterface
 		$services['order.assembler'] = $services->factory(function($c) {
 			$order = $c['order'];
 
-			$order->locale     = $c['locale']->getId();
-			$order->currencyID = 'GBP';
+			$order->locale               = $c['locale']->getId();
+			$order->currencyID           = 'GBP';
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
@@ -212,9 +212,9 @@ class Services implements ServicesInterface
 		$services['order.payment.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Payment\Create(
 				$c['db.transaction'],
+				$c['payment.create'],
 				$c['order.payment.loader'],
-				$c['event.dispatcher'],
-				$c['user.current']
+				$c['event.dispatcher']
 			);
 		});
 
@@ -226,14 +226,10 @@ class Services implements ServicesInterface
 		$services['order.refund.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Refund\Create(
 				$c['db.transaction'],
+				$c['refund.create'],
 				$c['order.refund.loader'],
-				$c['event.dispatcher'],
-				$c['user.current']
+				$c['event.dispatcher']
 			);
-		});
-
-		$services['order.refund.edit'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Refund\Edit($c['db.query'], $c['order.refund.loader'], $c['user.current']);
 		});
 
 		// Order note entity
@@ -251,17 +247,7 @@ class Services implements ServicesInterface
 
 		// Available payment & despatch methods
 		$services['order.payment.methods'] = function($c) {
-			return new Commerce\Order\Entity\Payment\MethodCollection(array(
-				new Commerce\Order\Entity\Payment\Method\Card,
-				new Commerce\Order\Entity\Payment\Method\Cash,
-				new Commerce\Order\Entity\Payment\Method\Cheque,
-				new Commerce\Order\Entity\Payment\Method\Manual,
-
-				new Commerce\Order\Entity\Payment\Method\Paypal,
-				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
-				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
-				new Commerce\Order\Entity\Payment\Method\GiftVoucher,
-			));
+			return $c['payment.methods'];
 		};
 
 		$services['order.dispatch.methods'] = function($c) {

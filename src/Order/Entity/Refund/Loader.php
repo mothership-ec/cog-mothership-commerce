@@ -3,7 +3,8 @@
 namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
 use Message\Mothership\Commerce\Order;
-use Message\Mothership\Commerce\Order\Entity\Payment\MethodCollection;
+use Message\Mothership\Commerce\Refund\Loader as BaseLoader;
+use Message\Mothership\Commerce\Refund\Loader as BaseRefund;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -16,12 +17,12 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Loader extends Order\Entity\BaseLoader implements Order\Transaction\RecordLoaderInterface
 {
 	protected $_query;
-	protected $_methods;
+	protected $_refundLoader;
 
-	public function __construct(DB\Query $query, MethodCollection $paymentMethods)
+	public function __construct(DB\Query $query, BaseLoader $refundLoader)
 	{
-		$this->_query   = $query;
-		$this->_methods = $paymentMethods;
+		$this->_query        = $query;
+		$this->_refundLoader = $refundLoader;
 	}
 
 	/**
@@ -46,10 +47,13 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 		return $this->_load($id, false, $order);
 	}
 
-
 	/**
-	 * Alias of getByID for Order\Transaction\RecordLoaderInterface
-	 * @param  int $id record id
+	 * Alias of getByID() for `Order\Transaction\RecordLoaderInterface`.
+	 *
+	 * @see getByID
+	 *
+	 * @param  int $id      The refund ID
+	 *
 	 * @return Refund|false The refund, or false if it doesn't exist
 	 */
 	public function getByRecordID($id)
@@ -59,58 +63,71 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
-		if (!is_array($ids)) {
-			$ids = (array) $ids;
+		$refunds = $this->_refundLoader->getByID($ids);
+		$return  = [];
+
+		if (!is_array($refunds) && $alwaysReturnArray) {
+			$refunds = [$refunds];
 		}
 
-		if (!$ids) {
-			return $alwaysReturnArray ? array() : false;
+		if (!is_array($refunds)) {
+			return $this->_convertRefundToOrderEntity($refunds, $order);
 		}
 
-		$result = $this->_query->run('
-			SELECT
-				*,
-				refund_id AS id
-			FROM
-				order_refund
-			WHERE
-				refund_id IN (?ij)
-		', array($ids));
-
-		if (0 === count($result)) {
-			return $alwaysReturnArray ? array() : false;
-		}
-
-		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Refund\\Refund');
-		$return   = array();
-
-		foreach ($result as $key => $row) {
-			// Cast decimals to float
-			$entities[$key]->amount = (float) $row->amount;
-
-			$entities[$key]->authorship->create(
-				new DateTimeImmutable(date('c', $row->created_at)),
-				$row->created_by
-			);
-
-			if (!$order || $row->order_id != $order->id) {
-				$order = $this->_orderLoader->getByID($row->order_id);
-			}
-
-			$entities[$key]->order = $order;
-
-			if ($row->payment_id) {
-				$entities[$key]->payment = $entities[$key]->order->payments->get($row->payment_id);
-			}
-
-			// TODO: set return, if defined
-
-			$entities[$key]->method = $this->_methods->get($row->method);
-
-			$return[$row->id] = $entities[$key];
+		foreach ($refunds as $refund) {
+			$return[$refund->id] = $this->_convertRefundToOrderEntity($refund, $order);
 		}
 
 		return $alwaysReturnArray || count($return) > 1 ? $return : reset($return);
 	}
 
+	/**
+	 * Convert base `Refund` instances returned by the base refund loader into
+	 * order entity refunds and set the order parameter on them.
+	 *
+	 * @param  BaseRefund      $refund The base refund to convert
+	 * @param  Order\Order|null $order The related order, if you have it. If
+	 *                                 null it will be loaded automagically
+	 *
+	 * @return Refund                  The converted refund
+	 *
+	 * @throws \LogicException If the refund to be converted is not linked to
+	 *                         any order (and therefore cannot be converted)
+	 */
+	protected function _convertRefundToOrderEntity(BaseRefund $refund, Order\Order $order = null)
+	{
+		$return = new Refund($refund);
+
+		// Find the order and load it if it was not passed
+		if (!$order) {
+			$result = $this->_query->run('
+				SELECT
+					order_id
+				FROM
+					order_refund
+				WHERE
+					refund_id = ?i
+			', $refund->id);
+
+			if (count($result) !== 1) {
+				throw new \LogicException(sprintf('Refund #%s is not an order refund and cannot be loaded', $refund->id));
+			}
+
+			$order = $this->_orderLoader->getByID($result->value());
+
+			if (!$order) {
+				throw new \LogicException(sprintf('Order #%s not found', $result->value()));
+			}
+		}
+
+		// Override the payment to an order payment, if there is one
+		if ($refund->payment) {
+			$paymentLoader   = $this->_orderLoader->getEntityLoader('payments');
+			$return->payment = $paymentLoader->getByID($refund->payment->id, $order);
+		}
+
+		$return->order = $order;
+
+		return $return;
+	}
 }
