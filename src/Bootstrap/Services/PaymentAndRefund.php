@@ -46,12 +46,8 @@ class PaymentAndRefund implements ServicesInterface
 			);
 		});
 
-		// $services['order.refund.create'] = $services->factory(function($c) {
-		// 	return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
-		// });
-
-		// $services['order.refund.edit'] = $services->factory(function($c) {
-		// 	return new Commerce\Order\Entity\Refund\Edit($c['db.query'], $c['order.refund.loader'], $c['user.current']);
-		// });
+		$services['refund.create'] = $services->factory(function($c) {
+			return new Commerce\Refund\Create($c['db.query'], $c['refund.loader'], $c['user.current']);
+		});
 	}
 }

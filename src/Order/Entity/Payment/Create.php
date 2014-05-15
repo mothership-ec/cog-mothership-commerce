@@ -69,6 +69,8 @@ class Create implements DB\TransactionalInterface
 	 */
 	public function create(Payment $payment)
 	{
+		$this->_validate($payment);
+
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
 		$event->setTransaction($this->_trans);
 
@@ -105,5 +107,12 @@ class Create implements DB\TransactionalInterface
 		}
 
 		return $payment;
+	}
+
+	protected function _validate(Payment $payment)
+	{
+		if (!$payment->order) {
+			throw new InvalidArgumentException('Could not create payment: no order specified');
+		}
 	}
 }
