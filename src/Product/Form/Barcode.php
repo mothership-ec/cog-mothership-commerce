@@ -46,6 +46,9 @@ class Barcode extends Form\AbstractType
 				'automatic' =>'For all units in stock in location',
 				'manual'    => 'Manually'
 			],
+			'attr' => [
+				'data-toggle' => true,
+			],
 		]);
 
 		$builder->add('location', 'choice', [

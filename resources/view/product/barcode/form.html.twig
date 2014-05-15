@@ -1,11 +1,24 @@
 {% extends 'Message:Mothership:ControlPanel::modal:standard' %}
 
+{% block javascript %}
+
+{% endblock %}
+
 {% block content %}
+	{% javascripts
+		'@Message:Mothership:Commerce::resources:assets:js:barcode-toggle.js'
+
+		output='/assets/js/barcodes.js'
+		filter='?jsmin'
+	%}
+		<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
+
 	<h3>Print barcode labels</h3>
 	{{ form_start(form) }}
 	{{ form_widget(form['type']) }}
 	{{ form_row(form['location']) }}
-	<table>
+	<table data-toggle >
 		<thead>
 			<tr>
 				<th>Variant</th>
