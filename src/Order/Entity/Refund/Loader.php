@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
 use Message\Mothership\Commerce\Order;
 use Message\Mothership\Commerce\Refund\Loader as BaseLoader;
-use Message\Mothership\Commerce\Refund\Loader as BaseRefund;
+use Message\Mothership\Commerce\Refund\Refund as BaseRefund;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;

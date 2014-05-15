@@ -10,7 +10,8 @@ class PaymentAndRefund implements ServicesInterface
 {
 	public function registerServices($services)
 	{
-		$services['payment.methods'] = function($c) {
+		// @todo rename this to payment.methods in next major version
+		$services['order.payment.methods'] = function($c) {
 			return new Commerce\Order\Entity\Payment\MethodCollection(array(
 				new Commerce\Payment\Method\Card,
 				new Commerce\Payment\Method\Cash,
@@ -26,7 +27,7 @@ class PaymentAndRefund implements ServicesInterface
 		$services['payment.loader'] = $services->factory(function($c) {
 			return new Commerce\Payment\Loader(
 				$c['db.query'],
-				$c['payment.methods']
+				$c['order.payment.methods']
 			);
 		});
 
@@ -41,7 +42,7 @@ class PaymentAndRefund implements ServicesInterface
 		$services['refund.loader'] = $services->factory(function($c) {
 			return new Commerce\Refund\Loader(
 				$c['db.query'],
-				$c['payment.methods'],
+				$c['order.payment.methods'],
 				$c['payment.loader']
 			);
 		});

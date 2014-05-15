@@ -245,11 +245,7 @@ class Services implements ServicesInterface
 				$c['event.dispatcher']);
 		});
 
-		// Available payment & despatch methods
-		$services['order.payment.methods'] = function($c) {
-			return $c['payment.methods'];
-		};
-
+		// Available despatch methods
 		$services['order.dispatch.methods'] = function($c) {
 			return new Commerce\Order\Entity\Dispatch\MethodCollection;
 		};
