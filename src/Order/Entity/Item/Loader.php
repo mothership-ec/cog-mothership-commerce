@@ -18,12 +18,27 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	protected $_query;
 	protected $_statusLoader;
 	protected $_stockLocations;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, Status\Loader $statusLoader, LocationCollection $stockLocations)
 	{
 		$this->_query          = $query;
 		$this->_statusLoader   = $statusLoader;
 		$this->_stockLocations = $stockLocations;
+	}
+
+	/**
+	 * Toggle whether to load deleted items
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted items
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+
+		return $this;
 	}
 
 	public function getByID($id, Order\Order $order = null)
@@ -68,11 +83,15 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
 				item_id          AS id,
 				order_id         AS orderID,
+				deleted_at       AS deletedAt,
+				deleted_by       AS deletedBy,
 				actual_price     AS actualPrice,
 				list_price       AS listPrice,
 				tax_rate         AS taxRate,
@@ -89,6 +108,7 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 				order_item_personalisation USING (item_id)
 			WHERE
 				item_id IN (?ij)
+			' . $includeDeleted . '
 		', array($ids));
 
 		if (0 === count($result)) {
@@ -115,6 +135,13 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			if ($row->deleted_at) {
+				$items[$key]->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			// Load the order if we don't have it already
 			if (!$order || $row->order_id != $order->id) {
