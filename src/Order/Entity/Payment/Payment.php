@@ -3,66 +3,91 @@
 namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
+use Message\Mothership\Commerce\Payment\Payment as BasePayment;
 
 use Message\Cog\ValueObject\Authorship;
-
 use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
 
 /**
- * Represents a payment on an order.
+ * Model defining a payment on an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Payment implements EntityInterface, RecordInterface
 {
-	const RECORD_TYPE = 'payment';
+	const RECORD_TYPE = BasePayment::RECORD_TYPE;
 
-	public $id;
-	public $authorship;
 	public $order;
-	public $return;
-	public $method;
-	public $amount;
-	public $change;
-	public $reference;
+	public $payment;
 
-	public function __construct()
+	/**
+	 * Constructor.
+	 *
+	 * @param BasePayment $payment The base payment for this order entity
+	 */
+	public function __construct(BasePayment $payment)
 	{
-		$this->authorship = new Authorship;
-
-		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+		$this->payment = $payment;
 	}
 
 	/**
-	 * Get the amount tendered for this transaction. This is the actual amount
-	 * given to the merchant with the payment (amount + change).
+	 * Magic getter. Proxies property accessing to the embedded actual payment
+	 * instance.
 	 *
-	 * @return float
+	 * @param  string $var Property name
+	 *
+	 * @return mixed       The value returned from the payment, or null if not
+	 *                     found
 	 */
-	public function getTenderedAmount()
+	public function __get($var)
 	{
-		return $this->amount + ($this->change ?: 0);
+		return (isset($this->payment->{$var})) ? $this->payment->{$var} : null;
 	}
 
 	/**
-	 * Get a reference for the payment that is suitable for the customer.
+	 * Magic setter. Proxies property setting to the embedded actual payment
+	 * instance.
 	 *
-	 * @todo   Remove the direct mention of sagepay here, it should pass it to
-	 *         the sagepay module to determine the reference.
-	 *
-	 * @return string
+	 * @param  string $var Property name
+	 * @param  mixed  $val Property value
 	 */
-	public function getCustomerFacingReference()
+	public function __set($var, $val)
 	{
-		if ('sagepay' == $this->method->getName()) {
-			$reference = json_decode($this->reference);
+		$this->payment->{$var} = $val;
+	}
 
-			return isset($reference->VPSTxId) ? $reference->VPSTxId : '';
+	/**
+	 * Magic isset checker. Proxies property existance checking to the embedded
+	 * ctual payment instance.
+	 *
+	 * @param  string $var Property name
+	 *
+	 * @return boolean
+	 */
+	public function __isset($var)
+	{
+		return isset($this->payment->{$var});
+	}
+
+	/**
+	 * Magic caller. Proxies method calls to the embedded actual payment
+	 * instance.
+	 *
+	 * @param  string $method Method name to call
+	 * @param  array  $args   The arguments for the method
+	 *
+	 * @return mixed          The return value from calling the method
+	 *
+	 * @throws \BadMethodCallException If the method does not exist on the base
+	 *                                 payment instance
+	 */
+	public function __call($method, $args)
+	{
+		if (!method_exists($this->payment, $method)) {
+			throw new \BadMethodCallException(sprintf('Method `%s` does not exist on `Payment`', $method));
 		}
 
-		return $this->reference;
+		return call_user_func_array([$this->payment, $method], $args);
 	}
 
 	/**
@@ -70,7 +95,7 @@ class Payment implements EntityInterface, RecordInterface
 	 */
 	public function getRecordType()
 	{
-		return self::RECORD_TYPE;
+		return $this->payment->getRecordType();
 	}
 
 	/**
@@ -78,6 +103,6 @@ class Payment implements EntityInterface, RecordInterface
 	 */
 	public function getRecordID()
 	{
-		return $this->id;
+		return $this->payment->getRecordID();
 	}
 }
