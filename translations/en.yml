@@ -79,7 +79,7 @@ ms.commerce:
         help: -
       tags:
         label: Tags
-        help: Tags are single words separated by commans which can be used to group items together in ad-hoc ways, depending on the set-up of your site.
+        help: Tags are words or phrases separated by commas which can be used to group items together in ad-hoc ways, depending on the set-up of your site.
       notes:
         label: Notes
         help: A place for you to jot down additional information about your product.

@@ -14,24 +14,24 @@ class DetailLoader
 
 	public function __construct(Query $query, Field\Factory $factory, Collection $types)
 	{
-		$this->_query			= $query;
-		$this->_fieldFactory	= $factory;
-		$this->_types			= $types;
+		$this->_query        = $query;
+		$this->_fieldFactory = $factory;
+		$this->_types        = $types;
 	}
 
 	public function load(Product $product)
 	{
-		$result =	$this->_query->run("
+		$result = $this->_query->run("
 			SELECT
-				product_id	AS productID,
-				name		AS field,
+				product_id AS productID,
+				name       AS field,
 				value,
 				value_int,
 				locale
 			FROM
 				product_detail
 			WHERE
-				product_id	= :productID?i
+				product_id = :productID?i
 		", array(
 			'productID'	=> $product->id,
 		));
@@ -47,7 +47,7 @@ class DetailLoader
 		}
 
 		foreach ($result as $row) {
-			$field	= $details->{$row->field};
+			$field = $details->{$row->field};
 
 			if ($field instanceof Field\BaseField) {
 				$field->setValue($row->value);

@@ -56,9 +56,6 @@ class Product
 		if (array_key_exists($var, $this->_entities)) {
 			return $this->_entities[$var];
 		}
-		elseif ($this->details && $this->details->exists($var)) {
-			return $this->details->$var;
-		}
 
 		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
 
@@ -73,7 +70,7 @@ class Product
 	 */
 	public function __isset($var)
 	{
-		return array_key_exists($var, $this->_entities) || ($this->details && $this->details->$var);
+		return array_key_exists($var, $this->_entities);
 	}
 
 	/**
