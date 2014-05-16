@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Order\Order;
+use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
@@ -14,8 +15,10 @@ use Message\Cog\ValueObject\Authorship;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Item implements EntityInterface
+class Item implements EntityInterface, RecordInterface
 {
+	const RECORD_TYPE = 'item';
+
 	public $id;
 
 	public $order;
@@ -185,5 +188,21 @@ class Item implements EntityInterface
 		}
 
 		return $this->_unit;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordID()
+	{
+		return $this->id;
 	}
 }

@@ -12,7 +12,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader
+class Loader extends Order\Entity\BaseLoader implements Order\Transaction\RecordLoaderInterface
 {
 	protected $_query;
 	protected $_methods;
@@ -88,6 +88,16 @@ class Loader extends Order\Entity\BaseLoader
 	public function getByID($id, Order\Order $order = null)
 	{
 		return $this->_load($id, false, $order);
+	}
+
+	/**
+	 * Alias of getByID for Order\Transaction\RecordLoaderInterface
+	 * @param  int $id record id
+	 * @return Payment|false The payment, or false if it doesn't exist
+	 */
+	public function getByRecordID($id)
+	{
+		return $this->getByID($id);
 	}
 
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)

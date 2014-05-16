@@ -6,13 +6,17 @@ use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 
 use Message\Cog\ValueObject\Authorship;
 
+use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
+
 /**
  * Represents a payment on an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Payment implements EntityInterface
+class Payment implements EntityInterface, RecordInterface
 {
+	const RECORD_TYPE = 'payment';
+
 	public $id;
 	public $authorship;
 	public $order;
@@ -41,14 +45,38 @@ class Payment implements EntityInterface
 		return $this->amount + ($this->change ?: 0);
 	}
 
+	/**
+	 * Get a reference for the payment that is suitable for the customer.
+	 *
+	 * @todo   Remove the direct mention of sagepay here, it should pass it to
+	 *         the sagepay module to determine the reference.
+	 *
+	 * @return string
+	 */
 	public function getCustomerFacingReference()
 	{
-		if (strpos($this->reference,'sagepay')) {
+		if ('sagepay' == $this->method->getName()) {
 			$reference = json_decode($this->reference);
 
 			return isset($reference->VPSTxId) ? $reference->VPSTxId : '';
 		}
 
 		return $this->reference;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordID()
+	{
+		return $this->id;
 	}
 }

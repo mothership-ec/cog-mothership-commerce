@@ -32,7 +32,7 @@ class Edit implements DB\TransactionalInterface
 
 	/**
 	 * Sets transaction and sets $_transOverridden to true.
-	 * 
+	 *
 	 * @param  DB\Transaction $trans transaction
 	 * @return Create                $this for chainability
 	 */
