@@ -214,13 +214,19 @@ class Generate
 				p.brand,
 				p.name,
 				u.barcode,
-				up.price,
+				IFNULL(
+					up.price, pp.price
+				) AS price,
 				up.currency_id AS currency,
 				GROUP_CONCAT(o.option_value, ', ') AS text
 			FROM
 				product_unit AS u
 			LEFT JOIN
 				product AS p
+			USING
+				(product_id)
+			LEFT JOIN
+				product_price AS pp
 			USING
 				(product_id)
 			LEFT JOIN
@@ -236,7 +242,11 @@ class Generate
 			AND
 				barcode != ''
 			AND
-				up.type = :retail?s
+				(
+						up.type = :retail?s
+					OR
+						pp.type = :retail?s
+				)
 			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
 			GROUP BY
 				u.unit_id
