@@ -29,10 +29,10 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order                       = $c['order'];
-				$order->locale               = $c['locale']->getId();
-				$order->currencyID           = 'GBP';
-				$order->type                 = 'web';
+				$order             = $c['order'];
+				$order->locale     = $c['locale']->getId();
+				$order->currencyID = 'GBP';
+				$order->type       = 'web';
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -129,6 +129,10 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$services['order.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Delete($c['db.query'], $c['user.current']);
+		});
+
 		$services['order.edit'] = $services->factory(function($c) {
 			return new Commerce\Order\Edit(
 				$c['db.transaction'],
@@ -154,6 +158,10 @@ class Services implements ServicesInterface
 
 		$services['order.item.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['event.dispatcher'], $c['user.current']);
+		});
+
+		$services['order.item.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Item\Delete($c['db.query'], $c['user.current']);
 		});
 
 		$services['order.item.edit'] = $services->factory(function($c) {
@@ -214,6 +222,10 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$services['order.payment.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Payment\Delete($c['payment.delete']);
+		});
+
 		// Order refund entity
 		$services['order.refund.loader'] = $services->factory(function($c) {
 			return $c['order.loader']->getEntityLoader('refunds');
@@ -226,6 +238,10 @@ class Services implements ServicesInterface
 				$c['order.refund.loader'],
 				$c['event.dispatcher']
 			);
+		});
+
+		$services['order.refund.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Refund\Delete($c['refund.delete']);
 		});
 
 		// Order note entity

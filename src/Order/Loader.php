@@ -25,6 +25,7 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected $_itemStatuses;
 	protected $_entities;
 	protected $_orderBy;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, User\Loader $userLoader,
 		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
@@ -64,6 +65,20 @@ class Loader implements Transaction\RecordLoaderInterface
 		$loader->setOrderLoader($this);
 
 		return $loader;
+	}
+
+	/**
+	 * Toggle whether to load deleted orders
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted orders
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+
+		return $this;
 	}
 
 	/**
@@ -222,6 +237,7 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
 		$this->_orderBy = '';
 
 		if (!is_array($ids)) {
@@ -237,7 +253,9 @@ class Loader implements Transaction\RecordLoaderInterface
 				order_summary.*,
 				order_summary.order_id         AS id,
 				order_summary.order_id         AS orderID,
-				order_summary.user_email	   AS userEmail,
+				order_summary.deleted_at       AS deletedAt,
+				order_summary.deleted_by       AS deletedBy,
+				order_summary.user_email       AS userEmail,
 				order_summary.currency_id      AS currencyID,
 				order_summary.conversion_rate  AS conversionRate,
 				order_summary.product_net      AS productNet,
@@ -262,6 +280,7 @@ class Loader implements Transaction\RecordLoaderInterface
 				order_shipping USING (order_id)
 			WHERE
 				order_summary.order_id IN (?ij)
+			' . $includeDeleted .'
 			GROUP BY
 				order_summary.order_id
 			' . ($orderBy) . '
@@ -315,6 +334,13 @@ class Loader implements Transaction\RecordLoaderInterface
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			if ($row->deleted_at) {
+				$order->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			if ($row->updated_at) {
 				$order->authorship->update(

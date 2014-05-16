@@ -12,6 +12,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 			  `payment_id` int(11) unsigned DEFAULT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
 			  `created_by` int(11) unsigned DEFAULT NULL,
+			  `deleted_at` int(11) unsigned DEFAULT NULL,
+			  `deleted_by` int(11) unsigned DEFAULT NULL,
 			  `method` varchar(100) NOT NULL DEFAULT '',
 			  `amount` decimal(10,2) unsigned NOT NULL,
 			  `reason` varchar(255) DEFAULT NULL,
@@ -20,6 +22,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 			  KEY `payment_id` (`payment_id`),
 			  KEY `created_at` (`created_at`),
 			  KEY `created_by` (`created_by`),
+			  KEY `deleted_at` (`deleted_at`),
+			  KEY `deleted_by` (`deleted_by`),
 			  KEY `method` (`method`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
@@ -31,6 +35,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 					payment_id,
 					created_at,
 					created_by,
+					deleted_at,
+					deleted_by,
 					method,
 					amount,
 					reason,
@@ -41,6 +47,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 				payment_id,
 				created_at,
 				created_by,
+				deleted_at,
+				deleted_by,
 				method,
 				amount,
 				reason,
@@ -53,6 +61,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 		$this->run('ALTER TABLE	`order_refund` DROP `return_id`');
 		$this->run('ALTER TABLE	`order_refund` DROP `created_at`');
 		$this->run('ALTER TABLE	`order_refund` DROP `created_by`');
+		$this->run('ALTER TABLE	`order_refund` DROP `deleted_at`');
+		$this->run('ALTER TABLE	`order_refund` DROP `deleted_by`');
 		$this->run('ALTER TABLE	`order_refund` DROP `method`');
 		$this->run('ALTER TABLE	`order_refund` DROP `amount`');
 		$this->run('ALTER TABLE	`order_refund` DROP `reason`');
@@ -65,6 +75,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `return_id` int(11) unsigned DEFAULT NULL');
 		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `created_at` int(11) unsigned NOT NULL');
 		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `created_by` int(11) unsigned DEFAULT NULL');
+		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `deleted_at` int(11) unsigned DEFAULT NULL');
+		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `deleted_by` int(11) unsigned DEFAULT NULL');
 		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `method` varchar(100) NOT NULL');
 		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `amount` decimal(10,2) unsigned NOT NULL');
 		$this->run('ALTER TABLE	`order_refund` ADD COLUMN `reason` varchar(255) DEFAULT NULL');
@@ -79,6 +91,8 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 				order_refund.payment_id = refund.payment_id,
 				order_refund.created_at = refund.created_at,
 				order_refund.created_by = refund.created_by,
+				order_refund.deleted_at = refund.deleted_at,
+				order_refund.deleted_by = refund.deleted_by,
 				order_refund.method     = refund.method,
 				order_refund.amount     = refund.amount,
 				order_refund.reason     = refund.reason,

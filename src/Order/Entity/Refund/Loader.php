@@ -26,6 +26,20 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	}
 
 	/**
+	 * Toggle whether to load deleted refunds.
+	 *
+	 * @param  bool $bool True to load deleted refunds, false otherwise
+	 *
+	 * @return Loader     Returns $this for chainability
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_refundLoader->includeDeleted((bool) $bool);
+
+		return $this;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function getByOrder(Order\Order $order)
@@ -65,6 +79,10 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	{
 		$refunds = $this->_refundLoader->getByID($ids);
 		$return  = [];
+
+		if (false == $refunds || 0 === count($refunds)) {
+			return $alwaysReturnArray ? [] : false;
+		}
 
 		if (!is_array($refunds) && $alwaysReturnArray) {
 			$refunds = [$refunds];
