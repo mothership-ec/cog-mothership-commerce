@@ -10,7 +10,7 @@ use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
 
 class Refund implements EntityInterface, RecordInterface
 {
-	const RECORD_TYPE = BaseRefund::RECORD_TYPE;
+	const RECORD_TYPE = 'order-refund';
 
 	public $order;
 	public $refund;
@@ -90,7 +90,7 @@ class Refund implements EntityInterface, RecordInterface
 	 */
 	public function getRecordType()
 	{
-		return $this->refund->getRecordType();
+		return self::RECORD_TYPE;
 	}
 
 	/**
@@ -98,6 +98,6 @@ class Refund implements EntityInterface, RecordInterface
 	 */
 	public function getRecordID()
 	{
-		return $this->refund->getRecordID();
+		return $this->refund->id;
 	}
 }

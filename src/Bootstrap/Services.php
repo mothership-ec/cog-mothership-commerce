@@ -312,6 +312,8 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Transaction\Loader($c['db.query'], array(
 				Commerce\Order\Order::RECORD_TYPE                  => $c['order.loader'],
 				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $c['order.item.loader'],
+				Commerce\Refund\Refund::RECORD_TYPE                => $c['refund.loader'],
+				Commerce\Payment\Payment::RECORD_TYPE              => $c['payment.loader'],
 				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $c['order.refund.loader'],
 				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $c['order.payment.loader'],
 			));

@@ -15,7 +15,7 @@ use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
  */
 class Payment implements EntityInterface, RecordInterface
 {
-	const RECORD_TYPE = BasePayment::RECORD_TYPE;
+	const RECORD_TYPE = 'order-payment';
 
 	public $order;
 	public $payment;
@@ -95,7 +95,7 @@ class Payment implements EntityInterface, RecordInterface
 	 */
 	public function getRecordType()
 	{
-		return $this->payment->getRecordType();
+		return self::RECORD_TYPE;
 	}
 
 	/**
@@ -103,6 +103,6 @@ class Payment implements EntityInterface, RecordInterface
 	 */
 	public function getRecordID()
 	{
-		return $this->payment->getRecordID();
+		return $this->payment->id;
 	}
 }
