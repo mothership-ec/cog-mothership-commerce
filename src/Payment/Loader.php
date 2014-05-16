@@ -16,11 +16,26 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 {
 	protected $_query;
 	protected $_methods;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, MethodCollection $methods)
 	{
 		$this->_query   = $query;
 		$this->_methods = $methods;
+	}
+
+	/**
+	 * Toggle whether to load deleted payments.
+	 *
+	 * @param  bool $bool True to load deleted payments, false otherwise
+	 *
+	 * @return Loader     Returns $this for chainability
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_includeDeleted = (bool) $bool;
+
+		return $this;
 	}
 
 	/**
@@ -90,6 +105,7 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 				payment
 			WHERE
 				payment_id IN (?ij)
+			' . ($this->_includeDeleted ? '' : 'AND deleted_at IS NULL') . '
 		', array($ids));
 
 		if (0 === count($result)) {
@@ -108,6 +124,13 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			if ($row->deleted_at) {
+				$entities[$key]->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			$entities[$key]->method = $this->_methods->get($row->method);
 

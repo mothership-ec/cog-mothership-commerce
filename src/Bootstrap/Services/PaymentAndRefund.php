@@ -39,6 +39,10 @@ class PaymentAndRefund implements ServicesInterface
 			);
 		});
 
+		$services['payment.delete'] = $services->factory(function($c) {
+			return new Commerce\Payment\Delete($c['db.query'], $c['user.current']);
+		});
+
 		$services['refund.loader'] = $services->factory(function($c) {
 			return new Commerce\Refund\Loader(
 				$c['db.query'],
@@ -49,6 +53,10 @@ class PaymentAndRefund implements ServicesInterface
 
 		$services['refund.create'] = $services->factory(function($c) {
 			return new Commerce\Refund\Create($c['db.query'], $c['refund.loader'], $c['user.current']);
+		});
+
+		$services['refund.delete'] = $services->factory(function($c) {
+			return new Commerce\Refund\Delete($c['db.query'], $c['user.current']);
 		});
 	}
 }

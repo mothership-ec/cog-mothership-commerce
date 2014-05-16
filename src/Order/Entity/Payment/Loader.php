@@ -18,11 +18,26 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 {
 	protected $_query;
 	protected $_paymentLoader;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, BaseLoader $paymentLoader)
 	{
 		$this->_query         = $query;
 		$this->_paymentLoader = $paymentLoader;
+	}
+
+	/**
+	 * Toggle whether to load deleted payments.
+	 *
+	 * @param  bool $bool True to load deleted payments, false otherwise
+	 *
+	 * @return Loader     Returns $this for chainability
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_paymentLoader->includeDeleted((bool) $bool);
+
+		return $this;
 	}
 
 	/**
@@ -88,7 +103,11 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
 		$payments = $this->_paymentLoader->getByID($ids);
-		$return  = [];
+		$return   = [];
+
+		if (false == $payments || 0 === count($payments)) {
+			return $alwaysReturnArray ? [] : false;
+		}
 
 		if (!is_array($payments) && $alwaysReturnArray) {
 			$payments = [$payments];

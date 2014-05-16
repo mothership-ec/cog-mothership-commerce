@@ -27,8 +27,7 @@ class Payment implements RecordInterface
 		$this->authorship = new Authorship;
 
 		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+			->disableUpdate();
 	}
 
 	/**
