@@ -28,8 +28,7 @@ class Refund implements EntityInterface, RecordInterface
 		$this->authorship = new Authorship;
 
 		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+			->disableUpdate();
 	}
 
 	/**

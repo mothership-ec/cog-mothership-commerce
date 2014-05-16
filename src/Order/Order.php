@@ -12,7 +12,8 @@ use Message\Mothership\Commerce\Payable\PayableInterface;
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 
-class Order implements Transaction\RecordInterface
+class Order implements PayableInterface, Transaction\RecordInterface
+
 {
 	const RECORD_TYPE = 'order';
 
@@ -408,6 +409,21 @@ class Order implements Transaction\RecordInterface
 		return $paid;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordID()
+	{
+		return $this->id;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -446,22 +462,6 @@ class Order implements Transaction\RecordInterface
 		}
 
 		return $this->_payableTransactionID;
-	}
-
-	/*
-	 * {@inheritdoc}
-	 */
-	public function getRecordType()
-	{
-		return self::RECORD_TYPE;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getRecordID()
-	{
-		return $this->id;
 
 	}
 }

@@ -17,11 +17,26 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 {
 	protected $_query;
 	protected $_methods;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, MethodCollection $paymentMethods)
 	{
 		$this->_query   = $query;
 		$this->_methods = $paymentMethods;
+	}
+
+	/**
+	 * Toggle whether to load deleted refunds
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted refunds
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+
+		return $this;
 	}
 
 	/**
@@ -67,6 +82,8 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
@@ -75,6 +92,7 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 				order_refund
 			WHERE
 				refund_id IN (?ij)
+			' . $includeDeleted . '
 		', array($ids));
 
 		if (0 === count($result)) {
@@ -92,6 +110,13 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			if ($row->deleted_at) {
+				$entities[$key]->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			if (!$order || $row->order_id != $order->id) {
 				$order = $this->_orderLoader->getByID($row->order_id);
