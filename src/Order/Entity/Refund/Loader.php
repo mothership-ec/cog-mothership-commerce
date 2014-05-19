@@ -88,7 +88,7 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 			$refunds = [$refunds];
 		}
 
-		if (!is_array($refunds)) {
+		if ($refunds instanceof BaseRefund) {
 			return $this->_convertRefundToOrderEntity($refunds, $order);
 		}
 
