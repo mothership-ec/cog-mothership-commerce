@@ -14,7 +14,7 @@ class MethodCollection implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 *
-	 * @param array $pageTypes An array of payment methods
+	 * @param array $methods An array of payment methods
 	 */
 	public function __construct(array $methods = array())
 	{
