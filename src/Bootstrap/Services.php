@@ -313,13 +313,27 @@ class Services implements ServicesInterface
 		};
 
 		$services['order.transaction.loader'] = function($c) {
+			$orderLoader        = $c['order.loader'];
+			$itemLoader         = $c['order.item.loader'];
+			$paymentLoader      = $c['payment.loader'];
+			$refundLoader       = $c['refund.loader'];
+			$orderPaymentLoader = $c['order.payment.loader'];
+			$orderRefundLoader  = $c['order.refund.loader'];
+
+			$orderLoader->includeDeleted(true);
+			$itemLoader->includeDeleted(true);
+			$paymentLoader->includeDeleted(true);
+			$refundLoader->includeDeleted(true);
+			$orderPaymentLoader->includeDeleted(true);
+			$orderRefundLoader->includeDeleted(true);
+
 			return new Commerce\Order\Transaction\Loader($c['db.query'], array(
-				Commerce\Order\Order::RECORD_TYPE                  => $c['order.loader'],
-				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $c['order.item.loader'],
-				Commerce\Refund\Refund::RECORD_TYPE                => $c['refund.loader'],
-				Commerce\Payment\Payment::RECORD_TYPE              => $c['payment.loader'],
-				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $c['order.refund.loader'],
-				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $c['order.payment.loader'],
+				Commerce\Order\Order::RECORD_TYPE                  => $orderLoader,
+				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $itemLoader,
+				Commerce\Refund\Refund::RECORD_TYPE                => $refundLoader,
+				Commerce\Payment\Payment::RECORD_TYPE              => $paymentLoader,
+				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $orderRefundLoader,
+				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $orderPaymentLoader,
 			));
 		};
 

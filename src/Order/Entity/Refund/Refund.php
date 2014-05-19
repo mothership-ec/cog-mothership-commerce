@@ -18,11 +18,12 @@ class Refund implements EntityInterface, RecordInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param BaseRefund $refund The base refund for this order entity
+	 * @param BaseRefund|null $refund The base refund for this order entity,
+	 *                                or null to instantiate an empty one
 	 */
-	public function __construct(BaseRefund $refund)
+	public function __construct(BaseRefund $refund = null)
 	{
-		$this->refund = $refund;
+		$this->refund = $refund ?: new BaseRefund;
 	}
 
 	/**
