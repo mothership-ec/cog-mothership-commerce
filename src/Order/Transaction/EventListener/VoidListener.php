@@ -30,6 +30,7 @@ class VoidListener extends BaseListener implements SubscriberInterface
 			Transaction\Events::VOID => array(
 				array('deleteItems'),
 				array('deleteOrders'),
+				array('deletePayments'),
 				array('deleteOrderPayments'),
 				array('returnItemsToStock'),
 			),
@@ -67,6 +68,23 @@ class VoidListener extends BaseListener implements SubscriberInterface
 
 		foreach ($transaction->records->getByType(Order\Order::RECORD_TYPE) as $order) {
 			$delete->delete($order);
+		}
+	}
+
+	/**
+	 * Deletes any records of type "payment" when a transaction is voided.
+	 *
+	 * @param Transaction\Event\TransactionalEvent $event
+	 */
+	public function deletePayments(Transaction\Event\TransactionalEvent $event)
+	{
+		$transaction = $event->getTransaction();
+		$delete      = $this->get('payment.delete');
+
+		$delete->setTransaction($event->getDbTransaction());
+
+		foreach ($transaction->records->getByType(Payment\Payment::RECORD_TYPE) as $payment) {
+			$delete->delete($payment);
 		}
 	}
 
