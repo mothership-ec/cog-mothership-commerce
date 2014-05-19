@@ -59,7 +59,7 @@ class Payment implements EntityInterface, RecordInterface
 
 	/**
 	 * Magic isset checker. Proxies property existance checking to the embedded
-	 * ctual payment instance.
+	 * actual payment instance.
 	 *
 	 * @param  string $var Property name
 	 *
