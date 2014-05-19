@@ -54,7 +54,7 @@ class Refund implements EntityInterface, RecordInterface
 
 	/**
 	 * Magic isset checker. Proxies property existance checking to the embedded
-	 * ctual refund instance.
+	 * actual refund instance.
 	 *
 	 * @param  string $var Property name
 	 *

@@ -94,7 +94,7 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 		}
 
 		if (!$ids) {
-			return $alwaysReturnArray ? array() : false;
+			return $alwaysReturnArray ? [] : false;
 		}
 
 		$result = $this->_query->run('
@@ -109,11 +109,11 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 		', array($ids));
 
 		if (0 === count($result)) {
-			return $alwaysReturnArray ? array() : false;
+			return $alwaysReturnArray ? [] : false;
 		}
 
 		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Payment\\Payment');
-		$return   = array();
+		$return   = [];
 
 		foreach ($result as $key => $row) {
 			// Cast decimals to float
