@@ -79,7 +79,9 @@ class Create implements DB\TransactionalInterface
 			$event
 		)->getEntity();
 
-		$this->_paymentCreate->create($payment->payment);
+		if (!$payment->payment->id) {
+			$this->_paymentCreate->create($payment->payment);
+		}
 
 		$this->_trans->run('
 			INSERT INTO
