@@ -23,11 +23,12 @@ class Payment implements EntityInterface, RecordInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param BasePayment $payment The base payment for this order entity
+	 * @param BasePayment|null $payment The base payment for this order entity,
+	 *                                  or null to instantiate an empty one
 	 */
-	public function __construct(BasePayment $payment)
+	public function __construct(BasePayment $payment = null)
 	{
-		$this->payment = $payment;
+		$this->payment = $payment ?: new BasePayment;
 	}
 
 	/**

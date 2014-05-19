@@ -79,7 +79,9 @@ class Create implements DB\TransactionalInterface
 			$event
 		)->getEntity();
 
-		$this->_refundCreate->create($refund->refund);
+		if (!$refund->refund->id) {
+			$this->_refundCreate->create($refund->refund);
+		}
 
 		$this->_trans->run('
 			INSERT INTO

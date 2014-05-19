@@ -18,20 +18,25 @@ use InvalidArgumentException;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
 	protected $_loader;
 	protected $_currentUser;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
+	protected $_trans;
+	protected $_transOverridden = false;
+
+	public function __construct(DB\Transaction $trans, Loader $loader, UserInterface $currentUser)
 	{
-		$this->_query       = $query;
+		$this->_trans       = $trans;
 		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_trans           = $trans;
+		$this->_transOverridden = true;
+
+		return $this;
 	}
 
 	public function create(Refund $refund)
@@ -46,7 +51,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$this->_query->run('
+		$this->_trans->run('
 			INSERT INTO
 				refund
 			SET
@@ -67,11 +72,18 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $refund->reference,
 		));
 
-		if ($this->_query instanceof DB\Transaction) {
-			return $refund;
+		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
+
+		$this->_trans->setIDVariable($sqlVariable);
+		$refund->id = '@' . $sqlVariable;
+
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+
+			return $this->_loader->getByID($this->_trans->getIDVariable($sqlVariable));
 		}
 
-		return $this->_loader->getByID($result->id());
+		return $refund;
 	}
 
 	protected function _validate(Refund $refund)

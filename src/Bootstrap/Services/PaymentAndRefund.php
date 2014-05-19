@@ -52,7 +52,7 @@ class PaymentAndRefund implements ServicesInterface
 		});
 
 		$services['refund.create'] = $services->factory(function($c) {
-			return new Commerce\Refund\Create($c['db.query'], $c['refund.loader'], $c['user.current']);
+			return new Commerce\Refund\Create($c['db.transaction'], $c['refund.loader'], $c['user.current']);
 		});
 
 		$services['refund.delete'] = $services->factory(function($c) {

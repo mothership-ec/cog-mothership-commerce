@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Order\Transaction\EventListener;
 use Message\Mothership\Commerce\Order\Transaction;
 use Message\Mothership\Commerce\Order;
 use Message\Mothership\Commerce\Order\Entity\Item;
+use Message\Mothership\Commerce\Payment;
+use Message\Mothership\Commerce\Refund;
 
 use Message\Cog\Event\EventListener as BaseListener;
 
@@ -12,6 +14,8 @@ use Message\Cog\Event\SubscriberInterface;
 
 /**
  * Event listener for voiding transactions.
+ *
+ * @todo delete payments
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
@@ -24,44 +28,80 @@ class VoidListener extends BaseListener implements SubscriberInterface
 	{
 		return array(
 			Transaction\Events::VOID => array(
-				array('cancelItems'),
-				array('cancelOrders'),
+				array('deleteItems'),
+				array('deleteOrders'),
+				array('deletePayments'),
+				array('deleteOrderPayments'),
 				array('returnItemsToStock'),
 			),
 		);
 	}
 
 	/**
-	 * Cancels any records of type "item" when a transaction is voided.
+	 * Deletes any records of type "item" when a transaction is voided.
 	 *
 	 * @param Transaction\Event\TransactionalEvent $event
 	 */
-	public function cancelItems(Transaction\Event\TransactionalEvent $event)
+	public function deleteItems(Transaction\Event\TransactionalEvent $event)
 	{
-		$itemEdit = $this->get('order.item.edit');
+		$transaction = $event->getTransaction();
+		$delete      = $this->get('order.item.delete');
 
-		$itemEdit->setTransaction($event->getDbTransaction());
+		$delete->setTransaction($event->getDbTransaction());
 
-		$itemEdit->updateStatus(
-			$event->getTransaction()->records->getByType(Item\Item::RECORD_TYPE),
-			Order\Statuses::CANCELLED
-		);
+		foreach ($transaction->records->getByType(Item\Item::RECORD_TYPE) as $item) {
+			$delete->delete($item);
+		}
 	}
 
 	/**
-	 * Cancels any records of type "order" when a transaction is voided.
+	 * Deletes any records of type "order" when a transaction is voided.
 	 *
 	 * @param Transaction\Event\TransactionalEvent $event
 	 */
-	public function cancelOrders(Transaction\Event\TransactionalEvent $event)
+	public function deleteOrders(Transaction\Event\TransactionalEvent $event)
 	{
 		$transaction = $event->getTransaction();
-		$orderEdit   = $this->get('order.edit');
+		$delete      = $this->get('order.delete');
 
-		$orderEdit->setTransaction($event->getDbTransaction());
+		$delete->setTransaction($event->getDbTransaction());
 
 		foreach ($transaction->records->getByType(Order\Order::RECORD_TYPE) as $order) {
-			$orderEdit->updateStatus($order, Order\Statuses::CANCELLED);
+			$delete->delete($order);
+		}
+	}
+
+	/**
+	 * Deletes any records of type "payment" when a transaction is voided.
+	 *
+	 * @param Transaction\Event\TransactionalEvent $event
+	 */
+	public function deletePayments(Transaction\Event\TransactionalEvent $event)
+	{
+		$transaction = $event->getTransaction();
+		$delete      = $this->get('payment.delete');
+
+		$delete->setTransaction($event->getDbTransaction());
+
+		foreach ($transaction->records->getByType(Payment\Payment::RECORD_TYPE) as $payment) {
+			$delete->delete($payment);
+		}
+	}
+
+	/**
+	 * Deletes any records of type "order-payment" when a transaction is voided.
+	 *
+	 * @param Transaction\Event\TransactionalEvent $event
+	 */
+	public function deleteOrderPayments(Transaction\Event\TransactionalEvent $event)
+	{
+		$transaction = $event->getTransaction();
+		$delete      = $this->get('order.payment.delete');
+
+		$delete->setTransaction($event->getDbTransaction());
+
+		foreach ($transaction->records->getByType(Order\Entity\Payment\Payment::RECORD_TYPE) as $payment) {
+			$delete->delete($payment);
 		}
 	}
 
