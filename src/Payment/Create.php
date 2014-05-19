@@ -25,9 +25,9 @@ class Create implements DB\TransactionalInterface
 
 	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
 	{
-		$this->_trans           = $query;
-		$this->_loader          = $loader;
-		$this->_currentUser     = $currentUser;
+		$this->_trans       = $query;
+		$this->_loader      = $loader;
+		$this->_currentUser = $currentUser;
 	}
 
 	/**
