@@ -8,6 +8,7 @@ ms.commerce:
       save: Save changes
       create: Create product
       sku: Add SKU
+      barcodes: Print barcodes
     attributes:
       name:
         label: Name

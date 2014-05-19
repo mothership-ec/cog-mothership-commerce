@@ -4,12 +4,14 @@
 	<div class="page">
 		{% for key, barcode in barcodes %}
 			<div class="label">
-				<hgroup>
-					<h2>{{ barcode.brand }} {{ barcode.name }} {{ barcode.text }}</h2>
-				</hgroup>
+				{% if barcode %}
+					<hgroup>
+						<h2>{{ barcode.brand }} {{ barcode.name }} {{ barcode.text }}</h2>
+					</hgroup>
 
-				<p class="price">{{ barcode.price | price(barcode.currency) }}</p>
-				<img src="{{ barcode.url }}" />
+					<p class="price">{{ barcode.price | price(barcode.currency) }}</p>
+					<img src="{{ barcode.url }}" />
+				{% endif %}
 			</div>
 
 			{% if (key + 1) == pageBreak %}

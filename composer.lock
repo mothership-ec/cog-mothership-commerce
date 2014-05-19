@@ -3,11 +3,11 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "c8deb2074552111e56aedfba4bd4c2bf",
+    "hash": "38c4110cde7e74190f5570c701c4c381",
     "packages": [
         {
             "name": "domisys/image_barcode2",
-            "version": "dev-master",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Domisys/Image_Barcode2.git",
@@ -642,16 +642,16 @@
         },
         {
             "name": "message/cog-user",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-user.git",
-                "reference": "1.1.0"
+                "reference": "1.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-user/zipball/1.1.0",
-                "reference": "1.1.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-user/zipball/1.2.0",
+                "reference": "1.2.0",
                 "shasum": ""
             },
             "require": {
@@ -686,9 +686,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-user/issues",
-                "source": "https://github.com/messagedigital/cog-user/tree/1.1.0"
+                "source": "https://github.com/messagedigital/cog-user/tree/1.2.0"
             },
-            "time": "2014-03-18 14:37:33"
+            "time": "2014-05-12 15:49:57"
         },
         {
             "name": "message/wkhtmltopdf",
@@ -2308,9 +2308,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "domisys/image_barcode2": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.4.0"
     },

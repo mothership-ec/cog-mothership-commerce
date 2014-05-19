@@ -81,10 +81,15 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', 'Message:Mothership:Commerce::Controller:Product:Edit#images')
 			->setRequirement('productID', '\d+');
 
-
 		$router['ms.product.basket']->add('ms.commerce.product.add.basket', '/basket/add/{productID}', 'Message:Mothership:Commerce::Controller:Module:ProductSelector#process')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
+
+		$router['ms.product']->add('ms.commerce.product.barcodes.action', '/barcode/print/{productID}', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodesAction')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.barcodes', '/barcode/print/{productID}', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodes')
+			->setRequirement('productID', '\d+');
 
 		$router['ms.product']->add('ms.commerce.product.barcode.stock_take', '/barcode/stock-take', 'Message:Mothership:Commerce::Controller:Product:Barcode#stockTake');
 
