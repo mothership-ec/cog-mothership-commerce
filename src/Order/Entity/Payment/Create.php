@@ -114,7 +114,7 @@ class Create implements DB\TransactionalInterface
 	protected function _validate(Payment $payment)
 	{
 		if (!$payment->order) {
-			throw new InvalidArgumentException('Could not create payment: no order specified');
+			throw new \InvalidArgumentException('Could not create payment: no order specified');
 		}
 	}
 }
