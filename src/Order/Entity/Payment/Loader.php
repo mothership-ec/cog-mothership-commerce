@@ -68,11 +68,15 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 			return $this->_convertPaymentToOrderEntity($payments);
 		}
 
-		foreach ($payments as $key => $payment) {
-			$payments[$key] = $this->_convertPaymentToOrderEntity($payment);
+		if (is_array($payments)) {
+			foreach ($payments as $key => $payment) {
+				$payments[$key] = $this->_convertPaymentToOrderEntity($payment);
+			}
+
+			return $payments;
 		}
 
-		return $payments;
+		return false;
 	}
 
 	public function getByID($id, Order\Order $order = null)
