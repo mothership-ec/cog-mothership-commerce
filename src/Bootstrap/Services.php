@@ -482,6 +482,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\ProductAttributes($c);
 		});
 
+		$services['product.form.barcode'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\Barcode($c['stock.locations']);
+		});
+
 		$services['product.detail.loader'] = function($c) {
 			return new Commerce\Product\Type\DetailLoader(
 				$c['db.query'],
@@ -495,6 +499,30 @@ class Services implements ServicesInterface
 				$c['db.transaction'],
 				$c['event.dispatcher'],
 				$c['user.current']
+			);
+		};
+
+		$services['product.barcode.generate'] = function($c) {
+			return new Commerce\Product\Barcode\Generate(
+				$c['db.query'],
+				new Commerce\Product\Barcode\ImageResource,
+				$c['product.barcode.sheet']->getBarcodeHeight(),
+				$c['product.barcode.sheet']->getBarcodeWidth(),
+				$c['cfg']->barcode->fileType,
+				$c['cfg']->barcode->barcodeType
+			);
+		};
+
+		$services['product.barcode.sheet.collection'] = function($c) {
+			$collection = new Commerce\Product\Barcode\Sheet\Collection;
+			$collection->add(new Commerce\Product\Barcode\Sheet\Size5x13);
+
+			return $collection;
+		};
+
+		$services['product.barcode.sheet'] = function($c) {
+			return $c['product.barcode.sheet.collection']->get(
+				$c['cfg']->barcode->sheetType
 			);
 		};
 

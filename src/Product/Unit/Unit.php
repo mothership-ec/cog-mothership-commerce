@@ -54,6 +54,13 @@ class Unit
 		$this->options[$type] = $value;
 	}
 
+	public function getOptionString()
+	{
+		$options = implode(', ', $this->options);
+
+		return ucfirst($options);
+	}
+
 	public function getPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
