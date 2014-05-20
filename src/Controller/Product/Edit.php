@@ -231,6 +231,7 @@ class Edit extends Controller
 			$product->name                        = $data['name'];
 			$product->shortDescription            = $data['short_description'];
 			$product->displayName                 = $data['display_name'];
+			$product->sortName                    = $data['sort_name'];
 			$product->description                 = $data['description'];
 			$product->category                    = $data['category'];
 			$product->brand                       = $data['brand'];
