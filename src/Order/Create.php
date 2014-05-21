@@ -218,12 +218,11 @@ class Create implements DB\TransactionalInterface
 		);
 
 		$order = $event->getOrder();
-		// do we need this?
-		$this->_trans = $event->getTransaction();
+		$trans = $event->getTransaction();
 
 		// add CREATE_COMPLETE event to when transaction is committed
 		$loader = $this->_loader;
-		$this->_trans->attachEvent(
+		$trans->attachEvent(
 			Events::CREATE_COMPLETE,
 			function ($trans) use ($loader) {
 				return new Event\Event(
@@ -233,7 +232,7 @@ class Create implements DB\TransactionalInterface
 		);
 
 		if (!$this->_transOverridden) {
-			$this->_trans->commit();
+			$this->_query->commit();
 		}
 
 		return $order;
