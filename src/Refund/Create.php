@@ -58,6 +58,7 @@ class Create implements DB\TransactionalInterface
 				payment_id = :paymentID?in,
 				created_at = :createdAt?d,
 				created_by = :createdBy?in,
+				currencyID = :currencyID?s,
 				method     = :method?sn,
 				amount     = :amount?f,
 				reason     = :reason?sn,
@@ -66,6 +67,7 @@ class Create implements DB\TransactionalInterface
 			'paymentID'   => $refund->payment ? $refund->payment->id : null,
 			'createdAt'   => $refund->authorship->createdAt(),
 			'createdBy'   => $refund->authorship->createdBy(),
+			'currencyID'  => $refund->currencyID,
 			'method'      => $refund->method->getName(),
 			'amount'      => $refund->amount,
 			'reason'      => $refund->reason,
@@ -90,6 +92,18 @@ class Create implements DB\TransactionalInterface
 	{
 		if ($refund->amount <= 0) {
 			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0');
+		}
+
+		if (!$refund->currencyID) {
+			throw new InvalidArgumentException('Could not create refund: currency ID must be set');
+		}
+
+		if ($refund->payment && $refund->currencyID !== $refund->payment->currencyID) {
+			throw new InvalidArgumentException(sprintf(
+				'Could not create refund: currency ID (%s) does not match the related payment\'s currency ID (%s)',
+				$refund->currencyID,
+				$refund->payment->currencyID
+			));
 		}
 	}
 }

@@ -62,6 +62,8 @@ class Create implements DB\TransactionalInterface
 			);
 		}
 
+		$this->_validate($payment);
+
 		$result = $this->_trans->run('
 			INSERT INTO
 				payment
@@ -69,12 +71,14 @@ class Create implements DB\TransactionalInterface
 				created_at = :createdAt?d,
 				created_by = :createdBy?in,
 				method     = :method?sn,
+				currencyID = :currencyID?s,
 				amount     = :amount?f,
 				`change`   = :change?fn,
 				reference  = :reference?sn
 		', array(
 			'createdAt'   => $payment->authorship->createdAt(),
 			'createdBy'   => $payment->authorship->createdBy(),
+			'currencyID'  => $payment->currencyID,
 			'method'      => $payment->method->getName(),
 			'amount'      => $payment->amount,
 			'change'      => $payment->change,
@@ -93,5 +97,16 @@ class Create implements DB\TransactionalInterface
 		}
 
 		return $payment;
+	}
+
+	protected function _validate(Payment $payment)
+	{
+		if ($payment->amount <= 0) {
+			throw new InvalidArgumentException('Could not create payment: amount must be greater than 0');
+		}
+
+		if (!$payment->currencyID) {
+			throw new InvalidArgumentException('Could not create payment: currency ID must be set');
+		}
 	}
 }

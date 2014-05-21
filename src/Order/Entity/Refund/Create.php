@@ -116,5 +116,17 @@ class Create implements DB\TransactionalInterface
 		if (!$refund->order) {
 			throw new InvalidArgumentException('Could not create refund: no order specified');
 		}
+
+		if (!$refund->refund->currencyID) {
+			$refund->refund->currencyID = $refund->order->currencyID;
+		}
+
+		if ($this->order->currencyID !== $this->refund->currencyID) {
+			throw new \InvalidArgumentException(sprintf(
+				'Could not create refund: currency ID (%s) must match order currency ID (%s)',
+				$this->refund->currencyID,
+				$this->order->currencyID
+			));
+		}
 	}
 }
