@@ -17,14 +17,12 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Create implements DB\TransactionalInterface
+class Create
 {
+	protected $_trans;
 	protected $_loader;
 	protected $_eventDispatcher;
 	protected $_currentUser;
-
-	protected $_trans;
-	protected $_transOverridden = false;
 
 	protected $_entityCreators = array();
 
@@ -39,12 +37,6 @@ class Create implements DB\TransactionalInterface
 		foreach ($entityCreators as $name => $creator) {
 			$this->addEntityCreator($name, $creator);
 		}
-	}
-
-	public function setTransaction(DB\Transaction $trans)
-	{
-		$this->_trans = $trans;
-		$this->_transOverridden = true;
 	}
 
 	/**
@@ -220,21 +212,14 @@ class Create implements DB\TransactionalInterface
 		$order = $event->getOrder();
 		$trans = $event->getTransaction();
 
-		// add CREATE_COMPLETE event to when transaction is committed
-		$loader = $this->_loader;
-		$trans->attachEvent(
+		$trans->commit();
+
+		$event = new Event\Event($this->_loader->getByID($trans->getIDVariable('ORDER_ID')));
+		$this->_eventDispatcher->dispatch(
 			Events::CREATE_COMPLETE,
-			function ($trans) use ($loader) {
-				return new Event\Event(
-					$loader->getByID($trans->getIDVariable('ORDER_ID'))
-				);
-			}
+			$event
 		);
 
-		if (!$this->_transOverridden) {
-			$this->_query->commit();
-		}
-
-		return $order;
+		return $event->getOrder();
 	}
 }
