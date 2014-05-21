@@ -215,6 +215,7 @@ class Edit implements TransactionalInterface
 					product_id,
 					locale,
 					display_name,
+					sort_name,
 					description,
 					short_description,
 					notes
@@ -224,12 +225,14 @@ class Edit implements TransactionalInterface
 					:product_id?i,
 					:locale?sn,
 					:displayName?sn,
+					:sortName?sn,
 					:description?sn,
 					:shortDescription?sn,
 					:notes?sn
 				)
 			ON DUPLICATE KEY UPDATE
 				display_name		= :displayName?sn,
+				sort_name           = :sortName?sn,
 				description			= :description?sn,
 				short_description	= :shortDescription?sn,
 				notes				= :notes?sn
@@ -237,6 +240,7 @@ class Edit implements TransactionalInterface
 			'product_id'        => $this->_product->id,
 			'locale'            => $this->_locale->getID(),
 			'displayName'       => $this->_product->displayName,
+			'sortName'          => $this->_product->sortName,
 			'description'       => $this->_product->description,
 			'shortDescription'  => $this->_product->shortDescription,
 			'notes'             => $this->_product->notes,

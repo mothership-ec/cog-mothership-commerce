@@ -290,6 +290,7 @@ class Loader
 				product.weight_grams AS weight,
 
 				product_info.display_name      AS displayName,
+				product_info.sort_name         AS sortName,
 				product_info.description       AS description,
 				product_info.short_description AS shortDescription,
 				product_info.notes             AS notes,
