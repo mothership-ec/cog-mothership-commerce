@@ -240,8 +240,12 @@ class Create implements DB\TransactionalInterface
 			}
 		);
 
+		// @todo ideally we want to listen to CREATE_COMPLETE
+		// check if $event->getOrder()->id == $sqlVariableThing
+		// then set that as the return value
 		if (!$this->_transOverridden) {
 			$this->_trans->commit();
+			$order = $this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID'));
 		}
 
 		return $order;
