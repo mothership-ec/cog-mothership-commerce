@@ -116,5 +116,17 @@ class Create implements DB\TransactionalInterface
 		if (!$payment->order) {
 			throw new \InvalidArgumentException('Could not create payment: no order specified');
 		}
+
+		if (!$payment->payment->currencyID) {
+			$payment->payment->currencyID = $payment->order->currencyID;
+		}
+
+		if ($this->order->currencyID !== $this->payment->currencyID) {
+			throw new \InvalidArgumentException(sprintf(
+				'Could not create payment: currency ID (%s) must match order currency ID (%s)',
+				$this->payment->currencyID,
+				$this->order->currencyID
+			));
+		}
 	}
 }

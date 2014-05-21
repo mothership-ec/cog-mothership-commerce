@@ -17,6 +17,7 @@ class Payment implements RecordInterface
 
 	public $id;
 	public $authorship;
+	public $currencyID;
 	public $method;
 	public $amount;
 	public $change;

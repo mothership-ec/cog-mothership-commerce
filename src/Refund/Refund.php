@@ -17,6 +17,7 @@ class Refund implements RecordInterface
 	public $id;
 	public $authorship;
 	public $payment;
+	public $currencyID;
 	public $method;
 	public $amount;
 	public $reason;
