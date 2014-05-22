@@ -35,6 +35,7 @@ class PaymentAndRefund implements ServicesInterface
 			return new Commerce\Payment\Create(
 				$c['db.transaction'],
 				$c['payment.loader'],
+				$c['event.dispatcher'],
 				$c['user.current']
 			);
 		});
@@ -52,7 +53,12 @@ class PaymentAndRefund implements ServicesInterface
 		});
 
 		$services['refund.create'] = $services->factory(function($c) {
-			return new Commerce\Refund\Create($c['db.transaction'], $c['refund.loader'], $c['user.current']);
+			return new Commerce\Refund\Create(
+				$c['db.transaction'],
+				$c['refund.loader'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
 		});
 
 		$services['refund.delete'] = $services->factory(function($c) {
