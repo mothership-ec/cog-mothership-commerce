@@ -42,7 +42,8 @@ class Create implements DB\TransactionalInterface
 	}
 
 	/**
-	 * Sets transaction and $_transOverridden to true.
+	 * Sets transaction and $_transOverridden to true, also sets transaction on
+	 * all entity create decorators.
 	 * 
 	 * @param  DBTransaction $trans Transaction
 	 * @return Create               $this for chainability
@@ -51,6 +52,10 @@ class Create implements DB\TransactionalInterface
 	{
 		$this->_trans = $trans;
 		$this->_transOverridden = true;
+
+		foreach ($this->_entityCreators as $entityCreator) {
+			$entityCreator->setTransaction($trans);
+		}
 
 		return $this;
 	}
