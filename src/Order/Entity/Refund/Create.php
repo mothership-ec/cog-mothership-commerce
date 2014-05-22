@@ -121,11 +121,11 @@ class Create implements DB\TransactionalInterface
 			$refund->refund->currencyID = $refund->order->currencyID;
 		}
 
-		if ($payment->order->currencyID !== $payment->refund->currencyID) {
+		if ($refund->order->currencyID !== $refund->refund->currencyID) {
 			throw new \InvalidArgumentException(sprintf(
 				'Could not create refund: currency ID (%s) must match order currency ID (%s)',
-				$payment->refund->currencyID,
-				$payment->order->currencyID
+				$refund->refund->currencyID,
+				$refund->order->currencyID
 			));
 		}
 	}
