@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Order;
 use Message\User\UserInterface;
 
 use Message\Cog\DB;
+use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
@@ -18,16 +19,19 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 class Create implements DB\TransactionalInterface
 {
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
 
 	protected $_trans;
 	protected $_transOverridden = false;
 
-	public function __construct(DB\Transaction $query, Loader $loader, UserInterface $currentUser)
+	public function __construct(DB\Transaction $query, Loader $loader,
+		DispatcherInterface $eventDispatcher, UserInterface $currentUser)
 	{
-		$this->_trans       = $query;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_trans           = $query;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
 	/**
@@ -64,17 +68,25 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($payment);
 
+		$event = new Event\TransactionalPaymentEvent($payment);
+		$event->setTransaction($this->_trans);
+
+		$payment = $this->_eventDispatcher->dispatch(
+			Events::CREATE_START,
+			$event
+		)->getPayment();
+
 		$result = $this->_trans->run('
 			INSERT INTO
 				payment
 			SET
-				created_at = :createdAt?d,
-				created_by = :createdBy?in,
-				method     = :method?sn,
-				currencyID = :currencyID?s,
-				amount     = :amount?f,
-				`change`   = :change?fn,
-				reference  = :reference?sn
+				created_at  = :createdAt?d,
+				created_by  = :createdBy?in,
+				method      = :method?sn,
+				currency_id = :currencyID?s,
+				amount      = :amount?f,
+				`change`    = :change?fn,
+				reference   = :reference?sn
 		', array(
 			'createdAt'   => $payment->authorship->createdAt(),
 			'createdBy'   => $payment->authorship->createdBy(),

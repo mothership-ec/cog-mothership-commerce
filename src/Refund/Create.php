@@ -7,6 +7,7 @@ use Message\User\UserInterface;
 use Message\Mothership\Commerce\Order;
 
 use Message\Cog\DB;
+use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 use InvalidArgumentException;
@@ -19,18 +20,24 @@ use InvalidArgumentException;
 class Create implements DB\TransactionalInterface
 {
 	protected $_loader;
+	protected $_eventDispatcher;
 	protected $_currentUser;
 
 	protected $_trans;
 	protected $_transOverridden = false;
 
-	public function __construct(DB\Transaction $trans, Loader $loader, UserInterface $currentUser)
+	public function __construct(DB\Transaction $trans, Loader $loader,
+		DispatcherInterface $eventDispatcher, UserInterface $currentUser)
 	{
-		$this->_trans       = $trans;
-		$this->_loader      = $loader;
-		$this->_currentUser = $currentUser;
+		$this->_trans           = $trans;
+		$this->_loader          = $loader;
+		$this->_eventDispatcher = $eventDispatcher;
+		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_trans           = $trans;
@@ -51,27 +58,35 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
+		$event = new Event\TransactionalRefundEvent($refund);
+		$event->setTransaction($this->_trans);
+
+		$refund = $this->_eventDispatcher->dispatch(
+			Events::CREATE_START,
+			$event
+		)->getRefund();
+
 		$this->_trans->run('
 			INSERT INTO
 				refund
 			SET
-				payment_id = :paymentID?in,
-				created_at = :createdAt?d,
-				created_by = :createdBy?in,
-				currencyID = :currencyID?s,
-				method     = :method?sn,
-				amount     = :amount?f,
-				reason     = :reason?sn,
-				reference  = :reference?sn
+				payment_id  = :paymentID?in,
+				created_at  = :createdAt?d,
+				created_by  = :createdBy?in,
+				currency_id = :currencyID?s,
+				method      = :method?sn,
+				amount      = :amount?f,
+				reason      = :reason?sn,
+				reference   = :reference?sn
 		', array(
-			'paymentID'   => $refund->payment ? $refund->payment->id : null,
-			'createdAt'   => $refund->authorship->createdAt(),
-			'createdBy'   => $refund->authorship->createdBy(),
-			'currencyID'  => $refund->currencyID,
-			'method'      => $refund->method->getName(),
-			'amount'      => $refund->amount,
-			'reason'      => $refund->reason,
-			'reference'   => $refund->reference,
+			'paymentID'  => $refund->payment ? $refund->payment->id : null,
+			'createdAt'  => $refund->authorship->createdAt(),
+			'createdBy'  => $refund->authorship->createdBy(),
+			'currencyID' => $refund->currencyID,
+			'method'     => $refund->method->getName(),
+			'amount'     => $refund->amount,
+			'reason'     => $refund->reason,
+			'reference'  => $refund->reference,
 		));
 
 		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
