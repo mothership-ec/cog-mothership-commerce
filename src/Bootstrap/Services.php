@@ -129,6 +129,7 @@ class Services implements ServicesInterface
 					'items'     => $c['order.item.create'],
 					'notes'     => $c['order.note.create'],
 					'payments'  => $c['order.payment.create'],
+					'refunds'   => $c['order.refund.create'],
 				)
 			);
 		});
