@@ -10,6 +10,8 @@ use Message\Cog\DB;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
+use InvalidArgumentException;
+
 /**
  * Payment creator.
  *
