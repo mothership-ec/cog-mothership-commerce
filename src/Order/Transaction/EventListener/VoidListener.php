@@ -15,8 +15,6 @@ use Message\Cog\Event\SubscriberInterface;
 /**
  * Event listener for voiding transactions.
  *
- * @todo delete payments
- *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class VoidListener extends BaseListener implements SubscriberInterface
