@@ -88,7 +88,7 @@ class Create
 			'type'          => $transaction->type,
 		));
 
-		$sqlVariable = 'TRANSACTION_ID_' . spl_object_hash($transaction);
+		$sqlVariable = 'TRANSACTION_ID_' . uniqid();
 
 		$this->_query->setIDVariable($sqlVariable);
 		$transaction->id = '@' . $sqlVariable;

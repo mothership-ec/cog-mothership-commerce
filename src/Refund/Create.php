@@ -89,7 +89,7 @@ class Create implements DB\TransactionalInterface
 			'reference'  => $refund->reference,
 		));
 
-		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
+		$sqlVariable = 'REFUND_ID_' . uniqid();
 
 		$this->_trans->setIDVariable($sqlVariable);
 		$refund->id = '@' . $sqlVariable;
