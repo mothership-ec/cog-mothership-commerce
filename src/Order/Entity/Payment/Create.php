@@ -101,7 +101,7 @@ class Create implements DB\TransactionalInterface
 			'reference'   => $payment->reference,
 		));
 
-		$sqlVariable = 'PAYMENT_ID_' . spl_object_hash($payment);
+		$sqlVariable = 'PAYMENT_ID_' . uniqid();
 
 		$this->_trans->setIDVariable($sqlVariable);
 		$payment->id = '@' . $sqlVariable;
