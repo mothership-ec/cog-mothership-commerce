@@ -15,8 +15,6 @@ use Message\Cog\Event\SubscriberInterface;
 /**
  * Event listener for voiding transactions.
  *
- * @todo delete payments
- *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class VoidListener extends BaseListener implements SubscriberInterface
@@ -32,6 +30,8 @@ class VoidListener extends BaseListener implements SubscriberInterface
 				array('deleteOrders'),
 				array('deletePayments'),
 				array('deleteOrderPayments'),
+				array('deleteRefunds'),
+				array('deleteOrderRefunds'),
 				array('returnItemsToStock'),
 			),
 		);
@@ -102,6 +102,40 @@ class VoidListener extends BaseListener implements SubscriberInterface
 
 		foreach ($transaction->records->getByType(Order\Entity\Payment\Payment::RECORD_TYPE) as $payment) {
 			$delete->delete($payment);
+		}
+	}
+
+	/**
+	 * Deletes any records of type "refund" when a transaction is voided.
+	 *
+	 * @param Transaction\Event\TransactionalEvent $event
+	 */
+	public function deleteRefunds(Transaction\Event\TransactionalEvent $event)
+	{
+		$transaction = $event->getTransaction();
+		$delete      = $this->get('refund.delete');
+
+		$delete->setTransaction($event->getDbTransaction());
+
+		foreach ($transaction->records->getByType(Refund\Refund::RECORD_TYPE) as $refund) {
+			$delete->delete($refund);
+		}
+	}
+
+	/**
+	 * Deletes any records of type "order-refund" when a transaction is voided.
+	 *
+	 * @param Transaction\Event\TransactionalEvent $event
+	 */
+	public function deleteOrderRefunds(Transaction\Event\TransactionalEvent $event)
+	{
+		$transaction = $event->getTransaction();
+		$delete      = $this->get('order.refund.delete');
+
+		$delete->setTransaction($event->getDbTransaction());
+
+		foreach ($transaction->records->getByType(Order\Entity\Refund\Refund::RECORD_TYPE) as $refund) {
+			$delete->delete($refund);
 		}
 	}
 
