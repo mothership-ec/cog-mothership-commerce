@@ -74,7 +74,8 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 		$result = $this->_query->run('
 			SELECT
 				*,
-				refund_id AS id
+				refund_id   AS id,
+				currency_id AS currencyID
 			FROM
 				refund
 			WHERE
