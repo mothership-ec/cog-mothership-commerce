@@ -100,7 +100,8 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 		$result = $this->_query->run('
 			SELECT
 				*,
-				payment_id AS id
+				payment_id  AS id,
+				currency_id AS currencyID
 			FROM
 				payment
 			WHERE
