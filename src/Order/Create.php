@@ -231,8 +231,6 @@ class Create implements DB\TransactionalInterface
 		);
 
 		$order = $event->getOrder();
-		// do we need this?
-		$this->_trans = $event->getTransaction();
 
 		// add CREATE_COMPLETE event to when transaction is committed
 		$loader = $this->_loader;
