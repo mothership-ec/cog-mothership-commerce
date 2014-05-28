@@ -44,6 +44,11 @@ class RemoveTemporaryIdListener implements SubscriberInterface
 			return false;
 		}
 
+		// Skip if the ID is a MySQL variable. We need this!
+		if ('@' === substr($entity->id, 0, 1)) {
+			return false;
+		}
+
 		$entity->id = null;
 	}
 }
