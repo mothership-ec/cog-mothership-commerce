@@ -188,7 +188,7 @@ class Loader
 		return count($result) ? $this->_loadProduct($result->flatten()) : [];
 	}
 
-	public function getCategories()
+	public function getCategories($includeDeleted = false)
 	{
 		$result = $this->_query->run("
 			SELECT DISTINCT
@@ -199,6 +199,7 @@ class Loader
 				category IS NOT NULL
 			AND
 				category != ''
+			" . (!$includeDeleted ? " AND deleted_at IS NULL " : "") . "
 		");
 
 		return $result->flatten();
@@ -227,10 +228,14 @@ class Loader
 				$terms[$i] = $term = strtolower($term);
 
 				foreach ($searchFields as $j => $field) {
-					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s';
-					if ($j != count($searchFields) - 1) {
+					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
+					if ($j != (count($searchFields) - 1)) {
 						$query .= ' OR ';
 					}
+				}
+
+				if ($i != (count($terms) - 1)) {
+					$query .= ' OR ';
 				}
 
 				$searchParams['term' . $i] = '%' . $term . '%';
@@ -252,7 +257,8 @@ class Loader
 			USING
 				(unit_id)
 			WHERE
-				' . $query . '';
+				' . $query . '
+			';
 
 		$result = $this->_query->run($query, $searchParams);
 
