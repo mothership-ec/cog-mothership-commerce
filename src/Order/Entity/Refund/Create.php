@@ -114,7 +114,7 @@ class Create implements DB\TransactionalInterface
 	protected function _validate(Refund $refund)
 	{
 		if (!$refund->order) {
-			throw new InvalidArgumentException('Could not create refund: no order specified');
+			throw new \InvalidArgumentException('Could not create refund: no order specified');
 		}
 
 		if (!$refund->refund->currencyID) {
