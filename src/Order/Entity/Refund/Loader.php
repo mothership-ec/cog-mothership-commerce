@@ -58,7 +58,12 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 
 	public function getByID($id, Order\Order $order = null)
 	{
-		return $this->_load($id, false, $order);
+		return $this->_load($id, is_array($id), $order);
+	}
+
+	public function getByIDs(array $ids)
+	{
+		return $this->_load($ids, true);
 	}
 
 	/**

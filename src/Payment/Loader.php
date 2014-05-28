@@ -70,7 +70,12 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 
 	public function getByID($id)
 	{
-		return $this->_load($id, false);
+		return $this->_load($id, is_array($id));
+	}
+
+	public function getByIDs(array $ids)
+	{
+		return $this->_load($ids, true);
 	}
 
 	/**
