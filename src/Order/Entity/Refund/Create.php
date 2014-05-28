@@ -27,8 +27,7 @@ class Create implements DB\TransactionalInterface
 		BaseCreate $refundCreate,
 		Loader $loader,
 		DispatcherInterface $eventDispatcher
-	)
-	{
+	) {
 		$this->_trans           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
