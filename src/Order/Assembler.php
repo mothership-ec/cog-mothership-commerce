@@ -69,11 +69,11 @@ class Assembler
 	/**
 	 * Set the default stock location to set for items added to the order.
 	 *
-	 * @param  string|int $stockLocation
+	 * @param  StockLocation $stockLocation
 	 *
 	 * @return Assembler Returns $this for chainability
 	 */
-	public function setDefaultStockLocation($stockLocation)
+	public function setDefaultStockLocation(StockLocation $stockLocation)
 	{
 		$this->_defaultStockLocation = $stockLocation;
 
