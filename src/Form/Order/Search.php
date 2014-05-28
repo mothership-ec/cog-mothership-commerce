@@ -26,7 +26,7 @@ class Search extends Form\AbstractType
      */
     public function getName()
     {
-        return 'order_search';
+        return 'order_simple_search';
     }
 
 }
