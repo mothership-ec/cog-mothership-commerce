@@ -27,9 +27,13 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected $_orderBy;
 	protected $_includeDeleted = false;
 
-	public function __construct(DB\Query $query, User\Loader $userLoader,
-		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
-	{
+	public function __construct(
+		DB\Query $query,
+		User\Loader $userLoader,
+		Status\Collection $statuses,
+		Status\Collection $itemStatuses,
+		array $entities
+	) {
 		$this->_query        = $query;
 		$this->_userLoader   = $userLoader;
 		$this->_statuses     = $statuses;
@@ -237,7 +241,7 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
-		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL';
 		$this->_orderBy = '';
 
 		if (!is_array($ids)) {
