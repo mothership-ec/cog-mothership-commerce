@@ -1,10 +1,10 @@
 <?php
 
-namespace Message\Mothership\Commerce\Task\Barcode;
+namespace Message\Mothership\Commerce\Product\Barcode;
 
 use Message\Cog\Console\Task\Task;
 
-class GenerateAll extends Task
+class GenerateTask extends Task
 {
 	public function process()
 	{
