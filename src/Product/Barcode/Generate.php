@@ -36,6 +36,14 @@ class Generate
 		'gif',
 	];
 
+	/**
+	 * @param Query $query                     Database query object for selecting barcode data
+	 * @param ImageResource $imageResource     ImageResource object for handling the barcode files
+	 * @param $height int                      Height of barcode to generate (pixels)
+	 * @param $width int                       Width of barcode to generate (1 is a standard)
+	 * @param $fileExt string                  File extension for marcode images
+	 * @param $type string                     Type of barcode, i.e. 'code39'
+	 */
 	public function __construct(Query $query, ImageResource $imageResource, $height, $width, $fileExt, $type)
 	{
 		$this->_query         = $query;
