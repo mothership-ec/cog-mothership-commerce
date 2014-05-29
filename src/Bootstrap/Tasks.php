@@ -9,8 +9,8 @@ use Message\Mothership\Commerce\Product;
 
 class Tasks implements TasksInterface
 {
-    public function registerTasks($tasks)
-    {
+	public function registerTasks($tasks)
+	{
         // Order related ports
         $tasks->add(new Task\Porting\Order\OrderSummary('commerce:porting:order:summary'), 'Ports order_summary from pre mothership');
         $tasks->add(new Task\Porting\Order\OrderShipping('commerce:porting:order:shipping'), 'Ports order_shipping from pre mothership');
@@ -38,5 +38,7 @@ class Tasks implements TasksInterface
         $tasks->add(new Forex\FetchDataTask('commerce:forex:fetch'), 'Fetches the lastest forex data from the feed');
 
         $tasks->add(new Product\Stock\StockSnapshot('commerce:stock:snapshot'), 'Creates a snapshot of current stock levels');
-    }
+
+		$tasks->add(new Product\Barcode\GenerateTask('commerce:barcode:generate'), 'Creates barcode images for all units in the database');
+	}
 }
