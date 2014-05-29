@@ -201,7 +201,7 @@ class Generate
 				u.barcode,
 				up.price,
 				up.currency_id AS currency,
-				GROUP_CONCAT(o.option_value, ', ') AS text
+				GROUP_CONCAT(DISTINCT o.option_value SEPARATOR ', ') AS text
 			FROM
 				product_unit AS u
 			LEFT JOIN
