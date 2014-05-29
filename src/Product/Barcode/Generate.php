@@ -24,11 +24,29 @@ class Generate
 	 */
 	protected $_imageResource;
 
-	protected $_height      = 60;
-	protected $_width       = 1;
-	protected $_fileExt     = 'png';
-	protected $_barcodeType = 'code39';
+	/**
+	 * @var int
+	 */
+	protected $_height;
 
+	/**
+	 * @var int
+	 */
+	protected $_width;
+
+	/**
+	 * @var string
+	 */
+	protected $_fileExt;
+
+	/**
+	 * @var string
+	 */
+	protected $_barcodeType;
+
+	/**
+	 * @var array
+	 */
 	protected $_supportedImageTypes = [
 		'png',
 		'jpg',
@@ -36,26 +54,23 @@ class Generate
 		'gif',
 	];
 
+	/**
+	 * @param Query $query                     Database query object for selecting barcode data
+	 * @param ImageResource $imageResource     ImageResource object for handling the barcode files
+	 * @param $height int                      Height of barcode to generate (pixels)
+	 * @param $width int                       Width of barcode to generate (1 is a standard)
+	 * @param $fileExt string                  File extension for marcode images
+	 * @param $type string                     Type of barcode, i.e. 'code39'
+	 */
 	public function __construct(Query $query, ImageResource $imageResource, $height, $width, $fileExt, $type)
 	{
 		$this->_query         = $query;
 		$this->_imageResource = $imageResource;
 
-		if ($height) {
-			$this->setHeight($height);
-		}
-
-		if ($width) {
-			$this->setWidth($width);
-		}
-
-		if ($fileExt) {
-			$this->setFileExt($fileExt);
-		}
-
-		if ($type) {
-			$this->setBarcodeType($type);
-		}
+		$this->setHeight($height);
+		$this->setWidth($width);
+		$this->setFileExt($fileExt);
+		$this->setBarcodeType($type);
 	}
 
 	public function getOneOfEach()
@@ -218,7 +233,7 @@ class Generate
 					up.price, pp.price
 				) AS price,
 				up.currency_id AS currency,
-				GROUP_CONCAT(o.option_value, ', ') AS text
+				GROUP_CONCAT(DISTINCT o.option_value SEPARATOR ', ') AS text
 			FROM
 				product_unit AS u
 			LEFT JOIN
