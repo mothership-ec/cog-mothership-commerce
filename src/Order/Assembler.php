@@ -183,7 +183,7 @@ class Assembler
 			$this->_prepareEntity($name, $entity);
 		}
 
-		$this->_order->{$name}->remove($entity);
+		$this->_order->{$name}->remove($entity->id);
 
 		return $this->dispatchEvent();
 	}
