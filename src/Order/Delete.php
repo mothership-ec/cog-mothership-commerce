@@ -11,8 +11,11 @@ use Message\User\UserInterface;
 
 /**
  * Decorator for deleting orders.
+ *
+ * @author Eleanor Shakeshaft <eleanor@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Delete
+class Delete implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_currentUser;
@@ -27,6 +30,18 @@ class Delete
 	{
 		$this->_query           = $query;
 		$this->_currentUser     = $user;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return Delete Returns $this for chainability
+	 */
+	public function setTransaction(DB\Transaction $transaction)
+	{
+		$this->_query = $transaction;
+
+		return $this;
 	}
 
 	/**

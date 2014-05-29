@@ -35,6 +35,7 @@ class Loader implements Transaction\RecordLoaderInterface
 		$this->_statuses     = $statuses;
 		$this->_itemStatuses = $itemStatuses;
 		$this->_entities     = $entities;
+		$this->_prepareEntities();
 	}
 
 	public function getEntities()
@@ -62,7 +63,6 @@ class Loader implements Transaction\RecordLoaderInterface
 		}
 
 		$loader = $this->_entities[$name]->getLoader();
-		$loader->setOrderLoader($this);
 
 		return $loader;
 	}
@@ -369,5 +369,18 @@ class Loader implements Transaction\RecordLoaderInterface
 		});
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	/**
+	 * Prepares entities by setting their loaders' order loader to $this.
+	 * This is necessary to make sure the entity loaders will always have an
+	 * order loader.
+	 */
+	protected function _prepareEntities()
+	{
+		foreach ($this->_entities as $entity) {
+			$loader = $entity->getLoader();
+			$loader->setOrderLoader($this);
+		}
 	}
 }

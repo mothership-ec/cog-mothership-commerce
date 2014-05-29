@@ -58,8 +58,10 @@ class CreateListener extends BaseListener implements SubscriberInterface
 				$transaction->records->add($payment);
 			}
 
-			$transaction->type =
-				($order->status->code === Statuses::PAYMENT_PENDING ? Types::CONTRACT_INITIATION : Types::ORDER);
+			// $transaction->type =
+			// 	($order->status->code === Statuses::PAYMENT_PENDING ? Types::CONTRACT_INITIATION : Types::ORDER);
+
+			$transaction->type = Types::ORDER;
 
 			$this->get('order.transaction.create')
 				->setDbTransaction($event->getTransaction())

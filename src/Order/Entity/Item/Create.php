@@ -41,7 +41,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Sets transaction and sets $_transOverridden to true.
-	 * 
+	 *
 	 * @param  DB\Transaction $trans transaction
 	 * @return Create                $this for chainability
 	 */
@@ -126,7 +126,7 @@ class Create implements DB\TransactionalInterface
 			'stockLocation'  => $item->stockLocation->name,
 		));
 
-		$sqlVariable = 'ITEM_ID_' . spl_object_hash($item);
+		$sqlVariable = 'ITEM_ID_' . uniqid();
 
 		$this->_query->setIDVariable($sqlVariable);
 		$item->id = '@' . $sqlVariable;
