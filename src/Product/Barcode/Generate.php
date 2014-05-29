@@ -24,11 +24,29 @@ class Generate
 	 */
 	protected $_imageResource;
 
-	protected $_height      = 60;
-	protected $_width       = 1;
-	protected $_fileExt     = 'png';
-	protected $_barcodeType = 'code39';
+	/**
+	 * @var int
+	 */
+	protected $_height;
 
+	/**
+	 * @var int
+	 */
+	protected $_width;
+
+	/**
+	 * @var string
+	 */
+	protected $_fileExt;
+
+	/**
+	 * @var string
+	 */
+	protected $_barcodeType;
+
+	/**
+	 * @var array
+	 */
 	protected $_supportedImageTypes = [
 		'png',
 		'jpg',
@@ -49,21 +67,10 @@ class Generate
 		$this->_query         = $query;
 		$this->_imageResource = $imageResource;
 
-		if ($height) {
-			$this->setHeight($height);
-		}
-
-		if ($width) {
-			$this->setWidth($width);
-		}
-
-		if ($fileExt) {
-			$this->setFileExt($fileExt);
-		}
-
-		if ($type) {
-			$this->setBarcodeType($type);
-		}
+		$this->setHeight($height);
+		$this->setWidth($width);
+		$this->setFileExt($fileExt);
+		$this->setBarcodeType($type);
 	}
 
 	public function getOneOfEach()

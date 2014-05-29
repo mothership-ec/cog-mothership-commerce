@@ -18,11 +18,11 @@ class ImageResource
 	const PUBLIC_PATH      = 'cog://public';
 
 	/**
-	 * @param $barcode
-	 * @param $type
-	 * @param $fileExt
-	 * @param $height
-	 * @param $width
+	 * @param $barcode string
+	 * @param $type string
+	 * @param $fileExt string
+	 * @param $height int
+	 * @param $width int
 	 *
 	 * @return resource
 	 */

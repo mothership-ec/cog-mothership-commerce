@@ -11,13 +11,44 @@ namespace Message\Mothership\Commerce\Product\Barcode;
  */
 class Barcode
 {
+	/**
+	 * @var int
+	 */
 	public $unitID;
+
+	/**
+	 * @var string
+	 */
 	public $brand;
+
+	/**
+	 * @var string
+	 */
 	public $name;
+
+	/**
+	 * @var string
+	 */
 	public $barcode;
+
+	/**
+	 * @var float
+	 */
 	public $price;
+
+	/**
+	 * @var string
+	 */
 	public $currency;
+
+	/**
+	 * @var string
+	 */
 	public $text;
+
+	/**
+	 * @var string
+	 */
 	public $url;
 
 	/**
