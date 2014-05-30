@@ -582,15 +582,11 @@ class Services implements ServicesInterface
 	public function registerStatisticsDatasets($services)
 	{
 		$services->extend('statistics', function($statistics, $c) {
-			$factory = $c['statistics.dataset.factory'];
-
-			$statistics->addDatasets([
-				$factory->create('orders.in.weekly',      $factory::COUNTER,     $factory::WEEKLY),
-				$factory->create('orders.out.weekly',     $factory::COUNTER,     $factory::WEEKLY),
-				$factory->create('sales.net.daily',       $factory::COUNTER,     $factory::DAILY),
-				$factory->create('sales.gross.daily',     $factory::COUNTER,     $factory::DAILY),
-				$factory->create('products.sales.weekly', $factory::KEY_COUNTER, $factory::WEEKLY),
-			]);
+			$statistics->add(new Commerce\Statistic\OrdersIn     ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\OrdersOut    ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\SalesNet     ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\SalesGross   ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\ProductsSales($c['db.query'], $c['statistics.counter.key'], $c['statistics.range.date']));
 
 			return $statistics;
 		});

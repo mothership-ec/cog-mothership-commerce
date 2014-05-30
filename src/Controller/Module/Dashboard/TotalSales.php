@@ -18,9 +18,9 @@ class TotalSales extends Controller
 	 */
 	public function index()
 	{
-		$dataset  = $this->get('statistics')->get('sales.net.daily');
-		$net      = $dataset->getRange($dataset::WEEK_AGO);
-		$totalNet = $dataset->getTotal($dataset::WEEK_AGO);
+		$dataset  = $this->get('statistics')->get('sales.net');
+		$net      = $dataset->range->getValues($dataset->range->getWeekAgo());
+		$totalNet = $dataset->range->getTotal($dataset->range->getWeekAgo());
 
 		$rows = [];
 
