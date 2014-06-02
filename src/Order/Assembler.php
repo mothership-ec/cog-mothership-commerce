@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order;
 
+use Message\Mothership\Commerce\Payment;
 use Message\Mothership\Commerce\Shipping;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
@@ -315,7 +316,7 @@ class Assembler
 		return $this->setQuantity($unit, $quantity);
 	}
 
-	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
+	public function addPayment(Payment\MethodInterface $paymentMethod, $amount, $reference)
 	{
 		$payment            = new Entity\Payment\Payment;
 		$payment->method    = $paymentMethod;
