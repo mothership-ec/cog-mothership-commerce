@@ -25,7 +25,7 @@ class TotalSales extends Controller
 		$rows = [];
 
 		// Pre-fill rows with a total of 0 on each day before the last to
-		// ensure we don't lose days where there are is no value.
+		// ensure we don't lose days where there is no value.
 		$last = key(array_reverse($net, true));
 		$day = 60*60*24;
 		for ($i = $last - $day * 6; $i <= $last; $i += $day) {
