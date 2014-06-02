@@ -159,12 +159,7 @@ class EventListener implements SubscriberInterface
 		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
-			$item->gross = round($item->actualPrice - $item->discount, 2);
-
-			if ('inclusive' === $item->taxStrategy) {
-				$item->gross = round($item->gross - $this->_calculateInclusiveTax($item->gross, $item->productTaxRate), 2);
-			}
-
+			$item->gross   = $item->basePrice - $item->discount;
 			$item->taxRate = 0;
 			$item->tax     = 0;
 			$item->net     = $item->gross;
