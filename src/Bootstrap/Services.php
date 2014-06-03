@@ -389,6 +389,14 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$services['product.searcher'] = $services->factory(function($c) {
+			return new Commerce\Product\Searcher(
+				$c['db.query'],
+				$c['product.loader'],
+				3
+			);
+		});
+
 		$services['product.create'] = $services->factory(function($c) {
 			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
 
