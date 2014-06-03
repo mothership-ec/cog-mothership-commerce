@@ -14,11 +14,24 @@ use Message\Cog\DB\Result;
 
 class Loader implements LoaderInterface
 {
+	/**
+	 * @var \Message\Cog\DB\Query
+	 */
 	protected $_query;
+
+	/**
+	 * @var \Message\Cog\Localisation\Locale
+	 */
 	protected $_locale;
+
+	/**
+	 * @var \Message\Mothership\Commerce\Product\Loader
+	 */
+	protected $_productLoader;
 
 	protected $_loadInvisible  = true;
 	protected $_loadOutOfStock = false;
+
 	protected $_prices;
 
 	protected $_returnArray = false;
@@ -28,6 +41,7 @@ class Loader implements LoaderInterface
 	 *
 	 * @param Query  $query  Query Object
 	 * @param Locale $locale Locale Object
+	 * @param array $prices
 	 */
 	public function __construct(Query $query, Locale $locale, array $prices)
 	{
@@ -38,6 +52,7 @@ class Loader implements LoaderInterface
 
 	public function setProductLoader(ProductLoader $loader)
 	{
+		$loader->includeDeleted(true);
 		$this->_productLoader = $loader;
 	}
 
@@ -116,12 +131,13 @@ class Loader implements LoaderInterface
 	}
 
 	/**
-	 * Handles loading of the given units and returning them
+	 * @param $unitIDs                     $unitIDs Array or single untiID to load
+	 * @param bool $alwaysReturnArray
+	 * @param Product $product             $product Product associated to the product
+	 * @param null $revisionID
+	 * @throws \RuntimeException
 	 *
-	 * @param  int|array  	$unitIDs Array or single untiID to load
-	 * @param  Product 		$product Product associated to the product
-	 *
-	 * @return array|Unit 	Array of, or singular Unit object
+	 * @return array|bool|mixed             Array of, or singular Unit object
 	 */
 	protected function _load($unitIDs, $alwaysReturnArray = false, Product $product = null, $revisionID = null)
 	{

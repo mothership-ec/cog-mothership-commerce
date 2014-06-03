@@ -24,11 +24,29 @@ class Generate
 	 */
 	protected $_imageResource;
 
-	protected $_height      = 60;
-	protected $_width       = 1;
-	protected $_fileExt     = 'png';
-	protected $_barcodeType = 'code39';
+	/**
+	 * @var int
+	 */
+	protected $_height;
 
+	/**
+	 * @var int
+	 */
+	protected $_width;
+
+	/**
+	 * @var string
+	 */
+	protected $_fileExt;
+
+	/**
+	 * @var string
+	 */
+	protected $_barcodeType;
+
+	/**
+	 * @var array
+	 */
 	protected $_supportedImageTypes = [
 		'png',
 		'jpg',
@@ -36,61 +54,28 @@ class Generate
 		'gif',
 	];
 
+	/**
+	 * @param Query $query                     Database query object for selecting barcode data
+	 * @param ImageResource $imageResource     ImageResource object for handling the barcode files
+	 * @param $height int                      Height of barcode to generate (pixels)
+	 * @param $width int                       Width of barcode to generate (1 is a standard)
+	 * @param $fileExt string                  File extension for marcode images
+	 * @param $type string                     Type of barcode, i.e. 'code39'
+	 */
 	public function __construct(Query $query, ImageResource $imageResource, $height, $width, $fileExt, $type)
 	{
 		$this->_query         = $query;
 		$this->_imageResource = $imageResource;
 
-		if ($height) {
-			$this->setHeight($height);
-		}
-
-		if ($width) {
-			$this->setWidth($width);
-		}
-
-		if ($fileExt) {
-			$this->setFileExt($fileExt);
-		}
-
-		if ($type) {
-			$this->setBarcodeType($type);
-		}
+		$this->setHeight($height);
+		$this->setWidth($width);
+		$this->setFileExt($fileExt);
+		$this->setBarcodeType($type);
 	}
 
 	public function getOneOfEach()
 	{
 		return $this->_getBarcodes();
-	}
-
-	/**
-	 * @param $quantities array    Array of unit IDs and quanities. The key is the unit ID and the value is the quantity
-	 * @param $offset int          Number of empty barcodes to append to list
-	 */
-	public function getBarcodes(array $quantities, $offset = 0)
-	{
-		$offset   = (int) $offset;
-		$unitIDs  = array_flip($quantities);
-		$toPrint  = [];
-		$barcodes = $this->_getBarcodes($unitIDs);
-
-		for ($i = 0; $i < $offset; $i++) {
-			$toPrint[] = null;
-		}
-
-		foreach ($barcodes as $barcode) {
-			if (array_key_exists($barcode->unitID, $quantities)) {
-				$quantity = (int) $quantities[$barcode->unitID];
-				for ($i = 0; $i < $quantity; $i++) {
-					$toPrint[] = $barcode;
-				}
-			}
-			else {
-				throw new \LogicException($barcode->unitID . ' not set in quantity list');
-			}
-		}
-
-		return $toPrint;
 	}
 
 	/**
@@ -202,11 +187,11 @@ class Generate
 	 * load the products efficiently enough and will break if the load is too high, so this binds to a lightweight
 	 * Barcode object to mitigate this problem, see https://github.com/messagedigital/cog-mothership-commerce/issues/297
 	 *
-	 * @param $unitIDs null | array                  Not currently used but will be useful when dealing with individual units
+	 * @param $unitIDs array                  Not currently used but will be useful when dealing with individual units
 	 *
 	 * @return \Message\Cog\DB\Result
 	 */
-	protected function _getBarcodes(array $unitIDs = null)
+	protected function _getBarcodes($unitIDs = [])
 	{
 		$barcodes = $this->_query->run("
 			SELECT DISTINCT
@@ -214,19 +199,13 @@ class Generate
 				p.brand,
 				p.name,
 				u.barcode,
-				IFNULL(
-					up.price, pp.price
-				) AS price,
+				up.price,
 				up.currency_id AS currency,
-				GROUP_CONCAT(o.option_value, ', ') AS text
+				GROUP_CONCAT(DISTINCT o.option_value SEPARATOR ', ') AS text
 			FROM
 				product_unit AS u
 			LEFT JOIN
 				product AS p
-			USING
-				(product_id)
-			LEFT JOIN
-				product_price AS pp
 			USING
 				(product_id)
 			LEFT JOIN
@@ -242,17 +221,11 @@ class Generate
 			AND
 				barcode != ''
 			AND
-				(
-						up.type = :retail?s
-					OR
-						pp.type = :retail?s
-				)
-			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
+				up.type = :retail?s
 			GROUP BY
 				u.unit_id
 		", [
-			'retail'  => 'retail',
-			'unitIDs' => $unitIDs,
+			'retail' => 'retail',
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
