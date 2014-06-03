@@ -26,9 +26,12 @@ class Create implements DB\TransactionalInterface
 	protected $_trans;
 	protected $_transOverridden = false;
 
-	public function __construct(DB\Transaction $trans, Loader $loader,
-		DispatcherInterface $eventDispatcher, UserInterface $currentUser)
-	{
+	public function __construct(
+		DB\Transaction $trans,
+		Loader $loader,
+		DispatcherInterface $eventDispatcher,
+		UserInterface $currentUser
+	) {
 		$this->_trans           = $trans;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
@@ -58,7 +61,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$event = new Event\TransactionalRefundEvent($refund);
+		$event = new Event\TransactionalEvent($refund);
 		$event->setTransaction($this->_trans);
 
 		$refund = $this->_eventDispatcher->dispatch(

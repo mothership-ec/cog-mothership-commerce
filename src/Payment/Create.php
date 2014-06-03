@@ -27,9 +27,12 @@ class Create implements DB\TransactionalInterface
 	protected $_trans;
 	protected $_transOverridden = false;
 
-	public function __construct(DB\Transaction $query, Loader $loader,
-		DispatcherInterface $eventDispatcher, UserInterface $currentUser)
-	{
+	public function __construct(
+		DB\Transaction $query,
+		Loader $loader,
+		DispatcherInterface $eventDispatcher,
+		UserInterface $currentUser
+	) {
 		$this->_trans           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
@@ -70,7 +73,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($payment);
 
-		$event = new Event\TransactionalPaymentEvent($payment);
+		$event = new Event\TransactionalEvent($payment);
 		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
