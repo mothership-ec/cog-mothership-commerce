@@ -1,31 +1,32 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product;
+namespace Message\Mothership\Commerce\Product\Category;
 
 use Message\Cog\DB\Query;
-
 
 /**
  * Simple class for loading category options out of the database
  */
-class CategoryLoader
+class Loader
 {
+	/**
+	 * @var \Message\Cog\DB\Query
+	 */
 	protected $_query;
-	protected $_locale;
 
 	public function __construct(Query $query)
 	{
-		$this->_query = $query;
+		$this->_query	= $query;
 	}
 
-	public function getAll()
+	public function getCategories()
 	{
-		$result = $this->_query->run(
-			'SELECT DISTINCT
+		$result	= $this->_query->run("
+			SELECT DISTINCT
 				category
 			FROM
-				product'
-		);
+				product
+		");
 
 		return $result->flatten();
 	}
