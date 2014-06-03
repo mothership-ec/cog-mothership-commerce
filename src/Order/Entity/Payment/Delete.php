@@ -2,59 +2,52 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
-use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Cog\ValueObject\Authorship;
+use Message\Mothership\Commerce\Payment\Delete as BaseDelete;
 
 use Message\Cog\DB;
-use Message\Cog\DB\Result;
-use Message\User\UserInterface;
 
 /**
- * Decorator for deleting payments.
+ * Decorator for deleting order payments.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Delete
+class Delete implements DB\TransactionalInterface
 {
-	protected $_query;
-	protected $_currentUser;
+	protected $_paymentDelete;
 
 	/**
-	 * Constructor.
+	 * Constructor
 	 *
-	 * @param DB\Query            $query          The database query instance to use
-	 * @param UserInterface       $currentUser    The currently logged in user
+	 * @param BaseDelete $paymentDelete Base payment delete decorator
 	 */
-	public function __construct(DB\Query $query, UserInterface $user)
+	public function __construct(BaseDelete $paymentDelete)
 	{
-		$this->_query           = $query;
-		$this->_currentUser     = $user;
+		$this->_paymentDelete = $paymentDelete;
 	}
 
 	/**
-	 * Delete a payment by marking it as deleted in the database.
+	 * {@inheritDoc}
+	 */
+	public function setTransaction(DB\Transaction $transaction)
+	{
+		$this->_paymentDelete->setTransaction($transaction);
+
+		return $this;
+	}
+
+	/**
+	 * Delete an order payment.
 	 *
-	 * @param  Payment     $payment The payment to be deleted
+	 * @see Message\Mothership\Commerce\Payment\Delete::delete
 	 *
-	 * @return Payment     The payment that was deleted, with the "delete" authorship data set
+	 * @param  Payment $payment The payment to delete
+	 *
+	 * @return Payment          The deleted payment
 	 */
 	public function delete(Payment $payment)
 	{
-		$payment->authorship->delete(new DateTimeImmutable, $this->_currentUser->id);
-
-		$result = $this->_query->run('
-			UPDATE
-				order_payment
-			SET
-				deleted_at = :at?d,
-				deleted_by = :by?in
-			WHERE
-				payment_id = :id?i
-		', array(
-			'at' => $payment->authorship->deletedAt(),
-			'by' => $payment->authorship->deletedBy(),
-			'id' => $payment->id,
-		));
+		$payment->payment = $this->_paymentDelete->delete($payment->payment);
 
 		return $payment;
 	}
-
 }

@@ -2,25 +2,17 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
+use Message\Mothership\Commerce\Payment\MethodInterface as BaseMethodInterface;
+
 /**
  * Interface defining a payment method.
  *
+ * @see Message\Mothership\Commerce\Payment\MethodInterface
+ *
+ * @deprecated Left here for BC. To be removed.
+ *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-interface MethodInterface
+interface MethodInterface extends BaseMethodInterface
 {
-	/**
-	 * Get the name for the payment method used internally as an identifier.
-	 *
-	 * @return string
-	 */
-	public function getName();
-
-	/**
-	 * Get the name for the payment method that is suitable to be displayed to
-	 * users.
-	 *
-	 * @return string
-	 */
-	public function getDisplayName();
 }
