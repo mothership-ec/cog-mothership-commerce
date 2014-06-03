@@ -92,6 +92,10 @@ class Generate
 		$toPrint  = [];
 		$barcodes = $this->_getBarcodes($unitIDs);
 
+		if (count($barcodes) === 0) {
+			return $toPrint;
+		}
+
 		for ($i = 0; $i < $offset; $i++) {
 			$toPrint[] = null;
 		}
