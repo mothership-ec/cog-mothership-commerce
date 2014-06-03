@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Controller\Order\Cancel;
 use Message\Mothership\Commerce\Order\CancellationRefund;
 use Message\Mothership\Commerce\Order\Entity\Payment\Payment as OrderPayment;
 use Message\Mothership\Commerce\Order\Entity\Refund\Refund as OrderRefund;
-use Message\Mothership\Commerce\Order\Entity\Payment\MethodInterface;
+use Message\Mothership\Commerce\Payment\MethodInterface;
 use Message\Mothership\Ecommerce\Controller\Gateway\CompleteControllerInterface;
 use Message\Mothership\Commerce\Payable\PayableInterface;
 
