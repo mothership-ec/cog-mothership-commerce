@@ -584,7 +584,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Stock\Movement\Reason\Collection([
 				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
 				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
-				new Commerce\Product\Stock\Movement\Reason\Reason('stock_take', 'Stock Take'),
+				new Commerce\Product\Stock\Movement\Reason\Reason(
+					\Message\Mothership\Commerce\Task\Stock\Barcode::REASON,
+					'Stock Take'
+				),
 			]);
 		};
 
