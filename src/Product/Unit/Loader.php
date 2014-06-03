@@ -131,10 +131,10 @@ class Loader implements LoaderInterface
 	}
 
 	/**
-	 * @param $unitIDs                     $unitIDs Array or single untiID to load
+	 * @param int | array $unitIDs         $unitIDs Array or single untiID to load
 	 * @param bool $alwaysReturnArray
 	 * @param Product $product             $product Product associated to the product
-	 * @param null $revisionID
+	 * @param int | null $revisionID
 	 * @throws \RuntimeException
 	 *
 	 * @return array|bool|mixed             Array of, or singular Unit object

@@ -46,14 +46,14 @@ class Barcode extends Task
 		$this->addArgument(
 			'clearStock',
 			InputArgument::OPTIONAL,
-			'Reset all stock levels before running script (set as 1)',
+			'Reset all stock levels in location before running script (set as 1)',
 			0
 		);
 
 		$this->addArgument(
 			'location',
 			InputArgument::OPTIONAL,
-			'Reset all stock levels before running script (set as 1)',
+			'Select which stock location to adjust (defaults to web)',
 			'web'
 		);
 	}
