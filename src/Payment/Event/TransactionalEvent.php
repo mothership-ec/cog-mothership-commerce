@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Payment\Event;
 
 use Message\Mothership\Commerce\Payment\Payment;
 
-use Message\Cog\Event\Event;
 use Message\Cog\DB;
 
 /**
@@ -12,7 +11,7 @@ use Message\Cog\DB;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class TransactionalPaymentEvent extends PaymentEvent implements DB\TransactionalInterface
+class TransactionalEvent extends Event implements DB\TransactionalInterface
 {
 	protected $_trans;
 
@@ -24,6 +23,11 @@ class TransactionalPaymentEvent extends PaymentEvent implements DB\Transactional
 		$this->_trans = $trans;
 	}
 
+	/**
+	 * Get the database transaction for this event.
+	 *
+	 * @return DB\Transaction
+	 */
 	public function getTransaction()
 	{
 		return $this->_trans;
