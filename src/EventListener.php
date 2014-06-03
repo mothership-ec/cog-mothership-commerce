@@ -188,48 +188,46 @@ class EventListener extends BaseListener implements SubscriberInterface
 	}
 
 	/**
-	 * Increment the orders.in.weekly stat.
+	 * Increment the orders.in stat.
 	 *
 	 * @param  Event\Event $event
 	 */
 	public function recordOrderIn(Event\Event $event)
 	{
-		$this->get('statistics')->get('orders.in.weekly')
-			->increment();
+		$this->get('statistics')->get('orders.in')->counter->increment();
 	}
 
 	/**
-	 * Increment the orders.out.weekly stat.
+	 * Increment the orders.out stat.
 	 *
 	 * @param  Event\Event $event
 	 */
 	public function recordOrderOut(Event\Event $event)
 	{
-		$this->get('statistics')->get('orders.out.weekly')
-			->increment();
+		$this->get('statistics')->get('orders.out')->counter->increment();
 	}
 
 	/**
-	 * Increment the sales.net.daily stat with the orders total net.
+	 * Increment the sales.net stat with the orders total net.
 	 *
 	 * @param  Event\Event $event
 	 */
 	public function recordSalesNet(Event\Event $event)
 	{
-		$this->get('statistics')->get('sales.net.daily')
-			->increment($event->getOrder()->totalNet);
+		$this->get('statistics')->get('sales.net')
+			->counter->increment($event->getOrder()->totalNet);
 	}
 
 	/**
-	 * Increment the products.sales.weekly stat for each product ordered.
+	 * Increment the products.sales stat for each product ordered.
 	 *
 	 * @param  Event\Event $event
 	 */
 	public function recordProductsSales(Event\Event $event)
 	{
-		$dataset = $this->get('statistics')->get('products.sales.weekly');
+		$dataset = $this->get('statistics')->get('products.sales');
 		foreach ($event->getOrder()->getItemRows() as $unitID => $items) {
-			$dataset->incrementKey($unitID, count($items));
+			$dataset->counter->increment($unitID, count($items));
 		}
 	}
 }
