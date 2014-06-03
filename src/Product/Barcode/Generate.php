@@ -79,6 +79,39 @@ class Generate
 	}
 
 	/**
+	 * @param $quantities array    Array of unit IDs and quanities. The key is the unit ID and the value is the quantity
+	 * @param $offset int          Number of empty barcodes to append to list
+	 * @throws \LogicException     Throws exception if a barcode is loaded for a unit that isn't in the $quantities array
+	 *
+	 * @return array               Returns array of barcodes including duplicates and offset
+	 */
+	public function getUnitBarcodes(array $quantities, $offset = 0)
+	{
+		$offset   = (int) $offset;
+		$unitIDs  = array_flip($quantities);
+		$toPrint  = [];
+		$barcodes = $this->_getBarcodes($unitIDs);
+
+		for ($i = 0; $i < $offset; $i++) {
+			$toPrint[] = null;
+		}
+
+		foreach ($barcodes as $barcode) {
+			if (array_key_exists($barcode->unitID, $quantities)) {
+				$quantity = (int) $quantities[$barcode->unitID];
+				for ($i = 0; $i < $quantity; $i++) {
+					$toPrint[] = $barcode;
+				}
+			}
+			else {
+				throw new \LogicException($barcode->unitID . ' not set in quantity list');
+			}
+		}
+
+		return $toPrint;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getHeight()
@@ -222,11 +255,13 @@ class Generate
 				barcode != ''
 			AND
 				up.type = :retail?s
+			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
 			GROUP BY
 				u.unit_id
 		", [
-			'retail' => 'retail',
-		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
+			'retail'  => 'retail',
+			'unitIDs' => $unitIDs,
+			])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
 			$code          = $barcode->getBarcode();

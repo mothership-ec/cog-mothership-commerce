@@ -39,7 +39,7 @@ class Barcode extends Controller
 
 			if (count($quantities) > 0) {
 				$offset   = (int) $data['offset'] ?: 0;
-				$barcodes = $this->get('product.barcode.generate')->getBarcodes($quantities, $offset);
+				$barcodes = $this->get('product.barcode.generate')->getUnitBarcodes($quantities, $offset);
 
 				return $this->forward('Message:Mothership:Commerce::Controller:Product:Barcode#printBarcodes', [
 					'barcodes' => $barcodes,
