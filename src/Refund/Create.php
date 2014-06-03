@@ -61,7 +61,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($refund);
 
-		$event = new Event\TransactionalRefundEvent($refund);
+		$event = new Event\TransactionalEvent($refund);
 		$event->setTransaction($this->_trans);
 
 		$refund = $this->_eventDispatcher->dispatch(

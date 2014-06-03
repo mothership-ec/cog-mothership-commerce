@@ -73,7 +73,7 @@ class Create implements DB\TransactionalInterface
 
 		$this->_validate($payment);
 
-		$event = new Event\TransactionalPaymentEvent($payment);
+		$event = new Event\TransactionalEvent($payment);
 		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
