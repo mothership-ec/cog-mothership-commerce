@@ -8,7 +8,7 @@ class Search extends Controller
 {
 	public function index()
 	{
-		$form = $this->getForm();
+		$form = $this->get('product.form.search');
 
 		return $this->render('Message:Mothership:Commerce::product:search', array(
 			'form' => $form,
@@ -17,9 +17,10 @@ class Search extends Controller
 
 	public function process()
 	{
-		$form = $this->getForm();
+		$form = $this->get('product.form.search');
+		$form->handleRequest();
 
-		if (!$form->isValid() || !$data = $form->getFilteredData()) {
+		if (!$form->isValid() || !$data = $form->getData()) {
 			// Add error
 			return $this->redirectToReferer();
 		}
