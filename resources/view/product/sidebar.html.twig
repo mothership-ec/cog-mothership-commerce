@@ -3,13 +3,13 @@
 <a href="{{ url('ms.commerce.product.create')}}" class="button small create product" data-live>Add a new product</a>
 
 <ol class="menu">
-{% for category, products in listing %}
-	<li><a href="#">{{ category }}</a>
-		<ol>
-		{% for product in products %}
-			<li><a href="{{ url('ms.commerce.product.edit.attributes', {productID:product.id}) }}" data-live>{{ product.name }}</a></li>
-		{% endfor %}
-		</ol>
-	</li>
-{% endfor %}
+	{% for category, products in listing %}
+		<li><a href="#">{{ category }}</a>
+			<ol>
+				{% for product in products %}
+					<li><a href="{{ url('ms.commerce.product.edit.attributes', {productID:product.id}) }}" data-live>{{ product.name }}</a></li>
+				{% endfor %}
+			</ol>
+		</li>
+	{% endfor %}
 </ol>
