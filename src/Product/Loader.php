@@ -89,7 +89,7 @@ class Loader
 
 	public function getByCategory($name, $limit = null)
 	{
-		if (null !== $limit && (!is_numeric($limit) || is_float($limit))) {
+		if (null !== $limit && !$this->_isWholeNumber($limit)) {
 			throw new \InvalidArgumentException('Limit must be a whole number');
 		}
 
@@ -168,7 +168,7 @@ class Loader
 
 	public function getByLimit($limit)
 	{
-		if (!is_numeric($limit) || is_float($limit)) {
+		if (!$this->_isWholeNumber($limit)) {
 			throw new \InvalidArgumentException('Limit must be a whole number');
 		}
 
@@ -207,7 +207,7 @@ class Loader
 
 	public function getBySearchTerms($terms, $limit = null)
 	{
-		if (null !== $limit && (!is_numeric($limit) || is_float($limit))) {
+		if (null !== $limit && !$this->_isWholeNumber($limit)) {
 			throw new \InvalidArgumentException('Limit must be a whole number');
 		}
 
@@ -438,6 +438,17 @@ class Loader
 	{
 		$product->details = $this->_detailLoader->load($product);
 		$product->type    = $this->_productTypes->get($type);
+	}
+
+	private function _isWholeNumber($value)
+	{
+		if (is_numeric($value)) {
+			$int = (int) $value;
+
+			return ($int == $value);
+		}
+
+		return false;
 	}
 
 }
