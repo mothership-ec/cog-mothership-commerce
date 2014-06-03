@@ -203,6 +203,7 @@ class Loader
 		];
 
 		$query = '(';
+		$where = [];
 
 		$searchParams = [];
 
@@ -210,22 +211,18 @@ class Loader
 			if (strlen($term) >= $minTermLength) {
 				$terms[$i] = $term = strtolower($term);
 
+				$whereFields = [];
 				foreach ($searchFields as $j => $field) {
-					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
-					if ($j != (count($searchFields) - 1)) {
-						$query .= ' OR ';
-					}
-				}
-
-				if ($i != (count($terms) - 1)) {
-					$query .= ' OR ';
+					$whereFields[] = 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
+					$where[] = implode(' OR ', $whereFields);
 				}
 
 				$searchParams['term' . $i] = '%' . $term . '%';
 			}
 		}
 
-		$query .= ')';
+
+		$query .= implode(' OR ', $where ) . ')';
 
 		$query = 'SELECT
 				p.product_id
