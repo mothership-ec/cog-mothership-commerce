@@ -2,12 +2,10 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
-use Message\User\UserInterface;
-
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Refund\Create as BaseCreate;
 
 use Message\Cog\DB;
-use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\Event\DispatcherInterface;
 
 /**
@@ -17,82 +15,85 @@ use Message\Cog\Event\DispatcherInterface;
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
+	protected $_trans;
 	protected $_loader;
 	protected $_eventDispatcher;
-	protected $_currentUser;
+	protected $_refundCreate;
 	protected $_transOverridden = false;
 
 	public function __construct(
 		DB\Transaction $query,
+		BaseCreate $refundCreate,
 		Loader $loader,
-		DispatcherInterface $eventDispatcher,
-		UserInterface $currentUser
+		DispatcherInterface $eventDispatcher
 	) {
-		$this->_query           = $query;
+		$this->_trans           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
-		$this->_currentUser     = $currentUser;
+		$this->_refundCreate    = $refundCreate;
+
+		// Set the base refund creator to use the same transaction
+		$this->_refundCreate->setTransaction($this->_trans);
 	}
 
 	/**
-	 * Sets transaction and sets $_transOverrriden to true.
-	 * 
-	 * @param  DBTransaction $trans transaction
-	 * @return Create               $this for chainability
+	 * Sets transaction and sets $_transOverridden to true.
+	 *
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
 	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
+		$this->_trans           = $trans;
 		$this->_transOverridden = true;
+
+		$this->_refundCreate->setTransaction($this->_trans);
 
 		return $this;
 	}
 
+	/**
+	 * Creates a refund.
+	 *
+	 * Dispatches Order\Events::ENTITY_CREATE and Order\Events::ENTITY_CREATE_END
+	 * events.
+	 *
+	 * Commits the transaction if $_transOverridden is false.
+	 *
+	 * @param  Refund $refund Refund to be created
+	 *
+	 * @return Refund          The created refund, reloaded if the transaction
+	 *                          was not overridden
+	 */
 	public function create(Refund $refund)
 	{
-		// Set create authorship data if not already set
-		if (!$refund->authorship->createdAt()) {
-			$refund->authorship->create(
-				new DateTimeImmutable,
-				$this->_currentUser->id
-			);
-		}
-
 		$this->_validate($refund);
 
-		$this->_query->run('
+		$event = new Order\Event\EntityEvent($refund->order, $refund);
+		$event->setTransaction($this->_trans);
+
+		$refund = $this->_eventDispatcher->dispatch(
+			Order\Events::ENTITY_CREATE,
+			$event
+		)->getEntity();
+
+		if (!$refund->refund->id) {
+			$this->_refundCreate->create($refund->refund);
+		}
+
+		$this->_trans->run('
 			INSERT INTO
 				order_refund
 			SET
-				order_id   = :orderID?i,
-				payment_id = :paymentID?in,
-				return_id  = :returnID?in,
-				created_at = :createdAt?d,
-				created_by = :createdBy?in,
-				method     = :method?sn,
-				amount     = :amount?f,
-				reason     = :reason?sn,
-				reference  = :reference?sn
-		', array(
-			'orderID'     => $refund->order->id,
-			'paymentID'   => $refund->payment ? $refund->payment->id : null,
-			'returnID'    => $refund->return ? $refund->return->id : null,
-			'createdAt'   => $refund->authorship->createdAt(),
-			'createdBy'   => $refund->authorship->createdBy(),
-			'method'      => $refund->method->getName(),
-			'amount'      => $refund->amount,
-			'reason'      => $refund->reason,
-			'reference'   => $refund->reference,
-		));
-
-		$sqlVariable = 'REFUND_ID_' . spl_object_hash($refund);
-
-		$this->_query->setIDVariable($sqlVariable);
-		$refund->id = '@' . $sqlVariable;
+				order_id  = :orderID?i,
+				refund_id = :refundID?i
+		', [
+			'orderID'  => $refund->order->id,
+			'refundID' => $refund->id,
+		]);
 
 		$event = new Order\Event\EntityEvent($refund->order, $refund);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$refund = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE_END,
@@ -100,9 +101,9 @@ class Create implements DB\TransactionalInterface
 		)->getEntity();
 
 		if (!$this->_transOverridden) {
-			$this->_query->commit();
+			$this->_trans->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $refund->order);
+			return $this->_loader->getByID($this->_trans->getIDVariable(str_replace('@', '', $refund->id)));
 		}
 
 		return $refund;
@@ -110,12 +111,20 @@ class Create implements DB\TransactionalInterface
 
 	protected function _validate(Refund $refund)
 	{
-		if (! $refund->order) {
+		if (!$refund->order) {
 			throw new \InvalidArgumentException('Could not create refund: no order specified');
 		}
 
-		if ($refund->amount <= 0) {
-			throw new \InvalidArgumentException('Could not create refund: amount must be greater than 0');
+		if (!$refund->refund->currencyID) {
+			$refund->refund->currencyID = $refund->order->currencyID;
+		}
+
+		if ($refund->order->currencyID !== $refund->refund->currencyID) {
+			throw new \InvalidArgumentException(sprintf(
+				'Could not create refund: currency ID (%s) must match order currency ID (%s)',
+				$refund->refund->currencyID,
+				$refund->order->currencyID
+			));
 		}
 	}
 }

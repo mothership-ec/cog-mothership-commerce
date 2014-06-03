@@ -10,6 +10,7 @@ namespace Message\Mothership\Commerce\Order;
 class Statuses
 {
 	const CANCELLED            = -300;
+	const PAYMENT_PENDING      = -100;
 	const AWAITING_DISPATCH    = 0;
 	const PROCESSING           = 500;
 	const PARTIALLY_DISPATCHED = 800;

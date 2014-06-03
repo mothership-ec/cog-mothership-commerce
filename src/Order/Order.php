@@ -11,8 +11,10 @@ use Message\Mothership\Commerce\Payable\PayableInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Order implements PayableInterface
+class Order implements PayableInterface, Transaction\RecordInterface
 {
+	const RECORD_TYPE = 'order';
+
 	public $id;
 	public $orderID; // alias of $id for BC
 
@@ -389,6 +391,37 @@ class Order implements PayableInterface
 		return $total;
 	}
 
+	/**
+	 * Get the sum of the payment amounts on the order.
+	 *
+	 * @return float
+	 */
+	public function getAmountPaid()
+	{
+		$paid = 0;
+
+		foreach ($this->payments as $payment) {
+			$paid += $payment->amount;
+		}
+
+		return $paid;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordID()
+	{
+		return $this->id;
+	}
 
 	/**
 	 * {@inheritDoc}

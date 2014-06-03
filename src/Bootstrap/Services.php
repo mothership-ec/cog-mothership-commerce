@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason;
+use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
 
 use Message\User\AnonymousUser;
 
@@ -29,10 +30,10 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order                       = $c['order'];
-				$order->locale               = $c['locale']->getId();
-				$order->currencyID           = 'GBP';
-				$order->type                 = 'web';
+				$order             = $c['order'];
+				$order->locale     = $c['locale']->getId();
+				$order->currencyID = 'GBP';
+				$order->type       = 'web';
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -81,11 +82,11 @@ class Services implements ServicesInterface
 				),
 				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['payment.loader'])
 				),
 				'refunds'    => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['refund.loader'])
 				),
 			);
 		});
@@ -125,8 +126,13 @@ class Services implements ServicesInterface
 					'items'     => $c['order.item.create'],
 					'notes'     => $c['order.note.create'],
 					'payments'  => $c['order.payment.create'],
+					'refunds'   => $c['order.refund.create'],
 				)
 			);
+		});
+
+		$services['order.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Delete($c['db.query'], $c['user.current']);
 		});
 
 		$services['order.edit'] = $services->factory(function($c) {
@@ -163,6 +169,10 @@ class Services implements ServicesInterface
 
 		$services['order.item.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Item\Create($c['db.transaction'], $c['order.item.loader'], $c['event.dispatcher'], $c['user.current']);
+		});
+
+		$services['order.item.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Item\Delete($c['db.query'], $c['user.current']);
 		});
 
 		$services['order.item.edit'] = $services->factory(function($c) {
@@ -220,10 +230,14 @@ class Services implements ServicesInterface
 		$services['order.payment.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Payment\Create(
 				$c['db.transaction'],
+				$c['payment.create'],
 				$c['order.payment.loader'],
-				$c['event.dispatcher'],
-				$c['user.current']
+				$c['event.dispatcher']
 			);
+		});
+
+		$services['order.payment.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Payment\Delete($c['payment.delete']);
 		});
 
 		// Order refund entity
@@ -234,18 +248,14 @@ class Services implements ServicesInterface
 		$services['order.refund.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Refund\Create(
 				$c['db.transaction'],
+				$c['refund.create'],
 				$c['order.refund.loader'],
-				$c['event.dispatcher'],
-				$c['user.current']
+				$c['event.dispatcher']
 			);
 		});
 
-		$services['order.refund.edit'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Refund\Edit(
-				$c['db.query'],
-				$c['order.refund.loader'],
-				$c['user.current']
-			);
+		$services['order.refund.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Refund\Delete($c['refund.delete']);
 		});
 
 		// Order note entity
@@ -261,21 +271,7 @@ class Services implements ServicesInterface
 				$c['event.dispatcher']);
 		});
 
-		// Available payment & despatch methods
-		$services['order.payment.methods'] = function($c) {
-			return new Commerce\Order\Entity\Payment\MethodCollection(array(
-				new Commerce\Order\Entity\Payment\Method\Card,
-				new Commerce\Order\Entity\Payment\Method\Cash,
-				new Commerce\Order\Entity\Payment\Method\Cheque,
-				new Commerce\Order\Entity\Payment\Method\Manual,
-
-				new Commerce\Order\Entity\Payment\Method\Paypal,
-				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
-				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
-				new Commerce\Order\Entity\Payment\Method\GiftVoucher,
-			));
-		};
-
+		// Available despatch methods
 		$services['order.dispatch.methods'] = function($c) {
 			return new Commerce\Order\Entity\Dispatch\MethodCollection;
 		};
@@ -288,6 +284,7 @@ class Services implements ServicesInterface
 		// Available order & item statuses
 		$services['order.statuses'] = function($c) {
 			return new Commerce\Order\Status\Collection(array(
+				new Commerce\Order\Status\Status(OrderStatuses::PAYMENT_PENDING,      'Payment Pending'),
 				new Commerce\Order\Status\Status(OrderStatuses::CANCELLED,            'Cancelled'),
 				new Commerce\Order\Status\Status(OrderStatuses::AWAITING_DISPATCH,    'Awaiting Dispatch'),
 				new Commerce\Order\Status\Status(OrderStatuses::PROCESSING,           'Processing'),
@@ -324,6 +321,56 @@ class Services implements ServicesInterface
 			return new Commerce\Order\EventListener\Assembler\StockCheckListener('web');
 		};
 
+		// Available transaction types
+		$services['order.transaction.types'] = function($c) {
+			return array(
+				TransactionTypes::ORDER               => 'Order',
+				TransactionTypes::CONTRACT_INITIATION => 'Contract Initiation',
+				TransactionTypes::CONTRACT_PAYMENT    => 'Contract Payment',
+			);
+		};
+
+		$services['order.transaction.loader'] = function($c) {
+			$orderLoader        = $c['order.loader'];
+			$itemLoader         = $c['order.item.loader'];
+			$paymentLoader      = $c['payment.loader'];
+			$refundLoader       = $c['refund.loader'];
+			$orderPaymentLoader = $c['order.payment.loader'];
+			$orderRefundLoader  = $c['order.refund.loader'];
+
+			$orderLoader->includeDeleted(true);
+			$itemLoader->includeDeleted(true);
+			$paymentLoader->includeDeleted(true);
+			$refundLoader->includeDeleted(true);
+			$orderPaymentLoader->includeDeleted(true);
+			$orderRefundLoader->includeDeleted(true);
+
+			return new Commerce\Order\Transaction\Loader($c['db.query'], array(
+				Commerce\Order\Order::RECORD_TYPE                  => $orderLoader,
+				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $itemLoader,
+				Commerce\Refund\Refund::RECORD_TYPE                => $refundLoader,
+				Commerce\Payment\Payment::RECORD_TYPE              => $paymentLoader,
+				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $orderRefundLoader,
+				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $orderPaymentLoader,
+			));
+		};
+
+		$services['order.transaction.create'] = function($c) {
+			return new Commerce\Order\Transaction\Create($c['db.transaction'], $c['order.transaction.loader'], $c['event.dispatcher'], $c['user.current']);
+		};
+
+		$services['order.transaction.edit'] = function($c) {
+			return new Commerce\Order\Transaction\Edit($c['db.transaction'], $c['user.current']);
+		};
+
+		$services['order.transaction.void'] = function($c) {
+			return new Commerce\Order\Transaction\Void(
+				$c['db.transaction'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
+		};
+
 		// Product
 		$services['product'] = $services->factory(function($c) {
 			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
@@ -356,6 +403,8 @@ class Services implements ServicesInterface
 				$c['db.query'],
 				$c['locale'],
 				$c['file_manager.file.loader'],
+				$c['product.types'],
+				$c['product.detail.loader'],
 				$c['product.entities'],
 				$c['product.price.types']
 			);
@@ -403,6 +452,17 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		});
 
+		$services->extend('field.collection', function($fields, $c) {
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
+			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));
+
+			return $fields;
+		});
+
+		$services['commerce.field.product_list'] = function($c) {
+			return new \Message\Mothership\Commerce\FieldType\Helper\ProductList($c['db.query']);
+		};
+
 		// DO NOT USE: LEFT IN FOR BC
 		$services['option.loader'] = $services->factory(function($c) {
 			return $c['product.option.loader'];
@@ -417,6 +477,36 @@ class Services implements ServicesInterface
 		$services['product.option.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		});
+
+		$services['product.category.loader'] = $services->factory(function($c) {
+			return new Commerce\Product\Category\Loader($c['db.query']);
+		});
+
+		$services['product.types'] = function($c) {
+			return new Commerce\Product\Type\Collection(array(
+				new Commerce\Product\Type\BasicProductType(),
+			));
+		};
+
+		$services['product.form.attributes'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\ProductAttributes($c);
+		});
+
+		$services['product.detail.loader'] = function($c) {
+			return new Commerce\Product\Type\DetailLoader(
+				$c['db.query'],
+				$c['field.factory'],
+				$c['product.types']
+			);
+		};
+
+		$services['product.detail.edit'] = function($c) {
+			return new Commerce\Product\Type\DetailEdit(
+				$c['db.transaction'],
+				$c['event.dispatcher'],
+				$c['user.current']
+			);
+		};
 
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
 			return new Commerce\User\Address\Loader(
@@ -470,6 +560,9 @@ class Services implements ServicesInterface
 				new Reason\Reason(Reason\Reasons::NEW_ORDER, 'New Order'),
 				new Reason\Reason(Reason\Reasons::CANCELLED_ORDER, 'Cancelled Order'),
 				new Reason\Reason(Reason\Reasons::CANCELLED_ITEM, 'Cancelled Item'),
+
+				// add this as constant somewhere
+				new Reason\Reason('void_transaction', 'Voided Transaction'),
 			));
 		};
 
