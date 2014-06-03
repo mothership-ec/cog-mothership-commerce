@@ -8,18 +8,17 @@ class Search extends Controller
 {
 	public function index()
 	{
-		$form = $this->getForm();
-
 		return $this->render('Message:Mothership:Commerce::product:search', array(
-			'form' => $form,
+			'form' => $this->getForm(),
 		));
 	}
 
 	public function process()
 	{
 		$form = $this->getForm();
+		$form->handleRequest();
 
-		if (!$form->isValid() || !$data = $form->getFilteredData()) {
+		if (!$form->isValid() || !$data = $form->getData()) {
 			// Add error
 			return $this->redirectToReferer();
 		}
@@ -34,33 +33,24 @@ class Search extends Controller
 
 	public function getForm()
 	{
-		$defaults = array();
-		$search = $this->get('http.request.master')->query->get('search');
+		return $this->createForm($this->get('product.form.search'),
+			$this->_getTermsFromRequest(),
+			[
+				'action' => $this->generateUrl('ms.commerce.product.search'),
+				'method' => 'GET',
+				'csrf_protection' => false,
+				'attr' => [
+					'class' => 'search',
+				]
+			]
+		);
+	}
 
-		if (isset($search['terms']) && $search['terms']) {
-			$defaults = array('terms' => $search['terms']);
-		}
+	protected function _getTermsFromRequest()
+	{
+		$search = $this->get('http.request.master')->query->get('product_search');
 
-		$form = $this->get('form')
-			->setName('search')
-			->setMethod('GET')
-			->setAction($this->generateUrl('ms.commerce.product.search'))
-			->addOptions(
-				array(
-					'csrf_protection' => false,
-					'attr' => array(
-						'class'=>'search',
-					)
-				))
-			->setDefaultValues($defaults);
-
-		$form->add('terms', 'search', $this->trans('ms.commerce.product.search.label'), array(
-			'attr' => array(
-				'placeholder' => 'Search content&hellip;'
-			)
-		));
-
-		return $form;
+		return ($search) ?: null;
 	}
 
 }
