@@ -6,10 +6,6 @@
 	</h2>
 	<div class="content">
 		<dl class="order-details">
-			{% if not payment.return is empty %}
-				<dt>{{ 'ms.commerce.order.payment.return'|trans }}</dt>
-					<dd>{{ payment.return }}</dd>
-			{% endif %}
 			<dt>{{ 'ms.commerce.order.payment.method'|trans }}</dt>
 				<dd>{{ payment.method.displayName }}</dd>
 			<dt>{{ 'ms.commerce.order.payment.amount'|trans }}</dt>
