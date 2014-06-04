@@ -125,7 +125,7 @@ class Barcode extends Controller
 		foreach ($units as $unit) {
 			$stock = (array_key_exists($location, $unit->stock)) ? (int) $unit->stock[$location] : null;
 
-			if ($stock) {
+			if ($stock > 0) {
 				$quantities[$unit->id] = $stock;
 			}
 		}
