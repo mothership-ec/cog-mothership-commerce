@@ -88,7 +88,7 @@ class Generate
 	public function getUnitBarcodes(array $quantities, $offset = 0)
 	{
 		$offset   = (int) $offset;
-		$unitIDs  = array_flip($quantities);
+		$unitIDs  = array_keys($quantities);
 		$toPrint  = [];
 		$barcodes = $this->_getBarcodes($unitIDs);
 
