@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Barcode;
 
 use Image_Barcode2 as ImageBarcode;
 use Message\Cog\Filesystem\File;
+use Message\Cog\Filesystem\StreamWrapperManager;
 
 /**
  * Class for communicating with the barcode image resource
@@ -124,6 +125,9 @@ class ImageResource
 	 */
 	public function getPath($filename)
 	{
-		return $this->getDirectory() . '/' . $filename;
+		$path    = $this->getDirectory() . '/' . $filename;
+		$handler = StreamWrapperManager::getHandler(File::COG_PREFIX);
+
+		return $handler->getLocalPath($path, File::COG_PREFIX);
 	}
 }
