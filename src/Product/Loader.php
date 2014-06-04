@@ -188,23 +188,6 @@ class Loader
 		return count($result) ? $this->_loadProduct($result->flatten()) : [];
 	}
 
-	public function getCategories($includeDeleted = false)
-	{
-		$result = $this->_query->run("
-			SELECT DISTINCT
-				category
-			FROM
-				product
-			WHERE
-				category IS NOT NULL
-			AND
-				category != ''
-			" . (!$includeDeleted ? " AND deleted_at IS NULL " : "") . "
-		");
-
-		return $result->flatten();
-	}
-
 	public function getBySearchTerms($terms, $limit = null)
 	{
 		if (null !== $limit && !$this->_isWholeNumber($limit)) {
@@ -220,6 +203,7 @@ class Loader
 		];
 
 		$query = '(';
+		$where = [];
 
 		$searchParams = [];
 
@@ -227,22 +211,18 @@ class Loader
 			if (strlen($term) >= $minTermLength) {
 				$terms[$i] = $term = strtolower($term);
 
+				$whereFields = [];
 				foreach ($searchFields as $j => $field) {
-					$query .= 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
-					if ($j != (count($searchFields) - 1)) {
-						$query .= ' OR ';
-					}
-				}
-
-				if ($i != (count($terms) - 1)) {
-					$query .= ' OR ';
+					$whereFields[] = 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
+					$where[] = implode(' OR ', $whereFields);
 				}
 
 				$searchParams['term' . $i] = '%' . $term . '%';
 			}
 		}
 
-		$query .= ')';
+
+		$query .= implode(' OR ', $where ) . ')';
 
 		$query = 'SELECT
 				p.product_id

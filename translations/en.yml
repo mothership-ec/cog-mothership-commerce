@@ -158,7 +158,7 @@ ms.commerce:
         help: The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
     search:
       label: Search
-
+      placeholder: Search products
   order:
     feedback:
       general:
