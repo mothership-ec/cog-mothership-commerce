@@ -2,59 +2,52 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Refund;
 
-use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Cog\ValueObject\Authorship;
+use Message\Mothership\Commerce\Refund\Delete as BaseDelete;
 
 use Message\Cog\DB;
-use Message\Cog\DB\Result;
-use Message\User\UserInterface;
 
 /**
- * Decorator for deleting refunds.
+ * Decorator for deleting order refunds.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Delete
+class Delete implements DB\TransactionalInterface
 {
-	protected $_query;
-	protected $_currentUser;
+	protected $_refundDelete;
 
 	/**
-	 * Constructor.
+	 * Constructor
 	 *
-	 * @param DB\Query            $query          The database query instance to use
-	 * @param UserInterface       $currentUser    The currently logged in user
+	 * @param BaseDelete $refundDelete Base refund delete decorator
 	 */
-	public function __construct(DB\Query $query, UserInterface $user)
+	public function __construct(BaseDelete $refundDelete)
 	{
-		$this->_query           = $query;
-		$this->_currentUser     = $user;
+		$this->_refundDelete = $refundDelete;
 	}
 
 	/**
-	 * Delete a refund by marking it as deleted in the database.
+	 * {@inheritDoc}
+	 */
+	public function setTransaction(DB\Transaction $transaction)
+	{
+		$this->_refundDelete->setTransaction($transaction);
+
+		return $this;
+	}
+
+	/**
+	 * Delete an order refund.
 	 *
-	 * @param  Refund     $refund The refund to be deleted
+	 * @see Message\Mothership\Commerce\Refund\Delete::delete
 	 *
-	 * @return Refund     The refund that was deleted, with the "delete" authorship data set
+	 * @param  Refund $refund The refund to delete
+	 *
+	 * @return Refund          The deleted refund
 	 */
 	public function delete(Refund $refund)
 	{
-		$refund->authorship->delete(new DateTimeImmutable, $this->_currentUser->id);
-
-		$result = $this->_query->run('
-			UPDATE
-				order_refund
-			SET
-				deleted_at = :at?d,
-				deleted_by = :by?in
-			WHERE
-				refund_id = :id?i
-		', array(
-			'at' => $refund->authorship->deletedAt(),
-			'by' => $refund->authorship->deletedBy(),
-			'id' => $refund->id,
-		));
+		$refund->refund = $this->_refundDelete->delete($refund->refund);
 
 		return $refund;
 	}
-
 }
