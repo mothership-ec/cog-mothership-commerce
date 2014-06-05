@@ -18,7 +18,10 @@ class Services implements ServicesInterface
 		$this->registerProductPageMapper($services);
 
 		$services['order'] = $services->factory(function($c) {
-			return new Commerce\Order\Order($c['order.entities']);
+			$order = new Commerce\Order\Order($c['order.entities']);
+			$order->taxable = true; // default orders to taxable
+
+			return $order;
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
@@ -29,10 +32,10 @@ class Services implements ServicesInterface
 
 		$services['basket.order'] = $services->factory(function($c) {
 			if (!$c['http.session']->get('basket.order')) {
-				$order                       = $c['order'];
-				$order->locale               = $c['locale']->getId();
-				$order->currencyID           = 'GBP';
-				$order->type                 = 'web';
+				$order             = $c['order'];
+				$order->locale     = $c['locale']->getId();
+				$order->currencyID = 'GBP';
+				$order->type       = 'web';
 
 				if ($c['user.current']
 				&& !($c['user.current'] instanceof AnonymousUser)) {
@@ -81,11 +84,11 @@ class Services implements ServicesInterface
 				),
 				'payments'   => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Payment\Loader($c['db.query'], $c['payment.loader'])
 				),
 				'refunds'    => new Commerce\Order\Entity\CollectionOrderLoader(
 					new Commerce\Order\Entity\Collection,
-					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['order.payment.methods'])
+					new Commerce\Order\Entity\Refund\Loader($c['db.query'], $c['refund.loader'])
 				),
 			);
 		});
@@ -223,14 +226,14 @@ class Services implements ServicesInterface
 		$services['order.payment.create'] = $services->factory(function($c) {
 			return new Commerce\Order\Entity\Payment\Create(
 				$c['db.transaction'],
+				$c['payment.create'],
 				$c['order.payment.loader'],
-				$c['event.dispatcher'],
-				$c['user.current']
+				$c['event.dispatcher']
 			);
 		});
 
 		$services['order.payment.delete'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Payment\Delete($c['db.query'], $c['user.current'] );
+			return new Commerce\Order\Entity\Payment\Delete($c['payment.delete']);
 		});
 
 		// Order refund entity
@@ -239,15 +242,16 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.refund.create'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Refund\Create($c['db.query'], $c['order.refund.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Refund\Create(
+				$c['db.transaction'],
+				$c['refund.create'],
+				$c['order.refund.loader'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['order.refund.delete'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Refund\Delete($c['db.query'], $c['user.current']);
-		});
-
-		$services['order.refund.edit'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Refund\Edit($c['db.query'], $c['order.refund.loader'], $c['user.current']);
+			return new Commerce\Order\Entity\Refund\Delete($c['refund.delete']);
 		});
 
 		// Order note entity
@@ -263,21 +267,7 @@ class Services implements ServicesInterface
 				$c['event.dispatcher']);
 		});
 
-		// Available payment & despatch methods
-		$services['order.payment.methods'] = function($c) {
-			return new Commerce\Order\Entity\Payment\MethodCollection(array(
-				new Commerce\Order\Entity\Payment\Method\Card,
-				new Commerce\Order\Entity\Payment\Method\Cash,
-				new Commerce\Order\Entity\Payment\Method\Cheque,
-				new Commerce\Order\Entity\Payment\Method\Manual,
-
-				new Commerce\Order\Entity\Payment\Method\Paypal,
-				new Commerce\Order\Entity\Payment\Method\CashOnDelivery,
-				new Commerce\Order\Entity\Payment\Method\PaymentOnPickup,
-				new Commerce\Order\Entity\Payment\Method\GiftVoucher,
-			));
-		};
-
+		// Available despatch methods
 		$services['order.dispatch.methods'] = function($c) {
 			return new Commerce\Order\Entity\Dispatch\MethodCollection;
 		};
@@ -331,17 +321,23 @@ class Services implements ServicesInterface
 		$services['order.transaction.loader'] = function($c) {
 			$orderLoader        = $c['order.loader'];
 			$itemLoader         = $c['order.item.loader'];
+			$paymentLoader      = $c['payment.loader'];
+			$refundLoader       = $c['refund.loader'];
 			$orderPaymentLoader = $c['order.payment.loader'];
 			$orderRefundLoader  = $c['order.refund.loader'];
 
 			$orderLoader->includeDeleted(true);
 			$itemLoader->includeDeleted(true);
+			$paymentLoader->includeDeleted(true);
+			$refundLoader->includeDeleted(true);
 			$orderPaymentLoader->includeDeleted(true);
 			$orderRefundLoader->includeDeleted(true);
 
 			return new Commerce\Order\Transaction\Loader($c['db.query'], array(
 				Commerce\Order\Order::RECORD_TYPE                  => $orderLoader,
 				Commerce\Order\Entity\Item\Item::RECORD_TYPE       => $itemLoader,
+				Commerce\Refund\Refund::RECORD_TYPE                => $refundLoader,
+				Commerce\Payment\Payment::RECORD_TYPE              => $paymentLoader,
 				Commerce\Order\Entity\Refund\Refund::RECORD_TYPE   => $orderRefundLoader,
 				Commerce\Order\Entity\Payment\Payment::RECORD_TYPE => $orderPaymentLoader,
 			));
@@ -548,10 +544,14 @@ class Services implements ServicesInterface
 		});
 
 		$services['stock.movement.reasons'] = function() {
-			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
+			return new Commerce\Product\Stock\Movement\Reason\Collection([
 				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
 				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
-			));
+				new Commerce\Product\Stock\Movement\Reason\Reason(
+					\Message\Mothership\Commerce\Task\Stock\Barcode::REASON,
+					'Stock Take'
+				),
+			]);
 		};
 
 		$services['stock.movement.iterator'] = $services->factory(function($c) {

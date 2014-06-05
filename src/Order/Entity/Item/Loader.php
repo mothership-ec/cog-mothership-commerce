@@ -95,8 +95,9 @@ class Loader extends Order\Entity\BaseLoader implements
 				order_id         AS orderID,
 				deleted_at       AS deletedAt,
 				deleted_by       AS deletedBy,
-				actual_price     AS actualPrice,
 				list_price       AS listPrice,
+				actual_price     AS actualPrice,
+				base_price       AS basePrice,
 				tax_rate         AS taxRate,
 				product_tax_rate AS productTaxRate,
 				tax_strategy     AS taxStrategy,
@@ -125,6 +126,7 @@ class Loader extends Order\Entity\BaseLoader implements
 			// Cast decimals to float
 			$items[$key]->listPrice      = (float) $row->listPrice;
 			$items[$key]->actualPrice    = (float) $row->actualPrice;
+			$items[$key]->basePrice      = (float) $row->basePrice;
 			$items[$key]->net            = (float) $row->net;
 			$items[$key]->discount       = (float) $row->discount;
 			$items[$key]->tax            = (float) $row->tax;
