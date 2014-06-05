@@ -13,11 +13,12 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader implements Order\Transaction\RecordLoaderInterface
+class Loader extends Order\Entity\BaseLoader implements
+	Order\Transaction\DeletableRecordLoaderInterface,
+	Order\Entity\DeletableLoaderInterface
 {
 	protected $_query;
 	protected $_methods;
-	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, MethodCollection $paymentMethods)
 	{
@@ -26,7 +27,7 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	}
 
 	/**
-	 * Toggle whether to load deleted refunds
+	 * Set whether to load deleted refunds. Also sets include deleted on order loader.
 	 *
 	 * @param  bool $bool    true / false as to whether to include deleted refunds
 	 *
@@ -34,7 +35,8 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	 */
 	public function includeDeleted($bool)
 	{
-		$this->_includeDeleted = $bool;
+		$this->_refundLoader->includeDeleted((bool) $bool);
+		$this->_orderLoader->includeDeleted((bool) $bool);
 
 		return $this;
 	}

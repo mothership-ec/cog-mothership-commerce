@@ -16,7 +16,7 @@ use Message\User\UserInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Transaction\RecordLoaderInterface
+class Loader implements Transaction\DeletableRecordLoaderInterface
 {
 	protected $_query;
 	protected $_eventDispatcher;
@@ -72,17 +72,27 @@ class Loader implements Transaction\RecordLoaderInterface
 	}
 
 	/**
-	 * Toggle whether to load deleted orders
+	 * Set whether to load deleted orders.
 	 *
 	 * @param  bool $bool    true / false as to whether to include deleted orders
 	 *
 	 * @return Loader        Loader object in order to chain the methods
 	 */
-	public function includeDeleted($bool)
+	public function includeDeleted($bool = true)
 	{
-		$this->_includeDeleted = $bool;
+		$this->_includeDeleted = (bool) $bool;
 
 		return $this;
+	}
+
+	/**
+	 * Gets whether this loader also loads deleted orders.
+	 * 
+	 * @return bool Whether the loader loads deleted orders or not.
+	 */
+	public function getIncludeDeleted()
+	{
+		return $this->_includeDeleted;
 	}
 
 	/**

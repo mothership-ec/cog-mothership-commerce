@@ -12,11 +12,12 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader implements Order\Transaction\RecordLoaderInterface
+class Loader extends Order\Entity\BaseLoader implements
+	Order\Transaction\DeletableRecordLoaderInterface,
+	Order\Entity\DeletableLoaderInterface
 {
 	protected $_query;
-	protected $_methods;
-	protected $_includeDeleted = false;
+	protected $_paymentLoader;
 
 	public function __construct(DB\Query $query, MethodCollection $methods)
 	{
@@ -33,7 +34,8 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	 */
 	public function includeDeleted($bool)
 	{
-		$this->_includeDeleted = $bool;
+		$this->_paymentLoader->includeDeleted((bool) $bool);
+		$this->_orderLoader->includeDeleted((bool) $bool);
 
 		return $this;
 	}
