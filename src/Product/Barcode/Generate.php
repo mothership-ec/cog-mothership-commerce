@@ -216,6 +216,10 @@ class Generate
 				product_unit_price AS up
 			USING
 				(unit_id)
+			LEFT JOIN
+				product_info AS pi
+			USING
+				(product_id)
 			WHERE
 				barcode IS NOT NULL
 			AND
@@ -224,6 +228,12 @@ class Generate
 				up.type = :retail?s
 			GROUP BY
 				u.unit_id
+			ORDER BY
+				p.category ASC,
+				COALESCE(
+					CONCAT(pi.sort_name, p.name),
+					p.name
+				)
 		", [
 			'retail' => 'retail',
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
