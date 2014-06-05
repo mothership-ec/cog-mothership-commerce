@@ -28,7 +28,7 @@ class Loader extends Order\Entity\BaseLoader implements
 	}
 
 	/**
-	 * Toggle whether to load deleted payments.
+	 * Set whether to load deleted payments. Also sets include deleted on order loader.
 	 *
 	 * @param  bool $bool True to load deleted payments, false otherwise
 	 *
@@ -36,7 +36,9 @@ class Loader extends Order\Entity\BaseLoader implements
 	 */
 	public function includeDeleted($bool = true)
 	{
-		$this->_paymentLoader->includeDeleted((bool) $bool);
+		$bool = (bool) $bool;
+		$this->_paymentLoader->includeDeleted($bool);
+		$this->_orderLoader->includeDeleted($bool);
 
 		return $this;
 	}

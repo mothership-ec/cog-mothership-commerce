@@ -38,8 +38,8 @@ class Loader extends Order\Entity\BaseLoader implements
 	 */
 	public function includeDeleted($bool = true)
 	{
-		$this->_includeDeleted = $bool;
-		$this->_orderLoader->includeDeleted($bool);
+		$this->_includeDeleted = (bool) $bool;
+		$this->_orderLoader->includeDeleted($this->_includeDeleted);
 
 		return $this;
 	}
