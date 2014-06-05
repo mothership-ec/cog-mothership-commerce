@@ -253,6 +253,10 @@ class Generate
 				product_unit_price AS up
 			USING
 				(unit_id)
+			LEFT JOIN
+				product_info AS pi
+			USING
+				(product_id)
 			WHERE
 				barcode IS NOT NULL
 			AND
@@ -262,6 +266,12 @@ class Generate
 			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
 			GROUP BY
 				u.unit_id
+			ORDER BY
+				p.category ASC,
+				COALESCE(
+					CONCAT(pi.sort_name, p.name),
+					p.name
+				)
 		", [
 			'retail'  => 'retail',
 			'unitIDs' => $unitIDs,
