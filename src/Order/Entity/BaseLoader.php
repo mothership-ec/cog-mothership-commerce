@@ -23,4 +23,9 @@ abstract class BaseLoader implements LoaderInterface
 
 		$this->_orderLoader->includeDeleted(true);
 	}
+
+	public function getOrderLoader()
+	{
+		return $this->_orderLoader;
+	}
 }
