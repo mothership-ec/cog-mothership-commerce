@@ -86,26 +86,26 @@ class EventListener extends BaseListener implements SubscriberInterface
 		foreach ($event->getOrder()->discounts as $discount) {
 			if ($discount->percentage) {
 				foreach ($discount->items as $item) {
-					$amount            = $item->listPrice * ($discount->percentage / 100);
+					$amount            = round($item->basePrice * ($discount->percentage / 100), 2);
 					$item->discount   += $amount;
 					$discount->amount += $amount;
 				}
 			}
 			else {
-				$totalListPrice = 0;
+				$totalBasePrice = 0;
 				foreach($discount->items as $item) {
-					$totalListPrice += $item->listPrice;
+					$totalBasePrice += $item->basePrice;
 				}
 
-				if ($totalListPrice === 0 ) {
+				if ($totalBasePrice === 0 ) {
 					continue;
 				}
 
 				$prorateHelper = $this->get('helper.prorate')
 					->setGetBasisPercentage(
-						function($item) use ($totalListPrice)
+						function($item) use ($totalBasePrice)
 					 	{
-					 		return $item->listPrice / $totalListPrice;
+					 		return $item->basePrice / $totalBasePrice;
 					 	}
 					 )
 					->setAssignProrateAmount(
