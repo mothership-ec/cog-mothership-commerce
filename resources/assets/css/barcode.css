@@ -3,40 +3,44 @@
 	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.page {
-	width: 21cm;
-	height: 29.7cm;
+body {
 	float: left;
-	border-top: 8.5mm solid #FFF;
-	border-bottom: 8.5mm solid #FFF;
-	border-left: 2mm solid #FFF;
-	border-right: 2mm solid #FFF;
+	margin: 0;
+	padding: 0;
+}
+
+.page {
+	float: left;
+	width: 210mm;
+	height: 297mm;
+	border-top: 10.75mm solid #FFF;
+	border-left: 5mm solid #FFF;
+	border-right: 5mm solid #FFF;
 	overflow: hidden;
 	padding: 0;
 	margin: 0;
+	clear: both;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-}
-
-.page-break {
-	float: left;
-	width: 21cm;
-	height: 10px;
 }
 
 .label {
 	width: 20%;
 	float: left;
-	height: 81px;
+	height: 21mm;
 	overflow: hidden;
 	border-left: 1mm solid #fff;
 	border-right: 1mm solid #fff;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 	padding: 10px;
 	position: relative;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	border-radius: 5px;
 }
 
 hgroup {
@@ -69,11 +73,31 @@ hgroup h2 {
 }
 
 img {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit-transform: translateX(-50%);
-  -moz-transform: translateX(-50%);
-  -ms-transform: translateX(-50%);
-  bottom: 0.5mm;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	-webkit-transform: translateX(-50%);
+	-moz-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	bottom: 0.5mm;
+}
+
+@media print {
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    .page {
+        margin: 0;
+		width: 210mm;
+		height: 295mm;
+        page-break-after: always;
+        page-break-before: always;
+        page-break-inside: avoid;
+    }
+
+    .label {
+    	height: 21.35mm;
+    }
 }
