@@ -184,10 +184,9 @@ class Assembler
 		}
 
 		// If we have IDs for these entities, remove using that
-		if (array_key_exists($name, $this->_entityTemporaryIdFields)) {
-			$this->_order->{$name}->remove(($entity instanceof Entity\EntityInterface)
-				? $entity->id
-				: $entity);
+		if (array_key_exists($name, $this->_entityTemporaryIdFields)
+		 && $entity instanceof Entity\EntityInterface) {
+			$this->_order->{$name}->remove($entity->id);
 		}
 		// Otherwise, remove using the entity instance
 		else {
