@@ -110,7 +110,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function buildDashboardProducts(DashboardEvent $event)
 	{
-		// $event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
+		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:PopularProducts#index');
 	}
 
 	/**

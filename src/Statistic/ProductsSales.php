@@ -33,14 +33,14 @@ class ProductsSales extends AbstractDataset
 			FROM (
 				SELECT
 					'products.sales' as dataset,
-					CONCAT('products.sales.', product_id) as `key`,
+					CONCAT('products.sales.', unit_id) as `key`,
 					created_at - MOD(created_at, 60 * 60 * 24) as period,
-					COUNT(product_id) as `value`,
+					COUNT(unit_id) as `value`,
 					UNIX_TIMESTAMP(NOW()) as created_at
 				FROM
 					order_item
 				GROUP BY
-					product_id, `period`
+					unit_id, `period`
 			) as products
 			WHERE
 				products.value > 0;

@@ -19,8 +19,8 @@ class PopularProducts extends Controller
 	public function index()
 	{
 		$rows          = [];
-		$dataset       = $this->get('statistics')->get('products.sales.weekly');
-		$productsSales = $dataset->getKeyRange($dataset::WEEK_AGO);
+		$dataset       = $this->get('statistics')->get('products.sales');
+		$productsSales = $dataset->range->getKeyValues($dataset->range->getWeekAgo());
 
 		uasort($productsSales, function($a, $b) {
 			if ($a == $b) return 0;
