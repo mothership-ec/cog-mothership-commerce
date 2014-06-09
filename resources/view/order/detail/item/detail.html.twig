@@ -29,6 +29,16 @@
 					<dd>{{ item.tax|price(order.currencyID) }}</dd>
 				<dt>Gross</dt>
 					<dd>{{ item.gross|price(order.currencyID) }}</dd>
+				<dt>List price</dt>
+					<dd>{{ item.listPrice|price(order.currencyID) }}</dd>
+				<dt>Actual price</dt>
+					<dd>{{ item.actualPrice|price(order.currencyID) }}</dd>
+				<dt>Base price</dt>
+					<dd>{{ item.basePrice|price(order.currencyID) }}</dd>
+				<dt>RRP</dt>
+					<dd>{{ item.rrp|price(order.currencyID) }}</dd>
+				<dt>Tax rate</dt>
+					<dd>{{ item.taxRate }}%{{ item.taxRate != item.productTaxRate ? ' (originally ' ~ item.productTaxRate ~ '%)' }}</dd>
 			</dl>
 			<h2>Item Details</h2>
 			<dl class="order-details ">

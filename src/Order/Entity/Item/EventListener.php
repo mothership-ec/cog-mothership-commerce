@@ -27,6 +27,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 		return array(
 			OrderEvents::ENTITY_CREATE => array(
 				array('setDefaultActualPrice'),
+				array('setBasePrice'),
 				array('calculateTax'),
 				array('setDefaultStatus'),
 			),
@@ -35,6 +36,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
 				array('setDefaultActualPrice'),
+				array('setBasePrice'),
 				array('calculateAllItemsTax'),
 			),
 			OrderEvents::STATUS_CHANGE => array(
@@ -83,6 +85,38 @@ class EventListener extends BaseListener implements SubscriberInterface
 			if (!$item->actualPrice) {
 				$item->actualPrice = $item->listPrice;
 			}
+		}
+	}
+
+	/**
+	 * Set the `basePrice` value for the item(s).
+	 *
+	 * Base price is the same as the actual price unless the strategy is
+	 * `inclusive` and the order is not taxable (i.e. a tax discount must be
+	 * applied).
+	 *
+	 * @param Event\Event $event
+	 */
+	public function setBasePrice(Event\Event $event)
+	{
+		if ($event instanceof Event\EntityEvent
+		 && $event->getEntity() instanceof Item) {
+			$items = [$event->getEntity()];
+		} else {
+			$items = $event->getOrder()->items->all();
+		}
+
+		foreach ($items as $item) {
+			$item->basePrice = $item->actualPrice;
+
+			// Skip if tax strategy is exclusive or the order is taxable
+			if ('exclusive' === $item->taxStrategy
+			 || true === $item->order->taxable) {
+				continue;
+			}
+
+			// Remove the tax discount
+			$item->basePrice -= $this->_calculateInclusiveTax($item->actualPrice, $item->productTaxRate);
 		}
 	}
 
@@ -141,12 +175,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
-			$item->gross = round($item->actualPrice - $item->discount, 2);
-
-			if ('inclusive' === $item->taxStrategy) {
-				$item->gross = round($item->gross - $this->_calculateInclusiveTax($item->gross, $item->productTaxRate), 2);
-			}
-
+			$item->gross   = $item->basePrice - $item->discount;
 			$item->taxRate = 0;
 			$item->tax     = 0;
 			$item->net     = $item->gross;

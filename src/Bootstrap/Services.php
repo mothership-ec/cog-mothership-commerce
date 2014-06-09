@@ -19,7 +19,10 @@ class Services implements ServicesInterface
 		$this->registerProductPageMapper($services);
 
 		$services['order'] = $services->factory(function($c) {
-			return new Commerce\Order\Order($c['order.entities']);
+			$order = new Commerce\Order\Order($c['order.entities']);
+			$order->taxable = true; // default orders to taxable
+
+			return $order;
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
@@ -560,6 +563,7 @@ class Services implements ServicesInterface
 				new Reason\Reason(Reason\Reasons::NEW_ORDER, 'New Order'),
 				new Reason\Reason(Reason\Reasons::CANCELLED_ORDER, 'Cancelled Order'),
 				new Reason\Reason(Reason\Reasons::CANCELLED_ITEM, 'Cancelled Item'),
+				new Reason\Reason(Commerce\Task\Stock\Barcode::REASON, 'Stock Take'),
 
 				// add this as constant somewhere
 				new Reason\Reason('void_transaction', 'Voided Transaction'),
