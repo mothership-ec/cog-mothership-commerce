@@ -209,7 +209,7 @@ class ProductSelector extends Controller
 
 	protected function _getAvailableUnits(Product $product, array $options = array())
 	{
-		$key = md5(serialize(array($product, $options)));
+		$key = md5(serialize(array($product->id, $options)));
 
 		if (!array_key_exists($key, $this->_availableUnits)) {
 			$this->_availableUnits[$key] = array();
