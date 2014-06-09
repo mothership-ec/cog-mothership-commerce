@@ -30,7 +30,7 @@ class TotalSales extends Controller
 		$last = time();
 		$day = 60*60*24;
 		for ($i = $first; $i <= $last; $i += $day) {
-			$label = date('l, dS M', $i);
+			$label = date('l, jS M', $i);
 			$rows[$label] = [
 				'label' => $label,
 				'value' => 0.0
@@ -38,7 +38,7 @@ class TotalSales extends Controller
 		}
 
 		foreach ($net as $timestamp => $value) {
-			$label = date('l, dS M', $timestamp);
+			$label = date('l, jS M', $timestamp);
 			$rows[$label] = [
 				'label' => $label,
 				'value' => (float) $value
