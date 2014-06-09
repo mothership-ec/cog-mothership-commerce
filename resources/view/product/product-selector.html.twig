@@ -6,10 +6,17 @@
 {{ form_end(form) }}
 
 {% if replenishedNotificationForm %}
-	<p class="oos">
-		Some of the options are out of stock. Choose to be notified when these are
-		back in stock below.
-	</p>
+	{% if units|length > 1 %}
+		<p class="oos">
+			Some of the options are out of stock. Choose to be notified when these are
+			back in stock below.
+		</p>
+	{% else %}
+		<p class="oos">
+			This product is out of stock. Choose to be notified when it is back in
+			stock below.
+		</p>
+	{% endif %}
 
 	{{ form_start(replenishedNotificationForm) }}
 		<div class="oos-options">{{ form_rest(replenishedNotificationForm) }}</div>
