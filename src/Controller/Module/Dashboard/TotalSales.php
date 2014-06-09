@@ -52,10 +52,10 @@ class TotalSales extends Controller
 				'value' => 'Amount',
 			],
 			'rows'  => $rows,
+			'filterPrice' => true,
 			'numbers' => [
 				[
 					'value'   => $totalNet,
-					'filterPrice' => true,
 				]
 			]
 		]);
