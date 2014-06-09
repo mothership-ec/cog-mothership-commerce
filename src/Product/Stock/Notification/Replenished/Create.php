@@ -30,6 +30,18 @@ class Create
 		}
 
 		$this->_query->run("
+			DELETE FROM
+				stock_notification
+			WHERE
+				`type`    = 'replenished'
+			AND	`unit_id` = :unitID?i
+			AND	`email`   = :email?s
+		", [
+			'unitID' => $notification->unitID,
+			'email'  => $notification->email,
+		]);
+
+		$this->_query->run("
 			INSERT INTO
 				stock_notification
 			SET
