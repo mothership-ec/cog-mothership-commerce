@@ -10,6 +10,8 @@ final class Events
 	const CREATE_END            = 'commerce.order.create.end';
 	const CREATE_COMPLETE       = 'commerce.order.create.complete';
 	const EDIT                  = 'commerce.order.edit';
+	const DELETE_START          = 'commerce.order.delete.start';
+	const DELETE_END            = 'commerce.order.delete.end';
 	const SET_STATUS            = 'commerce.order.status';
 	const ITEM_STATUS_CHANGE    = 'commerce.order.item.status.change';
 	const DISPATCH_POSTAGE_AUTO = 'commerce.order.dispatch.postage.automatically';

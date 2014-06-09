@@ -2,12 +2,13 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Cog\ValueObject\Authorship;
+use Message\User\UserInterface;
 
 use Message\Cog\DB;
 use Message\Cog\DB\Result;
-use Message\User\UserInterface;
+use Message\Cog\Event\DispatcherInterface;
+use Message\Cog\ValueObject\Authorship;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
  * Decorator for deleting orders.
@@ -23,10 +24,12 @@ class Delete implements DB\TransactionalInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param DB\Query            $query          The database query instance to use
-	 * @param UserInterface       $currentUser    The currently logged in user
+	 * @param DB\Query            $query           The database query instance to use
+	 * @param DispatcherInterface $eventDispatcher
+	 * @param UserInterface       $currentUser     The currently logged in user
 	 */
-	public function __construct(DB\Query $query, UserInterface $user)
+	public function __construct(DB\Query $query,
+		DispatcherInterface $eventDispatcher, UserInterface $user)
 	{
 		$this->_query           = $query;
 		$this->_currentUser     = $user;
@@ -55,6 +58,11 @@ class Delete implements DB\TransactionalInterface
 	{
 		$order->authorship->delete(new DateTimeImmutable, $this->_currentUser->id);
 
+		$event = new new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_query);
+		$order = $this->_eventDispatcher->dispatch(Events::DELETE_START, $event)
+			->getOrder();
+
 		$result = $this->_query->run('
 			UPDATE
 				order_summary
@@ -68,6 +76,11 @@ class Delete implements DB\TransactionalInterface
 			'by' => $order->authorship->deletedBy(),
 			'id' => $order->id,
 		));
+
+		$event = new new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_query);
+		$order = $this->_eventDispatcher->dispatch(Events::DELETE_END, $event)
+			->getOrder();
 
 		return $order;
 	}

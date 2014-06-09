@@ -49,6 +49,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 			OrderEvents::DISPATCH_SHIPPED => array(
 				array('recordOrderOut'),
 			),
+			OrderEvents::DELETE_END => array(
+				array('recordOrderDeleted'),
+				array('recordSalesNetDeleted'),
+				array('recordProductsSalesDeleted'),
+			),
 			DashboardEvent::DASHBOARD_INDEX => array(
 				array('buildDashboardProducts'),
 				array('buildDashboardOrders'),
@@ -208,6 +213,16 @@ class EventListener extends BaseListener implements SubscriberInterface
 	}
 
 	/**
+	 * Decrement the orders.in stat.
+	 *
+	 * @param  EventEvent $event
+	 */
+	public function recordOrderDeleted(Event\Event $event)
+	{
+		$this->get('statistics')->get('orders.in')->counter->decrement();
+	}
+
+	/**
 	 * Increment the sales.net stat with the orders total net.
 	 *
 	 * @param  Event\Event $event
@@ -216,6 +231,17 @@ class EventListener extends BaseListener implements SubscriberInterface
 	{
 		$this->get('statistics')->get('sales.net')
 			->counter->increment($event->getOrder()->totalNet);
+	}
+
+	/**
+	 * Decrement the sales.net stat with the orders total net.
+	 *
+	 * @param  Event\Event $event
+	 */
+	public function recordSalesNetDeleted(Event\Event $event)
+	{
+		$this->get('statistics')->get('sales.net')
+			->counter->decrement($event->getOrder()->totalNet);
 	}
 
 	/**
@@ -228,6 +254,19 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$dataset = $this->get('statistics')->get('products.sales');
 		foreach ($event->getOrder()->getItemRows() as $unitID => $items) {
 			$dataset->counter->increment($unitID, count($items));
+		}
+	}
+
+	/**
+	 * Decrement the products.sales stat for each product ordered.
+	 *
+	 * @param  Event\Event $event
+	 */
+	public function recordProductsSalesDeleted(Event\Event $event)
+	{
+		$dataset = $this->get('statistics')->get('products.sales');
+		foreach ($event->getOrder()->getItemRows() as $unitID => $items) {
+			$dataset->counter->decrement($unitID, count($items));
 		}
 	}
 }
