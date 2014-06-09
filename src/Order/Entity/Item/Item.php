@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 use Message\Mothership\Commerce\Order\Entity\EntityInterface;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Order\Order;
+use Message\Mothership\Commerce\Order\Transaction\RecordInterface;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
@@ -14,8 +15,10 @@ use Message\Cog\ValueObject\Authorship;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Item implements EntityInterface
+class Item implements EntityInterface, RecordInterface
 {
+	const RECORD_TYPE = 'item';
+
 	public $id;
 
 	public $order;
@@ -23,7 +26,8 @@ class Item implements EntityInterface
 	public $status;
 
 	public $listPrice      = 0; // Retail price of the item as advertised
-	public $actualPrice    = 0; // Price of the item for this order (before discounts)
+	public $actualPrice    = 0; // Same as list price unless it was overriden
+	public $basePrice      = 0; // Price of the item for this order (before discounts) (actual price with or without tax, as appropriate)
 	public $net            = 0; // Net amount, calculated on discounted price
 	public $discount       = 0; // Discount amount for this item
 	public $tax            = 0; // Tax amount for this item
@@ -56,8 +60,7 @@ class Item implements EntityInterface
 		$this->authorship      = new Authorship;
 
 		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+			->disableUpdate();
 	}
 
 	public function __sleep()
@@ -186,5 +189,21 @@ class Item implements EntityInterface
 		}
 
 		return $this->_unit;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordID()
+	{
+		return $this->id;
 	}
 }

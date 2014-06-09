@@ -16,7 +16,7 @@ use Message\User\UserInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader
+class Loader implements Transaction\RecordLoaderInterface
 {
 	protected $_query;
 	protected $_eventDispatcher;
@@ -25,6 +25,7 @@ class Loader
 	protected $_itemStatuses;
 	protected $_entities;
 	protected $_orderBy;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, User\Loader $userLoader,
 		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
@@ -34,6 +35,7 @@ class Loader
 		$this->_statuses     = $statuses;
 		$this->_itemStatuses = $itemStatuses;
 		$this->_entities     = $entities;
+		$this->_prepareEntities();
 	}
 
 	public function getEntities()
@@ -61,9 +63,22 @@ class Loader
 		}
 
 		$loader = $this->_entities[$name]->getLoader();
-		$loader->setOrderLoader($this);
 
 		return $loader;
+	}
+
+	/**
+	 * Toggle whether to load deleted orders
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted orders
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool)
+	{
+		$this->_includeDeleted = $bool;
+
+		return $this;
 	}
 
 	/**
@@ -81,6 +96,18 @@ class Loader
 
 		return $this->_load($id);
 	}
+
+
+	/**
+	 * Alias of getByID for Transaction\RecordLoaderInterface
+	 * @param  int $id record id
+	 * @return Order|array[Order]|false The order, or false if it doesn't exist
+	 */
+	public function getByRecordID($id)
+	{
+		return $this->getByID($id);
+	}
+
 
 	/**
 	 * Get all orders placed by a specific user.
@@ -210,6 +237,7 @@ class Loader
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
 		$this->_orderBy = '';
 
 		if (!is_array($ids)) {
@@ -225,7 +253,9 @@ class Loader
 				order_summary.*,
 				order_summary.order_id         AS id,
 				order_summary.order_id         AS orderID,
-				order_summary.user_email	   AS userEmail,
+				order_summary.deleted_at       AS deletedAt,
+				order_summary.deleted_by       AS deletedBy,
+				order_summary.user_email       AS userEmail,
 				order_summary.currency_id      AS currencyID,
 				order_summary.conversion_rate  AS conversionRate,
 				order_summary.product_net      AS productNet,
@@ -250,6 +280,7 @@ class Loader
 				order_shipping USING (order_id)
 			WHERE
 				order_summary.order_id IN (?ij)
+			' . $includeDeleted .'
 			GROUP BY
 				order_summary.order_id
 			' . ($orderBy) . '
@@ -304,6 +335,13 @@ class Loader
 				$row->created_by
 			);
 
+			if ($row->deleted_at) {
+				$order->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
+
 			if ($row->updated_at) {
 				$order->authorship->update(
 					new DateTimeImmutable(date('c', $row->updated_at)),
@@ -331,5 +369,18 @@ class Loader
 		});
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	/**
+	 * Prepares entities by setting their loaders' order loader to $this.
+	 * This is necessary to make sure the entity loaders will always have an
+	 * order loader.
+	 */
+	protected function _prepareEntities()
+	{
+		foreach ($this->_entities as $entity) {
+			$loader = $entity->getLoader();
+			$loader->setOrderLoader($this);
+		}
 	}
 }

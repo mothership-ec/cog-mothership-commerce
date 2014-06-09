@@ -2,7 +2,6 @@
 
 namespace Message\Mothership\Commerce\Product;
 
-use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
 
@@ -11,7 +10,6 @@ class Product
 	public $id;
 	public $catalogueID;
 	public $brand;
-	public $year;
 
 	public $authorship;
 
@@ -22,15 +20,13 @@ class Product
 	public $weight;
 
 	public $displayName;
-	public $season;
 	public $description;
 	public $category;
-	public $fabric;
-	public $features;
-	public $careInstructions;
 	public $shortDescription;
-	public $sizing;
 	public $notes;
+
+	public $type;
+	public $details;
 
 	public $price 	= array();
 	public $images  = array();
@@ -57,11 +53,12 @@ class Product
 	 */
 	public function __get($var)
 	{
-		if (!array_key_exists($var, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+		if (array_key_exists($var, $this->_entities)) {
+			return $this->_entities[$var];
 		}
 
-		return $this->_entities[$var];
+		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+
 	}
 
 	/**
@@ -373,5 +370,10 @@ class Product
 	public function hasImage($type = 'default', array $options = null)
 	{
 		return false !== $this->getImage($type, $options);
+	}
+
+	public function hasTag($tag)
+	{
+		return in_array($tag, $this->tags);
 	}
 }

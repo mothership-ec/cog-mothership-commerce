@@ -38,7 +38,7 @@ class Create
 				product_unit
 			SET
 				product_id   = :productID?i,
-				visible      = :visibile?i,
+				visible      = :visible?i,
 				barcode      = :barcode?s,
 				supplier_ref = :sup_ref?sn,
 				weight_grams = :weight?i,
@@ -81,7 +81,7 @@ class Create
 					option_value = ?s',
 				array(
 					$unitID,
-					$name,
+					strtolower($name),
 					$value
 			));
 		}

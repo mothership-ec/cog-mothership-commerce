@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order;
 
+use Message\Mothership\Commerce\Payment;
 use Message\Mothership\Commerce\Shipping;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location as StockLocation;
@@ -69,11 +70,11 @@ class Assembler
 	/**
 	 * Set the default stock location to set for items added to the order.
 	 *
-	 * @param  string|int $stockLocation
+	 * @param  StockLocation $stockLocation
 	 *
 	 * @return Assembler Returns $this for chainability
 	 */
-	public function setDefaultStockLocation($stockLocation)
+	public function setDefaultStockLocation(StockLocation $stockLocation)
 	{
 		$this->_defaultStockLocation = $stockLocation;
 
@@ -100,7 +101,7 @@ class Assembler
 	 */
 	public function setEntityTemporaryIdProperty($name, $property)
 	{
-		$this->_entityTemporaryIdProp[$name] = $property;
+		$this->_entityTemporaryIdFields[$name] = $property;
 
 		return $this;
 	}
@@ -182,7 +183,14 @@ class Assembler
 			$this->_prepareEntity($name, $entity);
 		}
 
-		$this->_order->{$name}->remove($entity);
+		// If we have IDs for these entities, remove using that
+		if (array_key_exists($name, $this->_entityTemporaryIdFields)) {
+			$this->_order->{$name}->remove($entity->id);
+		}
+		// Otherwise, remove using the entity instance
+		else {
+			$this->_order->{$name}->remove($entity);
+		}
 
 		return $this->dispatchEvent();
 	}
@@ -308,7 +316,7 @@ class Assembler
 		return $this->setQuantity($unit, $quantity);
 	}
 
-	public function addPayment(Entity\Payment\MethodInterface $paymentMethod, $amount, $reference)
+	public function addPayment(Payment\MethodInterface $paymentMethod, $amount, $reference)
 	{
 		$payment            = new Entity\Payment\Payment;
 		$payment->method    = $paymentMethod;

@@ -29,7 +29,7 @@ class CollectionOrderLoader implements CollectionInterface
 
 	public function __sleep()
 	{
-		return array('_collection', '_loaded', '_order');
+		return array('_collection', '_loaded', '_order', '_loader');
 	}
 
 	public function __clone()
