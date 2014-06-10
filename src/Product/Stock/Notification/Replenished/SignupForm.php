@@ -13,19 +13,8 @@ class SignupForm extends Form\AbstractType
 		return 'replenished_notification';
 	}
 
-	// public function setDefaultOptions(OptionsResolverInterface $resolver)
-	// {
-	// 	$resolver->setDefaults([
-	// 		'data_class' => 'Message\\Mothership\\Discount\\Discount\\Discount',
-	// 	]);
-	// }
-
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
-		// if (! $this->_product)  throw new LogicException("Product required for form");
-		// if (! $this->_units)    throw new LogicException("Units required for form");
-		// if (! $this->_oosUnits) throw new LogicException("Out of stock units required for form");
-
 		extract($options['data']);
 
 		$fullyOutOfStock = count($units) === count($oosUnits);
