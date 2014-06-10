@@ -18,10 +18,22 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = array())
+	/**
+	 * Displays the product selector
+	 * 
+	 * @param  Product $product             Product for which to show the selector
+	 * @param  array   $options             Product options
+	 * @param  boolean $showVariablePricing Whether to show the price of the unit next
+	 *                                      to its name in the dropdown, if unit prices
+	 *                                      differ from product price.
+	 *                                      
+	 * @return Message\Cog\HTTP\Response    Response object
+	 */
+	public function index(Product $product, array $options = array(), $showVariablePricing = false)
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
+		// oos = out of stock
 		$oosUnits = $this->_filterInStockUnits($units);
 
 		if (count($units) === count($oosUnits)) {
@@ -32,9 +44,9 @@ class ProductSelector extends Controller
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
-			'product' => $product,
-			'units'   => $units,
-			'form'    => $this->_getForm($product, $options),
+			'product'     => $product,
+			'units'       => $units,
+			'form'        => $this->_getForm($product, $options, $showVariablePricing),
 		));
 	}
 
@@ -65,7 +77,7 @@ class ProductSelector extends Controller
 		return $this->redirectToReferer();
 	}
 
-	protected function _getForm(Product $product, array $options = array())
+	protected function _getForm(Product $product, array $options = array(), $showVariablePricing = false)
 	{
 		$form = $this->get('form')
 			->setName('select_product')
@@ -93,9 +105,11 @@ class ProductSelector extends Controller
 		// Otherwise, add a select box to select the unit
 		} else {
 			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), array(
-				'choices'     => $choices,
-				'oos'         => array_keys($oosUnits),
-				'empty_value' => $this->trans('ms.commerce.product.selector.unit.label')
+				'choices'      => $choices,
+				'units'        => $units,
+				'oos'          => array_keys($oosUnits),
+				'empty_value'  => $this->trans('ms.commerce.product.selector.unit.label'),
+				'show_pricing' => $showVariablePricing && $product->hasVariablePricing(),
 			));
 		}
 
