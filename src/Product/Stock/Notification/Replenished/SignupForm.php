@@ -28,8 +28,6 @@ class SignupForm extends Form\AbstractType
 
 		extract($options['data']);
 
-		if (0 == count($oosUnits)) return false;
-
 		$fullyOutOfStock = count($units) === count($oosUnits);
 
 		$choices = [];

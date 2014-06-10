@@ -182,12 +182,14 @@ class ProductSelector extends Controller
 	protected function _getReplenishedNotificationForm($product, $units, $oosUnits, $settings)
 	{
 		// If there are no units to display, load all units for the product.
-		if (count($units) == 0) {
+		if (0 == count($units)) {
 			$loader = $this->get('product.unit.loader');
 			$loader->includeOutOfStock(true);
 			$loader->includeInvisible(true);
 			$oosUnits = $loader->getByProduct($product);
 		}
+
+		if (0 == count($oosUnits)) return false;
 
 		$email = (! $this->get('user.current') instanceof AnonymousUser)
 		       ? $this->get('user.current')->email

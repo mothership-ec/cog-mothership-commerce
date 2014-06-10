@@ -9,13 +9,11 @@ Hi,
 Good news, the product(s) that you are interested in are now back in stock.
 
 {% for notification in notifications %}
-{% if moduleExists('Message\\Mothership\\Ecommerce') %}
 {{ notification.unit.product.name }}{% for value in notification.unit.options %} {{ value }}{% endfor %}
 
+{% if moduleExists('Message\\Mothership\\Ecommerce') %}
 http://{{ url }}{{ getPageForProductUnit(notification.unit).slug }}
 
-{% else %}
-{{ notification.unit.product.name }}{% for value in notification.unit.options %} {{ value }}{% endfor %}
 {% endif %}
 {% endfor %}
 
