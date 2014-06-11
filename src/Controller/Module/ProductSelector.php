@@ -33,8 +33,7 @@ class ProductSelector extends Controller
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
-		// oos = out of stock
-		$oosUnits = $this->_filterInStockUnits($units);
+		$oosUnits = $this->_getOutOfStockUnits($units);
 
 		if (count($units) === count($oosUnits)) {
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
@@ -142,7 +141,7 @@ class ProductSelector extends Controller
 		return $this->_availableUnits[$key];
 	}
 
-	protected function _filterInStockUnits(array $units)
+	protected function _getOutOfStockUnits(array $units)
 	{
 		$return = array();
 		$locs   = $this->get('stock.locations');
