@@ -41,7 +41,7 @@ class Create implements DB\TransactionalInterface
 
 	/**
 	 * Sets transaction and sets $_transOverridden to true.
-	 * 
+	 *
 	 * @param  DB\Transaction $trans transaction
 	 * @return Create                $this for chainability
 	 */
@@ -82,6 +82,7 @@ class Create implements DB\TransactionalInterface
 				created_by        = :createdBy?in,
 				list_price        = :listPrice?f,
 				actual_price      = :actualPrice?f,
+				base_price        = :basePrice?f,
 				net               = :net?f,
 				discount          = :discount?f,
 				tax               = :tax?f,
@@ -106,6 +107,7 @@ class Create implements DB\TransactionalInterface
 			'createdBy'      => $item->authorship->createdBy(),
 			'listPrice'      => $item->listPrice,
 			'actualPrice'    => $item->actualPrice,
+			'basePrice'      => $item->basePrice,
 			'net'            => $item->net,
 			'discount'       => $item->discount,
 			'tax'            => $item->tax,
@@ -126,7 +128,7 @@ class Create implements DB\TransactionalInterface
 			'stockLocation'  => $item->stockLocation->name,
 		));
 
-		$sqlVariable = 'ITEM_ID_' . spl_object_hash($item);
+		$sqlVariable = 'ITEM_ID_' . uniqid();
 
 		$this->_query->setIDVariable($sqlVariable);
 		$item->id = '@' . $sqlVariable;
