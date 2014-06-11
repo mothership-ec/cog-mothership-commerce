@@ -13,12 +13,14 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
-		$resolver->setDefaults(array(
-			'oos' => array(),
-			'oos_label' => function($label) {
+		$resolver->setDefaults([
+			'oos'          => [],
+			'units'        => [],
+			'oos_label'    => function($label) {
 				return $label . ' (Out of stock)';
-			}
-		));
+			},
+			'show_pricing' => false,
+		]);
 	}
 
 	/**
@@ -38,10 +40,12 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 			}
 		}
 
-		$view->vars = array_replace($view->vars, array(
-			'oos'       => $options['oos'],
-			'oos_label' => $options['oos_label'],
-		));
+		$view->vars = array_replace($view->vars, [
+			'oos'          => $options['oos'],
+			'oos_label'    => $options['oos_label'],
+			'show_pricing' => $options['show_pricing'],
+			'units'        => $options['units'],
+		]);
 	}
 
 	public function getParent()
