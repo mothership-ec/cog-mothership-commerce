@@ -84,7 +84,7 @@ class ProductSelector extends Controller
 			->setMethod('post');
 
 		$units    = $this->_getAvailableUnits($product, $options);
-		$oosUnits = $this->_filterInStockUnits($units);
+		$oosUnits = $this->_getOutOfStockUnits($units);
 		$choices  = [];
 
 		foreach ($units as $unit) {
