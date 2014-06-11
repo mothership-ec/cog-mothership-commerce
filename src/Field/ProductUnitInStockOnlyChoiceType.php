@@ -16,9 +16,7 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 		$resolver->setDefaults([
 			'oos'          => [],
 			'units'        => [],
-			'oos_label'    => function($label) {
-				return $label . ' (Out of stock)';
-			},
+			'oos_label'    => '(Out of stock)',
 			'show_pricing' => false,
 		]);
 	}
@@ -28,18 +26,6 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 	 */
 	public function buildView(FormView $view, FormInterface $form, array $options)
 	{
-		$oosLabelClosure = $options['oos_label'];
-
-		if ($oosLabelClosure instanceof \Closure) {
-			foreach ($view->vars['choices'] as $choice) {
-				if (!in_array($choice->value, $options['oos'])) {
-					continue;
-				}
-
-				$choice->label = $oosLabelClosure($choice->label);
-			}
-		}
-
 		$view->vars = array_replace($view->vars, [
 			'oos'          => $options['oos'],
 			'oos_label'    => $options['oos_label'],
