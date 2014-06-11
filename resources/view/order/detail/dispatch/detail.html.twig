@@ -1,9 +1,7 @@
 <section class="dual-column">
 	<h1 class="title">
-		{{ dispatch.method.displayName|title }},
-		{{ 'Created by'|trans }} {{ dispatch.authorship.createdBy }}
-		{{ 'at'|trans }} {{ dispatch.authorship.createdAt|date }}
-	</h1>
+		{{ dispatch.method.displayName|title }}, {{ dispatch.authorship }}
+ 	</h1>
 	<div class="content">
 		<div class="column">
 			<h2>Shipping Details</h2>
