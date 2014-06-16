@@ -2,12 +2,19 @@
 
 {% block order_content %}
 	<section class="container-content short">
-		{% if not payments is empty %}
-			{% for payment in payments %}
-				{% include 'Message:Mothership:Commerce::order:detail:payment:detail' %}
-			{% endfor %}
+		<h2>{{ 'ms.commerce.order.payment.listing-title'|trans }}</h2>
+
+		{% for payment in order.payments %}
+			{% include 'Message:Mothership:Commerce::order:detail:payment:payment-detail' %}
 		{% else %}
 			<p>{{ 'ms.commerce.order.payment.none'|trans }}</p>
-		{% endif %}
+		{% endfor %}
+
+		<h2>{{ 'ms.commerce.order.refund.listing-title'|trans }}</h2>
+		{% for refund in order.refunds %}
+			{% include 'Message:Mothership:Commerce::order:detail:payment:refund-detail' %}
+		{% else %}
+			<p>{{ 'ms.commerce.order.refund.none'|trans }}</p>
+		{% endfor %}
 	</section>
 {% endblock %}

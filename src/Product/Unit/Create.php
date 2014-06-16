@@ -29,34 +29,45 @@ class Create
 
 	public function create(Unit $unit)
 	{
-		if (is_null($unit->authorship->createdAt())) {
+		if (!$unit->authorship->createdAt()) {
 			$unit->authorship->create(new DateTimeImmutable, $this->_user->id);
 		}
 
-		$result = $this->_query->run(
-			'INSERT INTO
+		$result = $this->_query->run('
+			INSERT INTO
 				product_unit
 			SET
 				product_id   = :productID?i,
 				visible      = :visible?i,
-				barcode      = :barcode?s,
+				barcode      = :barcode?sn,
 				supplier_ref = :sup_ref?sn,
 				weight_grams = :weight?i,
 				created_at   = :createdAt?d,
-				created_by   = :createdBy?i',
-			array(
-				'productID' => $unit->product->id,
-				'visible'	=> (bool) $unit->visible,
-				'barcode'	=> $unit->barcode,
-				'sup_ref'	=> $unit->supplierRef,
-				'weight'	=> $unit->weight,
-				'createdAt' => $unit->authorship->createdAt(),
-				'createdBy' => $unit->authorship->createdBy()->id,
-				$unit->id
-			)
-		);
+				created_by   = :createdBy?i
+		', [
+			'productID' => $unit->product->id,
+			'visible'	=> (bool) $unit->visible,
+			'barcode'	=> $unit->barcode,
+			'sup_ref'	=> $unit->supplierRef,
+			'weight'	=> $unit->weight,
+			'createdAt' => $unit->authorship->createdAt(),
+			'createdBy' => $unit->authorship->createdBy()->id,
+		]);
 
 		$unitID = $result->id();
+
+		// If no barcode was defined, set it to the unit ID
+		// TODO: move this to an event listener once this decorator is transactional and uses events
+		if (!$unit->barcode) {
+			$this->_query->run('
+				UPDATE
+					product_unit
+				SET
+					barcode = unit_id
+				WHERE
+					unit_id = ?i
+			', $unitID);
+		}
 
 		$this->_query->run(
 			'INSERT INTO

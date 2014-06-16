@@ -236,8 +236,8 @@ class Generate
 				p.brand,
 				p.name,
 				u.barcode,
-				up.price,
-				up.currency_id AS currency,
+				IFNULL(up.price, pp.price) AS price,
+				IFNULL(up.currency_id, pp.currency_id) AS currency,
 				GROUP_CONCAT(DISTINCT o.option_value SEPARATOR ', ') AS text
 			FROM
 				product_unit AS u
@@ -251,18 +251,20 @@ class Generate
 				(unit_id)
 			LEFT JOIN
 				product_unit_price AS up
-			USING
-				(unit_id)
+			ON
+				(u.unit_id = up.unit_id AND up.type = :retail?s AND up.currency_id = :currencyID?s)
 			LEFT JOIN
 				product_info AS pi
 			USING
 				(product_id)
+			LEFT JOIN
+				product_price AS pp
+			ON
+				(u.product_id = pp.product_id AND pp.type = :retail?s AND pp.currency_id = :currencyID?s)
 			WHERE
 				barcode IS NOT NULL
 			AND
 				barcode != ''
-			AND
-				up.type = :retail?s
 			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
 			GROUP BY
 				u.unit_id
@@ -273,9 +275,10 @@ class Generate
 					p.name
 				)
 		", [
-			'retail'  => 'retail',
-			'unitIDs' => $unitIDs,
-			])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
+			'retail'     => 'retail',
+			'currencyID' => 'GBP',
+			'unitIDs'    => $unitIDs,
+		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
 			$code          = $barcode->getBarcode();
@@ -325,5 +328,4 @@ class Generate
 
 		return md5($string) . '.' . $this->getFileExt();
 	}
-
 }
