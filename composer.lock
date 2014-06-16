@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "38c4110cde7e74190f5570c701c4c381",
+    "hash": "a331a832dc987b626c72292695466680",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -228,12 +228,12 @@
             "version": "1.7.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/iio/fpdf.git",
+                "url": "https://github.com/hanneskod/fpdf.git",
                 "reference": "06d02a7bf227a62d37691a4e7e9c3a35efcb41c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iio/fpdf/zipball/06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
+                "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
                 "reference": "06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
                 "shasum": ""
             },
@@ -259,12 +259,12 @@
             "version": "1.4.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/iio/fpdi.git",
+                "url": "https://github.com/hanneskod/fpdi.git",
                 "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iio/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
+                "url": "https://api.github.com/repos/hanneskod/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
                 "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
                 "shasum": ""
             },
