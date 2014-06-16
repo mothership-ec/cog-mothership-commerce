@@ -11,7 +11,6 @@ use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Mothership\Commerce\Order\Entity\Address\Address;
 use Message\Cog\Event\Event as BaseEvent;
-use Message\Mothership\Ecommerce;
 use Message\User\User;
 use Message\User\AnonymousUser;
 
@@ -37,9 +36,6 @@ class AttachUserListener extends BaseListener implements SubscriberInterface
 			),
 			UserEvents\Event::LOGOUT => array(
 				array('addUserToOrder')
-			),
-			Ecommerce\Event::EMPTY_BASKET => array(
-				array('addUserToOrder'),
 			),
 		);
 	}
