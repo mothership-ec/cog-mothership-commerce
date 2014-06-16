@@ -190,6 +190,8 @@ class Loader
 	{
 		$this->_checkLimit($limit);
 
+		$this->_returnArray = true;
+
 		$terms = explode(' ', $terms);
 		$minTermLength = 3;
 		$searchFields = [
@@ -237,8 +239,9 @@ class Loader
 			';
 
 		$result = $this->_query->run($query, $searchParams);
+		$result = array_unique($result->flatten());
 
-		return $this->_loadProduct($result->flatten(), $limit);
+		return $this->_loadProduct($result, $limit);
 
 	}
 
