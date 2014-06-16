@@ -89,9 +89,7 @@ class Loader
 
 	public function getByCategory($name, $limit = null)
 	{
-		if (null !== $limit && !$this->_isWholeNumber($limit)) {
-			throw new \InvalidArgumentException('Limit must be a whole number');
-		}
+		$this->_checkLimit($limit);
 
 		$result = $this->_query->run('
 			SELECT
@@ -190,9 +188,7 @@ class Loader
 
 	public function getBySearchTerms($terms, $limit = null)
 	{
-		if (null !== $limit && !$this->_isWholeNumber($limit)) {
-			throw new \InvalidArgumentException('Limit must be a whole number');
-		}
+		$this->_checkLimit($limit);
 
 		$terms = explode(' ', $terms);
 		$minTermLength = 3;
@@ -255,6 +251,8 @@ class Loader
 		if (!$productIDs) {
 			return $this->_returnArray ? array() : false;
 		}
+
+		$this->_checkLimit($limit);
 
 		$result = $this->_query->run(
 			'SELECT
@@ -429,6 +427,13 @@ class Loader
 		}
 
 		return false;
+	}
+
+	private function _checkLimit($limit)
+	{
+		if (null !== $limit && !$this->_isWholeNumber($limit)) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
 	}
 
 }
