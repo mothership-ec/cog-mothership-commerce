@@ -14,13 +14,31 @@ class Loader
 	 */
 	protected $_query;
 
+	/**
+	 * @var bool
+	 */
+	protected $_includeDeleted = false;
+
 	public function __construct(Query $query)
 	{
 		$this->_query	= $query;
 	}
 
-	public function getCategories($includeDeleted = false)
+	public function includeDeleted($includeDeleted = true)
 	{
+		if (!is_bool($includeDeleted)) {
+			throw new \InvalidArgumentException('$includeDeleted must be a boolean');
+		}
+
+		$this->_includeDeleted = $includeDeleted;
+	}
+
+	public function getCategories($includeDeleted = null)
+	{
+		if (null !== $includeDeleted) {
+			$this->includeDeleted($includeDeleted);
+		}
+
 		$result	= $this->_query->run("
 			SELECT DISTINCT
 				category
@@ -30,7 +48,7 @@ class Loader
 				category IS NOT NULL
 			AND
 				category != ''
-			" . (!$includeDeleted ? " AND deleted_at IS NULL " : "") . "
+			" . (!$this->_includeDeleted ? " AND deleted_at IS NULL " : "") . "
 		");
 
 		return $result->flatten();
