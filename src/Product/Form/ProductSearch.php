@@ -28,7 +28,7 @@ class ProductSearch extends Form\AbstractType
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
 		$builder->add('terms', 'search', [
-			'label' => $this->_trans->trans('ms.commerce.product.search.label'),
+			'label' => 'ms.commerce.product.search.label',
 			'attr'  => array(
 				'placeholder' => $this->_trans->trans('ms.commerce.product.search.placeholder') . '&hellip;'
 			)
