@@ -18,7 +18,10 @@ class Services implements ServicesInterface
 		$this->registerProductPageMapper($services);
 
 		$services['order'] = $services->factory(function($c) {
-			return new Commerce\Order\Order($c['order.entities']);
+			$order = new Commerce\Order\Order($c['order.entities']);
+			$order->taxable = true; // default orders to taxable
+
+			return $order;
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
@@ -559,10 +562,14 @@ class Services implements ServicesInterface
 		});
 
 		$services['stock.movement.reasons'] = function() {
-			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
+			return new Commerce\Product\Stock\Movement\Reason\Collection([
 				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
 				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
-			));
+				new Commerce\Product\Stock\Movement\Reason\Reason(
+					\Message\Mothership\Commerce\Task\Stock\Barcode::REASON,
+					'Stock Take'
+				),
+			]);
 		};
 
 		$services['stock.movement.iterator'] = $services->factory(function($c) {

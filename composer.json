@@ -32,7 +32,7 @@
 		"message/cog"                        : "~3.0",
 		"message/cog-user"                   : "~1.0",
 		"message/cog-imageresize"            : "~1.0",
-		"message/cog-mothership-file-manager": "~1.0",
+		"message/cog-mothership-file-manager": "~1.2",
 		"message/cog-mothership-cp"          : "~1.1",
 
 		"domisys/image_barcode2"             : "3.0.0"
