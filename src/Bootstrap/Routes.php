@@ -83,6 +83,8 @@ class Routes implements RoutesInterface
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
 
+		$router['ms.product']->add('ms.commerce.product.barcode.stock_take', '/barcode/stock-take', 'Message:Mothership:Commerce::Controller:Product:Barcode#stockTake');
+
 
 		$router['ms.order']->add('ms.commerce.order.view.dashboard', 'view', 'Message:Mothership:Commerce::Controller:Order:Listing#dashboard');
 		$router['ms.order']->add('ms.commerce.order.view.all', 'view/all', 'Message:Mothership:Commerce::Controller:Order:Listing#all');
