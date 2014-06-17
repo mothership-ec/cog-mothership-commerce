@@ -13,12 +13,12 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
-		$resolver->setDefaults(array(
-			'oos' => array(),
-			'oos_label' => function($label) {
-				return $label . ' (Out of stock)';
-			}
-		));
+		$resolver->setDefaults([
+			'oos'          => [],
+			'units'        => [],
+			'oos_label'    => '(Out of stock)',
+			'show_pricing' => false,
+		]);
 	}
 
 	/**
@@ -26,22 +26,12 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 	 */
 	public function buildView(FormView $view, FormInterface $form, array $options)
 	{
-		$oosLabelClosure = $options['oos_label'];
-
-		if ($oosLabelClosure instanceof \Closure) {
-			foreach ($view->vars['choices'] as $choice) {
-				if (!in_array($choice->value, $options['oos'])) {
-					continue;
-				}
-
-				$choice->label = $oosLabelClosure($choice->label);
-			}
-		}
-
-		$view->vars = array_replace($view->vars, array(
-			'oos'       => $options['oos'],
-			'oos_label' => $options['oos_label'],
-		));
+		$view->vars = array_replace($view->vars, [
+			'oos'          => $options['oos'],
+			'oos_label'    => $options['oos_label'],
+			'show_pricing' => $options['show_pricing'],
+			'units'        => $options['units'],
+		]);
 	}
 
 	public function getParent()
