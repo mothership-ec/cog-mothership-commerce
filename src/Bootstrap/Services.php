@@ -96,8 +96,8 @@ class Services implements ServicesInterface
 		$services['order.assembler'] = $services->factory(function($c) {
 			$order = $c['order'];
 
-			$order->locale               = $c['locale']->getId();
-			$order->currencyID           = 'GBP';
+			$order->locale     = $c['locale']->getId();
+			$order->currencyID = 'GBP';
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
@@ -487,6 +487,30 @@ class Services implements ServicesInterface
 				$c['db.transaction'],
 				$c['event.dispatcher'],
 				$c['user.current']
+			);
+		};
+
+		$services['product.barcode.generate'] = function($c) {
+			return new Commerce\Product\Barcode\Generate(
+				$c['db.query'],
+				new Commerce\Product\Barcode\ImageResource,
+				$c['product.barcode.sheet']->getBarcodeHeight(),
+				$c['product.barcode.sheet']->getBarcodeWidth(),
+				$c['cfg']->barcode->fileType,
+				$c['cfg']->barcode->barcodeType
+			);
+		};
+
+		$services['product.barcode.sheet.collection'] = function($c) {
+			$collection = new Commerce\Product\Barcode\Sheet\Collection;
+			$collection->add(new Commerce\Product\Barcode\Sheet\Size5x13);
+
+			return $collection;
+		};
+
+		$services['product.barcode.sheet'] = function($c) {
+			return $c['product.barcode.sheet.collection']->get(
+				$c['cfg']->barcode->sheetType
 			);
 		};
 
