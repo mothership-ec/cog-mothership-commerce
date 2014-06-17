@@ -25,10 +25,10 @@ class OrderDetail extends Controller
 		$this->_metadata = $this->_order->metadata;
 
 		return $this->render('::order:detail:order:overview', array(
-			"order" => $this->_order,
-			"addresses" => $this->_addresses,
-			"items" => $this->_items,
-			"metadata" => $this->_metadata,
+			'order'     => $this->_order,
+			'addresses' => $this->_addresses,
+			'items'     => $this->_items,
+			'metadata'  => $this->_metadata,
 		));
 	}
 
