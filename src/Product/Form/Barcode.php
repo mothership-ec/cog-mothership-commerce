@@ -39,17 +39,18 @@ class Barcode extends Form\AbstractType
 			'constraints' => [
 				new Constraints\NotBlank,
 			],
+			'label'    => 'ms.commerce.product.barcode.type.label',
 			'multiple' => false,
 			'expanded' => true,
 			'choices'  => [
-				// @todo Use translations
-				'automatic' =>'For all units in stock in location',
-				'manual'    => 'Manually'
+				'automatic' => 'ms.commerce.product.barcode.type.automatic',
+				'manual'    => 'ms.commerce.product.barcode.type.manual'
 			],
 			'data'     => 'automatic',
 		]);
 
 		$builder->add('location', 'choice', [
+			'label'       => 'ms.commerce.product.barcode.location.label',
 			'multiple'    => false,
 			'expanded'    => false,
 			'choices'     => $this->_getLocations(),
@@ -65,7 +66,10 @@ class Barcode extends Form\AbstractType
 		$builder = $this->_addVariantFields($builder);
 
 		$builder->add('offset', 'number', [
-			'label' => 'Offset',
+			'label' => 'ms.commerce.product.barcode.offset.label',
+			'attr'  => [
+				'data-help-key' => 'ms.commerce.product.barcode.offset.help',
+			]
 		]);
 	}
 
