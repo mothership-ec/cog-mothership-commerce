@@ -13,7 +13,6 @@ use Message\Mothership\Commerce\Payable\PayableInterface;
  */
 
 class Order implements PayableInterface, Transaction\RecordInterface
-
 {
 	const RECORD_TYPE = 'order';
 
