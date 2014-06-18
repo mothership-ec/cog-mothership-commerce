@@ -52,14 +52,13 @@ class Image implements ResizableInterface
 	public function __get($key)
 	{
 		if ('file' == $key) {
-
 			return $this->getFile();
 		}
 	}
 
 	public function getFile()
 	{
-		if (!$this->_file) {
+		if (null === $this->_file) {
 			$this->_loadFile();
 		}
 
@@ -68,19 +67,15 @@ class Image implements ResizableInterface
 
 	protected function _loadFile()
 	{
-		if ($this->_file && !$this->_fileLoader) {
-			return true;
+		if ((null !== $this->_file) && !$this->_fileLoader) {
+			return;
 		}
 
 		if (!$this->_fileLoader) {
-			return false;
-
-//			throw new \LogicException(__CLASS__ . ': No file loader set, has this object been serialized?');
+			throw new \LogicException(__CLASS__ . ': No file loader set, has this object been serialized?');
 		}
 
 		$this->_file = $this->_fileLoader->getByID($this->fileID);
-
-		return true;
 	}
 
 	public function __isset($key)
@@ -97,6 +92,7 @@ class Image implements ResizableInterface
 			'authorship',
 			'type',
 			'locale',
+			'fileID',
 			'options',
 			'product',
 			'_file',
