@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Mothership\FileManager\File\File;
+use Message\Mothership\FileManager\File\Loader as FileLoader;
 
 use Message\ImageResize\ResizableInterface;
 
@@ -43,7 +44,7 @@ class Image implements ResizableInterface
 		return $this->getFile()->getAltText();
 	}
 
-	public function setFileLoader($fileLoader)
+	public function setFileLoader(FileLoader $fileLoader)
 	{
 		$this->_fileLoader = $fileLoader;
 	}
@@ -67,11 +68,19 @@ class Image implements ResizableInterface
 
 	protected function _loadFile()
 	{
+		if ($this->_file && !$this->_fileLoader) {
+			return true;
+		}
+
 		if (!$this->_fileLoader) {
-			throw new \LogicException(__CLASS__ . ': No file loader set, has this object been serialized?');
+			return false;
+
+//			throw new \LogicException(__CLASS__ . ': No file loader set, has this object been serialized?');
 		}
 
 		$this->_file = $this->_fileLoader->getByID($this->fileID);
+
+		return true;
 	}
 
 	public function __isset($key)
@@ -81,7 +90,7 @@ class Image implements ResizableInterface
 
 	public function __sleep()
 	{
-		$this->getFile();
+		$this->_loadFile();
 
 		return array(
 			'id',
