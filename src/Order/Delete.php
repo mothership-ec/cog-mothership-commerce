@@ -20,6 +20,7 @@ class Delete implements DB\TransactionalInterface
 {
 	protected $_query;
 	protected $_currentUser;
+	protected $_eventDispatcher;
 
 	/**
 	 * Constructor.
@@ -33,6 +34,7 @@ class Delete implements DB\TransactionalInterface
 	{
 		$this->_query           = $query;
 		$this->_currentUser     = $user;
+		$this->_eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -58,7 +60,7 @@ class Delete implements DB\TransactionalInterface
 	{
 		$order->authorship->delete(new DateTimeImmutable, $this->_currentUser->id);
 
-		$event = new new Event\TransactionalEvent($order);
+		$event = new Event\TransactionalEvent($order);
 		$event->setTransaction($this->_query);
 		$order = $this->_eventDispatcher->dispatch(Events::DELETE_START, $event)
 			->getOrder();
@@ -77,7 +79,7 @@ class Delete implements DB\TransactionalInterface
 			'id' => $order->id,
 		));
 
-		$event = new new Event\TransactionalEvent($order);
+		$event = new Event\TransactionalEvent($order);
 		$event->setTransaction($this->_query);
 		$order = $this->_eventDispatcher->dispatch(Events::DELETE_END, $event)
 			->getOrder();
