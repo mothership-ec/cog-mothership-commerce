@@ -67,7 +67,7 @@ class Image implements ResizableInterface
 
 	protected function _loadFile()
 	{
-		if ((null !== $this->_file) && !$this->_fileLoader) {
+		if (null !== $this->_file) {
 			return;
 		}
 
