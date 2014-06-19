@@ -25,25 +25,34 @@ class CancellationRefund implements PayableInterface
 	/**
 	 * Sets order
 	 *
-	 * @param Order $order order
+	 * @param  Order $order order
+	 *
+	 * @return CancellationRefund
 	 */
 	public function setOrder(Order $order)
 	{
 		$this->_order = $order;
+
+		return $this;
 	}
 
 	/**
 	 * Sets payable amount
 	 *
-	 * @param float $amount payable amount
+	 * @param  float $amount payable amount
+	 *
+	 * @return CancellationRefund
 	 */
 	public function setPayableAmount($amount)
 	{
 		$this->_amount = (float) $amount;
+
+		return $this;
 	}
 
 	/**
 	 * Gets order for cancellation refund
+	 *
 	 * @return Order order
 	 */
 	public function getOrder()
