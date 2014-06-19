@@ -55,6 +55,12 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$this->_defaultStatus = $defaultStatus;
 	}
 
+	/**
+	 * Update the items' statuses to match their parent order's status, where
+	 * the order status is 'cancelled'.
+	 *
+	 * @param  EventTransactionalEvent $event
+	 */
 	public function updateStatus(Event\TransactionalEvent $event)
 	{
 		$order = $event->getOrder();
