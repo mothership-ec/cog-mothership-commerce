@@ -20,13 +20,11 @@ class CancellationRefund implements PayableInterface
 	public function __construct(Order $order)
 	{
 		$this->_order = $order;
-
-		return $this;
 	}
 
 	/**
 	 * Sets order
-	 * 
+	 *
 	 * @param Order $order order
 	 */
 	public function setOrder(Order $order)
@@ -36,7 +34,7 @@ class CancellationRefund implements PayableInterface
 
 	/**
 	 * Sets payable amount
-	 * 
+	 *
 	 * @param float $amount payable amount
 	 */
 	public function setPayableAmount($amount)
