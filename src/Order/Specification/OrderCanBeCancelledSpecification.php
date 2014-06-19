@@ -18,7 +18,7 @@ class OrderCanBeCancelledSpecification extends AbstractCanBeCancelledSpecificati
 	 * @param  Order $order
 	 * @return boolean
 	 */
-	public function isSatisfiedBy($order)
+	public function isSatisfiedBy(Order $order)
 	{
 		return $this->_checkStatus($order->status->code);
 	}
