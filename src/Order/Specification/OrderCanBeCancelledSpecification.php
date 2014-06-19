@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order\Specification;
 
+use Message\Mothership\Commerce\Order\Order;
+
 /**
  * Interface defining whether an order can be cancelled or not, using the
  * specification pattern.
@@ -10,6 +12,12 @@ namespace Message\Mothership\Commerce\Order\Specification;
  */
 class OrderCanBeCancelledSpecification extends AbstractCanBeCancelledSpecification
 {
+	/**
+	 * Check if the order statisfies this specification.
+	 *
+	 * @param  Order $order
+	 * @return boolean
+	 */
 	public function isSatisfiedBy($order)
 	{
 		return $this->_checkStatus($order->status->code);
