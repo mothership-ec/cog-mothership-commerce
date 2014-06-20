@@ -49,11 +49,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 			OrderEvents::DISPATCH_SHIPPED => array(
 				array('recordOrderOut'),
 			),
-			OrderEvents::DELETE_END => array(
-				array('recordOrderDeleted'),
-				array('recordSalesNetDeleted'),
-				array('recordProductsSalesDeleted'),
-			),
+			// OrderEvents::DELETE_END => array(
+			// 	array('recordOrderDeleted'),
+			// 	array('recordSalesNetDeleted'),
+			// 	array('recordProductsSalesDeleted'),
+			// ),
 			DashboardEvent::DASHBOARD_INDEX => array(
 				array('buildDashboardProducts'),
 				array('buildDashboardOrders'),
