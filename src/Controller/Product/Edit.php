@@ -649,11 +649,11 @@ class Edit extends Controller
 					$choices[$choice] = $choice;
 				}
 
-				$fieldName = preg_replace('/[^a-z0-9]-_:/i', '-', $type);
+				$fieldName = preg_replace('/[^a-z0-9]/i', '_', $type);
 
 				$optionForm->add($fieldName, 'datalist', ucfirst($type), [
 					'choices' => $choices,
-					'data'    => ($unit->options[$type]) ?: null,
+					'data'    => (!empty($unit->options[$type])) ? $unit->options[$type] : null,
 				])->val()->optional();
 
 				$optionForm->add($fieldName . self::HIDDEN_SUFFIX, 'hidden', $fieldName, [
