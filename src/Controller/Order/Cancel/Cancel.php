@@ -19,16 +19,16 @@ class Cancel extends Controller
 
 	/**
 	 * Collects success flashes of different actions.
-	 * 
+	 *
 	 * @var array[string]
 	 */
 	protected $_successFlashes = [];
 
 	/**
 	 * Method responsible for cancelling a whole order.
-	 * 
+	 *
 	 * @param  int $orderID Order ID
-	 * 
+	 *
 	 * @return Message\Cog\HTTP\Response Response
 	 */
 	public function cancelOrder($orderID)
@@ -71,7 +71,7 @@ class Cancel extends Controller
 			$this->_successFlashes[] = sprintf('Successfully cancelled order #%s.', $this->_order->id);
 
 			if ($stock) {
-				$this->_configureStockManagerAndLocation($transaction, Reasons::CANCELLED_ORDER);	
+				$this->_configureStockManagerAndLocation($transaction, Reasons::CANCELLED_ORDER);
 
 				foreach ($this->_order->items->getRows() as $row) {
 					$this->_stockManager->increment(
@@ -127,10 +127,10 @@ class Cancel extends Controller
 
 	/**
 	 * Method responsible for cancelling an item in an order.
-	 * 
+	 *
 	 * @param  int $orderID Order ID
 	 * @param  int $itemID  Item ID
-	 * 
+	 *
 	 * @return Message\Cog\HTTP\Response Response
 	 */
 	public function cancelItem($orderID, $itemID)
@@ -176,7 +176,7 @@ class Cancel extends Controller
 					$this->_stockLocation
 				);
 
-				$this->_successFlashes[] = sprintf('Successfully moved item to stock location `%s`.', $this->_stockLocation->displayName);	
+				$this->_successFlashes[] = sprintf('Successfully moved item to stock location `%s`.', $this->_stockLocation->displayName);
 			}
 
 			if ($transaction->commit()) {
@@ -225,10 +225,10 @@ class Cancel extends Controller
 	 * Configures $_stockManager by setting its transaction, reason, note and
 	 * automated properties. Also sets $_stockLocation and sets it to the
 	 * sell stock location.
-	 * 
+	 *
 	 * @param  Mothership\Cog\DB\Transaction $transaction Transaction to be used
 	 * @param  string                        $reasonName  Name of reason to be set
-	 * 
+	 *
 	 */
 	protected function _configureStockManagerAndLocation($transaction, $reasonName)
 	{
@@ -247,7 +247,7 @@ class Cancel extends Controller
 
 	/**
 	 * Sends customer notification using factory with name $factoryName.
-	 * 
+	 *
 	 * @param  string $factoryName Name of the factory used to create the email.
 	 */
 	protected function _sendCustomerNotification($factoryName)
@@ -255,16 +255,16 @@ class Cancel extends Controller
 		$factory = $this->get($factoryName)
 			->set('order', $this->_order);
 		$this->get('mail.dispatcher')->send($factory->getMessage());
-		
+
 		$this->_successFlashes[] = 'Successfully notified customer.';
 	}
 
 	/**
 	 *	Gets order by order id.
-	 * 
+	 *
 	 * @param  int                                                          $orderID Order ID
 	 * @throws Symfony\Component\HttpKernel\Exception\NotFoundHttpException          If no order for id exists
-	 * 
+	 *
 	 * @return Order\Order  Order with ID $orderID
 	 */
 	protected function _getAndCheckOrder($orderID)
@@ -299,13 +299,13 @@ class Cancel extends Controller
 	/**
 	 * For now just returns latest payment's reference. Should in future find
 	 * the right payment.
-	 * 
+	 *
 	 * @return string Payment Reference
 	 */
 	protected function _getPaymentReference()
 	{
 		$payment = null;
-		
+
 		foreach ($this->_order->payments as $p) {
 			$payment = $p;
 		}
@@ -325,4 +325,3 @@ class Cancel extends Controller
 		return $exists;
 	}
 }
-       
