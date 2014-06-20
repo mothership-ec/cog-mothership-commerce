@@ -131,17 +131,19 @@ class Searcher {
 		// Terms are lowered to ensure they are case-insensitive.
 		foreach ($this->_requirements as $field => $term) {
 			$term = strtolower($term);
+			$fieldVar = ':_field_' . $field . '?s';
 
 			if ('description' == $field) {
 				$field = 'product_info.' . $field;
-				$wheres[] = '(LOWER(' . $field . ') LIKE :' . $field . ' OR LOWER(product_info.short_description) LIKE :' . $field .')';
+				$wheres[] = '(LOWER(' . $fieldVar . ') LIKE :' . $field . ' OR LOWER(product_info.short_description) LIKE :' . $field .')';
 			} else {
 				$field = 'product.' . $field;
-				$wheres[] = 'LOWER(' . $field . ') LIKE :' . $field;
+				$wheres[] = 'LOWER(' . $fieldVar . ') LIKE :' . $field;
 			}
 
 			// replace '*' with '%' and add '%' in end and beginning
-			$this->_searchParams[$field] = '%' . str_replace('*', '%', $term) . '%';
+			$this->_searchParams[$field]             = '%' . str_replace('*', '%', $term) . '%';
+			$this->_searchParams['_field_' . $field] = $field;
 		}
 
 		$where = join($wheres, ' AND ');
