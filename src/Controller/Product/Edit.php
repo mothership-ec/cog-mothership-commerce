@@ -649,7 +649,7 @@ class Edit extends Controller
 					$choices[$choice] = $choice;
 				}
 
-				$fieldName = str_replace(' ', '-', $type);
+				$fieldName = preg_replace('/[^a-z0-9]-_:/i', '-', $type);
 
 				$optionForm->add($fieldName, 'datalist', ucfirst($type), [
 					'choices' => $choices,
