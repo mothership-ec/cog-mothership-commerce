@@ -10,9 +10,13 @@
 			>
 				Cancel
 			</a>
-		{% else %}
+		{% elseif item.status.name == 'Cancelled' %}
 			<span class="button small cancel disabled"  id="cancel-order">
 				Cancelled
+			</span>
+		{% else %}
+			<span class="button small cancel disabled"  id="cancel-order">
+				Can't be cancelled
 			</span>
 		{% endif %}
 		</div>
