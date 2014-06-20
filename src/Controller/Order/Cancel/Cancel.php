@@ -96,6 +96,8 @@ class Cancel extends Controller
 				if ($refundable && true === $form->get('refund')->getData()) {
 					$payable = new Order\CancellationRefund($this->_order);
 
+					$payable->setPayableAmount($refundAmount);
+
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
 						'payable'   => $payable,
