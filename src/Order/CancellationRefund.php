@@ -23,8 +23,7 @@ class CancellationRefund implements PayableInterface
 	}
 
 	/**
-	 * Sets the order and defaults the payable amount to this value from the
-	 * given order.
+	 * Sets order
 	 *
 	 * @param  Order $order order
 	 *
@@ -33,8 +32,6 @@ class CancellationRefund implements PayableInterface
 	public function setOrder(Order $order)
 	{
 		$this->_order = $order;
-
-		$this->setPayableAmount($order->getPayableAmount());
 
 		return $this;
 	}
