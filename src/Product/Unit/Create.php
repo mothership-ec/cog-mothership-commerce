@@ -33,18 +33,22 @@ class Create
 			$unit->authorship->create(new DateTimeImmutable, $this->_user->id);
 		}
 
-		$result = $this->_query->run('
+		$result = $this->_query->run("
 			INSERT INTO
 				product_unit
 			SET
 				product_id   = :productID?i,
 				visible      = :visible?i,
-				barcode      = :barcode?sn,
+				barcode      = IF(
+					:barcode?sn IS NOT NULL,
+					:barcode?sn,
+					(SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='product_unit')
+				),
 				supplier_ref = :sup_ref?sn,
 				weight_grams = :weight?i,
 				created_at   = :createdAt?d,
 				created_by   = :createdBy?i
-		', [
+		", [
 			'productID' => $unit->product->id,
 			'visible'	=> (bool) $unit->visible,
 			'barcode'	=> $unit->barcode,
@@ -55,19 +59,6 @@ class Create
 		]);
 
 		$unitID = $result->id();
-
-		// If no barcode was defined, set it to the unit ID
-		// TODO: move this to an event listener once this decorator is transactional and uses events
-		if (!$unit->barcode) {
-			$this->_query->run('
-				UPDATE
-					product_unit
-				SET
-					barcode = unit_id
-				WHERE
-					unit_id = ?i
-			', $unitID);
-		}
 
 		$this->_query->run(
 			'INSERT INTO
