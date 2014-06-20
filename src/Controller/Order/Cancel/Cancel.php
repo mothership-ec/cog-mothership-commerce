@@ -65,15 +65,19 @@ class Cancel extends Controller
 
 			$transaction = $this->get('db.transaction');
 
-			$orderEdit = $this->get('order.edit');
-			$orderEdit->setTransaction($transaction);
-			$orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
-			$this->_successFlashes[] = sprintf('Successfully cancelled order #%s.', $this->_order->id);
-
 			if ($stock) {
 				$this->_configureStockManagerAndLocation($transaction, Reasons::CANCELLED_ORDER);
 
 				foreach ($this->_order->items->getRows() as $row) {
+					$quantity = $row->getQuantity();
+
+					// Only move those that have not yet been cancelled
+					foreach ($row as $item) {
+						if ($item->status == Order\Statuses::CANCELLED) {
+							$quantity -= 1;
+						}
+					}
+
 					$this->_stockManager->increment(
 						$row->first()->getUnit(),
 						$this->_stockLocation,
@@ -83,6 +87,11 @@ class Cancel extends Controller
 
 				$this->_successFlashes[] = sprintf('Successfully moved item(s) to stock location `%s`.', $this->_stockLocation->displayName);
 			}
+
+			$orderEdit = $this->get('order.edit');
+			$orderEdit->setTransaction($transaction);
+			$orderEdit->updateStatus($this->_order, Order\Statuses::CANCELLED);
+			$this->_successFlashes[] = sprintf('Successfully cancelled order #%s.', $this->_order->id);
 
 			if ($transaction->commit()) {
 				if ($notifyCustomer) {
