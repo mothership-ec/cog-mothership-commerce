@@ -145,7 +145,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.delete'] = $services->factory(function($c) {
-			return new Commerce\Order\Delete($c['db.query'], $c['event.dispatcher'], $c['user.current']);
+			return new Commerce\Order\Delete($c['db.transaction'], $c['event.dispatcher'], $c['user.current']);
 		});
 
 		$services['order.edit'] = $services->factory(function($c) {
