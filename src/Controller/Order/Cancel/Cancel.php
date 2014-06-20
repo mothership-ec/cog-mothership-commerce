@@ -84,8 +84,6 @@ class Cancel extends Controller
 				$this->_successFlashes[] = sprintf('Successfully moved item(s) to stock location `%s`.', $this->_stockLocation->displayName);
 			}
 
-			$payable = new Order\CancellationRefund($this->_order);
-
 			if ($transaction->commit()) {
 				if ($notifyCustomer) {
 					$this->_sendCustomerNotification('mail.factory.order.cancellation');
