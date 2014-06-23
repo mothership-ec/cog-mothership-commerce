@@ -34,7 +34,8 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Address\EventListener);
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Discount\EventListener);
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Item\EventListener(
-			$this->_services['order.item.statuses']->get(0)
+			$this->_services['order.item.statuses']->get(0),
+			$this->_services['order.item.edit']
 		));
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Note\EventListener);
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Payment\EventListener\RemoveTemporaryIdListener);

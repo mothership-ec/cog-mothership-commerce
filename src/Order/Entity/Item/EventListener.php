@@ -7,7 +7,6 @@ use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
 use Message\Mothership\Commerce\Order\Statuses;
 
-use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
 /**
@@ -15,9 +14,10 @@ use Message\Cog\Event\SubscriberInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener extends BaseListener implements SubscriberInterface
+class EventListener implements SubscriberInterface
 {
 	protected $_defaultStatus;
+	protected $_itemEdit;
 
 	/**
 	 * {@inheritdoc}
@@ -50,9 +50,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 *
 	 * @param BaseStatus $defaultStatus The default status to set on new order items
 	 */
-	public function __construct(BaseStatus $defaultStatus)
+	public function __construct(BaseStatus $defaultStatus, Edit $itemEdit)
 	{
 		$this->_defaultStatus = $defaultStatus;
+		$this->_itemEdit      = $itemEdit;
 	}
 
 	/**
@@ -66,9 +67,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$order = $event->getOrder();
 
 		if (Statuses::CANCELLED === $order->status->code) {
-			$itemEdit = $this->get('order.item.edit');
-			$itemEdit->setTransaction($event->getTransaction());
-			$itemEdit->updateStatus($order->items->all(), Statuses::CANCELLED);
+			$this->_itemEdit->setTransaction($event->getTransaction());
+			$this->_itemEdit->updateStatus($order->items->all(), Statuses::CANCELLED);
 		}
 	}
 
