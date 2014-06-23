@@ -108,7 +108,13 @@ class Refund extends Controller implements CompleteControllerInterface
 			);
 		}
 
-		return $this->_returnResponse($payable);
+		$successUrl = $this->generateUrl($this->_url, array(
+			'orderID' => $payable->getOrder()->id,
+		), UrlGeneratorInterface::ABSOLUTE_URL);
+
+		return new JsonResponse([
+			'url' => $successUrl,
+		]);
 	}
 
 	public function cancel(PayableInterface $payable)
@@ -127,20 +133,8 @@ class Refund extends Controller implements CompleteControllerInterface
 			)
 		);
 
-		return $this->_returnResponse($payable);
-	}
-
-	protected function _returnResponse($payable)
-	{
-		$url = $this->generateUrl($this->_url, array(
-			'orderID' => $payable->getOrder()->id,
-		), UrlGeneratorInterface::ABSOLUTE_URL);
-
-		$response = new JsonResponse;
-		$response->setData([
-			'url' => $url,
+		return $this->redirecToRoute($this->_url, [
+			'orderID' => $payable->getOrder()->id
 		]);
-
-		return $response;
 	}
 }
