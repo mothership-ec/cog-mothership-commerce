@@ -133,7 +133,7 @@ class Refund extends Controller implements CompleteControllerInterface
 			)
 		);
 
-		return $this->redirecToRoute($this->_url, [
+		return $this->redirectToRoute($this->_url, [
 			'orderID' => $payable->getOrder()->id
 		]);
 	}
