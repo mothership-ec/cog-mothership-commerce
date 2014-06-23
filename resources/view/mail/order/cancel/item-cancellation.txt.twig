@@ -11,7 +11,7 @@ ORDER NUMBER: {{ order.id }}
 
 CANCELLED ITEMS:
 {% for item in cancelledItems %}
-1 x {{ item.description }}
+1 x {{ item.description }} on {{ item.status.authorship.createdAt|date }}
 {% endfor %}
 
 ORDER DETAILS:
