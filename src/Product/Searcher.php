@@ -113,7 +113,7 @@ class Searcher {
 	/**
 	 * Sets $_queryString and $_searchParams
 	 *
-	 * @throws \LogixException If no requirements have been set yet
+	 * @throws \LogicException If no requirements have been set yet
 	 */
 	protected function _buildQuery()
 	{
@@ -146,7 +146,7 @@ class Searcher {
 			$this->_searchParams['_field_' . $field] = $field;
 		}
 
-		$where = join($wheres, ' AND ');
+		$where = implode(' AND ', $wheres);
 
 		$this->_queryString = '
 			SELECT
