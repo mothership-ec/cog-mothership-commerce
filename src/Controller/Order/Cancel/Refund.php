@@ -132,13 +132,13 @@ class Refund extends Controller implements CompleteControllerInterface
 
 	protected function _returnResponse($payable)
 	{
-		$successUrl = $this->generateUrl($this->_url, array(
+		$url = $this->generateUrl($this->_url, array(
 			'orderID' => $payable->getOrder()->id,
 		), UrlGeneratorInterface::ABSOLUTE_URL);
 
 		$response = new JsonResponse;
 		$response->setData([
-			'url' => $successUrl,
+			'url' => $url,
 		]);
 
 		return $response;
