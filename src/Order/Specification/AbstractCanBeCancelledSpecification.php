@@ -14,6 +14,6 @@ abstract class AbstractCanBeCancelledSpecification
 {
 	protected function _checkStatus($statusCode)
 	{
-		return (Statuses::AWAITING_DISPATCH === $statusCode || Statuses::PROCESSING === $statusCode);
+		return (Statuses::AWAITING_DISPATCH <= $statusCode and $statusCode <= Statuses::PROCESSING);
 	}
 }
