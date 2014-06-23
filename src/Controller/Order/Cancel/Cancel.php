@@ -73,7 +73,7 @@ class Cancel extends Controller
 
 					// Only move those that have not yet been cancelled
 					foreach ($row as $item) {
-						if ($item->status == Order\Statuses::CANCELLED) {
+						if ($item->status->code == Order\Statuses::CANCELLED) {
 							$quantity -= 1;
 						}
 					}
