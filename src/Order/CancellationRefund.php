@@ -16,6 +16,7 @@ class CancellationRefund implements PayableInterface
 {
 	protected $_amount;
 	protected $_order;
+	protected $_payableTransactionID;
 
 	public function __construct(Order $order)
 	{
@@ -93,6 +94,10 @@ class CancellationRefund implements PayableInterface
 	 */
 	public function getPayableTransactionID()
 	{
-		return 'CANCELLATION-' . spl_object_hash($this);
+		if (! $this->_payableTransactionID) {
+			$this->_payableTransactionID = 'CANCELLATION-' . strtoupper(uniqid());
+		}
+
+		return $this->_payableTransactionID;
 	}
 }
