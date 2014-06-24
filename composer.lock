@@ -1,10 +1,9 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
-        "This file is @generated automatically"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a331a832dc987b626c72292695466680",
+    "hash": "250f8c17b978281e9c2743aeca16aac3",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -228,12 +227,12 @@
             "version": "1.7.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/hanneskod/fpdf.git",
+                "url": "https://github.com/iio/fpdf.git",
                 "reference": "06d02a7bf227a62d37691a4e7e9c3a35efcb41c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
+                "url": "https://api.github.com/repos/iio/fpdf/zipball/06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
                 "reference": "06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
                 "shasum": ""
             },
@@ -259,12 +258,12 @@
             "version": "1.4.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/hanneskod/fpdi.git",
+                "url": "https://github.com/iio/fpdi.git",
                 "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanneskod/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
+                "url": "https://api.github.com/repos/iio/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
                 "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
                 "shasum": ""
             },
@@ -649,22 +648,25 @@
         },
         {
             "name": "message/cog-mothership-cp",
-            "version": "1.1.6",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-cp.git",
-                "reference": "1.1.6"
+                "reference": "1.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.1.6",
-                "reference": "1.1.6",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.2.0",
+                "reference": "1.2.0",
                 "shasum": ""
             },
             "require": {
                 "message/cog": "~3.0",
                 "message/cog-user": "~1.0",
                 "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -694,9 +696,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-cp/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.1.6"
+                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.2.0"
             },
-            "time": "2014-06-11 08:53:58"
+            "time": "2014-06-24 11:42:24"
         },
         {
             "name": "message/cog-mothership-file-manager",
@@ -1052,16 +1054,16 @@
         },
         {
             "name": "pimple/pimple",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Pimple.git",
-                "reference": "f99b3df12991c22463927aa6a18fd9b2212917f2"
+                "reference": "90b4710f115766d12e1a579b816c0974887b87a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/f99b3df12991c22463927aa6a18fd9b2212917f2",
-                "reference": "f99b3df12991c22463927aa6a18fd9b2212917f2",
+                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/90b4710f115766d12e1a579b816c0974887b87a7",
+                "reference": "90b4710f115766d12e1a579b816c0974887b87a7",
                 "shasum": ""
             },
             "require": {
@@ -1070,12 +1072,12 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
                 "psr-0": {
-                    "Pimple": "lib/"
+                    "Pimple": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1096,7 +1098,7 @@
                 "container",
                 "dependency injection"
             ],
-            "time": "2014-02-10 08:05:32"
+            "time": "2014-05-01 10:34:00"
         },
         {
             "name": "psr/log",
@@ -1171,9 +1173,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Chris Corbyn"
@@ -1337,9 +1337,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Symfony Community",
@@ -1435,9 +1433,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Symfony Community",
@@ -1847,9 +1843,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Symfony Community",
@@ -2011,9 +2005,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Symfony Community",
@@ -2299,9 +2291,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Symfony Community",
@@ -2395,14 +2385,11 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Armin Ronacher",
-                    "email": "armin.ronacher@active-4.com",
-                    "role": "Project Founder"
+                    "email": "armin.ronacher@active-4.com"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
