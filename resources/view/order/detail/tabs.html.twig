@@ -6,11 +6,11 @@
 	</ul>
 	<div class="controls">
 		{% if isCancellable %}
-		    <a class="button small cancel" href="{{ url('ms.commerce.order.cancel', {'orderID': orderID }) }}" data-modal-open id="cancel-order">
+		    <a class="button small cancel" href="{{ url('ms.commerce.order.cancel', {'orderID': orderID }) }}" data-modal-open>
 		    	Cancel
 		    </a>
 	    {% else %}
-			<span class="button small cancel disabled"  id="cancel-order">
+			<span class="button small cancel disabled">
 		    	Cancelled
 		    </span>
 	    {% endif %}
