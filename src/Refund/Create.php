@@ -9,6 +9,7 @@ use Message\Mothership\Commerce\Order;
 use Message\Cog\DB;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Mothership\Commerce\Payment\MethodInterface;
 
 use InvalidArgumentException;
 
@@ -109,16 +110,23 @@ class Create implements DB\TransactionalInterface
 	protected function _validate(Refund $refund)
 	{
 		if ($refund->amount <= 0) {
-			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0');
+			throw new InvalidArgumentException('Could not create refund: amount must be greater than 0.');
+		}
+
+		if (!$refund->method instanceof MethodInterface) {
+			throw new InvalidArgumentException(
+				'Could not create refund: refund method must be an instance of 
+				`Message\Mothership\Commerce\Payment\MethodInterface`.'
+			);
 		}
 
 		if (!$refund->currencyID) {
-			throw new InvalidArgumentException('Could not create refund: currency ID must be set');
+			throw new InvalidArgumentException('Could not create refund: currency ID must be set.');
 		}
 
 		if ($refund->payment && $refund->currencyID !== $refund->payment->currencyID) {
 			throw new InvalidArgumentException(sprintf(
-				'Could not create refund: currency ID (%s) does not match the related payment\'s currency ID (%s)',
+				'Could not create refund: currency ID (%s) does not match the related payment\'s currency ID (%s).',
 				$refund->currencyID,
 				$refund->payment->currencyID
 			));

@@ -3,12 +3,15 @@
 namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
-use Message\Mothership\Ecommerce\OrderItemStatuses;
-use Message\Mothership\Commerce\Order\Statuses;
-use Message\Mothership\Commerce\Order\Events;
-use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 
+use Message\Mothership\Commerce\Order\Events;
+use Message\Mothership\Commerce\Order\Statuses;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
+
+use Message\Mothership\Ecommerce\OrderItemStatuses;
+
+use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
+use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 
 
 class Listing extends Controller
@@ -108,8 +111,14 @@ class Listing extends Controller
 
 	public function dashboard()
 	{
-		return $this->render('::order:listing:dashboard', array(
-		));
+		$event = $this->get('event.dispatcher')->dispatch(
+			'dashboard.commerce.orders',
+			new DashboardEvent
+		);
+
+		return $this->render('::order:listing:dashboard', [
+			'dashboardReferences' => $event->getReferences()
+		]);
 	}
 
 	protected function _getSearchForm()
