@@ -86,6 +86,7 @@ class Routes implements RoutesInterface
 		$router['ms.product.basket']->add('ms.commerce.product.stock.notification.replenished.signup', '/product-replenished-notification-signup/', 'Message:Mothership:Commerce::Controller:Module:ProductSelector#processReplenishedNotificationSignup')
 			->setMethod('POST');
 
+		$router['ms.product']->add('ms.commerce.product.barcode.stock_take', '/barcode/stock-take', 'Message:Mothership:Commerce::Controller:Product:Barcode#stockTake');
 
 		$router['ms.order']->add('ms.commerce.order.view.dashboard', 'view', 'Message:Mothership:Commerce::Controller:Order:Listing#dashboard');
 		$router['ms.order']->add('ms.commerce.order.view.all', 'view/all', 'Message:Mothership:Commerce::Controller:Order:Listing#all');

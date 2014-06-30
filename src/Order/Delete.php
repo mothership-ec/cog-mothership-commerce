@@ -2,12 +2,13 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Cog\ValueObject\Authorship;
+use Message\User\UserInterface;
 
 use Message\Cog\DB;
 use Message\Cog\DB\Result;
-use Message\User\UserInterface;
+use Message\Cog\Event\DispatcherInterface;
+use Message\Cog\ValueObject\Authorship;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 /**
  * Decorator for deleting orders.
@@ -17,19 +18,25 @@ use Message\User\UserInterface;
  */
 class Delete implements DB\TransactionalInterface
 {
-	protected $_query;
+	protected $_trans;
 	protected $_currentUser;
+	protected $_eventDispatcher;
+
+	protected $_transOverriden = false;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param DB\Query            $query          The database query instance to use
-	 * @param UserInterface       $currentUser    The currently logged in user
+	 * @param DB\Transaction      $trans           The database transaction to use
+	 * @param DispatcherInterface $eventDispatcher
+	 * @param UserInterface       $currentUser     The currently logged in user
 	 */
-	public function __construct(DB\Query $query, UserInterface $user)
+	public function __construct(DB\Transaction $trans,
+		DispatcherInterface $eventDispatcher, UserInterface $user)
 	{
-		$this->_query           = $query;
+		$this->_trans           = $trans;
 		$this->_currentUser     = $user;
+		$this->_eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -39,7 +46,8 @@ class Delete implements DB\TransactionalInterface
 	 */
 	public function setTransaction(DB\Transaction $transaction)
 	{
-		$this->_query = $transaction;
+		$this->_trans = $transaction;
+		$this->_transOverriden = true;
 
 		return $this;
 	}
@@ -55,7 +63,12 @@ class Delete implements DB\TransactionalInterface
 	{
 		$order->authorship->delete(new DateTimeImmutable, $this->_currentUser->id);
 
-		$result = $this->_query->run('
+		$event = new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_trans);
+		$order = $this->_eventDispatcher->dispatch(Events::DELETE_START, $event)
+			->getOrder();
+
+		$this->_trans->run('
 			UPDATE
 				order_summary
 			SET
@@ -68,6 +81,11 @@ class Delete implements DB\TransactionalInterface
 			'by' => $order->authorship->deletedBy(),
 			'id' => $order->id,
 		));
+
+		$event = new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_trans);
+		$order = $this->_eventDispatcher->dispatch(Events::DELETE_END, $event)
+			->getOrder();
 
 		return $order;
 	}

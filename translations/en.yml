@@ -18,6 +18,9 @@ ms.commerce:
       display-name:
         label: Display Name
         help: The display name can be different from the 'actual' product name.
+      sort-name:
+        label: Sort Name
+        help: A name to override alphabetical sorting. This will not be displayed on the website.
       type:
         label: Type
         help: The type of product this will be. This will determine the information you can add.

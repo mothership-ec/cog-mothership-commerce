@@ -43,5 +43,7 @@ class Tasks implements TasksInterface
 
         $tasks->add(new Product\Stock\Notification\Replenished\ProcessPendingTask('commerce:stock:notification:replenished'),
             'Processes all pending stock replenished notifications');
+
+		$tasks->add(new Product\Barcode\GenerateTask('commerce:barcode:generate'), 'Creates barcode images for all units in the database');
 	}
 }

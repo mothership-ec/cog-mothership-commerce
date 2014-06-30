@@ -23,6 +23,9 @@ class ProductSelector extends Controller
 	/**
 	 * Render the product selector form.
 	 *
+	 * @todo Remove deprecated $showVariablePricing in favour of the setting of
+	 *       the same name in the next major version.
+	 *
 	 * @param  Product $product
 	 * @param  array   $options  Product options to display, passing an empty
 	 *                           array defaults to all available options.
@@ -33,27 +36,36 @@ class ProductSelector extends Controller
 	 *                           - 'collapseFullyOutOfStock', set to true to
 	 *                              only show one input when all options are
 	 *                              out of stock.
+	 *                           - 'showVariablePricing', set to true to show
+	 *                              the price of the unit next to it's name in
+	 *                              the option dropdown if unit prices differ
+	 *                              to product price.
+	 * @param  boolean $showVariablePricing See setting of the same name. This
+	 *                                      is here for backwards-compatibility
+	 *                                      and should be removed in the next
+	 *                                      major version
 	 * @return \Message\Cog\HTTP\Response
 	 */
-	public function index(Product $product, array $options = array(), array $settings = array())
+	public function index(Product $product, array $options = [], array $settings = [], $showVariablePricing = false)
 	{
 		$settings += [
-			'showNotificationForm' => false,
-			'collapseFullyOutOfStock' => false
+			'showNotificationForm'    => false,
+			'collapseFullyOutOfStock' => false,
+			'showVariablePricing'     => $showVariablePricing,
 		];
 
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
-		$oosUnits = $this->_filterInStockUnits($units);
+		$oosUnits = $this->_getOutOfStockUnits($units);
 
 		$notificationForm = $this->_getReplenishedNotificationForm(
 			$product, $units, $oosUnits, $settings
 		);
 
 		return $this->render('Message:Mothership:Commerce::product:product-selector', [
-			'product' => $product,
-			'units'   => $units,
-			'form'    => $this->_getForm($product, $options),
+			'product'                     => $product,
+			'units'                       => $units,
+			'form'                        => $this->_getForm($product, $options, $settings['showVariablePricing']),
 			'replenishedNotificationForm' => $notificationForm,
 		]);
 	}
@@ -125,16 +137,16 @@ class ProductSelector extends Controller
 		return $this->redirectToReferer();
 	}
 
-	protected function _getForm(Product $product, array $options = array())
+	protected function _getForm(Product $product, array $options = [], $showVariablePricing = false)
 	{
 		$form = $this->get('form')
 			->setName('select_product')
-			->setAction($this->generateUrl('ms.commerce.product.add.basket', array('productID' => $product->id)))
+			->setAction($this->generateUrl('ms.commerce.product.add.basket', ['productID' => $product->id]))
 			->setMethod('post');
 
 		$units    = $this->_getAvailableUnits($product, $options);
-		$oosUnits = $this->_filterInStockUnits($units);
-		$choices  = array();
+		$oosUnits = $this->_getOutOfStockUnits($units);
+		$choices  = [];
 
 		foreach ($units as $unit) {
 			// Don't show option names that were passed as criteria to avoid weird-looking duplication
@@ -145,18 +157,20 @@ class ProductSelector extends Controller
 
 		// If there's only one unit available to choose, add it as a hidden field
 		if (1 === count($choices)) {
-			$form->add('unit_id', 'hidden', null, array(
-				'attr' => array(
+			$form->add('unit_id', 'hidden', null, [
+				'attr' => [
 					'value' => key($choices),
-				),
-			));
+				],
+			]);
 		// Otherwise, add a select box to select the unit
 		} else {
-			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), array(
-				'choices'     => $choices,
-				'oos'         => array_keys($oosUnits),
-				'empty_value' => $this->trans('ms.commerce.product.selector.unit.label')
-			));
+			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), [
+				'choices'      => $choices,
+				'units'        => $units,
+				'oos'          => array_keys($oosUnits),
+				'empty_value'  => $this->trans('ms.commerce.product.selector.unit.label'),
+				'show_pricing' => $showVariablePricing && $product->hasVariablePricing(),
+			]);
 		}
 
 		$form = $this->get('event.dispatcher')->dispatch(
@@ -209,12 +223,12 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	protected function _getAvailableUnits(Product $product, array $options = array())
+	protected function _getAvailableUnits(Product $product, array $options = [])
 	{
 		$key = md5(serialize(array($product->id, $options)));
 
 		if (!array_key_exists($key, $this->_availableUnits)) {
-			$this->_availableUnits[$key] = array();
+			$this->_availableUnits[$key] = [];
 
 			foreach ($product->getVisibleUnits() as $unit) {
 				// Skip units that don't meet the options criteria, if set
@@ -230,9 +244,9 @@ class ProductSelector extends Controller
 		return $this->_availableUnits[$key];
 	}
 
-	protected function _filterInStockUnits(array $units)
+	protected function _getOutOfStockUnits(array $units)
 	{
-		$return = array();
+		$return = [];
 		$locs   = $this->get('stock.locations');
 
 		foreach ($units as $key => $unit) {
