@@ -119,8 +119,8 @@ class Loader
 
 			// Add created authorship
 			$entity->authorship->create(
-				new DateTimeImmutable(date('c', $result[$key]->created_at))//,
-				// $result[$key]->created_by
+				new DateTimeImmutable(date('c', $result[$key]->created_at)),
+				$result[$key]->created_by
 			);
 
 			if ($result[$key]->created_by) {
