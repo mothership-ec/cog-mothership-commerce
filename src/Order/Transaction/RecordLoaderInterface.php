@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Order\Transaction;
 
 /**
- * Interface for records' load-decorators
+ * Interface for loading decorators for records.
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */

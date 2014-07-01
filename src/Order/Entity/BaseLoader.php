@@ -20,7 +20,10 @@ abstract class BaseLoader implements LoaderInterface
 	public function setOrderLoader(OrderLoader $orderLoader)
 	{
 		$this->_orderLoader = $orderLoader;
+	}
 
-		$this->_orderLoader->includeDeleted(true);
+	public function getOrderLoader()
+	{
+		return $this->_orderLoader;
 	}
 }

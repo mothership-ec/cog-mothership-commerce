@@ -264,6 +264,11 @@ class Loader
 		$records = [];
 		foreach($results as $key => $row) {
 			$loader = $this->_getLoader($row->type);
+
+			if ($loader instanceof DeletableRecordLoaderInterface) {
+				$loader->includeDeleted($this->_includeVoided);
+			}
+			
 			$records[] = $loader->getByRecordID($row->record_id);
 		}
 
