@@ -56,6 +56,10 @@ class Loader
 		// Extract the ID for the basket from the hash
 		list($basketID) = explode('-', $token, 2);
 
+		if (!$basketID) {
+			return false;
+		}
+
 		$result = $this->_query->run('
 			SELECT
 				basket_id,
