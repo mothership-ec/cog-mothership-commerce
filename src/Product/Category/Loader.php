@@ -4,6 +4,9 @@ namespace Message\Mothership\Commerce\Product\Category;
 
 use Message\Cog\DB\Query;
 
+/**
+ * Simple class for loading category options out of the database
+ */
 class Loader
 {
 	/**

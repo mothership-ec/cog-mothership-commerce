@@ -16,6 +16,7 @@ class Services implements ServicesInterface
 	{
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
+		$this->registerStatisticsDatasets($services);
 
 		$services['order'] = $services->factory(function($c) {
 			$order = new Commerce\Order\Order($c['order.entities']);
@@ -96,8 +97,8 @@ class Services implements ServicesInterface
 		$services['order.assembler'] = $services->factory(function($c) {
 			$order = $c['order'];
 
-			$order->locale               = $c['locale']->getId();
-			$order->currencyID           = 'GBP';
+			$order->locale     = $c['locale']->getId();
+			$order->currencyID = 'GBP';
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
@@ -113,7 +114,13 @@ class Services implements ServicesInterface
 
 		// Order decorators
 		$services['order.loader'] = $services->factory(function($c) {
-			return new Commerce\Order\Loader($c['db.query'], $c['user.loader'], $c['order.statuses'], $c['order.item.statuses'], $c['order.entities']);
+			return new Commerce\Order\Loader(
+				$c['db.query'],
+				$c['user.loader'],
+				$c['order.statuses'],
+				$c['order.item.statuses'],
+				$c['order.entities']
+			);
 		});
 
 		$services['order.create'] = $services->factory(function($c) {
@@ -134,7 +141,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['order.delete'] = $services->factory(function($c) {
-			return new Commerce\Order\Delete($c['db.query'], $c['user.current']);
+			return new Commerce\Order\Delete($c['db.transaction'], $c['event.dispatcher'], $c['user.current']);
 		});
 
 		$services['order.edit'] = $services->factory(function($c) {
@@ -389,6 +396,14 @@ class Services implements ServicesInterface
 				$c['product.detail.loader'],
 				$c['product.entities'],
 				$c['product.price.types']
+			);
+		});
+
+		$services['product.searcher'] = $services->factory(function($c) {
+			return new Commerce\Product\Searcher(
+				$c['db.query'],
+				$c['product.loader'],
+				3
 			);
 		});
 
@@ -692,6 +707,19 @@ class Services implements ServicesInterface
 			));
 
 			return $twig;
+		});
+	}
+
+	public function registerStatisticsDatasets($services)
+	{
+		$services->extend('statistics', function($statistics, $c) {
+			$statistics->add(new Commerce\Statistic\OrdersIn     ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\OrdersOut    ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\SalesNet     ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\SalesGross   ($c['db.query'], $c['statistics.counter'], $c['statistics.range.date']));
+			$statistics->add(new Commerce\Statistic\ProductsSales($c['db.query'], $c['statistics.counter.key'], $c['statistics.range.date']));
+
+			return $statistics;
 		});
 	}
 }

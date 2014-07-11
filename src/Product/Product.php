@@ -20,6 +20,7 @@ class Product
 	public $weight;
 
 	public $displayName;
+	public $sortName;
 	public $description;
 	public $category;
 	public $shortDescription;

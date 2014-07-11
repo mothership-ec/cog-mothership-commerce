@@ -7,7 +7,11 @@
 					{{ block('choice_widget_options') }}
 				</optgroup>
 			{% else %}
-				<option{% if choice.value in oos %} disabled="disabled"{% endif %} value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}>{{ choice.label|trans({}, translation_domain) }}</option>
+				<option{% if choice.value in oos %} disabled="disabled"{% endif %} value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}>
+					{{ choice.label|trans({}, translation_domain) }}
+					{% if show_pricing %} - {{ units[choice.value].getPrice | price }} {% endif %}
+					{% if choice.value in oos %} {{ oos_label }} {% endif %}
+				</option>
 			{% endif %}
 		{% endfor %}
 	{% endspaceless %}

@@ -13,7 +13,7 @@
 		<tbody>
 			{% for item in items %}
 				<tr>
-					<td class="left">{{ item.brand }}, {{ item.productName }}, {{ item.options }}  </td>
+					<td class="left">{{ item.description }} </td>
 					<td>{{ item.net|price(order.currencyID) }}</td>
 					<td>{{ item.discount|price(order.currencyID) }}</td>
 					<td>{{ item.tax|price(order.currencyID) }}</td>
