@@ -13,7 +13,9 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader implements Order\Transaction\RecordLoaderInterface
+class Loader extends Order\Entity\BaseLoader implements
+	Order\Transaction\DeletableRecordLoaderInterface,
+	Order\Entity\DeletableLoaderInterface
 {
 	protected $_query;
 	protected $_statusLoader;
@@ -28,15 +30,16 @@ class Loader extends Order\Entity\BaseLoader implements Order\Transaction\Record
 	}
 
 	/**
-	 * Toggle whether to load deleted items
+	 * Set whether to load deleted items. Also sets include deleted on order loader.
 	 *
 	 * @param  bool $bool    true / false as to whether to include deleted items
 	 *
 	 * @return Loader        Loader object in order to chain the methods
 	 */
-	public function includeDeleted($bool)
+	public function includeDeleted($bool = true)
 	{
-		$this->_includeDeleted = $bool;
+		$this->_includeDeleted = (bool) $bool;
+		$this->_orderLoader->includeDeleted($this->_includeDeleted);
 
 		return $this;
 	}
