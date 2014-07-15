@@ -81,7 +81,7 @@ class Cancel extends Controller
 					$this->_stockManager->increment(
 						$row->first()->getUnit(),
 						$this->_stockLocation,
-						$row->getQuantity()
+						$quantity
 					);
 				}
 
