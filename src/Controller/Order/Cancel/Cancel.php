@@ -73,16 +73,18 @@ class Cancel extends Controller
 
 					// Only move those that have not yet been cancelled
 					foreach ($row as $item) {
-						if ($item->status->code != Order\Statuses::CANCELLED) {
+						if ($item->status->code == Order\Statuses::CANCELLED) {
 							$quantity -= 1;
 						}
 					}
 
-					$this->_stockManager->increment(
-						$row->first()->getUnit(),
-						$this->_stockLocation,
-						$quantity
-					);
+					if ($quantity > 0) {
+						$this->_stockManager->increment(
+							$row->first()->getUnit(),
+							$this->_stockLocation,
+							$quantity
+						);
+					}
 				}
 
 				$this->_successFlashes[] = sprintf('Successfully moved item(s) to stock location `%s`.', $this->_stockLocation->displayName);
