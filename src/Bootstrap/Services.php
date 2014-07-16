@@ -207,8 +207,12 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		});
 
+		$services['order.dispatch.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Dispatch\Delete($c['db.query'], $c['user.current']);
+		});
+
 		$services['order.dispatch.edit'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current'], $c['event.dispatcher']);
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.transaction'], $c['user.current'], $c['event.dispatcher']);
 		});
 
 		// Order document entity
