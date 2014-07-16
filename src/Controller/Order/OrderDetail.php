@@ -155,7 +155,7 @@ class OrderDetail extends Controller
 		$event->setClassOnCurrent($this->get('http.request.master'), 'active');
 
 		return $this->render('Message:Mothership:Commerce::order:detail:tabs', array(
-			'orderID'       => $event->getOrder()->id,
+			'order'         => $event->getOrder(),
 			'items'         => $event->getItems(),
 			'isCancellable' => $isCancellable,
 		));
