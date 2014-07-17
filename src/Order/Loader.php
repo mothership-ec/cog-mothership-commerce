@@ -16,7 +16,7 @@ use Message\User\UserInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Transaction\RecordLoaderInterface
+class Loader implements Transaction\DeletableRecordLoaderInterface
 {
 	protected $_query;
 	protected $_eventDispatcher;
@@ -27,9 +27,13 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected $_orderBy;
 	protected $_includeDeleted = false;
 
-	public function __construct(DB\Query $query, User\Loader $userLoader,
-		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
-	{
+	public function __construct(
+		DB\Query $query,
+		User\Loader $userLoader,
+		Status\Collection $statuses,
+		Status\Collection $itemStatuses,
+		array $entities
+	) {
 		$this->_query        = $query;
 		$this->_userLoader   = $userLoader;
 		$this->_statuses     = $statuses;
@@ -68,17 +72,27 @@ class Loader implements Transaction\RecordLoaderInterface
 	}
 
 	/**
-	 * Toggle whether to load deleted orders
+	 * Set whether to load deleted orders.
 	 *
 	 * @param  bool $bool    true / false as to whether to include deleted orders
 	 *
 	 * @return Loader        Loader object in order to chain the methods
 	 */
-	public function includeDeleted($bool)
+	public function includeDeleted($bool = true)
 	{
-		$this->_includeDeleted = $bool;
+		$this->_includeDeleted = (bool) $bool;
 
 		return $this;
+	}
+
+	/**
+	 * Gets whether this loader also loads deleted orders.
+	 * 
+	 * @return bool Whether the loader loads deleted orders or not.
+	 */
+	public function getIncludeDeleted()
+	{
+		return $this->_includeDeleted;
 	}
 
 	/**
@@ -237,7 +251,7 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
-		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL';
 		$this->_orderBy = '';
 
 		if (!is_array($ids)) {

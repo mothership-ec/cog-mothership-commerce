@@ -15,6 +15,8 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Edit extends Controller
 {
+	const HIDDEN_SUFFIX = '_hidden';
+
 	protected $_product;
 	protected $_units = array();
 
@@ -152,6 +154,7 @@ class Edit extends Controller
 		$form           = $this->_getUnitForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
+
 			foreach ($data as $unitID => $values) {
 				// original unit
 				$unit = clone $this->_units[$unitID];
@@ -167,8 +170,15 @@ class Edit extends Controller
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
 				}
 
-				foreach ($values['optionForm'] as $type => $value) {
-					$changedUnit->options[$type] = $value;
+				// Labels are stored in hidden fields to allow for spaces and special characters, we don't want to save
+				// this to the unit, so we need to check the current field against the previous one.
+				$previousOption = null;
+				foreach ($values['optionForm'] as $typeField => $value) {
+					if ($typeField !== $previousOption . self::HIDDEN_SUFFIX) {
+						$type = $values['optionForm'][$typeField . self::HIDDEN_SUFFIX];
+						$changedUnit->options[$type] = $value;
+						$previousOption = $typeField;
+					}
 				}
 
 				if ($changedUnit != $unit) {
@@ -640,8 +650,16 @@ class Edit extends Controller
 					$choices[$choice] = $choice;
 				}
 
-				$optionForm->add($type, 'choice', ucfirst($type), array('choices' => $choices))
-					->val()->optional();
+				$fieldName = preg_replace('/[^a-z0-9]/i', '_', $type);
+
+				$optionForm->add($fieldName, 'datalist', ucfirst($type), [
+					'choices' => $choices,
+					'data'    => (!empty($unit->options[$type])) ? $unit->options[$type] : null,
+				])->val()->optional();
+
+				$optionForm->add($fieldName . self::HIDDEN_SUFFIX, 'hidden', $fieldName, [
+					'data' => $type,
+				]);
 			}
 			// Add the option forms to the parent form
 			$form->add($optionForm, 'form');
