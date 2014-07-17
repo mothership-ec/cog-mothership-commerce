@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "250f8c17b978281e9c2743aeca16aac3",
+    "hash": "7e71f739e41735f35c672559df793f3e",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -227,12 +228,12 @@
             "version": "1.7.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/iio/fpdf.git",
+                "url": "https://github.com/hanneskod/fpdf.git",
                 "reference": "06d02a7bf227a62d37691a4e7e9c3a35efcb41c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iio/fpdf/zipball/06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
+                "url": "https://api.github.com/repos/hanneskod/fpdf/zipball/06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
                 "reference": "06d02a7bf227a62d37691a4e7e9c3a35efcb41c3",
                 "shasum": ""
             },
@@ -258,12 +259,12 @@
             "version": "1.4.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/iio/fpdi.git",
+                "url": "https://github.com/hanneskod/fpdi.git",
                 "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/iio/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
+                "url": "https://api.github.com/repos/hanneskod/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
                 "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
                 "shasum": ""
             },
@@ -1173,7 +1174,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Chris Corbyn"
@@ -1337,7 +1340,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1433,7 +1438,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1843,7 +1850,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -2005,7 +2014,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -2292,7 +2303,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -2386,11 +2399,14 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Armin Ronacher",
-                    "email": "armin.ronacher@active-4.com"
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",

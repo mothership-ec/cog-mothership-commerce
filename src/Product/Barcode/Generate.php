@@ -79,6 +79,43 @@ class Generate
 	}
 
 	/**
+	 * @param $quantities array    Array of unit IDs and quanities. The key is the unit ID and the value is the quantity
+	 * @param $offset int          Number of empty barcodes to append to list
+	 * @throws \LogicException     Throws exception if a barcode is loaded for a unit that isn't in the $quantities array
+	 *
+	 * @return array               Returns array of barcodes including duplicates and offset
+	 */
+	public function getUnitBarcodes(array $quantities, $offset = 0)
+	{
+		$offset   = (int) $offset;
+		$unitIDs  = array_keys($quantities);
+		$toPrint  = [];
+		$barcodes = $this->_getBarcodes($unitIDs);
+
+		if (count($barcodes) === 0) {
+			return $toPrint;
+		}
+
+		for ($i = 0; $i < $offset; $i++) {
+			$toPrint[] = null;
+		}
+
+		foreach ($barcodes as $barcode) {
+			if (array_key_exists($barcode->unitID, $quantities)) {
+				$quantity = (int) $quantities[$barcode->unitID];
+				for ($i = 0; $i < $quantity; $i++) {
+					$toPrint[] = $barcode;
+				}
+			}
+			else {
+				throw new \LogicException($barcode->unitID . ' not set in quantity list');
+			}
+		}
+
+		return $toPrint;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getHeight()
@@ -199,8 +236,8 @@ class Generate
 				p.brand,
 				p.name,
 				u.barcode,
-				up.price,
-				up.currency_id AS currency,
+				IFNULL(up.price, pp.price) AS price,
+				IFNULL(up.currency_id, pp.currency_id) AS currency,
 				GROUP_CONCAT(DISTINCT o.option_value SEPARATOR ', ') AS text
 			FROM
 				product_unit AS u
@@ -214,18 +251,21 @@ class Generate
 				(unit_id)
 			LEFT JOIN
 				product_unit_price AS up
-			USING
-				(unit_id)
+			ON
+				(u.unit_id = up.unit_id AND up.type = :retail?s AND up.currency_id = :currencyID?s)
 			LEFT JOIN
 				product_info AS pi
 			USING
 				(product_id)
+			LEFT JOIN
+				product_price AS pp
+			ON
+				(u.product_id = pp.product_id AND pp.type = :retail?s AND pp.currency_id = :currencyID?s)
 			WHERE
 				barcode IS NOT NULL
 			AND
 				barcode != ''
-			AND
-				up.type = :retail?s
+			" . ($unitIDs ? "AND u.unit_id IN (:unitIDs?ij)" : "") . "
 			GROUP BY
 				u.unit_id
 			ORDER BY
@@ -235,7 +275,9 @@ class Generate
 					p.name
 				)
 		", [
-			'retail' => 'retail',
+			'retail'     => 'retail',
+			'currencyID' => 'GBP',
+			'unitIDs'    => $unitIDs,
 		])->bindTo('\\Message\\Mothership\\Commerce\\Product\\Barcode\\Barcode');
 
 		foreach ($barcodes as $barcode) {
@@ -286,5 +328,4 @@ class Generate
 
 		return md5($string) . '.' . $this->getFileExt();
 	}
-
 }
