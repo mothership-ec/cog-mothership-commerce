@@ -26,14 +26,12 @@ class Loader
 
 	public function includeDeleted($includeDeleted = true)
 	{
-		if (!is_bool($includeDeleted)) {
-			throw new \InvalidArgumentException('$includeDeleted must be a boolean');
-		}
+		$this->_includeDeleted = (bool) $includeDeleted;
 
-		$this->_includeDeleted = $includeDeleted;
+		return $this;
 	}
 
-	public function getCategories($includeDeleted = null)
+	public function getAll($includeDeleted = null)
 	{
 		if (null !== $includeDeleted) {
 			$this->includeDeleted($includeDeleted);

@@ -8,7 +8,7 @@ class Sidebar extends Controller
 {
 	public function index($productID = null)
 	{
-		$listing = array_flip($this->get('product.category.loader')->getCategories());
+		$listing = array_flip($this->get('product.category.loader')->getAll());
 
 		foreach ($listing as $category => $list) {
 			$listing[$category] = $this->get('product.loader')->getByCategory($category, 20);
