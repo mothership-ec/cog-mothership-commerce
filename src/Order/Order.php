@@ -11,6 +11,7 @@ use Message\Mothership\Commerce\Payable\PayableInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
+
 class Order implements PayableInterface, Transaction\RecordInterface
 {
 	const RECORD_TYPE = 'order';
@@ -460,5 +461,6 @@ class Order implements PayableInterface, Transaction\RecordInterface
 		}
 
 		return $this->_payableTransactionID;
+
 	}
 }
