@@ -18,11 +18,12 @@ class Create implements DB\TransactionalInterface
 	protected $_loader;
 	protected $_currentUser;
 
-	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser)
+	public function __construct(DB\Query $query, Loader $loader, UserInterface $currentUser, Delete $delete)
 	{
 		$this->_query       = $query;
 		$this->_loader      = $loader;
 		$this->_currentUser = $currentUser;
+		$this->_delete		= $delete;
 	}
 
 	public function setTransaction(DB\Transaction $trans)
@@ -39,6 +40,9 @@ class Create implements DB\TransactionalInterface
 				$this->_currentUser->id
 			);
 		}
+
+		// Delete old address
+		$this->_delete->delete($address);
 
 		$result = $this->_query->run('
 			INSERT INTO

@@ -29,7 +29,6 @@ class Address extends BaseAddress implements EntityInterface
 
 		$this->authorship = new Authorship;
 		$this->authorship->disableUpdate();
-		$this->authorship->disableDelete();
 	}
 
 	public function getName()
