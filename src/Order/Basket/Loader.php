@@ -56,6 +56,15 @@ class Loader
 		// Extract the ID for the basket from the hash
 		list($basketID) = explode('-', $token, 2);
 
+		if (!$basketID) {
+			return false;
+		}
+
+		// If already loaded, return cached value
+		if (isset($this->_baskets[$token])) {
+			return $this->_baskets[$token];
+		}
+		
 		$result = $this->_query->run('
 			SELECT
 				basket_id,
