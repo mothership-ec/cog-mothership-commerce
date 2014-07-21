@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Cog\DB;
+use Message\User\UserInterface;
 
 class Delete implements DB\TransactionalInterface
 {
@@ -19,7 +20,7 @@ class Delete implements DB\TransactionalInterface
 	 */
 	public function __construct(DB\Transaction $trans, UserInterface $currentUser)
 	{
-		$this->trans        = $trans;
+		$this->_trans       = $trans;
 		$this->_currentUser = $currentUser;
 	}
 
@@ -37,7 +38,7 @@ class Delete implements DB\TransactionalInterface
 	 * 
 	 * @param  Image  $image
 	 */
-	public function delete ($imageId)
+	public function delete (Image $image)
 	{
 		$image->authorship->delete();
 
@@ -45,9 +46,9 @@ class Delete implements DB\TransactionalInterface
 			DELETE FROM
 				`product_image`
 			WHERE
-				`image_id` = :image_id?s
+				`image_id` = ?s
 			', 
-			[ $imageId, ]
+			[ $image->id, ]
 			);
 
 		$this->_trans->add('
@@ -56,9 +57,32 @@ class Delete implements DB\TransactionalInterface
 			WHERE
 				`image_id` = ?s
 			',
-			[ $imageId, ]
+			[ $image->id, ]
 			);
 		
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+		}
+	}
+
+	public function deleteMulti (array $images)
+	{
+		$ids = array_keys($images);
+
+		$this->_trans->add(
+			"DELETE FROM
+				`product_image`
+			WHERE
+				`image_id` IN (?js)
+			", [$ids]);
+
+		$this->_trans->add(
+			"DELETE FROM
+				`product_image_option`
+			WHERE
+				`image_id` IN (?js)
+			", [$ids]);
+
 		if (!$this->_transOverridden) {
 			$this->_trans->commit();
 		}
