@@ -65,6 +65,10 @@ class Delete implements DB\TransactionalInterface
 		}
 	}
 
+	/**
+	 * Deletes all images in the array of images
+	 * @param  array $images array of Images to delete
+	 */
 	public function deleteMulti ($images)
 	{
 		$ids = [];
