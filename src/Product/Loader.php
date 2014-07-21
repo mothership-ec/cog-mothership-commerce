@@ -87,8 +87,10 @@ class Loader
 		return count($result) ? $this->_loadProduct($result->flatten()) : false;
 	}
 
-	public function getByCategory($name)
+	public function getByCategory($name, $limit = null)
 	{
+		$this->_checkLimit($limit);
+
 		$result = $this->_query->run('
 			SELECT
 				product_id
@@ -100,7 +102,7 @@ class Loader
 
 		$this->_returnArray = true;
 
-		return $this->_loadProduct($result->flatten());
+		return $this->_loadProduct($result->flatten(), $limit);
 	}
 
 	public function getByType($type)
@@ -150,20 +152,98 @@ class Loader
 
 	public function getAll()
 	{
-		$result = $this->_query->run(
-			'SELECT
+		$result = $this->_query->run('
+			SELECT
 				product_id
 			FROM
-				product'
-		);
+				product
+			');
 
 		$this->_returnArray = true;
 
-		return count($result) ? $this->_loadProduct($result->flatten()) : array();
+		return count($result) ? $this->_loadProduct($result->flatten()) : [];
 	}
 
+	public function getByLimit($limit)
+	{
+		$this->_checkLimit($limit);
 
-	protected function _loadProduct($productIDs)
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			LIMIT
+				0, :limit?i
+		', [
+			'limit' => $limit,
+		]);
+
+		$this->_returnArray = true;
+
+		return count($result) ? $this->_loadProduct($result->flatten()) : [];
+	}
+
+	public function getBySearchTerms($terms, $limit = null)
+	{
+		$this->_checkLimit($limit);
+
+		$this->_returnArray = true;
+
+		$terms = explode(' ', $terms);
+		$minTermLength = 3;
+		$searchFields = [
+			'p.name',
+			'p.category',
+			'ui.sku',
+		];
+
+		$query = '(';
+		$where = [];
+
+		$searchParams = [];
+
+		foreach ($terms as $i => $term) {
+			if (strlen($term) >= $minTermLength) {
+				$terms[$i] = $term = strtolower($term);
+
+				$whereFields = [];
+				foreach ($searchFields as $j => $field) {
+					$whereFields[] = 'LOWER(' . $field . ') LIKE :term' . $i . '?s' . PHP_EOL;
+					$where[] = implode(' OR ', $whereFields);
+				}
+
+				$searchParams['term' . $i] = '%' . $term . '%';
+			}
+		}
+
+
+		$query .= implode(' OR ', $where ) . ')';
+
+		$query = 'SELECT
+				p.product_id
+			FROM
+				product AS p
+			LEFT JOIN
+				product_unit AS u
+			USING
+				(product_id)
+			LEFT JOIN
+				product_unit_info AS ui
+			USING
+				(unit_id)
+			WHERE
+				' . $query . '
+			';
+
+		$result = $this->_query->run($query, $searchParams);
+		$result = array_unique($result->flatten());
+
+		return $this->_loadProduct($result, $limit);
+
+	}
+
+	protected function _loadProduct($productIDs, $limit = null)
 	{
 		if (!is_array($productIDs)) {
 			$productIDs = (array) $productIDs;
@@ -172,6 +252,8 @@ class Loader
 		if (!$productIDs) {
 			return $this->_returnArray ? array() : false;
 		}
+
+		$this->_checkLimit($limit);
 
 		$result = $this->_query->run(
 			'SELECT
@@ -210,6 +292,7 @@ class Loader
 			WHERE
 				product.product_id 	 IN (?ij)
 				' . (!$this->_includeDeleted ? 'AND product.deleted_at IS NULL' : '' ) . '
+			' . ($limit ? 'LIMIT 0, ' . (int) $limit : '') . '
 		', 	array(
 				(array) $productIDs,
 			)
@@ -335,6 +418,24 @@ class Loader
 	{
 		$product->details = $this->_detailLoader->load($product);
 		$product->type    = $this->_productTypes->get($type);
+	}
+
+	private function _isWholeNumber($value)
+	{
+		if (is_numeric($value)) {
+			$int = (int) $value;
+
+			return ($int == $value);
+		}
+
+		return false;
+	}
+
+	private function _checkLimit($limit)
+	{
+		if (null !== $limit && !$this->_isWholeNumber($limit)) {
+			throw new \InvalidArgumentException('Limit must be a whole number');
+		}
 	}
 
 }
