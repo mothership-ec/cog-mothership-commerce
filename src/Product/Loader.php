@@ -166,9 +166,7 @@ class Loader
 
 	public function getByLimit($limit)
 	{
-		if (!$this->_isWholeNumber($limit)) {
-			throw new \InvalidArgumentException('Limit must be a whole number');
-		}
+		$this->_checkLimit($limit);
 
 		$result = $this->_query->run('
 			SELECT
