@@ -429,8 +429,12 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Image\Create($c['db.transaction'], $c['user.current']);
 		});
 
-		$services['product.image.delete'] = $services->factory(function($c){
-			return new Message\Mothership\Commerce\Product\Image\Delete($c['db.trans'], $c['user.current']);
+		$services['product.image.delete'] = $services->factory(function($c) {
+			return new Commerce\Product\Image\Delete($c['db.transaction'], $c['user.current']);
+		});
+
+		$services['product.image.loader'] = $services->factory(function($c) {
+			return new Commerce\Product\Image\Loader($c['db.query'], $c['file_manager.file.loader']);
 		});
 
 		$services['product.unit.loader'] = $services->factory(function($c) {
