@@ -65,9 +65,12 @@ class Delete implements DB\TransactionalInterface
 		}
 	}
 
-	public function deleteMulti (array $images)
+	public function deleteMulti ($images)
 	{
-		$ids = array_keys($images);
+		$ids = [];
+		foreach ($images as $image) {
+			$ids[] = $image->id;
+		}
 
 		$this->_trans->add(
 			"DELETE FROM

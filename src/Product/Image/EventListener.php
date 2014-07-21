@@ -35,7 +35,7 @@ class EventListener extends BaseListener implements SubscriberInterface {
 		$images = $this->_services['product.image.loader']
 			->loadByFile($e->getFile());
 		$delete = $this->_services['product.image.delete'];
-
+		
 		$delete->deleteMulti($images);
 	}
 }

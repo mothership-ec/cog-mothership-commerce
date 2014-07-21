@@ -19,6 +19,11 @@ class Loader
 		$this->_fileloader = $loader;
 	}
 
+	/**
+	 * loads an image by an id
+	 * @param  string $id id of image
+	 * @return Image
+	 */
 	public function loadByID($id)
 	{
 		$dataSet = $this->_query->run(
@@ -46,6 +51,11 @@ class Loader
 		return array_pop($this->_load($dataSet));
 	}
 
+	/**
+	 * loads images from corresponding File
+	 * @param  File   $file file to load images by
+	 * @return array       array of Image objects with id as key
+	 */
 	public function loadByFile(File $file)
 	{
 		$dataSet = $this->_query->run(
@@ -95,12 +105,11 @@ class Loader
 					new DateTimeImmutable(date('c', $data->createdAt)),
 					$data->createdBy
 				);
-				$imageIDs[$data->id] = $image;
+				$images[$data->id] = $image;
 			}
 
 			$images[$data->id]->options[$data->optionName] = $data->optionValue;
 		}
-
 		return $images;
 	}
 }
