@@ -14,18 +14,39 @@ class Loader
 	 */
 	protected $_query;
 
+	/**
+	 * @var bool
+	 */
+	protected $_includeDeleted = false;
+
 	public function __construct(Query $query)
 	{
 		$this->_query	= $query;
 	}
 
-	public function getCategories()
+	public function includeDeleted($includeDeleted = true)
 	{
+		$this->_includeDeleted = (bool) $includeDeleted;
+
+		return $this;
+	}
+
+	public function getAll($includeDeleted = null)
+	{
+		if (null !== $includeDeleted) {
+			$this->includeDeleted($includeDeleted);
+		}
+
 		$result	= $this->_query->run("
 			SELECT DISTINCT
 				category
 			FROM
 				product
+			WHERE
+				category IS NOT NULL
+			AND
+				category != ''
+			" . (!$this->_includeDeleted ? " AND deleted_at IS NULL " : "") . "
 		");
 
 		return $result->flatten();

@@ -8,6 +8,7 @@ ms.commerce:
       save: Save changes
       create: Create product
       sku: Add SKU
+      barcodes: Print barcodes
     attributes:
       name:
         label: Name
@@ -155,6 +156,19 @@ ms.commerce:
       level:
         label: Adjust stock level
         help: The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
+    search:
+      label: Search
+      placeholder: Search products
+    barcode:
+      type:
+        label: Type
+        automatic: For all in stock units in location
+        manual: Manually
+      location:
+        label: Location
+      offset:
+        label: Number of used labels
+        help: This allows you to re-use label sheets. Set this to the number of labels already used on the label sheet. For instance, if you set this to 5, the first barcode will be set to print on the 6th label.
   order:
     feedback:
       general:

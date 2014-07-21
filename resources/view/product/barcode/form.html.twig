@@ -1,0 +1,38 @@
+{% extends 'Message:Mothership:ControlPanel::modal:standard' %}
+
+{% block content %}
+	{% javascripts
+		'@Message:Mothership:Commerce::resources:assets:js:barcode-toggle.js'
+
+		output='/assets/js/barcodes.js'
+		filter='?jsmin'
+	%}
+		<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
+
+	<h3>Print barcode labels</h3>
+	{{ form_start(form) }}
+	{{ form_widget(form['type']) }}
+	{{ form_row(form['location']) }}
+	<table data-toggle-manual >
+		<thead>
+			<tr>
+				<th>Variant</th>
+				<th>Number to print</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for unit in units %}
+				<tr>
+					<td>{{ form_label(form['unit_' ~ unit.id]) }}</td>
+					<td>{{ form_widget(form['unit_' ~ unit.id]) }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{{ form_row(form['offset']) }}
+	<button type="submit" class="button small save" id="save-content">
+		{{ 'ms.commerce.product.button.barcodes'|trans }}
+	</button>
+	{{ form_end(form) }}
+{% endblock %}
