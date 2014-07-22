@@ -34,7 +34,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$result
 			->expects($this->any())
 			->method('first')
-			->will($this->returnValue([
+			->will($this->returnValue([[
 				'type'      => 'default',
 				'productID' => '2',
 				'fileID'    => 1410,
@@ -42,15 +42,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 				'createdAt' => '1394641204',
 				'createdBy' => '1',
 				'id'        => 'b90b033153546c187a5b8179c016ebd6',
-				]));
-
-		$result
-			->expects($this->any())
-			->method('hash')
-			->will($this->returnValue([
-				'colour' => 'blue',
-				'other'  => 'something'
-				]));
+				], ]));
 
 		$loader = new Loader($_query, $_loader);
 		$image = $loader->loadByID('b90b033153546c187a5b8179c016ebd6');
