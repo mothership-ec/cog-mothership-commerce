@@ -26,7 +26,7 @@ class Loader
 	public function getByID($basketID)
 	{
 		$data['basketID'] = $basketID;
-		d($basketID);
+
 		$result = $this->_query->run('
 			SELECT
 				basket_id,
@@ -65,7 +65,7 @@ class Loader
 		if (isset($this->_baskets[$token])) {
 			return $this->_baskets[$token];
 		}
-		d($token);
+
 
 		$result = $this->_query->run('
 			SELECT
