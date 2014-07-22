@@ -87,6 +87,37 @@ class Loader
 		return $images;
 	}
 
+	public function loadByProductID($productID)
+	{
+		$dataSet = $this->_query->run(
+			"SELECT
+				product_image.product_id      AS productID,
+				product_image.image_id        AS id,
+				product_image.file_id         AS fileID,
+				product_image.type            AS type,
+				product_image.created_at      AS createdAt,
+				product_image.created_by      AS createdBy,
+				product_image.locale          AS locale,
+				product_image.product_id      AS productID,
+				product_image_option.name     AS optionName,
+				product_image_option.value    AS optionValue
+			FROM
+				product_image 
+			LEFT JOIN 
+				product_image_option 
+			ON 
+				product_image.image_id = product_image_option.image_id
+			WHERE
+				product_image.product_id = ?i
+			ORDER BY
+				product_image.image_id
+			", $productID);
+
+		$images = $this->_load($dataSet);
+
+		return $images;
+	}
+
 	protected function _load($dataSet)
 	{
 		$images = [];

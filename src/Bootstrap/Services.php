@@ -395,7 +395,8 @@ class Services implements ServicesInterface
 				$c['product.types'],
 				$c['product.detail.loader'],
 				$c['product.entities'],
-				$c['product.price.types']
+				$c['product.price.types'],
+				$c['product.image.loader']
 			);
 		});
 
