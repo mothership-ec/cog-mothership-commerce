@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
 
 use Message\User\AnonymousUser;
 
@@ -395,7 +396,11 @@ class Services implements ServicesInterface
 				$c['product.types'],
 				$c['product.detail.loader'],
 				$c['product.entities'],
-				$c['product.price.types']
+				$c['product.price.types'],
+				new EntityLoaderCollection([
+					'units'  => $c['product.unit.loader'],
+					'images' => $c['product.image.loader'],
+				])
 			);
 		});
 
@@ -430,7 +435,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.unit.loader'] = $services->factory(function($c) {
-			return $c['product.loader']->getEntityLoader('units');
+			return new Commerce\Product\Unit\Loader(
+				$c['db.query'],
+				$c['locale'],
+				$c['product.price.types']
+			);
 		});
 
 		$services['product.edit'] = $services->factory(function($c) {

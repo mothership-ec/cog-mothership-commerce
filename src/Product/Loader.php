@@ -4,6 +4,8 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
+
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\FileManager\File\Loader as FileLoader;
@@ -27,7 +29,8 @@ class Loader
 		Type\Collection $productTypes,
 		Type\DetailLoader $detailLoader,
 		array $entities = array(),
-		$priceTypes = array()
+		$priceTypes = array(),
+		EntityLoaderCollection $entityLoaders
 	) {
 		$this->_query			= $query;
 		$this->_locale			= $locale;
@@ -36,6 +39,7 @@ class Loader
 		$this->_detailLoader	= $detailLoader;
 		$this->_priceTypes		= $priceTypes;
 		$this->_fileLoader		= $fileLoader;
+		$this->_entityLoaders   = $entityLoaders;
 	}
 
 	/**
@@ -341,7 +345,10 @@ class Loader
 			(array) $productIDs,
 		));
 
-		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_locale, $this->_entities, $this->_priceTypes));
+		$products = $result->bindTo(
+			'Message\\Mothership\\Commerce\\Product\\ProductProxy',
+			[$this->_locale, $this->_entities, $this->_priceTypes, $this->_entityLoaders]
+		);
 
 		foreach ($result as $key => $data) {
 
