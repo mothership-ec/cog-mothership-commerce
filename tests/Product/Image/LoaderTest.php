@@ -44,9 +44,9 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 			->method('bindTo')
 			->will($this->returnValue([ $image, ]));
 
-		$result->expects($this->any())
-			->method('numRows')
-			->will($this->returnValue(1));
+		$result->expects($this->once())
+			->method('valid')
+			->will($this->returnValue(true));
 
 		$result->expects($this->any())
 			->method('first')
