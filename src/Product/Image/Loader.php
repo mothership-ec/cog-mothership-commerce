@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Product\Image;
 
+use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\FileManager\File\File;
@@ -10,8 +11,10 @@ use Message\Mothership\FileManager\File\Loader as FileLoader;
 class Loader
 {
 	protected $_query;
-	protected $_loaded;
 	protected $_fileLoader;
+
+	protected $_where = [];
+	protected $_whereVars = [];
 
 	public function __construct(Query $query, FileLoader $loader)
 	{
@@ -26,6 +29,69 @@ class Loader
 	 */
 	public function getByID($id)
 	{
+		$dataSet = $this->_query->run(
+			"SELECT
+				image_id
+			FROM
+				product_image 
+			WHERE
+				image_id = ?s
+			", [ $id, ]);
+
+		$all = $this->_load($dataSet->flatten());
+		
+		return array_pop($all);
+	}
+
+	/**
+	 * loads images from corresponding File
+	 * @param  File   $file file to load images by
+	 * @return array       array of Image objects with id as key
+	 */
+	public function getByFile(File $file)
+	{
+		$dataSet = $this->_query->run(
+			"SELECT
+				image_id
+			FROM
+				product_image
+			WHERE
+				file_id = ?i
+			",  $file->id );
+
+		$images = $this->_load($dataSet->flatten());
+
+		return $images;
+	}
+
+	/**
+	 * Gets images by product
+	 * @param  Product $product product's images
+	 * @return array           array of products
+	 */
+	public function getByProduct(Product $product)
+	{
+		$dataSet = $this->_query->run(
+			"SELECT
+				image_id
+			FROM
+				product_image
+			WHERE
+				product_id = ?i
+			", $product->id);
+
+		$images = $this->_load($dataSet->flatten(), $product);
+
+		return $images;
+	}
+
+	protected function _load(array $ids, Product $product = null)
+	{
+		if (empty($ids)) {
+			return [];
+		}
+
+		// query for product images and product image options
 		$dataSet = $this->_query->run(
 			"SELECT
 				product_image.product_id   AS productID,
@@ -45,103 +111,32 @@ class Loader
 			ON 
 				product_image.image_id = product_image_option.image_id
 			WHERE
-				product_image.image_id = ?s
-			", [ $id, ]);
+				product_image.image_id IN (?js)
+			", [ $ids, ]);
 
-		return array_pop($this->_load($dataSet));
-	}
+		// bind as image
+		$images = $dataSet->bindTo('Message\\Mothership\\Commerce\\Product\\Image\\Image');
+		
 
-	/**
-	 * loads images from corresponding File
-	 * @param  File   $file file to load images by
-	 * @return array       array of Image objects with id as key
-	 */
-	public function getByFile(File $file)
-	{
-		$dataSet = $this->_query->run(
-			"SELECT
-				product_image.product_id      AS productID,
-				product_image.image_id        AS id,
-				product_image.file_id         AS fileID,
-				product_image.type            AS type,
-				product_image.created_at      AS createdAt,
-				product_image.created_by      AS createdBy,
-				product_image.locale          AS locale,
-				product_image.product_id      AS productID,
-				product_image_option.name     AS optionName,
-				product_image_option.value    AS optionValue
-			FROM
-				product_image 
-			LEFT JOIN 
-				product_image_option 
-			ON 
-				product_image.image_id = product_image_option.image_id
-			WHERE
-				product_image.file_id = ?i
-			ORDER BY
-				product_image.image_id
-			", [ $file->id, ]);
+		// Images are keyed by id for BC
+		$keyedImages = [];
 
-		$images = $this->_load($dataSet);
-
-		return $images;
-	}
-
-	public function getByProductID($productID)
-	{
-		$dataSet = $this->_query->run(
-			"SELECT
-				product_image.product_id      AS productID,
-				product_image.image_id        AS id,
-				product_image.file_id         AS fileID,
-				product_image.type            AS type,
-				product_image.created_at      AS createdAt,
-				product_image.created_by      AS createdBy,
-				product_image.locale          AS locale,
-				product_image.product_id      AS productID,
-				product_image_option.name     AS optionName,
-				product_image_option.value    AS optionValue
-			FROM
-				product_image 
-			LEFT JOIN 
-				product_image_option 
-			ON 
-				product_image.image_id = product_image_option.image_id
-			WHERE
-				product_image.product_id = ?i
-			ORDER BY
-				product_image.image_id
-			", $productID);
-
-		$images = $this->_load($dataSet);
-
-		return $images;
-	}
-
-	protected function _load($dataSet)
-	{
-		$images = [];
-
-		foreach ($dataSet as $data) {
-			if (!array_key_exists($data->id, $images)) {
-				$image                = new Image;
-				$image->id            = $data->id;
-				$image->type          = $data->type;
-				$image->product       = $data->productID;
-				$image->locale        = $data->locale;
-				$image->fileID        = $data->fileID;
-				$image->setFileLoader($this->_fileLoader);
-
-				$image->authorship->create(
+		foreach ($dataSet as $key => $data) {
+			if (!array_key_exists($data->id, $keyedImages)) {
+				// load extra stuff
+				$images[$key]->product = $product;
+				$images[$key]->setFileLoader($this->_fileLoader);
+				$images[$key]->authorship->create(
 					new DateTimeImmutable(date('c', $data->createdAt)),
 					$data->createdBy
 				);
-				$images[$data->id] = $image;
+				$keyedImages[$data->id] = $images[$key];
 			}
 
-			$images[$data->id]->options[$data->optionName] = $data->optionValue;
+			// add options
+			$keyedImages[$data->id]->options[$data->optionName] = $data->optionValue;
 		}
 
-		return $images;
+		return $keyedImages;
 	}
 }

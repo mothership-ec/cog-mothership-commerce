@@ -7,7 +7,7 @@ use Message\Mothership\Commerce\Product\Image\Loader;
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
 	private $_query;
-	private $_fileloader;
+	private $_fileLoader;
 
 	public function setUp()
 	{
@@ -15,14 +15,19 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->_fileloader = $this->getMockBuilder('\\Message\\Mothership\\FileManager\\File\\Loader')
+		$this->_fileLoader = $this->getMockBuilder('\\Message\\Mothership\\FileManager\\File\\Loader')
 			->disableOriginalConstructor()
+			->setMethods(['getByID'])
 			->getMock();
 	}
 
-	public function testLoadByID()
+	public function testGetByID()
 	{
 		$result = $this->getMockBuilder('\\Message\\Cog\\DB\\Result')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$image = $this->getMockBuilder('\\ßMessage\\Mothership\\Commerce\\Test\\Product\\Image\\Image')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -31,8 +36,19 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 			->method('run')
 			->will($this->returnValue($result));
 
-		$result
-			->expects($this->any())
+		$result->expects($this->any())
+			->method('flatten')
+			->will($this->returnValue(['b90b033153546c187a5b8179c016ebd6']));
+
+		$result->expects($this->any())
+			->method('bindTo')
+			->will($this->returnValue([ $image, ]));
+
+		$result->expects($this->any())
+			->method('numRows')
+			->will($this->returnValue(1));
+
+		$result->expects($this->any())
 			->method('first')
 			->will($this->returnValue([[
 				'type'      => 'default',
@@ -44,8 +60,8 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 				'id'        => 'b90b033153546c187a5b8179c016ebd6',
 				], ]));
 
-		$loader = new Loader($_query, $_loader);
-		$image = $loader->loadByID('b90b033153546c187a5b8179c016ebd6');
+		$loader = new Loader($this->_query, $this->_fileLoader);
+		$image = $loader->getByID('b90b033153546c187a5b8179c016ebd6');
 
 		$this->assertEquals($image->id, 'b90b033153546c187a5b8179c016ebd6');
 		$this->assertEquals($image->type, 'default');
