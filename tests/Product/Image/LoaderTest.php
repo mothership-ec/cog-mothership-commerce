@@ -3,64 +3,45 @@
 namespace Message\Mothership\Commerce\Test\Product\Image;
 
 use Message\Mothership\Commerce\Product\Image\Loader;
+use Mockery as m;
 
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
 	private $_query;
 	private $_fileLoader;
+	private $_mockery;
 
-	public function setUp()
-	{
-		$this->_query      = $this->getMockBuilder('\\Message\\Cog\\DB\\Query')
-			->disableOriginalConstructor()
-			->getMock();
-
-		$this->_fileLoader = $this->getMockBuilder('\\Message\\Mothership\\FileManager\\File\\Loader')
-			->disableOriginalConstructor()
-			->setMethods(['getByID'])
-			->getMock();
-	}
+	public function teardown()
+    {
+        m::close();
+    }
 
 	public function testGetByID()
 	{
-		$result = $this->getMockBuilder('\\Message\\Cog\\DB\\Result')
-			->disableOriginalConstructor()
-			->getMock();
+		$fileLoader = m::mock('\Message\Mothership\FileManager\File\Loader');
+		$query  = m::mock('\Message\Mothership\Cog\DB\Query');
+		$result = m::mock('\Message\Mothership\Cog\DB\Result');
+		$image  = m::mock('\Message\Mothership\Commerce\Test\Product\Image\Image');
 
-		$image = $this->getMockBuilder('\\ßMessage\\Mothership\\Commerce\\Test\\Product\\Image\\Image')
-			->disableOriginalConstructor()
-			->getMock();
+		$query->shouldReceive('run')->times(2)->andReturn($result);
+		$result->shouldReceive('flatten')->once()->andReturn(['b90b033153546c187a5b8179c016ebd6']);
 
-		$this->_query
-			->expects($this->any())
-			->method('run')
-			->will($this->returnValue($result));
+		$result->shouldReceive('bindTo')->once()->andReturn([ $image, ]);
 
-		$result->expects($this->any())
-			->method('flatten')
-			->will($this->returnValue(['b90b033153546c187a5b8179c016ebd6']));
 
-		$result->expects($this->any())
-			->method('bindTo')
-			->will($this->returnValue([ $image, ]));
+		// $result->expects($this->any())
+		// 	->method('first')
+		// 	->will($this->returnValue([[
+		// 		'type'      => 'default',
+		// 		'productID' => '2',
+		// 		'fileID'    => 1410,
+		// 		'locale'    => 'en_GB',
+		// 		'createdAt' => '1394641204',
+		// 		'createdBy' => '1',
+		// 		'id'        => 'b90b033153546c187a5b8179c016ebd6',
+		// 		], ]));
 
-		$result->expects($this->once())
-			->method('valid')
-			->will($this->returnValue(true));
-
-		$result->expects($this->any())
-			->method('first')
-			->will($this->returnValue([[
-				'type'      => 'default',
-				'productID' => '2',
-				'fileID'    => 1410,
-				'locale'    => 'en_GB',
-				'createdAt' => '1394641204',
-				'createdBy' => '1',
-				'id'        => 'b90b033153546c187a5b8179c016ebd6',
-				], ]));
-
-		$loader = new Loader($this->_query, $this->_fileLoader);
+		$loader = new Loader($query, $fileLoader);
 		$image = $loader->getByID('b90b033153546c187a5b8179c016ebd6');
 
 		$this->assertEquals($image->id, 'b90b033153546c187a5b8179c016ebd6');
