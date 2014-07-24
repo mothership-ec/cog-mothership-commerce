@@ -273,7 +273,7 @@ class Loader
 				}
 			}
 
-			$images = $this->_imageLoader->loadByProductID($data->id);
+			$images = $this->_imageLoader->getByProductID($data->id);
 			$products[$key]->images = $images;
 
 			$this->_loadType($products[$key], $data->type);

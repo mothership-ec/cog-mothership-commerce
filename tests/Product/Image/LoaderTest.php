@@ -53,7 +53,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($image->fileID, 1401);
 		$this->assertEquals($image->options, [
 				'colour' => 'blue',
-				'other'  => 'something'
+				'other'  => 'something',
 				]);
 	}
 }

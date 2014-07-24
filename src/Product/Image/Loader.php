@@ -9,14 +9,14 @@ use Message\Mothership\FileManager\File\Loader as FileLoader;
 
 class Loader
 {
-	private $_query;
-	private $_loaded;
-	private $_fileloader;
+	protected $_query;
+	protected $_loaded;
+	protected $_fileLoader;
 
 	public function __construct(Query $query, FileLoader $loader)
 	{
 		$this->_query      = $query;
-		$this->_fileloader = $loader;
+		$this->_fileLoader = $loader;
 	}
 
 	/**
@@ -24,7 +24,7 @@ class Loader
 	 * @param  string $id id of image
 	 * @return Image
 	 */
-	public function loadByID($id)
+	public function getByID($id)
 	{
 		$dataSet = $this->_query->run(
 			"SELECT
@@ -56,7 +56,7 @@ class Loader
 	 * @param  File   $file file to load images by
 	 * @return array       array of Image objects with id as key
 	 */
-	public function loadByFile(File $file)
+	public function getByFile(File $file)
 	{
 		$dataSet = $this->_query->run(
 			"SELECT
@@ -87,7 +87,7 @@ class Loader
 		return $images;
 	}
 
-	public function loadByProductID($productID)
+	public function getByProductID($productID)
 	{
 		$dataSet = $this->_query->run(
 			"SELECT
@@ -123,14 +123,14 @@ class Loader
 		$images = [];
 
 		foreach ($dataSet as $data) {
-			if (!array_key_exists($data->id, $images)){
+			if (!array_key_exists($data->id, $images)) {
 				$image                = new Image;
 				$image->id            = $data->id;
 				$image->type          = $data->type;
 				$image->product       = $data->productID;
 				$image->locale        = $data->locale;
 				$image->fileID        = $data->fileID;
-				$image->setFileLoader($this->_fileloader);
+				$image->setFileLoader($this->_fileLoader);
 
 				$image->authorship->create(
 					new DateTimeImmutable(date('c', $data->createdAt)),
@@ -141,6 +141,7 @@ class Loader
 
 			$images[$data->id]->options[$data->optionName] = $data->optionValue;
 		}
+
 		return $images;
 	}
 }

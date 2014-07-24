@@ -15,7 +15,7 @@ class Delete implements DB\TransactionalInterface
 	/**
 	 * Constructor
 	 * 
-	 * @param DBTransaction $trans
+	 * @param DB\Transaction $trans
 	 * @param UserInterface $currentUser
 	 */
 	public function __construct(DB\Transaction $trans, UserInterface $currentUser)
@@ -27,10 +27,25 @@ class Delete implements DB\TransactionalInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setTransaction (DB\Transaction $trans)
+	public function setTransaction(DB\Transaction $trans)
 	{
 		$this->_trans           = $trans;
 		$this->_transOverridden = true;
+
+		return $this;
+	}
+
+	/**	
+	 * deletes given image(s)
+	 * @param  Image|array $images Image(s) to delete
+	 */
+	public function delete($images)
+	{
+		if (is_array($images)) {
+			$this->_deleteMulti($images);
+		} else {
+			$this->_deleteSingle($images);
+		}
 	}
 
 	/**
@@ -38,18 +53,9 @@ class Delete implements DB\TransactionalInterface
 	 * 
 	 * @param  Image  $image
 	 */
-	public function delete (Image $image)
+	protected function _deleteSingle(Image $image)
 	{
 		$image->authorship->delete();
-
-		$this->_trans->add('
-			DELETE FROM
-				`product_image`
-			WHERE
-				`image_id` = ?s
-			', 
-			[ $image->id, ]
-			);
 
 		$this->_trans->add('
 			DELETE FROM
@@ -57,7 +63,16 @@ class Delete implements DB\TransactionalInterface
 			WHERE
 				`image_id` = ?s
 			',
-			[ $image->id, ]
+			$image->id
+			);
+
+		$this->_trans->add('
+			DELETE FROM
+				`product_image`
+			WHERE
+				`image_id` = ?s
+			', 
+			$image->id
 			);
 		
 		if (!$this->_transOverridden) {
@@ -69,7 +84,7 @@ class Delete implements DB\TransactionalInterface
 	 * Deletes all images in the array of images
 	 * @param  array $images array of Images to delete
 	 */
-	public function deleteMulti ($images)
+	protected function _deleteMulti($images)
 	{
 		$ids = [];
 		foreach ($images as $image) {
@@ -78,17 +93,17 @@ class Delete implements DB\TransactionalInterface
 
 		$this->_trans->add(
 			"DELETE FROM
-				`product_image`
-			WHERE
-				`image_id` IN (?js)
-			", [$ids]);
-
-		$this->_trans->add(
-			"DELETE FROM
 				`product_image_option`
 			WHERE
 				`image_id` IN (?js)
-			", [$ids]);
+			", [ $ids, ]);
+
+		$this->_trans->add(
+			"DELETE FROM
+				`product_image`
+			WHERE
+				`image_id` IN (?js)
+			", [ $ids, ]);
 
 		if (!$this->_transOverridden) {
 			$this->_trans->commit();

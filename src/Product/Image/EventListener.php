@@ -30,12 +30,12 @@ class EventListener extends BaseListener implements SubscriberInterface {
 	 * Delete the given image
 	 * @param  Image  $image
 	 */
-	public function deleteImage (FileEvent $e)
+	public function deleteImage(FileEvent $e)
 	{
 		$images = $this->_services['product.image.loader']
-			->loadByFile($e->getFile());
+			->getByFile($e->getFile());
 		$delete = $this->_services['product.image.delete'];
 		
-		$delete->deleteMulti($images);
+		$delete->delete($images);
 	}
 }
