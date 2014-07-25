@@ -66,6 +66,16 @@ class Unit
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 
+	/**
+	 * Returns whether unit is out of stock in all locations
+	 * 
+	 * @return boolean 
+	 */
+	public function isOutOfStock()
+	{
+		return array_sum($this->stock) == 0;
+	}
+
 	public function getStockForLocation(Location $location)
 	{
 		return (isset($this->stock[$location->name]) ? $this->stock[$location->name] : self::DEFAULT_STOCK_LEVEL);

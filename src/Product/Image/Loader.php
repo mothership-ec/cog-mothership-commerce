@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 use Message\Mothership\Commerce\Product\ProductEntityLoaderInterface;
 use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -13,14 +14,19 @@ class Loader implements ProductEntityLoaderInterface
 {
 	protected $_query;
 	protected $_fileLoader;
-
-	protected $_where = [];
-	protected $_whereVars = [];
+	protected $_productLoader;
 
 	public function __construct(Query $query, FileLoader $loader)
 	{
 		$this->_query      = $query;
 		$this->_fileLoader = $loader;
+	}
+
+	public function setProductLoader(ProductLoader $productLoader)
+	{
+		$this->_productLoader = $productLoader;
+
+		return $this;
 	}
 
 	/**

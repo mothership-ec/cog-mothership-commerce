@@ -2,47 +2,62 @@
 
 namespace Message\Mothership\Commerce\Product;
 
+use Message\Cog\Localisation\Locale;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
+
 class ProductProxy extends Product
 {
-	public $units = [];
-
 	protected $_loaders;
 
 	public function __construct(
 		Locale $locale,
-		array $entities = array(),
 		array $priceTypes = array(),
 		EntityLoaderCollection $loaders
 	) {
-		parent::construct($locale, $entities, $priceTypes);
+		parent::__construct($locale, $priceTypes);
 
 		$this->_loaders = $loaders;
 	}
 
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
-		$this->units = $this->_loaders->get('units')
-			->includeOutOfStock($showOutOfStock)
-			->includeInvisible($showInvisible)
-			->getByProduct($this);
+		if ($this->_loaders->exists('units')) {
+			$this->_loaders->get('units')
+				->includeOutOfStock(true)
+				->includeInvisible(true);
 
-		return $this->units;
+			$this->_load('units');
+		}
+
+		return parent::getUnits($showOutOfStock, $showInvisible);
+	}
+
+	public function getUnit($unitID)
+	{
+		if ($this->_loaders->exists('units')) {
+			return $this->_loaders->get('units')->getByID($unitID);
+		}
+
+		return parent::getUnit($unitID);
 	}
 
 	public function getImages($type = 'default', array $options = null)
 	{
 		$this->_load('images');
 
-		return parent::getFile();
+		return parent::getImages();
 	}
 
-	protected function _load($entity)
+	protected function _load($entityName)
 	{
-		if (!$this->_loaders->exists($entity)) {
+		if (!$this->_loaders->exists($entityName)) {
 			return;
 		}
 
-		$this->$entity = $this->_loaders->get($entity)->getByProduct($this);
-		$this->_loaders->remove($entity);
+		$entities = $this->_loaders->get($entityName)->getByProduct($this);
+		foreach ($entities as $entity) {
+ 			$this->{'_' . $entityName}->add($entity);
+		}
+		$this->_loaders->remove($entityName);
 	}
 }

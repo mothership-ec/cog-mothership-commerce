@@ -29,9 +29,8 @@ class Product
 	public $type;
 	public $details;
 
-	public $price 	= array();
-	public $images  = array();
-	public $tags    = array();
+	public $price = array();
+	public $tags = array();
 
 	public $exportDescription;
 	public $exportValue;
@@ -39,40 +38,9 @@ class Product
 
 	public $priceTypes;
 
-	protected $_entities = array();
+	protected $_units;
+	protected $_images;
 	protected $_locale;
-
-
-	/**
-	 * Magic getter. This maps to defined order entities.
-	 *
-	 * @param  string $var       Entity name
-	 *
-	 * @return Entity\Collection The entity collection instance
-	 *
-	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
-	 */
-	public function __get($var)
-	{
-		if (array_key_exists($var, $this->_entities)) {
-			return $this->_entities[$var];
-		}
-
-		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
-
-	}
-
-	/**
-	 * Magic isset. This maps to defined order entities.
-	 *
-	 * @param  string  $var Entity name
-	 *
-	 * @return boolean      True if the entity exist
-	 */
-	public function __isset($var)
-	{
-		return array_key_exists($var, $this->_entities);
-	}
 
 	/**
 	 * Initiate the object and set some basic properties up
@@ -81,37 +49,19 @@ class Product
 	 * @param array  $entities   	array of entities, this will proabbly only be units for now
 	 * @param array  $priceTypes 	array of price types
 	 */
-	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
+	public function __construct(Locale $locale, array $priceTypes = array())
 	{
 		$this->authorship = new Authorship;
 		$this->priceTypes = $priceTypes;
 		$this->_locale    = $locale;
 
-		foreach ($entities as $name => $loader) {
-			$this->addEntity($name, $loader);
-		}
-
 		foreach ($priceTypes as $type) {
 			$this->price[$type] = new Pricing($locale);
 		}
 
-	}
+		$this->_units  = new Unit\Collection;
+		$this->_images = new Image\Collection;
 
-	/**
-	 * Add an entity to this product.
-	 *
-	 * @param string                 $name   Entity name
-	 * @param Entity\LoaderInterface $loader Entity loader
-	 *
-	 * @throws \InvalidArgumentException If an entity with the given name already exists
-	 */
-	public function addEntity($name, Unit\LoaderInterface $loader)
-	{
-		if (array_key_exists($name, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
-		}
-
-		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
 	/**
@@ -124,9 +74,7 @@ class Product
 	 */
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
-		$this->_entities['units']->load($showOutOfStock, $showInvisible);
-
-		return $this->_entities['units']->all();
+		return $this->_units->getByCriteria($showOutOfStock, $showInvisible);
 	}
 
 	/**
@@ -155,7 +103,7 @@ class Product
 	public function getUnit($unitID)
 	{
 		try {
-			return $this->_entities['units']->get($unitID);
+			return $this->_units->get($unitID);
 		} catch (\Exception $e) {
 			return false;
 		}
@@ -238,7 +186,6 @@ class Product
 	public function hasVariablePricing($type = 'retail', $currencyID = 'GBP', array $options = null)
 	{
 		$basePrice = $this->getPrice($type, $currencyID);
-
 		foreach ($this->getVisibleUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) != $basePrice) {
 				return true;
@@ -249,13 +196,14 @@ class Product
 	}
 
 	/**
-	 * Brand name doesn't work just yet
+	 * Returns full name consisting of brand (if set) and display name,
+	 * separated by a comma.
 	 *
-	 * @return [type] [description]
+	 * @return string full name
 	 */
 	public function getFullName()
 	{
-		return $this->brand.', '.$this->displayName;
+		return ($this->brand ? $this->brand . ', ' : '') .$this->displayName;
 	}
 
 	/**
@@ -277,11 +225,11 @@ class Product
 	 * If multiple images are found that match this criteria, only the first
 	 * will be returned.
 	 *
-	 * @param  string     $type    The image type to get images for
-	 * @param  array|null $options Associative array of options, or null for all
+	 * @param  string|null $type    The image type to get images for
+	 * @param  array|null  $options Associative array of options, or null for all
 	 *
-	 * @return Image|null          Image matching the criteria, or null if none
-	 *                             found
+	 * @return Image|null           Image matching the criteria, or null if none
+	 *                              found
 	 */
 	public function getImage($type = 'default', array $options = null)
 	{
@@ -296,42 +244,28 @@ class Product
 	 * An associative array of options criteria can also be passed. If this is
 	 * set, only images matching the option criteria will be returned.
 	 *
-	 * @param  string     $type    The image type to get images for
-	 * @param  array|null $options Associative array of options, or null for all
+	 * @param  string|null $type    The image type to get images for
+	 * @param  array|null  $options Associative array of options, or null for all
 	 *
-	 * @return array               Array of images matching the criteria
+	 * @return array                Array of images matching the criteria
 	 */
-	public function getImages($type = 'default', array $options = null)
+	public function getImages($type = null, array $options = null)
 	{
-		$return  = array();
-		$options = (null === $options) ? null : array_filter($options);
-
-		foreach ($this->images as $image) {
-			if ($image->type !== $type) {
-				continue;
-			}
-
-			if (!is_null($options)) {
-				$intersect = array_intersect_assoc($options, $image->options);
-
-				if ($intersect !== $options) {
-					continue;
-				}
-			}
-
-			$return[$image->id] = $image;
+		if (null !== $type) {
+			return $this->_images->getByType($type, $options);
 		}
 
-		return $return;
+		return $this->_images->all();
 	}
 
 	/**
 	 * Get the image most appropriate for a particular unit.
 	 *
-	 * Currently this just checks for an image with all of the options set to
-	 * all of the options of this unit. If this doesn't return an image, it will
-	 * just return the image of this type for the product with no option
-	 * criteria.
+	 * This checks for an image with all of the options set to all of the
+	 * options of this unit first, then it iterates over all options and tries to
+	 * find an image with at least one matching option. If this doesn't return
+	 * an image, it will just return the image of this type for the product with
+	 * no option criteria.
 	 *
 	 * @todo Make this somehow prefer an image if it matches MORE option criteria
 	 *       than another (i.e. unit is Red/Small/Velvet), it will prefer an
@@ -370,7 +304,7 @@ class Product
 	 */
 	public function hasImage($type = 'default', array $options = null)
 	{
-		return false !== $this->getImage($type, $options);
+		return $this->getImage($type, $options);
 	}
 
 	public function hasTag($tag)

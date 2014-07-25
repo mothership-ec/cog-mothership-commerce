@@ -15,13 +15,12 @@ class Loader
 {
 	protected $_query;
 	protected $_locale;
-	protected $_entities;
 	protected $_includeDeleted = false;
 
 	protected $_returnArray;
 	protected $_productTypes;
 	protected $_detailLoader;
-	protected $_imageLoader;
+	protected $_entityLoaders;
 
 	public function __construct(
 		Query $query,
@@ -29,20 +28,29 @@ class Loader
 		FileLoader $fileLoader,
 		Type\Collection $productTypes,
 		Type\DetailLoader $detailLoader,
-		array $entities = array(),
-		$priceTypes = array(),
-		Image\Loader $imageLoader,
-		EntityLoaderCollection $entityLoaders
+		EntityLoaderCollection $entityLoaders,
+		$priceTypes = array()
 	) {
-		$this->_query			= $query;
-		$this->_locale			= $locale;
-		$this->_entities		= $entities;
-		$this->_productTypes	= $productTypes;
-		$this->_detailLoader	= $detailLoader;
-		$this->_priceTypes		= $priceTypes;
-		$this->_fileLoader		= $fileLoader;
-		$this->_imageLoader     = $imageLoader;
-		$this->_entityLoaders   = $entityLoaders;
+		$this->_query         = $query;
+		$this->_locale        = $locale;
+		$this->_productTypes  = $productTypes;
+		$this->_detailLoader  = $detailLoader;
+		$this->_priceTypes    = $priceTypes;
+		$this->_fileLoader    = $fileLoader;
+		$this->_entityLoaders = $entityLoaders;
+	}
+
+	public function getEntityLoader($entityName)
+	{
+		$loader = $this->_entityLoaders->get($entityName);
+		$loader->setProductLoader($this);
+
+		return $loader;
+	}
+
+	public function getEntityLoaders()
+	{
+		return $this->_entityLoaders;
 	}
 
 	/**
@@ -55,17 +63,6 @@ class Loader
 	{
 		$this->_includeDeleted = (bool)$bool;
 		return $this;
-	}
-
-	public function getEntityLoader($name)
-	{
-		if (!array_key_exists($name, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Unknown product entity: `%s`', $name));
-		}
-
-		$this->_entities[$name]->setProductLoader($this);
-
-		return $this->_entities[$name];
 	}
 
 	public function getByID($productID)
@@ -260,6 +257,10 @@ class Loader
 			return $this->_returnArray ? array() : false;
 		}
 
+		if (0 === $this->_entityLoaders->count()) {
+			throw new \LogicException('Cannot load products when entity loaders are not set.');
+		}
+
 		$this->_checkLimit($limit);
 
 		$result = $this->_query->run(
@@ -333,7 +334,7 @@ class Loader
 
 		$products = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\ProductProxy',
-			[$this->_locale, $this->_entities, $this->_priceTypes, $this->_entityLoaders]
+			[$this->_locale, $this->_priceTypes, $this->_entityLoaders]
 		);
 
 		foreach ($result as $key => $data) {
@@ -362,9 +363,6 @@ class Loader
 					$products[$key]->tags[$k] = $tag->name;
 				}
 			}
-
-			// $images = $this->_imageLoader->getByProduct($products[$key]);
-			// $products[$key]->images = $images;
 
 			$this->_loadType($products[$key], $data->type);
 		}

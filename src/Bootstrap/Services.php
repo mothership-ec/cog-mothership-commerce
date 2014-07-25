@@ -378,15 +378,19 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.entities'] = function($c) {
-			return array(
-				'units' => new Commerce\Product\Unit\Loader(
+		$services['product.entity_loaders'] = $services->factory(function($c) {
+			return 	new EntityLoaderCollection([
+				'units'  => new Commerce\Product\Unit\Loader(
 					$c['db.query'],
 					$c['locale'],
 					$c['product.price.types']
 				),
-			);
-		};
+				'images' => new Commerce\Product\Image\Loader(
+					$c['db.query'],
+					$c['file_manager.file.loader']
+				),
+			]);
+		});
 
 		$services['product.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\Loader(
@@ -395,13 +399,8 @@ class Services implements ServicesInterface
 				$c['file_manager.file.loader'],
 				$c['product.types'],
 				$c['product.detail.loader'],
-				$c['product.entities'],
-				$c['product.price.types'],
-				$c['product.image.loader'],
-				new EntityLoaderCollection([
-					'units'  => $c['product.unit.loader'],
-					'images' => $c['product.image.loader'],
-				])
+				$c['product.entity_loaders'],
+				$c['product.price.types']
 			);
 		});
 
@@ -419,6 +418,10 @@ class Services implements ServicesInterface
 			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
 
 			return $create;
+		});
+		
+		$services['product.edit'] = $services->factory(function($c) {
+			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		});
 
 		$services['product.delete'] = $services->factory(function($c) {
@@ -440,19 +443,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.image.loader'] = $services->factory(function($c) {
-			return new Commerce\Product\Image\Loader($c['db.query'], $c['file_manager.file.loader']);
+			return $c['product.loader']->getEntityLoader('images');
 		});
 
 		$services['product.unit.loader'] = $services->factory(function($c) {
-			return new Commerce\Product\Unit\Loader(
-				$c['db.query'],
-				$c['locale'],
-				$c['product.price.types']
-			);
-		});
-
-		$services['product.edit'] = $services->factory(function($c) {
-			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
+			return $c['product.loader']->getEntityLoader('units');
 		});
 
 		$services['product.unit.edit'] = $services->factory(function($c) {
