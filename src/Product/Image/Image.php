@@ -30,8 +30,7 @@ class Image implements ResizableInterface
 		$this->authorship = new Authorship;
 
 		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+			->disableUpdate(); // remove when making update class
 	}
 
 	public function getUrl()
