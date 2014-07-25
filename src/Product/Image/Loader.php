@@ -13,9 +13,6 @@ class Loader
 	protected $_query;
 	protected $_fileLoader;
 
-	protected $_where = [];
-	protected $_whereVars = [];
-
 	public function __construct(Query $query, FileLoader $loader)
 	{
 		$this->_query      = $query;
@@ -38,7 +35,8 @@ class Loader
 				image_id = ?s
 			", [ $id, ]);
 
-		$all = $this->_load($dataSet->flatten());
+		$all = $this->_load($dataSet->flatten()
+			);
 		
 		return array_pop($all);
 	}
@@ -57,7 +55,8 @@ class Loader
 				product_image
 			WHERE
 				file_id = ?i
-			",  $file->id );
+			",  $file->id
+			);
 
 		$images = $this->_load($dataSet->flatten());
 
@@ -112,7 +111,8 @@ class Loader
 				product_image.image_id = product_image_option.image_id
 			WHERE
 				product_image.image_id IN (?js)
-			", [ $ids, ]);
+			", [$ids,]
+			);
 
 		// bind as image
 		$images = $dataSet->bindTo('Message\\Mothership\\Commerce\\Product\\Image\\Image');

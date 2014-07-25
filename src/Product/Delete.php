@@ -78,7 +78,8 @@ class Delete
 				deleted_by = NULL
 			WHERE
 				product_id = ?i
-		', $product->id);
+		', $product->id
+		);
 
 		return $product;
 	}
