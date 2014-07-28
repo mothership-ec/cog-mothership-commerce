@@ -33,17 +33,17 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	// 	$result->shouldReceive('next');
 	// 	$result->shouldReceive('valid')->andReturn(true);
 
-	// 	// $result->expects($this->any())
-	// 	// 	->method('first')
-	// 	// 	->will($this->returnValue([[
-	// 	// 		'type'      => 'default',
-	// 	// 		'productID' => '2',
-	// 	// 		'fileID'    => 1410,
-	// 	// 		'locale'    => 'en_GB',
-	// 	// 		'createdAt' => '1394641204',
-	// 	// 		'createdBy' => '1',
-	// 	// 		'id'        => 'b90b033153546c187a5b8179c016ebd6',
-	// 	// 		], ]));
+	// 	$result->expects($this->any())
+	// 		->method('first')
+	// 		->will($this->returnValue([[
+	// 			'type'      => 'default',
+	// 			'productID' => '2',
+	// 			'fileID'    => 1410,
+	// 			'locale'    => 'en_GB',
+	// 			'createdAt' => '1394641204',
+	// 			'createdBy' => '1',
+	// 			'id'        => 'b90b033153546c187a5b8179c016ebd6',
+	// 			], ]));
 
 	// 	$loader = new Loader($query, $fileLoader);
 	// 	$image = $loader->getByID('b90b033153546c187a5b8179c016ebd6');

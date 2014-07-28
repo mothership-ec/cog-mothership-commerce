@@ -35,8 +35,7 @@ class Loader
 				image_id = ?s
 			", [ $id, ]);
 
-		$all = $this->_load($dataSet->flatten()
-			);
+		$all = $this->_load($dataSet->flatten());
 		
 		return array_pop($all);
 	}
