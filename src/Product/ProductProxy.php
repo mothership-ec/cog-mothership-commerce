@@ -8,6 +8,7 @@ use Message\Cog\DB\Entity\EntityLoaderCollection;
 class ProductProxy extends Product
 {
 	protected $_loaders;
+	protected $_loaded = [];
 
 	public function __construct(
 		Locale $locale,
@@ -50,14 +51,18 @@ class ProductProxy extends Product
 
 	protected function _load($entityName)
 	{
-		if (!$this->_loaders->exists($entityName)) {
+		if (in_array($entityName, $this->_loaded)) {
 			return;
 		}
 
 		$entities = $this->_loaders->get($entityName)->getByProduct($this);
-		foreach ($entities as $entity) {
- 			$this->{'_' . $entityName}->add($entity);
+		
+		if ($entities !== false) {
+			foreach ($entities as $entity) {
+		 		$this->{'_' . $entityName}->add($entity);
+			}
 		}
-		$this->_loaders->remove($entityName);
+
+		$this->_loaded[] = $entityName;
 	}
 }
