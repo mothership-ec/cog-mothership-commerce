@@ -27,7 +27,6 @@ class Product
 	public $notes;
 
 	public $type;
-	public $details;
 
 	public $price = array();
 	public $tags = array();
@@ -38,6 +37,7 @@ class Product
 
 	public $priceTypes;
 
+	protected $_details;
 	protected $_units;
 	protected $_images;
 	protected $_locale;
@@ -310,5 +310,10 @@ class Product
 	public function hasTag($tag)
 	{
 		return in_array($tag, $this->tags);
+	}
+
+	public function getDetails()
+	{
+		return $this->_details;
 	}
 }

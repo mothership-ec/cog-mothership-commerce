@@ -12,8 +12,8 @@ class Details implements \IteratorAggregate, \Countable
 	public function __construct($details = array())
 	{
 		foreach ($details as $detail) {
-			if (!$detail instanceof Detail) {
-				throw new \LogicException('Objects passed to Detail\\Collection must be an instance of Detail');
+			if (!$detail instanceof Field\FieldInterface) {
+				throw new \LogicException('Objects passed to Details must be an instance of Field\FieldInterface');
 			}
 
 			$this->_details[$detail->name] = $detail;

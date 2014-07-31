@@ -389,6 +389,11 @@ class Services implements ServicesInterface
 					$c['db.query'],
 					$c['file_manager.file.loader']
 				),
+				'details' => new Commerce\Product\Type\DetailLoader(
+					$c['db.query'],
+					$c['field.factory'],
+					$c['product.types']
+				),
 			]);
 		});
 
@@ -512,11 +517,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.detail.loader'] = function($c) {
-			return new Commerce\Product\Type\DetailLoader(
-				$c['db.query'],
-				$c['field.factory'],
-				$c['product.types']
-			);
+			return $c['product.entity_loaders']->get('details');
 		};
 
 		$services['product.detail.edit'] = function($c) {

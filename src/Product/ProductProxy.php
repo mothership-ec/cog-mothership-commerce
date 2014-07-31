@@ -22,7 +22,7 @@ class ProductProxy extends Product
 
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
-		if ($this->_loaders->exists('units')) {
+		if (!in_array($entityName, $this->_loaded)) {
 			$this->_loaders->get('units')
 				->includeOutOfStock(true)
 				->includeInvisible(true);
@@ -35,7 +35,7 @@ class ProductProxy extends Product
 
 	public function getUnit($unitID)
 	{
-		if ($this->_loaders->exists('units')) {
+		if (!in_array($entityName, $this->_loaded)) {
 			return $this->_loaders->get('units')->getByID($unitID);
 		}
 
@@ -47,6 +47,13 @@ class ProductProxy extends Product
 		$this->_load('images');
 
 		return parent::getImages();
+	}
+
+	public function getDetails()
+	{
+		$this->_load('details');
+
+		return parent::getDetails();
 	}
 
 	protected function _load($entityName)
