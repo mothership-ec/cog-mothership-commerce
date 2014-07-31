@@ -22,7 +22,7 @@ class ProductProxy extends Product
 
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
-		if (!in_array($entityName, $this->_loaded)) {
+		if (!in_array('units', $this->_loaded)) {
 			$this->_loaders->get('units')
 				->includeOutOfStock(true)
 				->includeInvisible(true);
@@ -35,7 +35,7 @@ class ProductProxy extends Product
 
 	public function getUnit($unitID)
 	{
-		if (!in_array($entityName, $this->_loaded)) {
+		if (!in_array('units', $this->_loaded)) {
 			return $this->_loaders->get('units')->getByID($unitID);
 		}
 
