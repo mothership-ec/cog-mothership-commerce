@@ -448,11 +448,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.image.loader'] = $services->factory(function($c) {
-			return $c['product.entity_loaders']->get('images');
+			return $c['product.loader']->getEntityLoader('images');
 		});
 
 		$services['product.unit.loader'] = $services->factory(function($c) {
-			return $c['product.entity_loaders']->get('units');
+			return $c['product.loader']->getEntityLoader('units');
 		});
 
 		$services['product.unit.edit'] = $services->factory(function($c) {
