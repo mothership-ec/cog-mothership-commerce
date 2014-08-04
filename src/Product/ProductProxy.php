@@ -46,7 +46,7 @@ class ProductProxy extends Product
 	{
 		$this->_load('images');
 
-		return parent::getImages();
+		return parent::getImages($type, $options);
 	}
 
 	public function getDetails()
