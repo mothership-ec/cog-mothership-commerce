@@ -150,18 +150,20 @@ class EventListener extends BaseListener implements SubscriberInterface
 		if (count($productID)) {
 			$product = $this->get('product.loader')->getByID($productID[0]->product_id);
 
-			$url = $this->get('routing.generator')->generate(
-				'ms.commerce.product.edit.attributes',
-				['productID' => $product->id],
-				UrlGeneratorInterface::ABSOLUTE_PATH
-			);
+			if ($product) {
+				$url = $this->get('routing.generator')->generate(
+					'ms.commerce.product.edit.attributes',
+					['productID' => $product->id],
+					UrlGeneratorInterface::ABSOLUTE_PATH
+				);
 
-			$event->addActivity(new Activity(
-				'Last edited product',
-				$product->authorship->updatedAt(),
-				$product->name,
-				$url
-			));
+				$event->addActivity(new Activity(
+					'Last edited product',
+					$product->authorship->updatedAt(),
+					$product->name,
+					$url
+				));
+			}
 		}
 
 		$orderID = $this->get('db.query')->run("
@@ -177,18 +179,20 @@ class EventListener extends BaseListener implements SubscriberInterface
 		if (count($orderID)) {
 			$order = $this->get('order.loader')->getByID($orderID[0]->order_id);
 
-			$url = $this->get('routing.generator')->generate(
-				'ms.commerce.order.detail.view',
-				['orderID' => $order->id],
-				UrlGeneratorInterface::ABSOLUTE_PATH
-			);
+			if ($order) {
+				$url = $this->get('routing.generator')->generate(
+					'ms.commerce.order.detail.view',
+					['orderID' => $order->id],
+					UrlGeneratorInterface::ABSOLUTE_PATH
+				);
 
-			$event->addActivity(new Activity(
-				'Last edited order',
-				$order->authorship->updatedAt(),
-				'#' . $order->id,
-				$url
-			));
+				$event->addActivity(new Activity(
+					'Last edited order',
+					$order->authorship->updatedAt(),
+					'#' . $order->id,
+					$url
+				));
+			}
 		}
 	}
 
