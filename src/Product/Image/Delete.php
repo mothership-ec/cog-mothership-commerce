@@ -14,7 +14,7 @@ class Delete implements DB\TransactionalInterface
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param DB\Transaction $trans
 	 * @param UserInterface $currentUser
 	 */
@@ -35,7 +35,7 @@ class Delete implements DB\TransactionalInterface
 		return $this;
 	}
 
-	/**	
+	/**
 	 * deletes given image(s)
 	 * @param  Image|array $images Image(s) to delete
 	 */
@@ -50,7 +50,7 @@ class Delete implements DB\TransactionalInterface
 
 	/**
 	 * Deletes the given image
-	 * 
+	 *
 	 * @param  Image  $image
 	 */
 	protected function _deleteSingle(Image $image)
@@ -64,17 +64,17 @@ class Delete implements DB\TransactionalInterface
 				`image_id` = ?s
 			',
 			$image->id
-			);
+		);
 
 		$this->_trans->add('
 			DELETE FROM
 				`product_image`
 			WHERE
 				`image_id` = ?s
-			', 
+			',
 			$image->id
-			);
-		
+		);
+
 		if (!$this->_transOverridden) {
 			$this->_trans->commit();
 		}
@@ -96,14 +96,20 @@ class Delete implements DB\TransactionalInterface
 				`product_image_option`
 			WHERE
 				`image_id` IN (?js)
-			", [ $ids, ]);
+			", [
+				$ids,
+			]
+		);
 
 		$this->_trans->add(
 			"DELETE FROM
 				`product_image`
 			WHERE
 				`image_id` IN (?js)
-			", [ $ids, ]);
+			", [
+				$ids,
+			]
+		);
 
 		if (!$this->_transOverridden) {
 			$this->_trans->commit();
