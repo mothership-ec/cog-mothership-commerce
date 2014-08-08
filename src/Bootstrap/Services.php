@@ -637,9 +637,9 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Basket\Delete($c['db.query']);
 		});
 
-		$services['order.basket.loader'] = $services->factory(function($c) {
+		$services['order.basket.loader'] = function($c) {
 			return new Commerce\Order\Basket\Loader($c['db.query'], $c['order.basket.token']);
-		});
+		};
 
 		$services['order.basket.token'] = $services->factory(function($c) {
 			return new Commerce\Order\Basket\Token($c['user.password_hash'], $c['cfg']);
