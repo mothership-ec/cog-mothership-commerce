@@ -192,7 +192,7 @@ ms.commerce:
       product-gross: Product Gross
       total-gross: Total Gross
       status: Status
-      user-email: E-Mail
+      user-email: User E-Mail
 
     item:
       none: There are no items to view.
@@ -221,10 +221,19 @@ ms.commerce:
       listing-title: Payments
       summary-title: Payment Summary
 
-      return: Return
       method: Method
       amount: Amount
       reference: Reference
+
+    refund:
+      none: There are no refunds to view.
+      listing-title: Refunds
+
+      method: Method
+      amount: Amount
+      reference: Reference
+      payment: For Payment
+      reason: Reason
 
     dispatch:
       none: There are no dispatches to view.

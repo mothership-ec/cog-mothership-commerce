@@ -9,7 +9,10 @@
 					<dt>Discount</dt>
 						<dd>{{ order.totalDiscount|price(order.currencyID) }} </dd>
 					<dt>Shipping</dt>
-						<dd>{{ order.shippingGross|price(order.currencyID) }} <em>({{ order.shippingDisplayName }})</em></dd>
+						<dd>
+							{{ order.shippingGross|price(order.currencyID) }}
+							{% if order.shippingDisplayName %}<em>({{ order.shippingDisplayName }})</em>{% endif %}
+						</dd>
 					<dt>Grand Total</dt>
 						<dd>{{ order.totalGross|price(order.currencyID) }} </dd>
 					<dt>Currency</dt>
@@ -31,24 +34,47 @@
 					<dd><em>Unknown</em></dd>
 					{% endif %}
 					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
-						<dd>{{ order.userEmail }}</dd>
+						<dd>
+							{% if order.userEmail %}
+								{{ order.userEmail }}
+							{% else %}
+								<em>Unknown</em>
+							{% endif %}
+						</dd>
 					{% for key, line in address.lines %}
 						{% if not line is empty %}
 							<dt>{{ 'ms.commerce.order.address.line'|trans({'number': key}) }}</dt>
 								<dd>{{ line }}</dd>
 						{% endif %}
 					{% endfor %}
-
 						<dt>{{ 'ms.commerce.order.address.town'|trans }}</dt>
-							<dd>{{ address.town }}</dd>
+							<dd>
+								{% if address.town %}
+									{{ address.town }}
+								{% else %}
+									<em>Unknown</em>
+								{% endif %}
+							</dd>
 						<dt>{{ 'ms.commerce.order.address.postcode'|trans }}</dt>
-							<dd>{{ address.postcode }}</dd>
+							<dd>
+								{% if address.postcode %}
+									{{ address.postcode }}
+								{% else %}
+									<em>Unknown</em>
+								{% endif %}
+							</dd>
 					{% if not address.state is empty %}
 						<dt>{{ 'ms.commerce.order.address.state'|trans }}</dt>
 							<dd>{{ address.state }}</dd>
 					{% endif %}
 					<dt>{{ 'ms.commerce.order.address.country'|trans }}</dt>
-						<dd>{{ address.country }}</dd>
+							<dd>
+								{% if address.country %}
+									{{ address.country }}
+								{% else %}
+									<em>Unknown</em>
+								{% endif %}
+							</dd>					
 					{% if not address.telephone is empty %}
 						<dt>{{ 'ms.commerce.order.address.telephone'|trans }}</dt>
 							<dd>{{ address.telephone }}</dd>
@@ -66,11 +92,17 @@
 							{{ order.authorship.createdUser.name }}
 						</a></dd>
 						{% endif %}
-					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
-						<dd>{{ order.email }}</dd>
 					<dt>{{ 'Created at'|trans }}</dt>
 						<dd>{{ order.authorship.createdAt|date }}</dd>
-				</ul>
+					<dt>{{ 'ms.commerce.order.order.user-email'|trans }}</dt>
+						<dd>
+							{% if order.userEmail %}
+								{{ order.userEmail }}
+							{% else %}
+								<em>Unknown</em>
+							{% endif %}
+						</dd>
+				</dl>
 			</div>
 		</section>
 	</div>
