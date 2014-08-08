@@ -97,6 +97,10 @@ class PersistenceListener extends BaseListener implements SubscriberInterface
 	 */
 	public function getBasket(Event\GetResponseEvent $event)
 	{
+		if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+			return false;
+		}
+
 		// Get the token from the cookie.
 		$token = $this->_services['request']->cookies->get($this->_services['cfg']->basket->cookieName);
 
