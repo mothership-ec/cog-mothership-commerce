@@ -124,7 +124,7 @@ class Edit extends Controller
 		$images = [];
 		$types  = $this->get('product.image.types');
 
-		foreach ($this->_product->images as $image) {
+		foreach ($this->_product->getImages() as $image) {
 			$label = $types->get($image->type);
 
 			if (!array_key_exists($label, $images)) {

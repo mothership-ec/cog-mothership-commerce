@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
 use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
 
 use Message\User\AnonymousUser;
 
@@ -381,15 +382,24 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.entities'] = function($c) {
-			return array(
-				'units' => new Commerce\Product\Unit\Loader(
+		$services['product.entity_loaders'] = $services->factory(function($c) {
+			return 	new EntityLoaderCollection([
+				'units'  => new Commerce\Product\Unit\Loader(
 					$c['db.query'],
 					$c['locale'],
 					$c['product.price.types']
 				),
-			);
-		};
+				'images' => new Commerce\Product\Image\Loader(
+					$c['db.query'],
+					$c['file_manager.file.loader']
+				),
+				'details' => new Commerce\Product\Type\DetailLoader(
+					$c['db.query'],
+					$c['field.factory'],
+					$c['product.types']
+				),
+			]);
+		});
 
 		$services['product.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\Loader(
@@ -398,7 +408,7 @@ class Services implements ServicesInterface
 				$c['file_manager.file.loader'],
 				$c['product.types'],
 				$c['product.detail.loader'],
-				$c['product.entities'],
+				$c['product.entity_loaders'],
 				$c['product.price.types']
 			);
 		});
@@ -419,6 +429,10 @@ class Services implements ServicesInterface
 			return $create;
 		});
 
+		$services['product.edit'] = $services->factory(function($c) {
+			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
+		});
+
 		$services['product.delete'] = $services->factory(function($c) {
 			return new Commerce\Product\Delete($c['db.query'], $c['user.current']);
 		});
@@ -433,12 +447,16 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Image\Create($c['db.transaction'], $c['user.current']);
 		});
 
-		$services['product.unit.loader'] = $services->factory(function($c) {
-			return $c['product.loader']->getEntityLoader('units');
+		$services['product.image.delete'] = $services->factory(function($c) {
+			return new Commerce\Product\Image\Delete($c['db.transaction'], $c['user.current']);
 		});
 
-		$services['product.edit'] = $services->factory(function($c) {
-			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
+		$services['product.image.loader'] = $services->factory(function($c) {
+			return $c['product.loader']->getEntityLoader('images');
+		});
+
+		$services['product.unit.loader'] = $services->factory(function($c) {
+			return $c['product.loader']->getEntityLoader('units');
 		});
 
 		$services['product.unit.edit'] = $services->factory(function($c) {
@@ -501,13 +519,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\Barcode($c['stock.locations']);
 		});
 
-		$services['product.detail.loader'] = $services->factory(function($c) {
-			return new Commerce\Product\Type\DetailLoader(
-				$c['db.query'],
-				$c['field.factory'],
-				$c['product.types']
-			);
-		});
+
+		$services['product.detail.loader'] = function($c) {
+			return $c['product.entity_loaders']->get('details');
+		};
 
 		$services['product.detail.edit'] = function($c) {
 			return new Commerce\Product\Type\DetailEdit(
