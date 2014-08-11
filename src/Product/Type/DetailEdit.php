@@ -27,7 +27,7 @@ class DetailEdit implements TransactionalInterface
 
 	public function save(Product $product)
 	{
-		$flattened	= $this->_flatten($product->details);
+		$flattened	= $this->_flatten($product->getDetails());
 
 		$this->_transaction->add("
 			DELETE FROM
@@ -73,7 +73,7 @@ class DetailEdit implements TransactionalInterface
 		$this->_transaction = $trans;
 	}
 
-	public function updateDetails($data, Details $details)
+	public function updateDetails($data, DetailCollection $details)
 	{
 		foreach ($data as $name => $value) {
 			$details->$name->setValue($value);
@@ -82,7 +82,7 @@ class DetailEdit implements TransactionalInterface
 		return $details;
 	}
 
-	protected function _flatten(Details $details)
+	protected function _flatten(DetailCollection $details)
 	{
 		$updates	= [];
 

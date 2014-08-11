@@ -372,7 +372,6 @@ class Loader
 
 	protected function _loadType(Product $product, $type)
 	{
-		$product->details = new Type\Details();
 		$product->type    = $this->_productTypes->get($type);
 	}
 

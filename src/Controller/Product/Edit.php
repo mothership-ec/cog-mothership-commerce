@@ -290,7 +290,7 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->details = $detailEdit->updateDetails($data, $product->details);
+			$product->setDetails($detailEdit->updateDetails($data, $product->getDetails()));
 			$detailEdit->save($product);
 
 			$product = $productEdit->save($product);
@@ -779,7 +779,7 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->get('field.form')->generate($this->_product->details, [
+		return $this->get('field.form')->generate($this->_product->getDetails(), [
 			'action' => $this->generateUrl('ms.commerce.product.edit.details.action', [
 					'productID' => $this->_product->id,
 				])
