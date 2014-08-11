@@ -59,9 +59,9 @@ class Product
 			$this->price[$type] = new Pricing($locale);
 		}
 
-		$this->_units  = new Unit\Collection;
-		$this->_images = new Image\Collection;
-
+		$this->_units   = new Unit\Collection;
+		$this->_images  = new Image\Collection;
+		$this->_details = new Type\DetailCollection;
 	}
 
 	/**
@@ -315,5 +315,10 @@ class Product
 	public function getDetails()
 	{
 		return $this->_details;
+	}
+
+	public function setDetails(Type\DetailCollection $details)
+	{
+		$this->_details = $details;
 	}
 }

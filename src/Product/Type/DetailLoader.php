@@ -63,7 +63,7 @@ class DetailLoader implements ProductEntityLoaderInterface
 			'productID'	=> $product->id,
 		));
 
-		$details = new Details;
+		$details = new DetailCollection;
 
 		$type    = $this->_types->get($product->type);
 

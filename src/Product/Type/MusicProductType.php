@@ -33,7 +33,7 @@ class MusicProductType implements ProductTypeInterface
 
 	public function getProductDisplayName(Product $product)
 	{
-		return $product->details->artist . ' - ' . $product->details->title;
+		return $product->getDetails()->artist . ' - ' . $product->getDetails()->title;
 	}
 
 	public function setFields(Factory $factory, Product $product = null)
@@ -89,7 +89,7 @@ class MusicProductType implements ProductTypeInterface
 
 	protected function _getDefaultValues(Product $product)
 	{
-		$defaultValues	= $product->details->flatten();
+		$defaultValues	= $product->getDetails()->flatten();
 
 		$defaultValues['title']	 = (!empty($defaultValues['title'])) ? $defaultValues['title'] : $product->name;
 

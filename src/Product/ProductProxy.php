@@ -52,7 +52,7 @@ class ProductProxy extends Product
 	public function getDetails()
 	{
 		$this->_load('details');
-
+		
 		return parent::getDetails();
 	}
 
@@ -66,7 +66,7 @@ class ProductProxy extends Product
 		
 		if ($entities !== false) {
 			foreach ($entities as $entity) {
-		 		$this->{'_' . $entityName}->add($entity);
+				$this->{'_' . $entityName}->add($entity);
 			}
 		}
 
