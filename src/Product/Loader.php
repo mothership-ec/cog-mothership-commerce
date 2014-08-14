@@ -105,6 +105,24 @@ class Loader
 		return $this->_loadProduct($result->flatten(), $limit);
 	}
 
+	public function getByBrand($name, $limit = null)
+	{
+		$this->_checkLimit($limit);
+
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			WHERE
+				brand = ?s
+		', $name);
+
+		$this->_returnArray = true;
+
+		return $this->_loadProduct($result->flatten(), $limit);
+	}
+
 	public function getByType($type)
 	{
 		$result = $this->_query->run("
