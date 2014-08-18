@@ -395,7 +395,8 @@ class Services implements ServicesInterface
 				$c['product.types'],
 				$c['product.detail.loader'],
 				$c['product.entities'],
-				$c['product.price.types']
+				$c['product.price.types'],
+				$c['product.image.loader']
 			);
 		});
 
@@ -427,6 +428,14 @@ class Services implements ServicesInterface
 
 		$services['product.image.create'] = $services->factory(function($c) {
 			return new Commerce\Product\Image\Create($c['db.transaction'], $c['user.current']);
+		});
+
+		$services['product.image.delete'] = $services->factory(function($c) {
+			return new Commerce\Product\Image\Delete($c['db.transaction'], $c['user.current']);
+		});
+
+		$services['product.image.loader'] = $services->factory(function($c) {
+			return new Commerce\Product\Image\Loader($c['db.query'], $c['file_manager.file.loader']);
 		});
 
 		$services['product.unit.loader'] = $services->factory(function($c) {
