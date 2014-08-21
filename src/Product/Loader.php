@@ -19,6 +19,7 @@ class Loader
 	protected $_returnArray;
 	protected $_productTypes;
 	protected $_detailLoader;
+	protected $_imageLoader;
 
 	public function __construct(
 		Query $query,
@@ -27,7 +28,8 @@ class Loader
 		Type\Collection $productTypes,
 		Type\DetailLoader $detailLoader,
 		array $entities = array(),
-		$priceTypes = array()
+		$priceTypes = array(),
+		Image\Loader $imageLoader
 	) {
 		$this->_query			= $query;
 		$this->_locale			= $locale;
@@ -36,6 +38,7 @@ class Loader
 		$this->_detailLoader	= $detailLoader;
 		$this->_priceTypes		= $priceTypes;
 		$this->_fileLoader		= $fileLoader;
+		$this->_imageLoader     = $imageLoader;
 	}
 
 	/**
@@ -98,6 +101,24 @@ class Loader
 				product
 			WHERE
 				category = ?s
+		', $name);
+
+		$this->_returnArray = true;
+
+		return $this->_loadProduct($result->flatten(), $limit);
+	}
+
+	public function getByBrand($name, $limit = null)
+	{
+		$this->_checkLimit($limit);
+
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			WHERE
+				brand = ?s
 		', $name);
 
 		$this->_returnArray = true;
@@ -324,23 +345,6 @@ class Loader
 			(array) $productIDs,
 		));
 
-		$images = $this->_query->run(
-			'SELECT
-				product_image.product_id   AS productID,
-				product_image.image_id     AS id,
-				product_image.file_id      AS fileID,
-				product_image.type         AS type,
-				product_image.created_at   AS createdAt,
-				product_image.created_by   AS createdBy,
-				product_image.locale       AS locale
-			FROM
-				product_image
-			WHERE
-				product_image.product_id IN (?ij)
-		', array(
-			(array) $productIDs,
-		));
-
 		$products = $result->bindTo('Message\\Mothership\\Commerce\\Product\\Product', array($this->_locale, $this->_entities, $this->_priceTypes));
 
 		foreach ($result as $key => $data) {
@@ -370,43 +374,8 @@ class Loader
 				}
 			}
 
-			foreach ($images as $imageData) {
-				if ($imageData->productID != $data->id) {
-					continue;
-				}
-
-				$image          = new Image\Image;
-				$image->id      = $imageData->id;
-				$image->type    = $imageData->type;
-				$image->product = $products[$key];
-				$image->locale  = $imageData->locale;
-
-				// $image->file    = $this->_fileLoader->getByID($imageData->fileID);
-				$image->setFileLoader($this->_fileLoader);
-				$image->fileID  = $imageData->fileID;
-
-				$image->authorship->create(
-					new DateTimeImmutable(date('c', $imageData->createdAt)),
-					$imageData->createdBy
-				);
-
-				// Look for image options
-				$opts = $this->_query->run('
-					SELECT
-						*
-					FROM
-						product_image_option
-					WHERE
-						image_id = ?s
-				', $image->id);
-
-				foreach ($opts->hash('name', 'value') as $name => $value) {
-					$image->options[$name] = $value;
-				}
-
-				$products[$key]->images[$image->id] = $image;
-
-			}
+			$images = $this->_imageLoader->getByProduct($products[$key]);
+			$products[$key]->images = $images;
 
 			$this->_loadType($products[$key], $data->type);
 		}
