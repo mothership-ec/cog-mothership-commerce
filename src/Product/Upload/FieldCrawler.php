@@ -8,7 +8,7 @@ use Message\Mothership\Commerce\Product\Type;
 /**
  * Class to extract the fields from a product type.
  *
- * @todo annoyingly in order to access the fields, this needs to extend the `Message\Cog\Field\Factory` and
+ * @todo annoyingly in order to access the fields, this needs to extend the `Message\Cog\Field\Factory` class and
  * run `setFields()` on the types. This is quite blatantly a hack and inherently unstable as if the `$_fields` property
  * became private, this method would break. If anyone has any ideas of how to approach this issue please let me know
  *
