@@ -458,6 +458,15 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		});
 
+		// CSV upload
+		$services['product.upload.field_crawler'] = function($c) {
+			return new Commerce\Product\Upload\FieldCrawler($c['product.types']);
+		};
+
+		$services['product.upload.csv_columns'] = function($c) {
+			return new Commerce\Product\Upload\Csv\Columns($c['product.upload.field_crawler'], $c['translator']);
+		};
+
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));

@@ -1,0 +1,14 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
+{% endblock %}
+
+{% block main %}
+	<hgroup class="title">
+		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
+	</hgroup>
+	<div class="container-content">
+		<p>Hell yes you'd like to upload some stuff</p>
+	</div>
+{% endblock %}

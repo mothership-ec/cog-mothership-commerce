@@ -113,6 +113,30 @@ ms.commerce:
         value:
           label: Option Value
           help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
+    upload:
+      title: Upload a CSV
+      csv:
+        name: Product name
+        sort: Alphabetical sort name
+        category: Category
+        brand: Brand
+        description: Description
+        short_desc: Short description
+        export_desc: Export description
+        supplier_ref: Supplier reference
+        weight: Weight (grams)
+        notes: Notes
+        man_country: Country of manufacture
+        price: Selling price
+        rrp: RRP
+        cost: Cost price
+        tax_rate: Tax rate
+        var_name_1: Variant name 1
+        var_val_1: Variant value 1
+        var_name_2 : Variant name 2
+        var_val_2: Variant name 2
+        var_name_3: Variant name 3
+        var_val_3: Variant value 3
     units:
       empty: No units have been added yet.
       sku:
