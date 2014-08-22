@@ -65,7 +65,7 @@ class Loader
 		if (isset($this->_baskets[$token])) {
 			return $this->_baskets[$token];
 		}
-		
+
 		$result = $this->_query->run('
 			SELECT
 				basket_id,

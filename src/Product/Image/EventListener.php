@@ -21,21 +21,22 @@ class EventListener extends BaseListener implements SubscriberInterface {
 	{
 		return array(
 			FileEvent::DELETE => [
-				['deleteImage'],
+				['deleteImages'],
 			],
 		);
 	}
 
 	/**
 	 * Delete the given image
-	 * @param  Image  $image
+	 * @param  FileEvent  $e
 	 */
-	public function deleteImage(FileEvent $e)
+	public function deleteImages(FileEvent $e)
 	{
 		$images = $this->_services['product.image.loader']
 			->getByFile($e->getFile());
-		$delete = $this->_services['product.image.delete'];
-		
-		$delete->delete($images);
+		if (!empty($images)){
+			$delete = $this->_services['product.image.delete'];	
+			$delete->delete($images);
+		}
 	}
 }

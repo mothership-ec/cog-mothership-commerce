@@ -40,14 +40,15 @@ class Loader implements ProductEntityLoaderInterface
 			"SELECT
 				image_id
 			FROM
-				product_image 
+				product_image
 			WHERE
 				image_id = ?s
 			", [ $id, ]);
 
-		$all = $this->_load($dataSet->flatten());
-		
-		return array_pop($all);
+		$all   = $this->_load($dataSet->flatten());
+		$image = array_pop($all);
+
+		return $image ?: false;
 	}
 
 	/**
@@ -64,11 +65,12 @@ class Loader implements ProductEntityLoaderInterface
 				product_image
 			WHERE
 				file_id = ?i
-			",  $file->id );
+			",  $file->id
+			);
 
 		$images = $this->_load($dataSet->flatten());
 
-		return $images;
+		return $images ?: false;
 	}
 
 	/**
@@ -89,7 +91,7 @@ class Loader implements ProductEntityLoaderInterface
 
 		$images = $this->_load($dataSet->flatten(), $product);
 
-		return $images;
+		return $images ?: false;
 	}
 
 	protected function _load(array $ids, Product $product = null)
@@ -112,18 +114,19 @@ class Loader implements ProductEntityLoaderInterface
 				product_image_option.name  AS optionName,
 				product_image_option.value AS optionValue
 			FROM
-				product_image 
-			LEFT JOIN 
-				product_image_option 
-			ON 
+				product_image
+			LEFT JOIN
+				product_image_option
+			ON
 				product_image.image_id = product_image_option.image_id
 			WHERE
 				product_image.image_id IN (?js)
-			", [ $ids, ]);
+			", [$ids,]
+			);
 
 		// bind as image
 		$images = $dataSet->bindTo('Message\\Mothership\\Commerce\\Product\\Image\\Image');
-		
+
 
 		// Images are keyed by id for BC
 		$keyedImages = [];
