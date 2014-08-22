@@ -328,7 +328,7 @@ class Edit extends Controller
 			foreach ($data as $key => $value) {
 				if (preg_match("/^price/us", $key)) {
 					$type = str_replace('price_', '', $key);
-					$product->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+					$product->getPrices()[$type]->setPrice('GBP', $value, $this->get('locale'));
 				}
 			}
 
@@ -793,7 +793,7 @@ class Edit extends Controller
 			->setAction($this->generateUrl('ms.commerce.product.edit.pricing.action', array('productID' => $this->_product->id)))
 			->setMethod('post');
 
-		foreach ($this->_product->price as $type => $value) {
+		foreach ($this->_product->getPrices() as $type => $value) {
 			$form->add(
 				'price_'.$type,
 				'money',

@@ -398,6 +398,10 @@ class Services implements ServicesInterface
 					$c['field.factory'],
 					$c['product.types']
 				),
+				'prices' => new Commerce\Product\Price\PriceLoader(
+					$c['db.query'],
+					$c['locale']
+				),
 			]);
 		});
 

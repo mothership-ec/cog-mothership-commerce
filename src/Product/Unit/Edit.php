@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Mothership\Commerce\Product\Pricing;
+use Message\Mothership\Commerce\Product\Price\Pricing;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 use Message\Cog\DB;

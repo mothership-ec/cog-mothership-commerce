@@ -306,19 +306,19 @@ class Loader
 			)
 		);
 
-		$prices = $this->_query->run(
-			'SELECT
-				product_price.product_id  AS id,
-				product_price.type        AS type,
-				product_price.currency_id AS currencyID,
-				product_price.price       AS price
-			FROM
-				product_price
-			WHERE
-				product_price.product_id IN (?ij)
-		', array(
-			(array) $productIDs,
-		));
+		// $prices = $this->_query->run(
+		// 	'SELECT
+		// 		product_price.product_id  AS id,
+		// 		product_price.type        AS type,
+		// 		product_price.currency_id AS currencyID,
+		// 		product_price.price       AS price
+		// 	FROM
+		// 		product_price
+		// 	WHERE
+		// 		product_price.product_id IN (?ij)
+		// ', array(
+		// 	(array) $productIDs,
+		// ));
 
 		$tags = $this->_query->run(
 			'SELECT
@@ -352,11 +352,11 @@ class Loader
 				$products[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
 			}
 
-			foreach ($prices as $price) {
-				if ($price->id == $data->id) {
-					$products[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
-				}
-			}
+			// foreach ($prices as $price) {
+			// 	if ($price->id == $data->id) {
+			// 		$products[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
+			// 	}
+			// }
 
 			foreach ($tags as $k => $tag) {
 				if ($tag->id == $data->id) {
