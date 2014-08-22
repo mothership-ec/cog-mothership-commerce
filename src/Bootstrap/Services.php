@@ -459,12 +459,16 @@ class Services implements ServicesInterface
 		});
 
 		// CSV upload
-		$services['product.upload.field_crawler'] = function($c) {
-			return new Commerce\Product\Upload\FieldCrawler($c['product.types']);
+		$services['product.field_crawler'] = function($c) {
+			return new Commerce\Product\Type\FieldCrawler($c['product.types']);
 		};
 
 		$services['product.upload.csv_columns'] = function($c) {
-			return new Commerce\Product\Upload\Csv\Columns($c['product.upload.field_crawler'], $c['translator']);
+			return new Commerce\Product\Upload\Csv\Columns($c['product.field_crawler'], $c['translator']);
+		};
+
+		$services['product.upload.csv_template_builder'] = function($c) {
+			return new Commerce\Product\Upload\Csv\TemplateBuilder($c['product.upload.csv_columns']);
 		};
 
 		$services->extend('field.collection', function($fields, $c) {

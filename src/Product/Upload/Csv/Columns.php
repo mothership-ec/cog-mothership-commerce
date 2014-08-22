@@ -2,7 +2,7 @@
 
 namespace Message\Mothership\Commerce\Product\Upload\Csv;
 
-use Message\Mothership\Commerce\Product\Upload;
+use Message\Mothership\Commerce\Product\Type\FieldCrawler;
 use Message\Cog\Localisation\Translator;
 
 class Columns implements \IteratorAggregate, \Countable
@@ -14,7 +14,7 @@ class Columns implements \IteratorAggregate, \Countable
 	const TRANS_PREFIX = 'ms.commerce.product.upload.csv.';
 
 	/**
-	 * @var \Message\Mothership\Commerce\Product\Upload\FieldCrawler
+	 * @var \Message\Mothership\Commerce\Product\Type\FieldCrawler
 	 */
 	private $_crawler;
 
@@ -29,17 +29,17 @@ class Columns implements \IteratorAggregate, \Countable
 	 * @var array
 	 */
 	private $_prefixCols = [
-		'name'         => 'ms.commerce.product.upload.csv.name',
-		'sort'         => 'ms.commerce.product.upload.csv.sort',
-		'category'     => 'ms.commerce.product.upload.csv.category',
-		'brand'        => 'ms.commerce.product.upload.csv.brand',
-		'description'  => 'ms.commerce.product.upload.csv.description',
-		'short_desc'   => 'ms.commerce.product.upload.csv.short_desc',
-		'export_desc'  => 'ms.commerce.product.upload.csv.export_desc',
-		'supplier_ref' => 'ms.commerce.product.upload.csv.supplier_ref',
-		'weight'       => 'ms.commerce.product.upload.csv.weight',
-		'notes'        => 'ms.commerce.product.upload.csv.notes',
-		'man_country'  => 'ms.commerce.product.upload.csv.man_country',
+		'name'         => 'name',
+		'sort'         => 'sort',
+		'category'     => 'category',
+		'brand'        => 'brand',
+		'description'  => 'description',
+		'short_desc'   => 'short_desc',
+		'export_desc'  => 'export_desc',
+		'supplier_ref' => 'supplier_ref',
+		'weight'       => 'weight',
+		'notes'        => 'notes',
+		'man_country'  => 'man_country',
 	];
 
 	/**
@@ -48,10 +48,10 @@ class Columns implements \IteratorAggregate, \Countable
 	 * @var array
 	 */
 	private $_suffixCols = [
-		'price'      => 'ms.commerce.product.upload.csv.price',
-		'rrp'        => 'ms.commerce.product.upload.csv.rrp',
-		'cost'       => 'ms.commerce.product.upload.csv.cost',
-		'tax_rate'   => 'ms.commerce.product.upload.csv.tax_rate',
+		'price'    => 'price',
+		'rrp'      => 'rrp',
+		'cost'     => 'cost',
+		'tax_rate' => 'tax_rate',
 	];
 
 	private $_variantColumns = [];
@@ -60,7 +60,7 @@ class Columns implements \IteratorAggregate, \Countable
 
 	private $_columns = [];
 
-	public function __construct(Upload\FieldCrawler $crawler, Translator $trans)
+	public function __construct(FieldCrawler $crawler, Translator $trans)
 	{
 		$this->_crawler = $crawler;
 		$this->_trans   = $trans;
@@ -102,7 +102,8 @@ class Columns implements \IteratorAggregate, \Countable
 		$this->_setVariantColumns();
 		$this->_setProductFields();
 
-		$this->_columns = $this->_prefixCols + $this->_productFields + $this->_suffixCols + $this->_variantColumns;
+		$this->_columns =
+		$this->_columns = $this->_getHeadingColumns();
 
 		$this->_validate();
 		$this->_translate();
@@ -114,7 +115,7 @@ class Columns implements \IteratorAggregate, \Countable
 	 */
 	private function _setProductFields()
 	{
-		$this->_productFields = $this->_crawler->getFields();
+		$this->_productFields = $this->_crawler->getFieldNames();
 	}
 
 	/**
@@ -138,7 +139,7 @@ class Columns implements \IteratorAggregate, \Countable
 		$trans = $this->_trans;
 
 		array_walk($this->_columns, function (&$column) use ($trans) {
-			$column = $trans->trans($column);
+			$column = $trans->trans(self::TRANS_PREFIX . $column);
 		});
 	}
 
@@ -166,6 +167,11 @@ class Columns implements \IteratorAggregate, \Countable
 		if ($this->_countColumnLists() !== $this->count()) {
 			throw new \LogicException('A column has been overridden, is there a conflict in the names of the fields in a product type?');
 		}
+	}
+
+	private function _getHeadingColumns()
+	{
+		return $this->_prefixCols + $this->_productFields + $this->_suffixCols + $this->_variantColumns;
 	}
 
 }

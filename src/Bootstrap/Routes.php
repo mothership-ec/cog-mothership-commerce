@@ -22,6 +22,7 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.create', 'create', 'Message:Mothership:Commerce::Controller:Product:Create#index');
 
 		$router['ms.product']->add('ms.commerce.product.upload', 'upload', 'Message:Mothership:Commerce::Controller:Product:CsvPort#index');
+		$router['ms.product']->add('ms.commerce.product.upload.csv', 'upload/template', 'Message:Mothership:Commerce::Controller:Product:CsvPort#template');
 
 		$router['ms.product']->add('ms.commerce.product.delete', 'delete/{productID}', 'Message:Mothership:Commerce::Controller:Product:Delete#delete')
 			->setRequirement('productID', '\d+')
