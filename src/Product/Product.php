@@ -27,9 +27,8 @@ class Product
 	public $notes;
 
 	public $type;
-
-	public $price = array();
 	public $tags = array();
+
 
 	public $exportDescription;
 	public $exportValue;
@@ -37,6 +36,7 @@ class Product
 
 	public $priceTypes;
 
+	protected $_prices;
 	protected $_details;
 	protected $_units;
 	protected $_images;
@@ -55,13 +55,10 @@ class Product
 		$this->priceTypes = $priceTypes;
 		$this->_locale    = $locale;
 
-		foreach ($priceTypes as $type) {
-			$this->price[$type] = new Pricing($locale);
-		}
-
 		$this->_units   = new Unit\Collection;
 		$this->_images  = new Image\Collection;
 		$this->_details = new Type\DetailCollection;
+		$this->_prices   = new Price\PriceCollection($priceTypes);
 	}
 
 	/**
@@ -109,6 +106,11 @@ class Product
 		}
 	}
 
+	public function getPrices()
+	{
+		return $this->_prices;
+	}
+
 	/**
 	 * Get the current price of price type based on the current locale and
 	 * given currencyID
@@ -120,7 +122,7 @@ class Product
 	 */
 	public function getPrice($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->price[$type]->getPrice($currencyID, $this->_locale);
+		return $this->_prices[$type]->getPrice($currencyID, $this->_locale);
 	}
 
 	/**

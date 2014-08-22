@@ -56,6 +56,20 @@ class ProductProxy extends Product
 		return parent::getDetails();
 	}
 
+	public function getPrices()
+	{
+		$this->_load('prices');
+
+		return parent::getPrices();
+	}
+
+	public function getPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		$this->_load('prices');
+
+		return parent::getPrice($type, $currencyID);
+	}
+
 	protected function _load($entityName)
 	{
 		if (in_array($entityName, $this->_loaded)) {
