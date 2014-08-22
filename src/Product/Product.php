@@ -122,7 +122,7 @@ class Product
 	 */
 	public function getPrice($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->_prices[$type]->getPrice($currencyID, $this->_locale);
+		return $this->getPrices()[$type]->getPrice($currencyID, $this->_locale);
 	}
 
 	/**
