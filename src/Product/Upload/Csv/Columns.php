@@ -12,6 +12,8 @@ class Columns implements \IteratorAggregate, \Countable
 	const VAR_VAL_PREFIX  = 'var_val_';
 
 	const TRANS_PREFIX = 'ms.commerce.product.upload.csv.';
+	const TRANS_NAME_SUFFIX = '.name';
+	const TRANS_NAME_PREFIX = '.help';
 
 	/**
 	 * @var \Message\Mothership\Commerce\Product\Type\FieldCrawler
@@ -102,7 +104,6 @@ class Columns implements \IteratorAggregate, \Countable
 		$this->_setVariantColumns();
 		$this->_setProductFields();
 
-		$this->_columns =
 		$this->_columns = $this->_getHeadingColumns();
 
 		$this->_validate();
@@ -139,7 +140,7 @@ class Columns implements \IteratorAggregate, \Countable
 		$trans = $this->_trans;
 
 		array_walk($this->_columns, function (&$column) use ($trans) {
-			$column = $trans->trans(self::TRANS_PREFIX . $column);
+			$column = $trans->trans(self::TRANS_PREFIX . $column . self::TRANS_NAME_SUFFIX);
 		});
 	}
 

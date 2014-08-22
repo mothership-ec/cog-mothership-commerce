@@ -116,27 +116,68 @@ ms.commerce:
     upload:
       title: Upload a CSV
       csv:
-        name: Product name
-        sort: Alphabetical sort name
-        category: Category
-        brand: Brand
-        description: Description
-        short_desc: Short description
-        export_desc: Export description
-        supplier_ref: Supplier reference
-        weight: Weight (grams)
-        notes: Notes
-        man_country: Country of manufacture
-        price: Selling price
-        rrp: RRP
-        cost: Cost price
-        tax_rate: Tax rate
-        var_name_1: Variant name 1
-        var_val_1: Variant value 1
-        var_name_2 : Variant name 2
-        var_val_2: Variant name 2
-        var_name_3: Variant name 3
-        var_val_3: Variant value 3
+        name:
+          name: Product name
+        sort:
+          name: Alphabetical sort name
+          help:
+        category:
+          name: Category
+          help:
+        brand:
+          name: Brand
+          help:
+        description:
+          name: Description
+          help:
+        short_desc:
+          name: Short description
+          help:
+        export_desc:
+          name: Export description
+          help:
+        supplier_ref:
+          name: Supplier reference
+          help:
+        weight:
+          name: Weight (grams)
+          help:
+        notes:
+          name: Notes
+          help:
+        man_country:
+          name: Country of manufacture
+          help:
+        price:
+          name: Selling price
+          help:
+        rrp:
+          name: RRP
+          help:
+        cost:
+          name: Cost price
+          help:
+        tax_rate:
+          name: Tax rate
+          help:
+        var_name_1:
+          name: Variant name 1
+          help:
+        var_val_1:
+          name: Variant value 1
+          help:
+        var_name_2:
+          name: Variant name 2
+          help:
+        var_val_2:
+          name: Variant value 2
+          help:
+        var_name_3:
+          name: Variant name 3
+          help:
+        var_val_3:
+          name: Variant value 3
+          help:
     units:
       empty: No units have been added yet.
       sku:
