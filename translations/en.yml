@@ -158,27 +158,14 @@ ms.commerce:
           name: Cost price
           help:
         tax_rate:
-          name: Tax rate
+          name: Tax rate (%)
           help:
-        var_name_1:
-          name: Variant name 1
+        var_name:
+          name: Variant name
           help:
-        var_val_1:
-          name: Variant value 1
+        var_val:
+          name: Variant value
           help:
-        var_name_2:
-          name: Variant name 2
-          help:
-        var_val_2:
-          name: Variant value 2
-          help:
-        var_name_3:
-          name: Variant name 3
-          help:
-        var_val_3:
-          name: Variant value 3
-          help:
-    units:
       empty: No units have been added yet.
       sku:
         label: SKU

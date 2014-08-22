@@ -28,7 +28,7 @@ class TemplateBuilder
 	 */
 	private $_response;
 
-	public function __construct(Columns $columns)
+	public function __construct(Row $columns)
 	{
 		$this->_columns = $columns;
 	}
