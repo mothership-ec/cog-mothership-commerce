@@ -14,6 +14,6 @@ class CsvPort extends Controller
 
 	public function template()
 	{
-		return $this->get('product.upload.csv_template_builder')->download();
+		return $this->get('product.upload.csv_download')->download();
 	}
 }

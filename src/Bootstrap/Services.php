@@ -464,7 +464,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.csv_heading'] = function($c) {
-			return new Commerce\Product\Upload\Csv\Row($c['product.upload.csv_heading_builder']->getColumns());
+			return new \Message\Cog\FileDownload\Csv\Row($c['product.upload.csv_heading_builder']->getColumns());
 		};
 
 		$services['product.upload.csv_heading_builder'] = function($c) {
@@ -472,13 +472,13 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.csv_template'] = function($c) {
-			return new Commerce\Product\Upload\Csv\Table([
+			return new \Message\Cog\FileDownload\Csv\Table([
 				$c['product.upload.csv_heading'],
 			]);
 		};
 
-		$services['product.upload.csv_template_builder'] = function($c) {
-			return new Commerce\Product\Upload\Csv\TemplateBuilder($c['product.upload.csv_heading']);
+		$services['product.upload.csv_download'] = function($c) {
+			return new \Message\Cog\FileDownload\Csv\Download($c['product.upload.csv_template']);
 		};
 
 		$services->extend('field.collection', function($fields, $c) {
