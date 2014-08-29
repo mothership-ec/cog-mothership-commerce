@@ -30,7 +30,7 @@ class ProductSearch extends Form\AbstractType
 		$builder->add('terms', 'search', [
 			'label' => 'ms.commerce.product.search.label',
 			'attr'  => array(
-				'placeholder' => $this->_trans->trans('ms.commerce.product.search.placeholder') . '…;'
+				'placeholder' => $this->_trans->trans('ms.commerce.product.search.placeholder') . '…'
 			)
 		]);
 	}
