@@ -46,5 +46,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		$dispatcher->addSubscriber(new Commerce\Order\Basket\EventListener\PersistenceListener);
 		$dispatcher->addSubscriber(new Commerce\Order\Basket\EventListener\AttachUserListener);
+
+		$dispatcher->addSubscriber(new Commerce\Product\Image\EventListener);
 	}
 }
