@@ -20,6 +20,32 @@ class ProductProxy extends Product
 		$this->_loaders = $loaders;
 	}
 
+	public function getAllUnits()
+	{
+		if (!in_array('units', $this->_loaded)) {
+			$this->_loaders->get('units')
+				->includeOutOfStock(true)
+				->includeInvisible(true);
+
+			$this->_load('units');
+		}
+
+		return parent::getAllUnits();
+	}
+
+	public function getVisibleUnits()
+	{
+		if (!in_array('units', $this->_loaded)) {
+			$this->_loaders->get('units')
+				->includeOutOfStock(true)
+				->includeInvisible(true);
+
+			$this->_load('units');
+		}
+
+		return parent::getVisibleUnits();
+	}
+
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
 		if (!in_array('units', $this->_loaded)) {
@@ -59,7 +85,7 @@ class ProductProxy extends Product
 	public function getPrices()
 	{
 		$this->_load('prices');
-
+		
 		return parent::getPrices();
 	}
 

@@ -363,7 +363,7 @@ class Services implements ServicesInterface
 
 		// Product
 		$services['product'] = $services->factory(function($c) {
-			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
+			return new Commerce\Product\Product($c['locale'], $c['product.price.types']);
 		});
 
 		$services['product.unit'] = $services->factory(function($c) {
@@ -376,6 +376,12 @@ class Services implements ServicesInterface
 				'rrp',
 				'cost',
 			);
+		};
+
+		$services['product.price.currency_IDs'] = function($c) {
+			return [
+				'GBP',
+			];
 		};
 
 		$services['product.entity_loaders'] = $services->factory(function($c) {
@@ -422,7 +428,12 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.create'] = $services->factory(function($c) {
-			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+			$create = new Commerce\Product\Create($c['db.query'], 
+				$c['locale'], 
+				$c['user.current'],
+				$c['product.price.types'],
+				$c['product.price.currency_IDs']
+			);
 
 			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
 
