@@ -65,7 +65,7 @@ class DetailLoader implements ProductEntityLoaderInterface
 
 		$details = new DetailCollection;
 
-		$type    = $this->_types->get($product->type);
+		$type    = $this->_types->get($product->type->getName());
 
 		$this->_fieldFactory->build($type);
 

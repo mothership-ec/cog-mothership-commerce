@@ -37,6 +37,12 @@ class DetailCollection extends BaseCollection implements \IteratorAggregate, \Co
 
 	public function __get($key)
 	{
-		return $this->get($key);
+		// if detail not yet set, Collection will throw Exception.
+		// return null instead to preserve array like properties for BC.
+		if($this->exists($key)) {
+			return $this->get($key);
+		}
+
+		return null;
 	}
 }

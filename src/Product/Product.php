@@ -58,7 +58,7 @@ class Product
 		$this->_units   = new Unit\Collection;
 		$this->_images  = new Image\Collection;
 		$this->_details = new Type\DetailCollection;
-		$this->_prices   = new Price\PriceCollection($priceTypes);
+		$this->_prices  = new Price\PriceCollection($priceTypes);
 	}
 
 	/**

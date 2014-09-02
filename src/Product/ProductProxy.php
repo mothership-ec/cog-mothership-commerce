@@ -85,7 +85,7 @@ class ProductProxy extends Product
 	public function getPrices()
 	{
 		$this->_load('prices');
-		
+
 		return parent::getPrices();
 	}
 
