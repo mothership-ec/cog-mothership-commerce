@@ -545,7 +545,7 @@ class Edit extends Controller
 
 		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.image.file.label'), array(
 			'choices' => $choices,
-			'empty_value' => 'Please select&hellip;',
+			'empty_value' => 'Please select…',
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.file.help'),
 		));
 
