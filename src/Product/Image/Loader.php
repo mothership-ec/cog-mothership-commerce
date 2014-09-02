@@ -60,7 +60,7 @@ class Loader
 
 		$images = $this->_load($dataSet->flatten());
 
-		return $images ?: false;
+		return $images ?: [];
 	}
 
 	/**
@@ -81,7 +81,7 @@ class Loader
 
 		$images = $this->_load($dataSet->flatten(), $product);
 
-		return $images ?: false;
+		return $images ?: [];
 	}
 
 	protected function _load(array $ids, Product $product = null)
