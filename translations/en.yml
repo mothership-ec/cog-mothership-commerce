@@ -115,6 +115,8 @@ ms.commerce:
           help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
     upload:
       title: Upload a CSV
+      form:
+        upload_field: Upload
       csv:
         name:
           name: Product name
