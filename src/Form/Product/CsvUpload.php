@@ -10,16 +10,6 @@ use Message\Mothership\Commerce\Product\Type\FieldCrawler;
 
 class CsvUpload extends Form\AbstractType
 {
-	/**
-	 * @var \Message\Mothership\Commerce\Product\Type\FieldCrawler
-	 */
-	private $_fieldCrawler;
-
-	public function __construct(FieldCrawler $fieldCrawler)
-	{
-		$this->_fieldCrawler = $fieldCrawler;
-	}
-
 	public function getName()
 	{
 		return 'ms_csv_upload';
@@ -27,12 +17,16 @@ class CsvUpload extends Form\AbstractType
 
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
-		$builder->add('file', 'file', [
-			'label' => 'ms.commerce.product.upload.form.upload_field',
-			'constraints' => [
-				new Constraints\NotBlank,
-				new CsvConstraint,
-			]
-		]);
+		$builder->add(
+			$builder->create(
+				'file', 'file', [
+				'label' => 'ms.commerce.product.upload.form.upload_field',
+				'constraints' => [
+					new Constraints\NotBlank,
+					new CsvConstraint,
+				]
+			])
+			->addModelTransformer(new DataTransform\ArrayToCsvTransformer)
+		);
 	}
 }

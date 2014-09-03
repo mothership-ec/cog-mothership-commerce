@@ -530,6 +530,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\Barcode($c['stock.locations']);
 		});
 
+		$services['product.form.csv_upload'] = $services->factory(function($c) {
+			return new Commerce\Form\Product\CsvUpload;
+		});
+
 		$services['product.detail.loader'] = function($c) {
 			return new Commerce\Product\Type\DetailLoader(
 				$c['db.query'],

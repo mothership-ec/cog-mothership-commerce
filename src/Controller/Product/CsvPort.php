@@ -10,8 +10,15 @@ class CsvPort extends Controller
 
 	public function index()
 	{
-		de($this->get('product.upload.csv_heading')->getSimpleColumns());
-		return $this->render('Message:Mothership:Commerce::product:csv:upload');
+		$form = $this->createForm($this->get('product.form.csv_upload'));
+
+		$form->handleRequest();
+
+		$form->isValid();
+
+		return $this->render('Message:Mothership:Commerce::product:csv:upload', [
+			'form' => $form,
+		]);
 	}
 
 	public function template()

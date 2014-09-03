@@ -9,5 +9,9 @@
 		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
 	</hgroup>
 	<div class="container-content">
+		{{ form_start(form) }}
+		{{ form_row(form['file']) }}
+		<input type="submit" value="Upload CSV">
+		{{ form_end(form) }}
 	</div>
 {% endblock %}
