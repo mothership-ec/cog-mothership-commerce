@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Product\Type;
 use Message\Cog\Field;
 use Message\Mothership\Commerce\Product\Type;
 
+use Symfony\Component\Validator\Constraints\NotBlank;
+
 /**
  * Class to extract the fields from a product type.
  *
@@ -19,6 +21,8 @@ use Message\Mothership\Commerce\Product\Type;
  */
 class FieldCrawler extends Field\Factory
 {
+	const CONSTRAINT_OPTION = 'constraints';
+
 	/**
 	 * @var \Message\Mothership\Commerce\Product\Type\Collection
 	 */
@@ -33,6 +37,8 @@ class FieldCrawler extends Field\Factory
 	 * @var array
 	 */
 	private $_fieldDescriptions = [];
+
+	private $_required = [];
 
 	public function __construct(Type\Collection $types)
 	{
@@ -60,6 +66,15 @@ class FieldCrawler extends Field\Factory
 		return $this->_fieldDescriptions;
 	}
 
+	public function getRequiredFields()
+	{
+		if (empty($this->_fields)) {
+			$this->_setFields();
+		}
+
+		return $this->_required;
+	}
+
 	private function _setFields()
 	{
 		$this->clear();
@@ -68,7 +83,9 @@ class FieldCrawler extends Field\Factory
 			$this->_setProductTypeFields($type);
 		}
 
-		$this->_validateFields();
+		$this->_validateFields()
+			->_setRequiredFields()
+		;
 	}
 
 	/**
@@ -132,5 +149,32 @@ class FieldCrawler extends Field\Factory
 				throw new \LogicException('Field must be an instance of `Message\Cog\Field\BaseField`, ' . gettype($field) . ' given');
 			}
 		}
+
+		return $this;
+	}
+
+	private function _setRequiredFields()
+	{
+		foreach ($this->_fields as $field) {
+			if ($this->_fieldIsRequired($field)) {
+				$this->_required[] = $field->getLabel() ?: ucfirst($field->getName());
+			}
+		}
+
+		return $this;
+	}
+
+	private function _fieldIsRequired(Field\BaseField $field)
+	{
+		$options = $field->getFieldOptions();
+		if (array_key_exists(self::CONSTRAINT_OPTION, $options)) {
+			foreach ($options[self::CONSTRAINT_OPTION] as $constraint) {
+				if ($constraint instanceof NotBlank) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }
