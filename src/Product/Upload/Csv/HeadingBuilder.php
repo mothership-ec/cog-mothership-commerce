@@ -65,6 +65,12 @@ class HeadingBuilder implements \Countable
 		'tax_rate' => 'tax_rate',
 	];
 
+	private $_required = [
+		'name',
+		'category',
+		'price'
+	];
+
 	/**
 	 * Array of columns for unit variants
 	 *
@@ -90,6 +96,7 @@ class HeadingBuilder implements \Countable
 	{
 		$this->_crawler = $crawler;
 		$this->_trans   = $trans;
+		$this->_required = $this->_translate($this->_required);
 	}
 
 	/**
@@ -116,6 +123,16 @@ class HeadingBuilder implements \Countable
 			count($this->_productFields) +
 			count($this->_variantColumns)
 		;
+	}
+
+	/**
+	 * Return array of required fields
+	 *
+	 * @return array
+	 */
+	public function getRequired()
+	{
+		return $this->_required;
 	}
 
 	/**

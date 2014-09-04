@@ -26,24 +26,25 @@ class CsvPort extends Controller
 
 		if ($form->isValid()) {
 			$data = $form->getData();
-			de($this->_convertDataToArray($data['file']));
+			$data = $this->get('product.upload.csv_filter')->filterEmptyRows(
+				$this->get('product.upload.csv_converter')->convert($data['file'])
+			);
+
+			$this->get('product.upload.csv_validator')->validate($data);
+
+			return $this->render('Message:Mothership:Commerce::product:csv:preview', [
+				'heading' => $this->get('product.upload.csv_heading'),
+				'valid' => $this->get('product.upload.csv_validator')->getValidRows(),
+				'invalid' => $this->get('product.upload.csv_validator')->getInvalidRows(),
+			]);
 		}
+
+		return $this->redirectToReferer();
 
 	}
 
 	public function template()
 	{
 		return $this->get('product.upload.csv_download')->download(self::SPREADSHEET_NAME);
-	}
-
-	private function _convertDataToArray(CSVFile $csv)
-	{
-		$rows = [];
-
-		foreach ($csv as $row) {
-			$rows[] = $row;
-		}
-
-		return $rows;
 	}
 }

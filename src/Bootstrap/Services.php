@@ -481,6 +481,18 @@ class Services implements ServicesInterface
 			return new \Message\Cog\FileDownload\Csv\Download($c['product.upload.csv_template']);
 		};
 
+		$services['product.upload.csv_validator'] = function($c) {
+			return new Commerce\Product\Upload\Csv\Validate($c['product.upload.csv_heading_builder']);
+		};
+
+		$services['product.upload.csv_filter'] = function($c) {
+			return new Commerce\Product\Upload\Csv\Filter;
+		};
+
+		$services['product.upload.csv_converter'] = function($c) {
+			return new Commerce\Product\Upload\Csv\CsvToArrayConverter;
+		};
+
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));

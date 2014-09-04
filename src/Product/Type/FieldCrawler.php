@@ -38,8 +38,6 @@ class FieldCrawler extends Field\Factory
 	 */
 	private $_fieldDescriptions = [];
 
-	private $_required = [];
-
 	public function __construct(Type\Collection $types)
 	{
 		$this->_types = $types;
@@ -66,15 +64,6 @@ class FieldCrawler extends Field\Factory
 		return $this->_fieldDescriptions;
 	}
 
-	public function getRequiredFields()
-	{
-		if (empty($this->_fields)) {
-			$this->_setFields();
-		}
-
-		return $this->_required;
-	}
-
 	private function _setFields()
 	{
 		$this->clear();
@@ -84,7 +73,6 @@ class FieldCrawler extends Field\Factory
 		}
 
 		$this->_validateFields()
-			->_setRequiredFields()
 		;
 	}
 
@@ -151,30 +139,5 @@ class FieldCrawler extends Field\Factory
 		}
 
 		return $this;
-	}
-
-	private function _setRequiredFields()
-	{
-		foreach ($this->_fields as $field) {
-			if ($this->_fieldIsRequired($field)) {
-				$this->_required[] = $field->getLabel() ?: ucfirst($field->getName());
-			}
-		}
-
-		return $this;
-	}
-
-	private function _fieldIsRequired(Field\BaseField $field)
-	{
-		$options = $field->getFieldOptions();
-		if (array_key_exists(self::CONSTRAINT_OPTION, $options)) {
-			foreach ($options[self::CONSTRAINT_OPTION] as $constraint) {
-				if ($constraint instanceof NotBlank) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 }

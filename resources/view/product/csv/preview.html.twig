@@ -1,0 +1,46 @@
+{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+
+{% macro getHeading(heading) %}
+	<thead>
+		<tr>
+			{% for title in heading %}
+				<th>{{ title }}</th>
+			{% endfor %}
+		</tr>
+	</thead>
+{% endmacro %}
+
+{% block sidebar %}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
+{% endblock %}
+
+{% block main %}
+	{# Use flipscroll style at http://elvery.net/demo/responsive-tables/ #}
+	<h3>Valid rows</h3>
+	<table>
+		{{ _self.getHeading(heading) }}
+		<tbody>
+			{% for validRow in valid %}
+				<tr>
+					{% for validColumn in validRow %}
+						<td>{{ validColumn }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<h3>Invalid rows</h3>
+	<table>
+		{{ _self.getHeading(heading) }}
+		<tbody>
+		{% for invalidRow in invalid %}
+			<tr>
+				{% for invalidColumn in invalidRow %}
+					<td>{{ invalidColumn }}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
