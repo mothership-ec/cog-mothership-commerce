@@ -21,6 +21,7 @@ class CsvPort extends Controller
 
 	public function preview()
 	{
+		de($this->get('product.upload.heading_builder')->getColumns());
 		$form = $this->createForm($this->get('product.form.csv_upload'));
 
 		$form->handleRequest();
@@ -41,13 +42,13 @@ class CsvPort extends Controller
 
 	private function _renderPreview(array $data)
 	{
-		$data = $this->get('product.upload.csv_filter')->filterEmptyRows(
+		$data = $this->get('product.upload.filter')->filterEmptyRows(
 			$this->get('product.upload.csv_converter')->convert($data['file'])
 		);
 
-		$this->get('product.upload.csv_validator')->validate($data);
-		$validRows   = $this->get('product.upload.csv_validator')->getValidRows();
-		$invalidRows = $this->get('product.upload.csv_validator')->getInvalidRows();
+		$this->get('product.upload.validator')->validate($data);
+		$validRows   = $this->get('product.upload.validator')->getValidRows();
+		$invalidRows = $this->get('product.upload.validator')->getInvalidRows();
 
 		$this->get('http.session')->set(self::VALID_ROWS_SESSION, $validRows);
 

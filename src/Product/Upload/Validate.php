@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Upload\Csv;
+namespace Message\Mothership\Commerce\Product\Upload;
 
 class Validate
 {

@@ -42,6 +42,28 @@ class Product
 	protected $_entities = array();
 	protected $_locale;
 
+	/**
+	 * Initiate the object and set some basic properties up
+	 *
+	 * @param Locale $locale     	Current locale instance
+	 * @param array  $entities   	array of entities, this will proabbly only be units for now
+	 * @param array  $priceTypes 	array of price types
+	 */
+	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
+	{
+		$this->authorship = new Authorship;
+		$this->priceTypes = $priceTypes;
+		$this->_locale    = $locale;
+
+		foreach ($entities as $name => $loader) {
+			$this->addEntity($name, $loader);
+		}
+
+		foreach ($priceTypes as $type) {
+			$this->price[$type] = new Pricing($locale);
+		}
+
+	}
 
 	/**
 	 * Magic getter. This maps to defined order entities.
@@ -72,29 +94,6 @@ class Product
 	public function __isset($var)
 	{
 		return array_key_exists($var, $this->_entities);
-	}
-
-	/**
-	 * Initiate the object and set some basic properties up
-	 *
-	 * @param Locale $locale     	Current locale instance
-	 * @param array  $entities   	array of entities, this will proabbly only be units for now
-	 * @param array  $priceTypes 	array of price types
-	 */
-	public function __construct(Locale $locale, array $entities = array(), array $priceTypes = array())
-	{
-		$this->authorship = new Authorship;
-		$this->priceTypes = $priceTypes;
-		$this->_locale    = $locale;
-
-		foreach ($entities as $name => $loader) {
-			$this->addEntity($name, $loader);
-		}
-
-		foreach ($priceTypes as $type) {
-			$this->price[$type] = new Pricing($locale);
-		}
-
 	}
 
 	/**

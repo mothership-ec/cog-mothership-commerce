@@ -464,11 +464,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.csv_heading'] = function($c) {
-			return new \Message\Cog\FileDownload\Csv\Row($c['product.upload.csv_heading_builder']->getColumns());
+			return new \Message\Cog\FileDownload\Csv\Row($c['product.upload.heading_builder']->getColumns());
 		};
 
-		$services['product.upload.csv_heading_builder'] = function($c) {
-			return new Commerce\Product\Upload\Csv\HeadingBuilder($c['product.field_crawler'], $c['translator']);
+		$services['product.upload.heading_builder'] = function($c) {
+			return new Commerce\Product\Upload\HeadingBuilder($c['product.field_crawler'], $c['translator']);
 		};
 
 		$services['product.upload.csv_template'] = function($c) {
@@ -481,12 +481,12 @@ class Services implements ServicesInterface
 			return new \Message\Cog\FileDownload\Csv\Download($c['product.upload.csv_template']);
 		};
 
-		$services['product.upload.csv_validator'] = function($c) {
-			return new Commerce\Product\Upload\Csv\Validate($c['product.upload.csv_heading_builder']);
+		$services['product.upload.validator'] = function($c) {
+			return new Commerce\Product\Upload\Validate($c['product.upload.heading_builder']);
 		};
 
-		$services['product.upload.csv_filter'] = function($c) {
-			return new Commerce\Product\Upload\Csv\Filter;
+		$services['product.upload.filter'] = function($c) {
+			return new Commerce\Product\Upload\Filter;
 		};
 
 		$services['product.upload.csv_converter'] = function($c) {

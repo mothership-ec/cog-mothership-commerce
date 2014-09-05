@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product\Upload\Csv;
+namespace Message\Mothership\Commerce\Product\Upload;
 
 use Message\Mothership\Commerce\Product\Type\FieldCrawler;
 use Message\Cog\Localisation\Translator;
@@ -8,6 +8,8 @@ use Message\Cog\FileDownload\Csv\Column;
 
 /**
  * Class for building an array of columns
+ *
+ * @todo separate CSV stuff into a different class
  *
  * Class Columns
  * @package Message\Mothership\Commerce\Product\Upload\Csv
@@ -145,8 +147,7 @@ class HeadingBuilder implements \Countable
 
 		$this->_columns = $this->_getHeadingColumns();
 
-		$this->_parseColumns()
-			->_validate();
+		$this->_validate();
 	}
 
 	/**
@@ -186,15 +187,6 @@ class HeadingBuilder implements \Countable
 		});
 
 		return $columns;
-	}
-
-	private function _parseColumns()
-	{
-		array_walk($this->_columns, function (&$column) {
-			$column = new Column($column);
-		});
-
-		return $this;
 	}
 
 	/**
