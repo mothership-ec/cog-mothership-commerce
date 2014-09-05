@@ -118,9 +118,10 @@ ms.commerce:
       form:
         upload_field: Upload
       csv:
+        # these names need to match
         name:
           name: Product name
-        sort:
+        sortName:
           name: Alphabetical sort name
           help:
         category:
@@ -132,13 +133,13 @@ ms.commerce:
         description:
           name: Description
           help:
-        short_desc:
+        shortDescription:
           name: Short description
           help:
-        export_desc:
+        exportDescription:
           name: Export description
           help:
-        supplier_ref:
+        supplierRef:
           name: Supplier reference
           help:
         weight:
@@ -147,7 +148,7 @@ ms.commerce:
         notes:
           name: Notes
           help:
-        man_country:
+        exportManufactureCountryID:
           name: Country of manufacture
           help:
         price:
@@ -159,7 +160,7 @@ ms.commerce:
         cost:
           name: Cost price
           help:
-        tax_rate:
+        taxRate:
           name: Tax rate (%)
           help:
         var_name:

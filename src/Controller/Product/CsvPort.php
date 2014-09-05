@@ -21,7 +21,6 @@ class CsvPort extends Controller
 
 	public function preview()
 	{
-		de($this->get('product.upload.heading_builder')->getColumns());
 		$form = $this->createForm($this->get('product.form.csv_upload'));
 
 		$form->handleRequest();
@@ -48,14 +47,17 @@ class CsvPort extends Controller
 
 		$this->get('product.upload.validator')->validate($data);
 		$validRows   = $this->get('product.upload.validator')->getValidRows();
+
+		$productData = $this->get('product.upload.unique_sorter')->sort($validRows);
+
 		$invalidRows = $this->get('product.upload.validator')->getInvalidRows();
 
-		$this->get('http.session')->set(self::VALID_ROWS_SESSION, $validRows);
+		$this->get('http.session')->set(self::VALID_ROWS_SESSION, $productData);
 
 		return $this->render('Message:Mothership:Commerce::product:csv:preview', [
-			'heading' => $this->get('product.upload.csv_heading'),
-			'valid'   => $validRows,
-			'invalid' => $invalidRows,
+			'heading'     => $this->get('product.upload.csv_heading'),
+			'productData' => $productData,
+			'invalid'     => $invalidRows,
 		]);
 	}
 }

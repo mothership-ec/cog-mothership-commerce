@@ -33,12 +33,6 @@ class Unit
 
 	protected $_locale;
 
-    public function __clone() {
-		foreach ($this->price as $name => $pricing) {
-			$this->price[$name] = clone $pricing;
-		}
-    }
-
 	public function __construct(Locale $locale, array $priceTypes)
 	{
 		$this->authorship = new Authorship;
@@ -48,6 +42,12 @@ class Unit
 		}
 
 	}
+
+	public function __clone() {
+		foreach ($this->price as $name => $pricing) {
+			$this->price[$name] = clone $pricing;
+		}
+    }
 
 	public function setOption($type, $value)
 	{
@@ -64,6 +64,11 @@ class Unit
 	public function getPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
+	}
+
+	public function setPrice($price, $type = 'retail', $currencyID = 'GBP')
+	{
+		$this->price[$type]->setPrice($currencyID, $price, $this->_locale);
 	}
 
 	public function getStockForLocation(Location $location)

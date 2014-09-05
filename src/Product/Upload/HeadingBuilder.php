@@ -18,10 +18,6 @@ use Message\Cog\FileDownload\Csv\Column;
  */
 class HeadingBuilder implements \Countable
 {
-	const NUM_VARIANTS    = 3;
-	const VAR_NAME_PREFIX = 'var_name.name';
-	const VAR_VAL_PREFIX  = 'var_val.name';
-
 	const TRANS_PREFIX = 'ms.commerce.product.upload.csv.';
 	const TRANS_NAME_SUFFIX = '.name';
 	const TRANS_NAME_PREFIX = '.help';
@@ -42,17 +38,17 @@ class HeadingBuilder implements \Countable
 	 * @var array
 	 */
 	private $_prefixCols = [
-		'name'         => 'name',
-		'sort'         => 'sort',
-		'category'     => 'category',
-		'brand'        => 'brand',
-		'description'  => 'description',
-		'short_desc'   => 'short_desc',
-		'export_desc'  => 'export_desc',
-		'supplier_ref' => 'supplier_ref',
-		'weight'       => 'weight',
-		'notes'        => 'notes',
-		'man_country'  => 'man_country',
+		'name'                        => 'name',
+		'sortName'                    => 'sortName',
+		'category'                    => 'category',
+		'brand'                       => 'brand',
+		'description'                 => 'description',
+		'shortDescription'            => 'shortDescription',
+		'exportDescription'           => 'exportDescription',
+		'supplierRef'                 => 'supplierRef',
+		'weight'                      => 'weight',
+		'notes'                       => 'notes',
+		'exportManufactureCountryID'  => 'exportManufactureCountryID',
 	];
 
 	/**
@@ -64,7 +60,7 @@ class HeadingBuilder implements \Countable
 		'price'    => 'price',
 		'rrp'      => 'rrp',
 		'cost'     => 'cost',
-		'tax_rate' => 'tax_rate',
+		'taxRate' => 'taxRate',
 	];
 
 	private $_required = [
@@ -163,11 +159,15 @@ class HeadingBuilder implements \Countable
 	 */
 	private function _setVariantColumns()
 	{
-		for ($i = 1; $i <= self::NUM_VARIANTS; $i++) {
-			$varName = self::VAR_NAME_PREFIX . $i;
-			$varVal  = self::VAR_VAL_PREFIX . $i;
-			$this->_variantColumns[$varName] = $this->_trans->trans(self::TRANS_PREFIX . self::VAR_NAME_PREFIX) . ' ' . $i;
-			$this->_variantColumns[$varVal]  = $this->_trans->trans(self::TRANS_PREFIX . self::VAR_VAL_PREFIX) . ' ' . $i;
+		for ($i = 1; $i <= HeadingKeys::NUM_VARIANTS; $i++) {
+			$varName = HeadingKeys::VAR_NAME_PREFIX . $i;
+			$varVal  = HeadingKeys::VAR_VAL_PREFIX . $i;
+
+			$transName = $this->_trans->trans(self::TRANS_PREFIX . HeadingKeys::VAR_NAME_PREFIX) . ' ' . $i;
+			$transVal  = $this->_trans->trans(self::TRANS_PREFIX . HeadingKeys::VAR_VAL_PREFIX) . ' ' . $i;
+
+			$this->_variantColumns[$varName] = $transName;
+			$this->_variantColumns[$varVal]  = $transVal;
 		}
 	}
 

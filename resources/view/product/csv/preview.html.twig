@@ -15,17 +15,21 @@
 {% endblock %}
 
 {% block main %}
+	{% set key = 1 %}
 	{# Use flipscroll style at http://elvery.net/demo/responsive-tables/ #}
 	<h3>Valid rows</h3>
 	<table>
 		{{ _self.getHeading(heading) }}
 		<tbody>
-			{% for validRow in valid %}
-				<tr>
-					{% for validColumn in validRow %}
-						<td>{{ validColumn }}</td>
-					{% endfor %}
-				</tr>
+			{% for product in productData %}
+				{% for unit in product %}
+					<tr class="{{ (key is odd) ? "odd" : "even" }}">
+						{% for column in unit %}
+							<td>{{ column }}</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+				{% set key = key + 1 %}
 			{% endfor %}
 		</tbody>
 	</table>

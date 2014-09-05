@@ -471,6 +471,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Upload\HeadingBuilder($c['product.field_crawler'], $c['translator']);
 		};
 
+		$services['product.upload.heading_keys'] = function($c) {
+			return new Commerce\Product\Upload\HeadingKeys($c['product.upload.heading_builder']->getColumns());
+		};
+
 		$services['product.upload.csv_template'] = function($c) {
 			return new \Message\Cog\FileDownload\Csv\Table([
 				$c['product.upload.csv_heading'],
@@ -491,6 +495,18 @@ class Services implements ServicesInterface
 
 		$services['product.upload.csv_converter'] = function($c) {
 			return new Commerce\Product\Upload\Csv\CsvToArrayConverter;
+		};
+
+		$services['product.upload.product_builder'] = function($c) {
+			return new Commerce\Product\Upload\ProductBuilder(
+				$c['product.upload.heading_keys'],
+				$c['product.upload.validator'],
+				$c['locale']
+			);
+		};
+
+		$services['product.upload.unique_sorter'] = function($c) {
+			return new Commerce\Product\Upload\UniqueProductSorter($c['product.upload.heading_keys']);
 		};
 
 		$services->extend('field.collection', function($fields, $c) {
