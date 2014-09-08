@@ -8,8 +8,6 @@ use Message\Cog\Localisation\Locale;
 
 class UnitBuilder
 {
-	const PRICE_REGEX = '/[^\p{N}.]++/';
-
 	/**
 	 * @var HeadingKeys
 	 */

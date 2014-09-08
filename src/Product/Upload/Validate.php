@@ -4,19 +4,24 @@ namespace Message\Mothership\Commerce\Product\Upload;
 
 class Validate
 {
-	private $_required = [];
-	private $_validRows = [];
+	private $_headingKeys = [];
+
+	private $_validRows   = [];
 	private $_invalidRows = [];
 
-	public function __construct(HeadingBuilder $headingBuilder)
+	private $_required;
+
+	public function __construct(HeadingKeys $headingKeys)
 	{
-		$this->_required = $headingBuilder->getRequired();
+		$this->_headingKeys = $headingKeys;
+		$this->_required    = $headingKeys->getRequired();
 	}
 
 	public function validateRow(array $row)
 	{
 		foreach ($row as $key => $column) {
-			if (in_array($key, $this->_required) && empty($column)) {
+
+			if (in_array($key, $this->_required) && ($column !== 0) && empty($column)) {
 				$this->_invalidRows[] = $row;
 
 				return false;
@@ -31,6 +36,7 @@ class Validate
 	public function validate(array $rows)
 	{
 		$this->_clear();
+
 		foreach ($rows as $row) {
 			$this->validateRow($row);
 		}

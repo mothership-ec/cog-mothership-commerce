@@ -41,9 +41,8 @@ class CsvPort extends Controller
 
 	private function _renderPreview(array $data)
 	{
-		$data = $this->get('product.upload.filter')->filterEmptyRows(
-			$this->get('product.upload.csv_converter')->convert($data['file'])
-		);
+		$data = $this->get('product.upload.csv_converter')->convert($data['file']);
+		$this->get('product.upload.filter')->filter($data);
 
 		$this->get('product.upload.validator')->validate($data);
 		$validRows   = $this->get('product.upload.validator')->getValidRows();

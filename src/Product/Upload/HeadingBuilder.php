@@ -28,6 +28,11 @@ class HeadingBuilder implements \Countable
 	private $_crawler;
 
 	/**
+	 * @var HeadingKeys
+	 */
+	private $_headingKeys;
+
+	/**
 	 * @var \Message\Cog\Localisation\Translator
 	 */
 	private $_trans;
@@ -60,13 +65,7 @@ class HeadingBuilder implements \Countable
 		'price'    => 'price',
 		'rrp'      => 'rrp',
 		'cost'     => 'cost',
-		'taxRate' => 'taxRate',
-	];
-
-	private $_required = [
-		'name',
-		'category',
-		'price'
+		'taxRate'  => 'taxRate',
 	];
 
 	/**
@@ -90,11 +89,29 @@ class HeadingBuilder implements \Countable
 	 */
 	private $_columns = [];
 
-	public function __construct(FieldCrawler $crawler, Translator $trans)
+	/**
+	 * @todo move this to different class, perhaps HeadingKeys?
+	 *
+	 * @var array
+	 */
+	private $_required = [
+		'name',
+		'category',
+		'price'
+	];
+
+	/**
+	 * @todo inject column headings via HeadingKeys, caused a dependency loop so that will need working out
+	 *
+	 * @param FieldCrawler $crawler
+	 * @param Translator $trans
+	 */
+	public function __construct(FieldCrawler $crawler, /*HeadingKeys $headingKeys, */Translator $trans)
 	{
-		$this->_crawler = $crawler;
-		$this->_trans   = $trans;
-		$this->_required = $this->_translate($this->_required);
+		$this->_crawler     = $crawler;
+		$this->_trans       = $trans;
+//		$this->_headingKeys = $headingKeys;
+		$this->_required    = $this->_translate($this->_required);
 	}
 
 	/**

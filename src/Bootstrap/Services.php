@@ -468,7 +468,8 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.heading_builder'] = function($c) {
-			return new Commerce\Product\Upload\HeadingBuilder($c['product.field_crawler'], $c['translator']);
+			return new Commerce\Product\Upload\HeadingBuilder(
+				$c['product.field_crawler'], $c['translator']);
 		};
 
 		$services['product.upload.heading_keys'] = function($c) {
@@ -486,11 +487,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.validator'] = function($c) {
-			return new Commerce\Product\Upload\Validate($c['product.upload.heading_builder']);
+			return new Commerce\Product\Upload\Validate($c['product.upload.heading_keys']);
 		};
 
 		$services['product.upload.filter'] = function($c) {
-			return new Commerce\Product\Upload\Filter;
+			return new Commerce\Product\Upload\Filter($c['product.upload.heading_keys']);
 		};
 
 		$services['product.upload.csv_converter'] = function($c) {
