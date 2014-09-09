@@ -20,10 +20,10 @@ class CsvUpload extends Form\AbstractType
 		$builder->add(
 			$builder->create(
 				'file', 'file', [
-				'label' => 'ms.commerce.product.upload.form.upload_field',
-				'constraints' => [
-					new Constraints\NotBlank,
-					new CsvConstraint,
+					'label' => 'ms.commerce.product.upload.form.upload_field',
+					'constraints' => [
+						new Constraints\NotBlank,
+						new CsvConstraint,
 				]
 			])
 			->addModelTransformer(new DataTransform\ArrayToCsvTransformer)

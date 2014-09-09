@@ -39,6 +39,35 @@ class CsvPort extends Controller
 		return $this->get('product.upload.csv_download')->download(self::SPREADSHEET_NAME);
 	}
 
+	public function createProducts()
+	{
+		$form = $this->createForm($this->get('product.form.upload_confirm'));
+
+		$form->handleRequest();
+
+		if ($form->isValid()) {
+			$data = $form->getData();
+
+			foreach ($this->get('http.session')->get(self::VALID_ROWS_SESSION) as $productRows) {
+				if (!is_array($productRows)) {
+					throw new \LogicException('Product rows expected to be array, ' . gettype($productRows) . ' given');
+				}
+
+				$productRow = array_values($productRows);
+				$productRow = array_shift($productRow);
+				$product = $this->get('product.upload.product_builder')->build($productRow);
+				$this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
+
+				foreach ($productRows as $row) {
+
+				}
+
+			}
+		}
+
+		return $this->redirectToReferer();
+	}
+
 	private function _renderPreview(array $data)
 	{
 		$data = $this->get('product.upload.csv_converter')->convert($data['file']);
@@ -46,17 +75,19 @@ class CsvPort extends Controller
 
 		$this->get('product.upload.validator')->validate($data);
 		$validRows   = $this->get('product.upload.validator')->getValidRows();
+		$invalidRows = $this->get('product.upload.validator')->getInvalidRows();
 
 		$productData = $this->get('product.upload.unique_sorter')->sort($validRows);
 
-		$invalidRows = $this->get('product.upload.validator')->getInvalidRows();
-
 		$this->get('http.session')->set(self::VALID_ROWS_SESSION, $productData);
+
+		$form = $this->createForm($this->get('product.form.upload_confirm'));
 
 		return $this->render('Message:Mothership:Commerce::product:csv:preview', [
 			'heading'     => $this->get('product.upload.csv_heading'),
 			'productData' => $productData,
 			'invalid'     => $invalidRows,
+			'form'        => $form,
 		]);
 	}
 }

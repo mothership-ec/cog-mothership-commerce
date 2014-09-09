@@ -20,8 +20,7 @@ class Validate
 	public function validateRow(array $row)
 	{
 		foreach ($row as $key => $column) {
-
-			if (in_array($key, $this->_required) && ($column !== 0) && empty($column)) {
+			if (in_array($key, $this->_required) && empty($column)) {
 				$this->_invalidRows[] = $row;
 
 				return false;

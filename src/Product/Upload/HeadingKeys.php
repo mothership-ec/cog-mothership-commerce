@@ -33,7 +33,7 @@ class HeadingKeys
 	public function getKey($key)
 	{
 		if (!array_key_exists($key, $this->_columns)) {
-			throw new \LogicException('Column `' . $key . '` does not exist!');
+			return $this->_getFlippedKey($key);
 		}
 
 		return $this->_columns[$key];
@@ -61,6 +61,17 @@ class HeadingKeys
 		$this->_floats = $floats;
 
 		return $this;
+	}
+
+	private function _getFlippedKey($key)
+	{
+		$flipped = array_flip($this->_columns);
+
+		if (!array_key_exists($key, $flipped)) {
+			throw new \LogicException('Column `' . $key . '` does not exist!');
+		}
+
+		return $flipped[$key];
 	}
 
 	private function _setRequiredKeys()

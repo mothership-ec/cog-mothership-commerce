@@ -2,8 +2,10 @@
 
 namespace Message\Mothership\Commerce\Product\Upload;
 
-use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product;
 use Message\Cog\Localisation\Locale;
+use Message\Cog\ValueObject\Authorship;
+use Message\User\UserInterface;
 
 class ProductBuilder
 {
@@ -23,6 +25,11 @@ class ProductBuilder
 	private $_product;
 
 	/**
+	 * @var \Message\Mothership\Commerce\Product\Type\Collection
+	 */
+	private $_productTypes;
+
+	/**
 	 * Default tax rate
 	 * @todo make dynamic depending on locale
 	 *
@@ -38,12 +45,20 @@ class ProductBuilder
 	 */
 	private $_defaultManCountry = 'UK';
 
-	public function __construct(HeadingKeys $headingKeys, Validate $validator, Locale $locale)
+	public function __construct(
+		HeadingKeys $headingKeys,
+		Validate $validator,
+		Product\Type\Collection $productTypes,
+		Locale $locale,
+		UserInterface $user
+	)
 	{
-		$this->_headingKeys = $headingKeys;
-		$this->_validator   = $validator;
-		$this->_locale      = $locale;
-		$this->_product     = new Product($locale);
+		$this->_headingKeys  = $headingKeys;
+		$this->_validator    = $validator;
+		$this->_productTypes = $productTypes;
+		$this->_locale       = $locale;
+		$this->_user         = $user;
+		$this->_product      = new Product\Product($locale);
 	}
 
 	public function build(array $data)
@@ -52,9 +67,23 @@ class ProductBuilder
 			throw new Exception\UploadException('Row is not valid!');
 		}
 
+		$this->_addProductType($data);
+		$this->_addAuthorship();
 		$this->_addData($data);
 
 		return $this->_product;
+	}
+
+	private function _addAuthorship()
+	{
+		$authorship = new Authorship;
+		$authorship->create(null, $this->_user);
+		$this->_product->authorship = $authorship;
+	}
+
+	private function _addProductType(array $data)
+	{
+		$this->_product->type = $this->_productTypes->get('basic');
 	}
 
 	private function _addData(array $data)

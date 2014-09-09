@@ -42,24 +42,29 @@ class Create
 			'INSERT INTO
 				product
 			SET
-				product.type			= ?s,
-				product.name			= ?s,
-				product.weight_grams	= ?i,
-				product.tax_rate		= ?f,
-				product.tax_strategy	= ?s,
-				product.supplier_ref    = ?s,
-				product.created_at		= ?d,
-				product.created_by		= ?i',
-			array(
-				$product->type->getName(),
-				$product->name,
-				$product->weight,
-				$product->taxRate,
-				$this->_defaultTaxStrategy,
-				$product->supplierRef,
-				$product->authorship->createdAt(),
-				$product->authorship->createdBy()->id
-			)
+				`type`			= :type?s,
+				`name`			= :name?s,
+				category        = :category?sn,
+				brand           = :brand?sn,
+				weight_grams	= :weight?i,
+				tax_rate		= :taxRate?f,
+				tax_strategy	= :taxStrategy?s,
+				supplier_ref    = :supplier?s,
+				created_at		= :createdAt?d,
+				created_by		= :createdBy?i
+		',
+			[
+				'type'        => $product->type->getName(),
+				'name'        => $product->name,
+				'category'    => $product->category,
+				'brand'       => $product->brand,
+				'weight'      => $product->weight,
+				'taxRate'     => $product->taxRate,
+				'taxStrategy' => $this->_defaultTaxStrategy,
+				'supplier'    => $product->supplierRef,
+				'createdAt'   => $product->authorship->createdAt(),
+				'createdBy'   => $product->authorship->createdBy()->id
+			]
 		);
 
 		$productID = $result->id();
@@ -68,16 +73,18 @@ class Create
 			'INSERT INTO
 				product_info
 			SET
-				product_info.product_id = ?i,
-				product_info.locale = ?s,
-				product_info.display_name = ?s,
-				product_info.short_description   = ?s',
-			array(
-				$productID,
-				$this->_locale->getID(),
-				$product->displayName,
-				$product->shortDescription,
-			)
+				product_id = :id?i,
+				locale = :locale?s,
+				display_name = :displayName?s,
+				sort_name = :sortName?s
+				short_description = :shortDesc?s',
+			[
+				'id'          => $productID,
+				'locale'      => $this->_locale->getID(),
+				'displayName' => $product->displayName,
+				'sortName'    => $product->sortName,
+				'shortDesc'   => $product->shortDescription,
+			]
 		);
 
 		$product->id = $productID;

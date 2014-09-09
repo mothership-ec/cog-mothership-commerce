@@ -502,13 +502,19 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Upload\ProductBuilder(
 				$c['product.upload.heading_keys'],
 				$c['product.upload.validator'],
-				$c['locale']
+				$c['product.types'],
+				$c['locale'],
+				$c['user.current']
 			);
 		};
 
 		$services['product.upload.unique_sorter'] = function($c) {
 			return new Commerce\Product\Upload\UniqueProductSorter($c['product.upload.heading_keys']);
 		};
+
+		$services['product.upload.create_dispatcher'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\CreateDispatcher($c['product.create'], $c['event.dispatcher']);
+		});
 
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
@@ -561,6 +567,10 @@ class Services implements ServicesInterface
 
 		$services['product.form.csv_upload'] = $services->factory(function($c) {
 			return new Commerce\Form\Product\CsvUpload;
+		});
+
+		$services['product.form.upload_confirm'] = $services->factory(function($c) {
+			return new \Message\Mothership\Commerce\Form\Product\CsvUploadConfirm($c['routing.generator']);
 		});
 
 		$services['product.detail.loader'] = function($c) {
