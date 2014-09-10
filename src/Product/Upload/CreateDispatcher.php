@@ -25,9 +25,11 @@ class CreateDispatcher
 
 	private function _dispatchEvent(Product\Product $product, array $formData, array $row)
 	{
+		$event = new CreateEvent($product, $formData, $row);
+
 		return $this->_dispatcher->dispatch(
 			Product\Events::PRODUCT_UPLOAD_CREATE,
-			new CreateEvent($product, $formData, $row)
+			$event
 		)->getProduct();
 	}
 }

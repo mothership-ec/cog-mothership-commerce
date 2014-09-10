@@ -73,10 +73,10 @@ class Create
 			'INSERT INTO
 				product_info
 			SET
-				product_id = :id?i,
-				locale = :locale?s,
-				display_name = :displayName?s,
-				sort_name = :sortName?s
+				product_id        = :id?i,
+				locale            = :locale?s,
+				display_name      = :displayName?s,
+				sort_name         = :sortName?s,
 				short_description = :shortDesc?s',
 			[
 				'id'          => $productID,

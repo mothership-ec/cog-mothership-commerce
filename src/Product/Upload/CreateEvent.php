@@ -11,7 +11,7 @@ class CreateEvent extends Event
 	private $_formData;
 	private $_row;
 
-	public function __create(Product\Product $product, array $formData, array $row)
+	public function __construct(Product\Product $product, array $formData, array $row)
 	{
 		$this->setProduct($product);
 		$this->setFormData($formData);
