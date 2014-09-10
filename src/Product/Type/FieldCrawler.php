@@ -38,6 +38,8 @@ class FieldCrawler extends Field\Factory
 	 */
 	private $_fieldDescriptions = [];
 
+	private $_productTypeFields = [];
+
 	public function __construct(Type\Collection $types)
 	{
 		$this->_types = $types;
@@ -53,6 +55,15 @@ class FieldCrawler extends Field\Factory
 		}
 
 		return $this->_fieldNames;
+	}
+
+	public function getTypeFields()
+	{
+		if (!$this->_productTypeFields) {
+			$this->_setFields();
+		}
+
+		return $this->_productTypeFields;
 	}
 
 	public function getFieldDescriptions()
@@ -85,7 +96,7 @@ class FieldCrawler extends Field\Factory
 			$this->_setFields();
 		}
 
-		$this->_mapFieldNames();
+		$this->_fieldNames = $this->_mapFieldNames();
 	}
 
 	private function _setFieldDescriptions()
@@ -104,21 +115,25 @@ class FieldCrawler extends Field\Factory
 	 */
 	private function _setProductTypeFields(Type\ProductTypeInterface $type)
 	{
+		$existingFields = array_values($this->_fields);
+
 		$type->setFields($this);
+		$diff = array_diff($this->_fields, $existingFields);
+		$this->_productTypeFields[$type->getName()] = $this->_mapFieldNames($diff);
 	}
 
 	/**
 	 * Convert array of field objects into an array of strings
 	 */
-	private function _mapFieldNames()
+	private function _mapFieldNames(array $fields = null)
 	{
-		$fieldNames = $this->_fields;
+		$fieldNames = $fields ?: $this->_fields;
 
 		array_walk($fieldNames, function (&$field) {
 			$field = $field->getLabel() ?: ucfirst($field->getName());
 		});
 
-		$this->_fieldNames = $fieldNames;
+		return $fieldNames;
 	}
 
 	private function _mapFieldDescriptions()
