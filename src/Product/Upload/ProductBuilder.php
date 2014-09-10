@@ -29,6 +29,8 @@ class ProductBuilder
 	 */
 	private $_productTypes;
 
+	private $_locale;
+
 	/**
 	 * Default tax rate
 	 * @todo make dynamic depending on locale
@@ -45,20 +47,29 @@ class ProductBuilder
 	 */
 	private $_defaultManCountry = 'UK';
 
+	private $_priceTypes = [
+		'retail',
+		'rrp',
+		'cost',
+	];
+
+	private $_currencyID = 'GBP';
+
 	public function __construct(
 		HeadingKeys $headingKeys,
 		Validate $validator,
 		Product\Type\Collection $productTypes,
-		Locale $locale,
-		UserInterface $user
+		UserInterface $user,
+		Product\Product $product,
+		Locale $locale
 	)
 	{
 		$this->_headingKeys  = $headingKeys;
 		$this->_validator    = $validator;
 		$this->_productTypes = $productTypes;
-		$this->_locale       = $locale;
 		$this->_user         = $user;
-		$this->_product      = new Product\Product($locale);
+		$this->_product      = $product;
+		$this->_locale       = $locale;
 	}
 
 	public function build(array $data)
@@ -70,6 +81,7 @@ class ProductBuilder
 		$this->_addProductType($data);
 		$this->_addAuthorship();
 		$this->_addData($data);
+		$this->_setPrices($data);
 
 		return $this->_product;
 	}
@@ -84,6 +96,30 @@ class ProductBuilder
 	private function _addProductType(array $data)
 	{
 		$this->_product->type = $this->_productTypes->get('basic');
+	}
+
+	private function _setPrices(array $row)
+	{
+		$basePrice = null;
+
+		foreach ($this->_priceTypes as $type) {
+			$key = $this->_headingKeys->getKey($type);
+
+			if (null === $basePrice) {
+				$basePrice = $row[$key];
+			}
+
+			$price = ($row[$key]) ?: $basePrice;
+
+			if (null === $basePrice) {
+				$basePrice = $price;
+			}
+
+			$this->_product->price[$type]->setPrice($this->_currencyID, $price, $this->_locale);
+
+			// @todo when Lazy Loading gets merged, swap the above line for the commented one below:
+			//$this->_product->getPrice($type)->setPrice('GBP', $price, $this->get('locale'));
+		}
 	}
 
 	private function _addData(array $data)

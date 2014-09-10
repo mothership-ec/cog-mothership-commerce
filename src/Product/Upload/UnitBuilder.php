@@ -4,7 +4,9 @@ namespace Message\Mothership\Commerce\Product\Upload;
 
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Product;
+use Message\User\UserInterface;
 use Message\Cog\Localisation\Locale;
+use Message\Cog\ValueObject\Authorship;
 
 class UnitBuilder
 {
@@ -19,11 +21,6 @@ class UnitBuilder
 	private $_validator;
 
 	/**
-	 * @var Product
-	 */
-	private $_product;
-
-	/**
 	 * @var \Message\Mothership\Commerce\Product\Unit\Unit
 	 */
 	private $_unit;
@@ -36,22 +33,25 @@ class UnitBuilder
 
 	private $_currencyID = 'GBP';
 
-	public function __construct(HeadingKeys $headingKeys, Validate $validator, Locale $locale)
+	public function __construct(HeadingKeys $headingKeys, Validate $validator, Locale $locale, UserInterface $user)
 	{
 		$this->_headingKeys = $headingKeys;
 		$this->_validator   = $validator;
 		$this->_locale      = $locale;
 		$this->_unit        = new Unit($this->_locale, $this->_priceTypes);
+		$this->_user        = $user;
 	}
 
 	public function setBaseProduct(Product $product)
 	{
-		$this->_product = $product;
+		$this->_unit->product = $product;
+
+		return $this;
 	}
 
 	public function build(array $row)
 	{
-		if (null === $this->_product) {
+		if (null === $this->_unit->product) {
 			throw new \LogicException('Base product not set for unit creation!');
 		}
 
@@ -62,8 +62,16 @@ class UnitBuilder
 		$this->_setOptions($row);
 		$this->_setPrices($row);
 		$this->_setData($row);
+		$this->_addAuthorship();
 
 		return $this->_unit;
+	}
+
+	private function _addAuthorship()
+	{
+		$authorship = new Authorship;
+		$authorship->create(null, $this->_user);
+		$this->_unit->authorship = $authorship;
 	}
 
 	private function _setOptions(array $row)
@@ -84,7 +92,7 @@ class UnitBuilder
 	{
 		foreach ($this->_priceTypes as $type) {
 			$key = $this->_headingKeys->getKey($type);
-			$price = $this->_parsePrice($row[$key]);
+			$price = $row[$key];
 
 			if ($price && $price !== $this->_getProductPrice($type)) {
 				$this->_unit->setPrice($price, $type, $this->_currencyID);
@@ -108,17 +116,9 @@ class UnitBuilder
 
 	private function _getProductPrice($type)
 	{
-		return (float) $this->_product->getPrice($type)->getPrice($this->_currencyID, $this->_locale);
+		return (float) $this->_unit->product->price[$type]->getPrice($this->_currencyID, $this->_locale);
+		// @todo when Lazy Loading has been merged, delete the above line and uncomment the one below
+		//return (float) $this->_product->getPrice($type)->getPrice($this->_currencyID, $this->_locale);
 	}
 
-	private function _parsePrice($price)
-	{
-		if ($price === '') {
-			return null;
-		}
-
-		$price = preg_replace(self::PRICE_REGEX, '', $price);
-
-		return (float) $price;
-	}
 }

@@ -13,11 +13,11 @@ class HeadingKeys
 	private $_required = [
 		'name',
 		'category',
-		'price'
+		'retail'
 	];
 
 	private $_floats = [
-		'price',
+		'retail',
 		'rrp',
 		'cost',
 		'taxRate',

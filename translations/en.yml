@@ -151,7 +151,7 @@ ms.commerce:
         exportManufactureCountryID:
           name: Country of manufacture
           help:
-        price:
+        retail:
           name: Selling price
           help:
         rrp:

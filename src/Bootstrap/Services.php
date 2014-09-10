@@ -498,22 +498,36 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Upload\Csv\CsvToArrayConverter;
 		};
 
-		$services['product.upload.product_builder'] = function($c) {
+		$services['product.upload.product_builder'] = $services->factory(function($c) {
 			return new Commerce\Product\Upload\ProductBuilder(
 				$c['product.upload.heading_keys'],
 				$c['product.upload.validator'],
 				$c['product.types'],
+				$c['user.current'],
+				$c['product'],
+				$c['locale']
+			);
+		});
+
+		$services['product.upload.unit_builder'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\UnitBuilder(
+				$c['product.upload.heading_keys'],
+				$c['product.upload.validator'],
 				$c['locale'],
 				$c['user.current']
 			);
-		};
+		});
 
 		$services['product.upload.unique_sorter'] = function($c) {
 			return new Commerce\Product\Upload\UniqueProductSorter($c['product.upload.heading_keys']);
 		};
 
 		$services['product.upload.create_dispatcher'] = $services->factory(function($c) {
-			return new Commerce\Product\Upload\CreateDispatcher($c['product.create'], $c['event.dispatcher']);
+			return new Commerce\Product\Upload\ProductCreateDispatcher($c['product.create'], $c['event.dispatcher']);
+		});
+
+		$services['product.upload.unit_create_dispatcher'] = $services->factory(function ($c) {
+			return new Commerce\Product\Upload\UnitCreateDispatcher($c['product.unit.create'], $c['event.dispatcher']);
 		});
 
 		$services->extend('field.collection', function($fields, $c) {

@@ -2,30 +2,30 @@
 
 namespace Message\Mothership\Commerce\Product\Upload;
 
-use Message\Mothership\Commerce\Product;
+use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Cog\Event\Event as Event;
 
-class CreateEvent extends Event
+class UnitCreateEvent extends Event
 {
-	private $_product;
+	private $_unit;
 	private $_formData;
 	private $_row;
 
-	public function __construct(Product\Product $product, array $formData, array $row)
+	public function __construct(Unit $unit, array $formData, array $row)
 	{
-		$this->setProduct($product);
+		$this->setUnit($unit);
 		$this->setFormData($formData);
 		$this->setRow($row);
 	}
 
-	public function setProduct(Product\Product $product)
+	public function setUnit(Unit $product)
 	{
-		$this->_product = $product;
+		$this->_unit = $product;
 	}
 
-	public function getProduct()
+	public function getUnit()
 	{
-		return $this->_product;
+		return $this->_unit;
 	}
 
 	public function setFormData(array $data)

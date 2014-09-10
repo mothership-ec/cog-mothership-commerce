@@ -55,11 +55,12 @@ class CsvPort extends Controller
 
 				$productRow = array_values($productRows);
 				$productRow = array_shift($productRow);
-				$product = $this->get('product.upload.product_builder')->build($productRow);
+				$product    = $this->get('product.upload.product_builder')->build($productRow);
 				$this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
 
 				foreach ($productRows as $row) {
-
+					$unit = $this->get('product.upload.unit_builder')->setBaseProduct($product)->build($row);
+					$this->get('product.upload.unit_create_dispatcher')->create($unit, $data, $row);
 				}
 
 			}

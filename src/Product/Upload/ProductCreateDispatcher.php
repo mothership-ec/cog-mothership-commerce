@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Product\Upload;
 use Message\Mothership\Commerce\Product;
 use Message\Cog\Event\Dispatcher;
 
-class CreateDispatcher
+class ProductCreateDispatcher
 {
 	private $_productCreate;
 	private $_dispatcher;
@@ -25,7 +25,7 @@ class CreateDispatcher
 
 	private function _dispatchEvent(Product\Product $product, array $formData, array $row)
 	{
-		$event = new CreateEvent($product, $formData, $row);
+		$event = new ProductCreateEvent($product, $formData, $row);
 
 		return $this->_dispatcher->dispatch(
 			Product\Events::PRODUCT_UPLOAD_CREATE,

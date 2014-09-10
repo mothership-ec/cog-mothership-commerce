@@ -64,12 +64,12 @@ class Create
 			'INSERT INTO
 				product_unit_info
 			SET
-				unit_id     = ?i,
+				unit_id     = :unitID?i,
 				revision_id = 1,
-				sku         = ?s',
+				sku         = :sku?s',
 			array(
 				$unitID,
-				$unit->sku,
+				$unit->sku ?: $unitID,
 		));
 
 		foreach ($unit->options as $name => $value) {
@@ -90,9 +90,9 @@ class Create
 
 		$unit->id = $unitID;
 
-		$unit = $this->_savePrices($unit);
+		$this->_savePrices($unit);
 
-		return $unit ? $unit : false;
+		return $unit;
 	}
 
 	protected function _savePrices(Unit $unit)
