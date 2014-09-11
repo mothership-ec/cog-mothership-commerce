@@ -9,6 +9,8 @@ use Message\User\UserInterface;
 
 class ProductBuilder
 {
+	const DEFAULT_TYPE = 'basic';
+
 	/**
 	 * @var HeadingKeys
 	 */
@@ -28,6 +30,11 @@ class ProductBuilder
 	 * @var \Message\Mothership\Commerce\Product\Type\Collection
 	 */
 	private $_productTypes;
+
+	/**
+	 * @var \Message\Mothership\Commerce\Product\Type\FieldCrawler
+	 */
+	private $_fieldCrawler;
 
 	private $_locale;
 
@@ -59,6 +66,7 @@ class ProductBuilder
 		HeadingKeys $headingKeys,
 		Validate $validator,
 		Product\Type\Collection $productTypes,
+		Product\Type\FieldCrawler $fieldCrawler,
 		UserInterface $user,
 		Product\Product $product,
 		Locale $locale
@@ -67,6 +75,7 @@ class ProductBuilder
 		$this->_headingKeys  = $headingKeys;
 		$this->_validator    = $validator;
 		$this->_productTypes = $productTypes;
+		$this->_fieldCrawler = $fieldCrawler;
 		$this->_user         = $user;
 		$this->_product      = $product;
 		$this->_locale       = $locale;
@@ -95,7 +104,31 @@ class ProductBuilder
 
 	private function _addProductType(array $data)
 	{
+		foreach ($this->_fieldCrawler->getTypeFields() as $type => $fields) {
+			foreach ($fields as $name) {
+				if (!empty($data[$name])) {
+					$this->_product->type = $this->_productTypes->get($type);
+					$this->_setDetails($data);
+
+					return;
+				}
+			}
+		}
+
 		$this->_product->type = $this->_productTypes->get('basic');
+	}
+
+	private function _setDetails(array $data)
+	{
+		$this->_fieldCrawler->build($this->_product->type);
+		$details = new Product\Type\Details;
+
+		foreach ($this->_fieldCrawler as $name => $field) {
+			$field->setValue($data[$this->_headingKeys->getKey($name)]);
+			$details->$name	= $field;
+		}
+
+		$this->_product->details = $details;
 	}
 
 	private function _setPrices(array $row)

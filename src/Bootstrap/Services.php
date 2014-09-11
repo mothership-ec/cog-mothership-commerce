@@ -503,6 +503,7 @@ class Services implements ServicesInterface
 				$c['product.upload.heading_keys'],
 				$c['product.upload.validator'],
 				$c['product.types'],
+				$c['product.field_crawler'],
 				$c['user.current'],
 				$c['product'],
 				$c['locale']
@@ -523,7 +524,9 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.create_dispatcher'] = $services->factory(function($c) {
-			return new Commerce\Product\Upload\ProductCreateDispatcher($c['product.create'], $c['event.dispatcher']);
+			return new Commerce\Product\Upload\ProductCreateDispatcher(
+				$c['product.create'], $c['product.detail.edit'], $c['event.dispatcher']
+			);
 		});
 
 		$services['product.upload.unit_create_dispatcher'] = $services->factory(function ($c) {
