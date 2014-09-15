@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Product\Type;
 use Message\Cog\Field;
 use Message\Mothership\Commerce\Product\Type;
 
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * Class to extract the fields from a product type.
@@ -39,6 +39,9 @@ class FieldCrawler extends Field\Factory
 	private $_fieldDescriptions = [];
 
 	private $_productTypeFields = [];
+
+	private $_constraints    = [];
+	private $_constraintsSet = false;
 
 	public function __construct(Type\Collection $types)
 	{
@@ -75,6 +78,19 @@ class FieldCrawler extends Field\Factory
 		return $this->_fieldDescriptions;
 	}
 
+	public function getConstraints($fieldName = null)
+	{
+		if (!$this->_constraintsSet) {
+			$this->_setFields();
+		}
+
+		if ($fieldName) {
+			return (array_key_exists($fieldName, $this->_constraints)) ? $this->_constraints[$fieldName] : [];
+		}
+
+		return $this->_constraints;
+	}
+
 	private function _setFields()
 	{
 		$this->clear();
@@ -83,8 +99,7 @@ class FieldCrawler extends Field\Factory
 			$this->_setProductTypeFields($type);
 		}
 
-		$this->_validateFields()
-		;
+		$this->_setConstraints();
 	}
 
 	/**
@@ -145,14 +160,21 @@ class FieldCrawler extends Field\Factory
 		});
 	}
 
-	private function _validateFields()
+	private function _setConstraints()
 	{
 		foreach ($this->_fields as $field) {
-			if (!$field instanceof Field\BaseField) {
-				throw new \LogicException('Field must be an instance of `Message\Cog\Field\BaseField`, ' . gettype($field) . ' given');
-			}
+			$this->_validateField($field);
+			$options = $field->getFieldOptions();
+			$this->_constraints[$field->getName()] = array_key_exists('constraints', $options) ? $options['constraints'] : [];
 		}
 
-		return $this;
+		$this->_constraintsSet = true;
+	}
+
+	private function _validateField($field)
+	{
+		if (!$field instanceof Field\BaseField) {
+			throw new \LogicException('Field must be an instance of `Message\Cog\Field\BaseField`, ' . gettype($field) . ' given');
+		}
 	}
 }

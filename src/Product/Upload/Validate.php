@@ -2,6 +2,10 @@
 
 namespace Message\Mothership\Commerce\Product\Upload;
 
+use Message\Mothership\Commerce\Product\Type\FieldCrawler;
+
+use Symfony\Component\Validator\Constraints;
+
 class Validate
 {
 	private $_headingKeys = [];
@@ -11,16 +15,20 @@ class Validate
 
 	private $_required;
 
-	public function __construct(HeadingKeys $headingKeys)
+	public function __construct(HeadingKeys $headingKeys, FieldCrawler $fieldCrawler)
 	{
-		$this->_headingKeys = $headingKeys;
-		$this->_required    = $headingKeys->getRequired();
+		$this->_headingKeys  = $headingKeys;
+		$this->_required     = $headingKeys->getRequired();
+		$this->_fieldCrawler = $fieldCrawler;
 	}
 
 	public function validateRow(array $row)
 	{
 		foreach ($row as $key => $column) {
-			if (in_array($key, $this->_required) && empty($column)) {
+			if (
+				(in_array($key, $this->_required) && empty($column)) ||
+				!$this->_validateWithConstraints($column)
+			) {
 				$this->_invalidRows[] = $row;
 
 				return false;
@@ -65,5 +73,22 @@ class Validate
 	{
 		$this->_validRows   = [];
 		$this->_invalidRows = [];
+	}
+
+	private function _validateWithConstraints(array $row)
+	{
+		foreach ($row as $key => $column) {
+			$key         = $this->_headingKeys->getKey($key);
+			$constraints = $this->_fieldCrawler->getConstraints($key);
+
+			foreach ($constraints as $constraint) {
+				if (!$constraint instanceof Constraints\NotBlank) {
+					$validator = new $constraint->validatedBy();
+
+					$validator->validate($column, $constraint);
+				}
+			}
+
+		}
 	}
 }
