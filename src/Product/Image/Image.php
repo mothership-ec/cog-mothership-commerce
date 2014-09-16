@@ -32,7 +32,7 @@ class Image implements ResizableInterface
 		$this->authorship
 			->disableUpdate(); // remove when making update class
 	}
-
+	
 	public function getUrl()
 	{
 		return $this->getFile()->getUrl();

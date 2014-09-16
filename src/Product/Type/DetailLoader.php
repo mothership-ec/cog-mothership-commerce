@@ -5,12 +5,15 @@ namespace Message\Mothership\Commerce\Product\Type;
 use Message\Cog\DB\Query;
 use Message\Cog\Field;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\ProductEntityLoaderInterface;
+use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 
-class DetailLoader
+class DetailLoader implements ProductEntityLoaderInterface
 {
 	protected $_query;
 	protected $_fieldFactory;
 	protected $_types;
+	protected $_productLoader;
 
 	public function __construct(Query $query, Field\Factory $factory, Collection $types)
 	{
@@ -19,6 +22,30 @@ class DetailLoader
 		$this->_types        = $types;
 	}
 
+	/**
+	 * @{inheritdocs}
+	 */
+	public function setProductLoader(ProductLoader $productLoader)
+	{
+		$this->_productLoader = $productLoader;
+
+		return $this;
+	}
+
+	/**
+	 * Gets details by product
+	 * @param  Product $product Product to load details for
+	 * @return array            array of details
+	 */
+	public function getByProduct(Product $product)
+	{
+		return $this->load($product);
+	}
+
+	/**
+	 * only public for BC
+	 * @see getByProduct()
+	 */
 	public function load(Product $product)
 	{
 		$result = $this->_query->run("
@@ -36,9 +63,9 @@ class DetailLoader
 			'productID'	=> $product->id,
 		));
 
-		$details = new Details;
+		$details = new DetailCollection;
 
-		$type    = $this->_types->get($product->type);
+		$type    = $this->_types->get($product->type->getName());
 
 		$this->_fieldFactory->build($type);
 
