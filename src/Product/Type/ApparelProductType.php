@@ -51,7 +51,7 @@ class ApparelProductType implements ProductTypeInterface
 
 	public function getProductDisplayName(Product $product)
 	{
-		return $product->details->brand . ' - ' . $product->name;
+		return $product->getDetails()->brand . ' - ' . $product->name;
 	}
 
 	protected function _getSeasons()

@@ -16,14 +16,22 @@ class Create
 	protected $_query;
 	protected $_locale;
 	protected $_user;
+	protected $_priceTypes;
+	protected $_currencyIDs;
 
 	protected $_defaultTaxStrategy = 'inclusive';
 
-	public function __construct(Query $query, Locale $locale, UserInterface $user)
+	public function __construct(Query $query, 
+		Locale $locale, 
+		UserInterface $user, 
+		array $priceTypes, 
+		array $currencyIDs)
 	{
-		$this->_query  = $query;
-		$this->_locale = $locale;
-		$this->_user   = $user;
+		$this->_query        = $query;
+		$this->_locale       = $locale;
+		$this->_user         = $user;
+		$this->_priceTypes   = $priceTypes;
+		$this->_currencyIDs  = $currencyIDs;
 	}
 
 	public function setDefaultTaxStrategy($strategy)
@@ -87,6 +95,30 @@ class Create
 			]
 		);
 
+		$queryAppend = [];
+		$queryVars   = [];
+		foreach($this->_priceTypes as $type) {
+			foreach($this->_currencyIDs as $currency) {
+				$queryAppend[] = "(?i, ?s, 0, ?s, ?s)";
+				$vars          = [
+					$productID,
+					$type,
+					$currency,
+					$this->_locale->getId(),
+				];
+
+				$queryVars = array_merge($queryVars, $vars);
+			}
+		}
+
+		$defaultPrices = $this->_query->run(
+			'INSERT INTO 
+				product_price (product_id, type, price, currency_id, locale)
+			VALUES
+				' . implode(', ', $queryAppend),
+			$queryVars
+			);
+	
 		$product->id = $productID;
 
 		return $product;
