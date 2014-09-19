@@ -57,7 +57,7 @@
 					<th>Name</th>
 					<th>Catagory</th>
 					<th class="a-center"><a href="#" class="clear-filters">Clear filters</a></th>
-					<th><a href="#" class="button small remove">Delete</a></th>
+					<th>-</th>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -71,8 +71,8 @@
 							<a href="{{ url('ms.commerce.product.edit.attributes', {productID:product.id}) }}" class="button small">Edit</a>
 							<a href="#" class="button small">Duplicate</a>
 						</td>
-						<td class="a-center">
-							<input type="checkbox">
+						<td>
+							<a href="{{ url('ms.commerce.product.delete', {productID:product.id}) }}" class="button small remove">Delete</a>
 						</td>
 					</tr>
 				{% endfor %}
