@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\Authorship;
-use Message\Mothership\Commerce\Product\Pricing;
+use Message\Mothership\Commerce\Product\Price\Pricing;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 class Unit
@@ -64,6 +64,16 @@ class Unit
 	public function getPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
+	}
+
+	/**
+	 * Returns whether unit is out of stock in all locations
+	 * 
+	 * @return boolean 
+	 */
+	public function isOutOfStock()
+	{
+		return array_sum($this->stock) == 0;
 	}
 
 	public function getStockForLocation(Location $location)
