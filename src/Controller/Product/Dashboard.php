@@ -14,7 +14,11 @@ class Dashboard extends Controller
 			new DashboardEvent
 		);
 
+		$products = $this->get('product.loader')->getAll();
+
+
 		return $this->render('::product:dashboard', [
+			'products' => $products,
 			'dashboardReferences' => $event->getReferences()
 		]);
 	}
