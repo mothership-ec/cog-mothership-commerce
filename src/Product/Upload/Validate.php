@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Product\Upload;
 use Message\Mothership\Commerce\Product\Type\FieldCrawler;
 
 use Symfony\Component\Validator\Constraints;
+use Symfony\Component\Validator\Validation;
 
 class Validate
 {
@@ -27,7 +28,7 @@ class Validate
 		foreach ($row as $key => $column) {
 			if (
 				(in_array($key, $this->_required) && empty($column)) ||
-				!$this->_validateWithConstraints($column)
+				!$this->_validateWithConstraints($key, $column)
 			) {
 				$this->_invalidRows[] = $row;
 
@@ -75,20 +76,14 @@ class Validate
 		$this->_invalidRows = [];
 	}
 
-	private function _validateWithConstraints(array $row)
+	private function _validateWithConstraints($key, $column)
 	{
-		foreach ($row as $key => $column) {
-			$key         = $this->_headingKeys->getKey($key);
-			$constraints = $this->_fieldCrawler->getConstraints($key);
+		$key         = $this->_headingKeys->getKey($key);
+		$constraints = $this->_fieldCrawler->getConstraints($key);
 
-			foreach ($constraints as $constraint) {
-				if (!$constraint instanceof Constraints\NotBlank) {
-					$validator = new $constraint->validatedBy();
+		$validator  = Validation::createValidator();
+		$violations = $validator->validateValue($column, $constraints);
 
-					$validator->validate($column, $constraint);
-				}
-			}
-
-		}
+		return $violations->count() <= 0;
 	}
 }

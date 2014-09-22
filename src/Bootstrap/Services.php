@@ -432,8 +432,8 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.create'] = $services->factory(function($c) {
-			$create = new Commerce\Product\Create($c['db.query'], 
-				$c['locale'], 
+			$create = new Commerce\Product\Create($c['db.query'],
+				$c['locale'],
 				$c['user.current'],
 				$c['product.price.types'],
 				$c['product.price.currency_IDs']
@@ -443,7 +443,7 @@ class Services implements ServicesInterface
 
 			return $create;
 		});
-		
+
 		$services['product.edit'] = $services->factory(function($c) {
 			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		});
@@ -515,7 +515,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.validator'] = function($c) {
-			return new Commerce\Product\Upload\Validate($c['product.upload.heading_keys']);
+			return new Commerce\Product\Upload\Validate($c['product.upload.heading_keys'], $c['product.field_crawler']);
 		};
 
 		$services['product.upload.filter'] = function($c) {
