@@ -68,8 +68,8 @@ class Create
 				revision_id = 1,
 				sku         = :sku?s',
 			array(
-				$unitID,
-				$unit->sku ?: $unitID,
+				'unitID' => $unitID,
+				'sku'    => $unit->sku ?: $unitID,
 		));
 
 		foreach ($unit->options as $name => $value) {

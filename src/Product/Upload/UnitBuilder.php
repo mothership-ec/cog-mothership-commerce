@@ -116,9 +116,7 @@ class UnitBuilder
 
 	private function _getProductPrice($type)
 	{
-		return (float) $this->_unit->product->price[$type]->getPrice($this->_currencyID, $this->_locale);
-		// @todo when Lazy Loading has been merged, delete the above line and uncomment the one below
-		//return (float) $this->_product->getPrice($type)->getPrice($this->_currencyID, $this->_locale);
+		return (float) $this->_unit->getPrice($type, $this->_currencyID);
 	}
 
 }

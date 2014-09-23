@@ -121,7 +121,7 @@ class ProductBuilder
 	private function _setDetails(array $data)
 	{
 		$this->_fieldCrawler->build($this->_product->type);
-		$details = new Product\Type\Details;
+		$details = new Product\Type\DetailCollection;
 
 		foreach ($this->_fieldCrawler as $name => $field) {
 			$field->setValue($data[$this->_headingKeys->getKey($name)]);
@@ -148,11 +148,18 @@ class ProductBuilder
 				$basePrice = $price;
 			}
 
-			$this->_product->price[$type]->setPrice($this->_currencyID, $price, $this->_locale);
-
-			// @todo when Lazy Loading gets merged, swap the above line for the commented one below:
-			//$this->_product->getPrice($type)->setPrice('GBP', $price, $this->get('locale'));
+			$price = $this->_getPriceObject($type, $price);
+			$this->_product->getPrices()->add($price);
 		}
+	}
+
+	private function _getPriceObject($type, $price)
+	{
+		$priceObject = new Product\Price\TypedPrice($type, $this->_locale);
+
+		$priceObject->setPrice($this->_currencyID, $price);
+
+		return $priceObject;
 	}
 
 	private function _addData(array $data)

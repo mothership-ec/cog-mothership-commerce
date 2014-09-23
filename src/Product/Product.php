@@ -42,6 +42,8 @@ class Product
 	protected $_images;
 	protected $_locale;
 
+	protected $_entities = [];
+
 	/**
 	 * Initiate the object and set some basic properties up
 	 *
