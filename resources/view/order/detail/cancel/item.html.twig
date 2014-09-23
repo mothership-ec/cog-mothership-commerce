@@ -1,0 +1,27 @@
+{% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
+
+{% block title title %}
+
+{% block content %}
+
+{% if lastUncancelledItem %}
+	<p class="warning">You are trying to cancel the last remaining item of this order. You might wish to <a href="{{ url('ms.commerce.order.cancel', {orderID: order.id }) }}" data-modal-open>cancel the entire order</a> instead, to ensure shipping is also refunded.</p>
+{% endif %}
+
+{{ form_start(form) }}
+	{{ form_row(form.stock) }}
+
+	{% if refundable %}
+	<div class="refund">
+		{{ form_row(form.refund) }}
+		<span><strong>{{ refundAmount|price }}</strong></span>
+	</div>
+	{% endif %}
+
+	{{ form_rest(form) }}
+
+	<p><i>This action cannot be undone.</i></p>
+	<button type="submit" class="button cancel small">Cancel Item</button>
+
+{{ form_end(form) }}
+{% endblock %}

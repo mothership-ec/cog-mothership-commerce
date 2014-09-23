@@ -48,14 +48,15 @@ class OrderDetail extends Controller
 		$this->_items = $this->get('order.item.loader')->getByOrder($this->_order);
 
 		$statuses = array();
-		foreach($this->_items AS $item) {
+		foreach($this->_items as $item) {
 			$statuses[$item->id] = $this->get('order.item.status.loader')->getHistory($item);
 		}
 
 		return $this->render('::order:detail:item:listing', array(
-			'order' => $this->_order,
-			'items' => $this->_items,
-			'statuses' => $statuses,
+			'order'           => $this->_order,
+			'items'           => $this->_items,
+			'statuses'        => $statuses,
+			'itemCancellable' => $this->get('order.item.specification.cancellable'),
 		));
 	}
 
@@ -142,6 +143,7 @@ class OrderDetail extends Controller
 	public function tabs($orderID)
 	{
 		$this->_order = ($this->_order ?: $this->_getAndCheckOrder($orderID));
+		$isCancellable = $this->get('order.specification.cancellable')->isSatisfiedBy($this->_order);
 
 		$event = new BuildOrderTabsEvent($this->_order);
 
@@ -153,8 +155,9 @@ class OrderDetail extends Controller
 		$event->setClassOnCurrent($this->get('http.request.master'), 'active');
 
 		return $this->render('Message:Mothership:Commerce::order:detail:tabs', array(
-			'orderID' => $event->getOrder()->id,
-			'items' => $event->getItems(),
+			'order'         => $event->getOrder(),
+			'items'         => $event->getItems(),
+			'isCancellable' => $isCancellable,
 		));
 	}
 

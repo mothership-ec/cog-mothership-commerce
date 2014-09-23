@@ -1,7 +1,22 @@
 <div class="topbar">
 	<ul class="tabs">
 	{% for item in items %}
-		<li class="{{ item.classes|join(' ') }}"><a href="{{ url(item.target, {orderID: orderID }) }}">{{ item.label|trans }}</a></li>
+		<li class="{{ item.classes|join(' ') }}"><a href="{{ url(item.target, {orderID: order.id }) }}">{{ item.label|trans }}</a></li>
 	{% endfor %}
-</ul>
+	</ul>
+	<div class="controls">
+		{% if isCancellable %}
+		    <a class="button small cancel" href="{{ url('ms.commerce.order.cancel', {'orderID': order.id }) }}" data-modal-open>
+		    	Cancel
+		    </a>
+		{% elseif order.status.name == 'Cancelled' %}
+			<span class="button small cancel disabled">
+				Cancelled
+			</span>
+		{% else %}
+			<span class="button small cancel disabled">
+				Can't be cancelled
+			</span>
+		{% endif %}
+	</div>
 </div>

@@ -68,6 +68,14 @@ class Edit implements DB\TransactionalInterface
 
 		$order->status = clone $status;
 
+		$event = new Event\TransactionalEvent($order);
+		$event->setTransaction($this->_query);
+
+		$order = $this->_eventDispatcher->dispatch(
+			Events::STATUS_CHANGE,
+			$event
+		)->getOrder();
+
 		if (!$this->_transOverridden) {
 			$this->_query->commit();
 		}
