@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Image;
 
 use Message\Mothership\FileManager\File\File;
+use Message\Mothership\FileManager\File\Loader as FileLoader;
 
 use Message\ImageResize\ResizableInterface;
 
@@ -29,31 +30,20 @@ class Image implements ResizableInterface
 		$this->authorship = new Authorship;
 
 		$this->authorship
-			->disableUpdate()
-			->disableDelete();
+			->disableUpdate(); // remove when making update class
 	}
-
+	
 	public function getUrl()
 	{
-		if (! $this->file or ! $this->file instanceof File) {
-			return "";
-			// throw new Exception(sprintf("No file set for image with id #%s", $this->id));
-		}
-
-		return $this->file->getUrl();
+		return $this->getFile()->getUrl();
 	}
 
 	public function getAltText()
 	{
-		if (! $this->file or ! $this->file instanceof File) {
-			return "";
-			// throw new Exception(sprintf("No file set for image with id #%s", $this->id));
-		}
-
-		return $this->file->getAltText();
+		return $this->getFile()->getAltText();
 	}
 
-	public function setFileLoader($fileLoader)
+	public function setFileLoader(FileLoader $fileLoader)
 	{
 		$this->_fileLoader = $fileLoader;
 	}
@@ -61,12 +51,30 @@ class Image implements ResizableInterface
 	public function __get($key)
 	{
 		if ('file' == $key) {
-			if (!$this->_file) {
-				$this->_file = $this->_fileLoader->getByID($this->fileID);
-			}
-
-			return $this->_file;
+			return $this->getFile();
 		}
+	}
+
+	public function getFile()
+	{
+		if (null === $this->_file) {
+			$this->_loadFile();
+		}
+
+		return $this->_file;
+	}
+
+	protected function _loadFile()
+	{
+		if (null !== $this->_file) {
+			return;
+		}
+
+		if (!$this->_fileLoader) {
+			throw new \LogicException(__CLASS__ . ': No file loader set, has this object been serialized?');
+		}
+
+		$this->_file = $this->_fileLoader->getByID($this->fileID);
 	}
 
 	public function __isset($key)
@@ -76,11 +84,14 @@ class Image implements ResizableInterface
 
 	public function __sleep()
 	{
+		$this->_loadFile();
+
 		return array(
 			'id',
 			'authorship',
 			'type',
 			'locale',
+			'fileID',
 			'options',
 			'product',
 			'_file',

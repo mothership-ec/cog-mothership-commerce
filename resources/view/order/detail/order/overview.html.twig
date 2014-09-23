@@ -2,8 +2,8 @@
 
 {% block order_content %}
 	<div class="container-content short">
-		{% include '::order:order:detail' %}
-			{% include '::order:detail:item:summary' %}
+		{% include 'Message:Mothership:Commerce::order:order:detail' %}
+		{% include 'Message:Mothership:Commerce::order:detail:item:summary' %}
 			{% if order is defined %}
 				<tfoot class="total-summary">
 					<tr>
@@ -11,8 +11,11 @@
 						<td>{{ order.productGross|price(order.currencyID) }}</td>
 					</tr>
 					<tr>
-						<th colspan="4">Shipping ({{ order.shippingDisplayName }} )</th>
-						<td>{{ order.shippingGross|price(	order.currencyID) }}</td>
+						<th colspan="4">
+							Shipping
+							{% if order.shippingDisplayName %}<em>({{ order.shippingDisplayName }})</em>{% endif %}
+						</th>
+						<td>{{ order.shippingGross|price(order.currencyID) }}</td>
 					</tr>
 					<tr>
 						<th colspan="4">Grand Total</th>

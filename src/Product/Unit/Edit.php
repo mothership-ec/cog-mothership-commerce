@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Mothership\Commerce\Product\Pricing;
+use Message\Mothership\Commerce\Product\Price\Pricing;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 use Message\Cog\DB;
@@ -64,7 +64,7 @@ class Edit implements DB\TransactionalInterface
 			$newRevisionID = $unit->revisionID + 1;
 			foreach ($unit->options as $optionName => $optionValue) {
 				$options[] = $unit->id;
-				$options[] = $optionName;
+				$options[] = strtolower($optionName);
 				$options[] = $optionValue;
 				$options[] = $newRevisionID;
 				$inserts[] = '(?i,?s,?s,?i)';
@@ -124,7 +124,7 @@ class Edit implements DB\TransactionalInterface
 		$inserts = array();
 		foreach ($unit->price as $type => $price) {
 			$unitPrice    = $unit->price[$type]->getPrice('GBP', $this->_locale);
-			$productPrice = $unit->product->price[$type]->getPrice('GBP', $this->_locale);
+			$productPrice = $unit->product->getPrices()[$type]->getPrice('GBP', $this->_locale);
 
 			// If the unit price is equal to the product price then we don't
 			// need to add a row, and same if the price is zero

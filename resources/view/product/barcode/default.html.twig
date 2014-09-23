@@ -1,0 +1,25 @@
+{% extends 'Message:Mothership:Commerce::product:barcode:template' %}
+
+{% block content %}
+	<div class="page">
+		{% for key, barcode in barcodes %}
+			<div class="label">
+				{% if barcode %}
+					<hgroup>
+						<h2>{{ barcode.brand }} {{ barcode.name }} {{ barcode.text }}</h2>
+					</hgroup>
+
+					<p class="price">{{ barcode.price | price(barcode.currency) }}</p>
+					<img src="{{ barcode.url }}" />
+				{% endif %}
+			</div>
+
+			{% if (key + 1) == pageBreak %}
+				</div>
+				<div class="page-break"></div>
+				<div class="page">
+				{% set pageBreak = pageBreak + labelsPerPage %}
+			{% endif %}
+		{% endfor %}
+	</div>
+{% endblock %}

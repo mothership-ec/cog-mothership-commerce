@@ -18,11 +18,22 @@ class ProductSelector extends Controller
 {
 	protected $_availableUnits = array();
 
-	public function index(Product $product, array $options = array())
+	/**
+	 * Displays the product selector
+	 * 
+	 * @param  Product $product             Product for which to show the selector
+	 * @param  array   $options             Product options
+	 * @param  boolean $showVariablePricing Whether to show the price of the unit next
+	 *                                      to its name in the dropdown, if unit prices
+	 *                                      differ from product price.
+	 *                                      
+	 * @return Message\Cog\HTTP\Response    Response object
+	 */
+	public function index(Product $product, array $options = [], $showVariablePricing = false)
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
-		$oosUnits = $this->_filterInStockUnits($units);
+		$oosUnits = $this->_getOutOfStockUnits($units);
 
 		if (count($units) === count($oosUnits)) {
 			return $this->render('Message:Mothership:Commerce::product:product-selector-oos', array(
@@ -32,9 +43,9 @@ class ProductSelector extends Controller
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
-			'product' => $product,
-			'units'   => $units,
-			'form'    => $this->_getForm($product, $options),
+			'product'     => $product,
+			'units'       => $units,
+			'form'        => $this->_getForm($product, $options, $showVariablePricing),
 		));
 	}
 
@@ -65,16 +76,16 @@ class ProductSelector extends Controller
 		return $this->redirectToReferer();
 	}
 
-	protected function _getForm(Product $product, array $options = array())
+	protected function _getForm(Product $product, array $options = [], $showVariablePricing = false)
 	{
 		$form = $this->get('form')
 			->setName('select_product')
-			->setAction($this->generateUrl('ms.commerce.product.add.basket', array('productID' => $product->id)))
+			->setAction($this->generateUrl('ms.commerce.product.add.basket', ['productID' => $product->id]))
 			->setMethod('post');
 
 		$units    = $this->_getAvailableUnits($product, $options);
-		$oosUnits = $this->_filterInStockUnits($units);
-		$choices  = array();
+		$oosUnits = $this->_getOutOfStockUnits($units);
+		$choices  = [];
 
 		foreach ($units as $unit) {
 			// Don't show option names that were passed as criteria to avoid weird-looking duplication
@@ -85,18 +96,20 @@ class ProductSelector extends Controller
 
 		// If there's only one unit available to choose, add it as a hidden field
 		if (1 === count($choices)) {
-			$form->add('unit_id', 'hidden', null, array(
-				'attr' => array(
+			$form->add('unit_id', 'hidden', null, [
+				'attr' => [
 					'value' => key($choices),
-				),
-			));
+				],
+			]);
 		// Otherwise, add a select box to select the unit
 		} else {
-			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), array(
-				'choices'     => $choices,
-				'oos'         => array_keys($oosUnits),
-				'empty_value' => $this->trans('ms.commerce.product.selector.unit.label')
-			));
+			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), [
+				'choices'      => $choices,
+				'units'        => $units,
+				'oos'          => array_keys($oosUnits),
+				'empty_value'  => $this->trans('ms.commerce.product.selector.unit.label'),
+				'show_pricing' => $showVariablePricing && $product->hasVariablePricing(),
+			]);
 		}
 
 		$form = $this->get('event.dispatcher')->dispatch(
@@ -107,12 +120,12 @@ class ProductSelector extends Controller
 		return $form;
 	}
 
-	protected function _getAvailableUnits(Product $product, array $options = array())
+	protected function _getAvailableUnits(Product $product, array $options = [])
 	{
-		$key = md5(serialize(array($product, $options)));
+		$key = md5(serialize(array($product->id, $options)));
 
 		if (!array_key_exists($key, $this->_availableUnits)) {
-			$this->_availableUnits[$key] = array();
+			$this->_availableUnits[$key] = [];
 
 			foreach ($product->getVisibleUnits() as $unit) {
 				// Skip units that don't meet the options criteria, if set
@@ -128,9 +141,9 @@ class ProductSelector extends Controller
 		return $this->_availableUnits[$key];
 	}
 
-	protected function _filterInStockUnits(array $units)
+	protected function _getOutOfStockUnits(array $units)
 	{
-		$return = array();
+		$return = [];
 		$locs   = $this->get('stock.locations');
 
 		foreach ($units as $key => $unit) {

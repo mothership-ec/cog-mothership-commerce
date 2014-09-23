@@ -17,12 +17,14 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Create
+class Create implements DB\TransactionalInterface
 {
-	protected $_trans;
 	protected $_loader;
 	protected $_eventDispatcher;
 	protected $_currentUser;
+
+	protected $_trans;
+	protected $_transOverridden = false;
 
 	protected $_entityCreators = array();
 
@@ -37,6 +39,25 @@ class Create
 		foreach ($entityCreators as $name => $creator) {
 			$this->addEntityCreator($name, $creator);
 		}
+	}
+
+	/**
+	 * Sets transaction and $_transOverridden to true, also sets transaction on
+	 * all entity create decorators.
+	 * 
+	 * @param  DBTransaction $trans Transaction
+	 * @return Create               $this for chainability
+	 */
+	public function setTransaction(DB\Transaction $trans)
+	{
+		$this->_trans = $trans;
+		$this->_transOverridden = true;
+
+		foreach ($this->_entityCreators as $entityCreator) {
+			$entityCreator->setTransaction($trans);
+		}
+
+		return $this;
 	}
 
 	/**
@@ -210,16 +231,26 @@ class Create
 		);
 
 		$order = $event->getOrder();
-		$trans = $event->getTransaction();
 
-		$trans->commit();
-
-		$event = new Event\Event($this->_loader->getByID($trans->getIDVariable('ORDER_ID')));
-		$this->_eventDispatcher->dispatch(
+		// add CREATE_COMPLETE event to when transaction is committed
+		$loader = $this->_loader;
+		$this->_trans->attachEvent(
 			Events::CREATE_COMPLETE,
-			$event
+			function ($trans) use ($loader) {
+				return new Event\Event(
+					$loader->getByID($trans->getIDVariable('ORDER_ID'))
+				);
+			}
 		);
 
-		return $event->getOrder();
+		// @todo ideally we want to listen to CREATE_COMPLETE
+		// check if $event->getOrder()->id == $sqlVariableThing
+		// then set that as the return value
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
+			$order = $this->_loader->getByID($this->_trans->getIDVariable('ORDER_ID'));
+		}
+
+		return $order;
 	}
 }

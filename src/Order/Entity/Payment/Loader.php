@@ -3,6 +3,8 @@
 namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Payment\Loader as BaseLoader;
+use Message\Mothership\Commerce\Payment\Payment as BasePayment;
 
 use Message\Cog\DB;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,15 +14,33 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader
+class Loader extends Order\Entity\BaseLoader implements
+	Order\Transaction\DeletableRecordLoaderInterface,
+	Order\Entity\DeletableLoaderInterface
 {
 	protected $_query;
-	protected $_methods;
+	protected $_paymentLoader;
 
-	public function __construct(DB\Query $query, MethodCollection $methods)
+	public function __construct(DB\Query $query, BaseLoader $paymentLoader)
 	{
-		$this->_query   = $query;
-		$this->_methods = $methods;
+		$this->_query         = $query;
+		$this->_paymentLoader = $paymentLoader;
+	}
+
+	/**
+	 * Set whether to load deleted payments. Also sets include deleted on order loader.
+	 *
+	 * @param  bool $bool True to load deleted payments, false otherwise
+	 *
+	 * @return Loader     Returns $this for chainability
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$bool = (bool) $bool;
+		$this->_paymentLoader->includeDeleted($bool);
+		$this->_orderLoader->includeDeleted($bool);
+
+		return $this;
 	}
 
 	/**
@@ -41,90 +61,116 @@ class Loader extends Order\Entity\BaseLoader
 	}
 
 	/**
-	 * Get payments for a particular method with a particular payment reference.
-	 *
-	 * @param  string|MethodInterface $method The payment method or method name
-	 * @param  string              $reference The payment reference
-	 *
-	 * @return Payment|array[Payment]         Payment(s) for this method & reference
+	 * @see \Message\Mothership\Commerce\Payment\Loader::getByMethodAndReference
 	 */
 	public function getByMethodAndReference($method, $reference)
 	{
-		if ($method instanceof MethodInterface) {
-			$method = $method->getName();
+		$payments = $this->_paymentLoader->getByMethodAndReference($method, $reference);
+
+		if ($payments instanceof BasePayment) {
+			return $this->_convertPaymentToOrderEntity($payments);
 		}
 
-		$result = $this->_query->run('
-			SELECT
-				payment_id
-			FROM
-				order_payment
-			WHERE
-				method    = :method?s
-			AND reference = :reference?s
-		', array(
-			'method'    => $method,
-			'reference' => $reference,
-		));
+		if (is_array($payments)) {
+			foreach ($payments as $key => $payment) {
+				$payments[$key] = $this->_convertPaymentToOrderEntity($payment);
+			}
 
-		return $this->_load($result->flatten(), false);
+			return $payments;
+		}
+
+		return false;
 	}
 
 	public function getByID($id, Order\Order $order = null)
 	{
-		return $this->_load($id, false, $order);
+		return $this->_load($id, is_array($id), $order);
+	}
+
+	public function getByIDs(array $ids)
+	{
+		return $this->_load($ids, true);
+	}
+
+	/**
+	 * Alias of getByID() for `Order\Transaction\RecordLoaderInterface`.
+	 *
+	 * @see getByID
+	 *
+	 * @param  int $id       The payment ID
+	 *
+	 * @return Payment|false The payment, or false if it doesn't exist
+	 */
+	public function getByRecordID($id)
+	{
+		return $this->getByID($id);
 	}
 
 	protected function _load($ids, $alwaysReturnArray = false, Order\Order $order = null)
 	{
-		if (!is_array($ids)) {
-			$ids = (array) $ids;
+		$payments = $this->_paymentLoader->getByID($ids);
+		$return   = [];
+
+		if (false == $payments || 0 === count($payments)) {
+			return $alwaysReturnArray ? [] : false;
 		}
 
-		if (!$ids) {
-			return $alwaysReturnArray ? array() : false;
+		if (!is_array($payments) && $alwaysReturnArray) {
+			$payments = [$payments];
 		}
 
-		$result = $this->_query->run('
-			SELECT
-				*,
-				payment_id AS id
-			FROM
-				order_payment
-			WHERE
-				payment_id IN (?ij)
-		', array($ids));
-
-		if (0 === count($result)) {
-			return $alwaysReturnArray ? array() : false;
+		if ($payments instanceof BasePayment) {
+			return $this->_convertPaymentToOrderEntity($payments, $order);
 		}
 
-		$entities = $result->bindTo('Message\\Mothership\\Commerce\\Order\\Entity\\Payment\\Payment');
-		$return   = array();
-
-		foreach ($result as $key => $row) {
-			// Cast decimals to float
-			$entities[$key]->amount = (float) $row->amount;
-
-			$entities[$key]->authorship->create(
-				new DateTimeImmutable(date('c', $row->created_at)),
-				$row->created_by
-			);
-
-			if (!$order || $row->order_id != $order->id) {
-				$order = $this->_orderLoader->getByID($row->order_id);
-			}
-
-			$entities[$key]->order = $order;
-
-			// TODO: set the return here if a return_id is set
-
-			$entities[$key]->method = $this->_methods->get($row->method);
-
-			$return[$row->id] = $entities[$key];
+		foreach ($payments as $payment) {
+			$return[$payment->id] = $this->_convertPaymentToOrderEntity($payment, $order);
 		}
 
 		return $alwaysReturnArray || count($return) > 1 ? $return : reset($return);
 	}
 
+	/**
+	 * Convert base `Payment` instances returned by the base payment loader into
+	 * order entity payments and set the order parameter on them.
+	 *
+	 * @param  BasePayment      $payment The base payment to convert
+	 * @param  Order\Order|null $order   The related order, if you have it. If
+	 *                                   null it will be loaded automagically
+	 *
+	 * @return Payment                   The converted payment
+	 *
+	 * @throws \LogicException If the payment to be converted is not linked to
+	 *                         any order (and therefore cannot be converted)
+	 */
+	protected function _convertPaymentToOrderEntity(BasePayment $payment, Order\Order $order = null)
+	{
+		$return = new Payment($payment);
+
+		// Find the order and load it if it was not passed
+		if (!$order) {
+			$result = $this->_query->run('
+				SELECT
+					order_id
+				FROM
+					order_payment
+				WHERE
+					payment_id = ?i
+			', $payment->id);
+
+			if (count($result) !== 1) {
+				throw new \LogicException(sprintf('Payment #%s is not an order payment and cannot be loaded', $payment->id));
+			}
+
+			$order = $this->_orderLoader->getByID($result->value());
+
+			if (!$order) {
+				throw new \LogicException(sprintf('Order #%s not found', $result->value()));
+			}
+		}
+
+		$return->order = $order;
+
+		return $return;
+	}
 }

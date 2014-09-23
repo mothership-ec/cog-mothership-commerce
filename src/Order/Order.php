@@ -4,14 +4,18 @@ namespace Message\Mothership\Commerce\Order;
 
 use Message\Cog\Service\Container;
 use Message\Cog\ValueObject\Authorship;
+use Message\Mothership\Commerce\Payable\PayableInterface;
 
 /**
  * Order model. Container for all information about an order.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Order
+
+class Order implements PayableInterface, Transaction\RecordInterface
 {
+	const RECORD_TYPE = 'order';
+
 	public $id;
 	public $orderID; // alias of $id for BC
 
@@ -46,6 +50,8 @@ class Order
 	public $shippingGross     = 0;
 
 	public $metadata;
+
+	protected $_payableTransactionID;
 
 	protected $_entities = array();
 
@@ -384,5 +390,77 @@ class Order
 		}
 
 		return $total;
+	}
+
+	/**
+	 * Get the sum of the payment amounts on the order.
+	 *
+	 * @return float
+	 */
+	public function getAmountPaid()
+	{
+		$paid = 0;
+
+		foreach ($this->payments as $payment) {
+			$paid += $payment->amount;
+		}
+
+		return $paid;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordType()
+	{
+		return self::RECORD_TYPE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRecordID()
+	{
+		return $this->id;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableAmount()
+	{
+		return $this->getAmountDue();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableCurrency()
+	{
+		return $this->currencyID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPayableAddress($type)
+	{
+		return $this->getAddress($type);
+	}
+
+	/**
+	 * Retrieves the payableTransactionID property, this is set once to ensure
+	 * it remains the same between requests.
+	 *
+	 * {@inheritDoc}
+	 */
+	public function getPayableTransactionID()
+	{
+		if (! $this->_payableTransactionID) {
+			$this->_payableTransactionID = 'ORDER-' . strtoupper(uniqid());
+		}
+
+		return $this->_payableTransactionID;
+
 	}
 }

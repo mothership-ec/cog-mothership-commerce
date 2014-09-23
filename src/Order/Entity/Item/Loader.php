@@ -13,11 +13,14 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader extends Order\Entity\BaseLoader
+class Loader extends Order\Entity\BaseLoader implements
+	Order\Transaction\DeletableRecordLoaderInterface,
+	Order\Entity\DeletableLoaderInterface
 {
 	protected $_query;
 	protected $_statusLoader;
 	protected $_stockLocations;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, Status\Loader $statusLoader, LocationCollection $stockLocations)
 	{
@@ -26,9 +29,34 @@ class Loader extends Order\Entity\BaseLoader
 		$this->_stockLocations = $stockLocations;
 	}
 
+	/**
+	 * Set whether to load deleted items. Also sets include deleted on order loader.
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted items
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_includeDeleted = (bool) $bool;
+		$this->_orderLoader->includeDeleted($this->_includeDeleted);
+
+		return $this;
+	}
+
 	public function getByID($id, Order\Order $order = null)
 	{
 		return $this->_load($id, false, $order);
+	}
+
+	/**
+	 * Alias of getByID for Order\Transaction\RecordLoaderInterface
+	 * @param  int $id record id
+	 * @return Item|false The item, or false if it doesn't exist
+	 */
+	public function getByRecordID($id)
+	{
+		return $this->getByID($id);
 	}
 
 	/**
@@ -58,13 +86,18 @@ class Loader extends Order\Entity\BaseLoader
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
 				item_id          AS id,
 				order_id         AS orderID,
-				actual_price     AS actualPrice,
+				deleted_at       AS deletedAt,
+				deleted_by       AS deletedBy,
 				list_price       AS listPrice,
+				actual_price     AS actualPrice,
+				base_price       AS basePrice,
 				tax_rate         AS taxRate,
 				product_tax_rate AS productTaxRate,
 				tax_strategy     AS taxStrategy,
@@ -79,6 +112,7 @@ class Loader extends Order\Entity\BaseLoader
 				order_item_personalisation USING (item_id)
 			WHERE
 				item_id IN (?ij)
+			' . $includeDeleted . '
 		', array($ids));
 
 		if (0 === count($result)) {
@@ -92,6 +126,7 @@ class Loader extends Order\Entity\BaseLoader
 			// Cast decimals to float
 			$items[$key]->listPrice      = (float) $row->listPrice;
 			$items[$key]->actualPrice    = (float) $row->actualPrice;
+			$items[$key]->basePrice      = (float) $row->basePrice;
 			$items[$key]->net            = (float) $row->net;
 			$items[$key]->discount       = (float) $row->discount;
 			$items[$key]->tax            = (float) $row->tax;
@@ -105,6 +140,13 @@ class Loader extends Order\Entity\BaseLoader
 				new DateTimeImmutable(date('c', $row->created_at)),
 				$row->created_by
 			);
+
+			if ($row->deleted_at) {
+				$items[$key]->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
 
 			// Load the order if we don't have it already
 			if (!$order || $row->order_id != $order->id) {

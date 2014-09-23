@@ -8,6 +8,7 @@ ms.commerce:
       save: Save changes
       create: Create product
       sku: Add SKU
+      barcodes: Print barcodes
     attributes:
       name:
         label: Name
@@ -15,6 +16,12 @@ ms.commerce:
       display-name:
         label: Display Name
         help: The display name can be different from the 'actual' product name.
+      sort-name:
+        label: Sort Name
+        help: A name to override alphabetical sorting. This will not be displayed on the website.
+      type:
+        label: Type
+        help: The type of product this will be. This will determine the information you can add.
       category:
         label: Category
         help: This is used for grouping products. All products with the same 'category' are linked automatically.
@@ -76,7 +83,7 @@ ms.commerce:
         help: -
       tags:
         label: Tags
-        help: Tags are single words separated by commans which can be used to group items together in ad-hoc ways, depending on the set-up of your site.
+        help: Tags are words or phrases separated by commas which can be used to group items together in ad-hoc ways, depending on the set-up of your site.
       notes:
         label: Notes
         help: A place for you to jot down additional information about your product.
@@ -149,6 +156,19 @@ ms.commerce:
       level:
         label: Adjust stock level
         help: The first figure gives information about the current stock level. Put the change in stock in the input-field. E.g. when you put "2", it will increase the stock level by 2.
+    search:
+      label: Search
+      placeholder: Search products
+    barcode:
+      type:
+        label: Type
+        automatic: For all in stock units in location
+        manual: Manually
+      location:
+        label: Location
+      offset:
+        label: Number of used labels
+        help: This allows you to re-use label sheets. Set this to the number of labels already used on the label sheet. For instance, if you set this to 5, the first barcode will be set to print on the 6th label.
   order:
     feedback:
       general:
@@ -172,7 +192,7 @@ ms.commerce:
       product-gross: Product Gross
       total-gross: Total Gross
       status: Status
-      user-email: E-Mail
+      user-email: User E-Mail
 
     item:
       none: There are no items to view.
@@ -201,10 +221,19 @@ ms.commerce:
       listing-title: Payments
       summary-title: Payment Summary
 
-      return: Return
       method: Method
       amount: Amount
       reference: Reference
+
+    refund:
+      none: There are no refunds to view.
+      listing-title: Refunds
+
+      method: Method
+      amount: Amount
+      reference: Reference
+      payment: For Payment
+      reason: Reason
 
     dispatch:
       none: There are no dispatches to view.
