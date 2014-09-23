@@ -1,19 +1,78 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-{% block main %}
+{% extends 'Message:Mothership:ControlPanel::_templates/cp' %}
+{% block content %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
 </hgroup>
 <div class="container-content create-product">
-	{{ form_start(form) }}
-		{{ form_row(form.name) }}
-		{{ form_row(form.display_name) }}
-		{{ form_row(form.short_description) }}
-		<button type="submit" class="button small save" id="save-content">
-			{{ 'ms.commerce.product.button.create'|trans }}
-		</button>
-	{{ form_end(form) }}
+	<form action="/">
+		<section class="group">
+			<h1 class="title">Information</h1>
+			<div class="content">
+				<div class="field required">
+					<label for="name">Name</label>
+					<input type="text" id="name" placeholder="Enter product name">
+				</div>
+				<div class="field required">
+					<label for="brand">Brand</label>
+					<input type="text" id="brand" placeholder="e.g. Addidas, Nike, Barbour..">
+				</div>
+				<div class="field required">
+					<label for="category">Category</label>
+					<input type="text" id="category" class="example-category" placeholder="category">
+				</div>
+				<h2>Variants</h2>
+				<div class="variants">
+					<div class="field required">
+						<label for="colour">Colour</label>
+						<input type="hidden" id="colour" style="width: 90%;" tabindex="-1" placeholder="Colour" data-main class="select2-offscreen">
+					</div>
+					<div class="field required">
+						<label for="colour">Size</label>
+						<input type="hidden" id="size" style="width: 90%;" tabindex="-1" placeholder="Sizes" data-second class="select2-offscreen">
+					</div>
+					<div class="options">
+						<ul>
+							<li>
+								<span class="name">Blue</span> - <span class="size">X small</span>
+								<fieldset>
+									<label for="stock">Stock value</label>
+									<input type="number" id="stock" placeholder="0">
+								</fieldset>
+								<a href="#" class="remove"></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="field required">
+					<label for="category">Price</label>
+					<input type="text" id="category" class="example-category" placeholder="Price">
+				</div>
+				<div class="field required">
+					<label for="short-description">Short description</label>
+					<textarea name="short-description" id="" cols="30" rows="10"></textarea>
+				</div>
+			</div>
+		</section>
+		<div class="save-content">
+			<a href="#" class="button small save">
+				{{ 'ms.commerce.product.button.create'|trans }}
+			</a>
+		</div>
+	</form>
 </div>
+<div class="container-content complete">
+	<div class="wrap">
+		<h1><span class="tick animated"></span>Product created</h1>
+		<a href="/admin/product/" class="small button">
+			Continue editing product
+		</a>
+		<a href="/admin/product/create" class="small button">
+			Create similar product
+		</a>
+		<a href="/admin/product/create" class="small button">
+			Create new product
+		</a>
+	</div>
+</div>
+
 {% endblock %}
