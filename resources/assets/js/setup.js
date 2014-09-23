@@ -20,8 +20,4 @@ $(function() {
 			null
 		]
 	});
-
-	$(document).ready(function() {
-		$('.table-filter').dataTable();
-	});
 });
