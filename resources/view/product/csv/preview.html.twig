@@ -15,6 +15,7 @@
 {% endblock %}
 
 {% block main %}
+	<section class="container-content">
 	{% set key = 1 %}
 	{# Use flipscroll style at http://elvery.net/demo/responsive-tables/ #}
 	<h3>Valid rows</h3>
@@ -51,4 +52,5 @@
 	{{ form_start(form) }}
 	<button type="submit" >Save</button>
 	{{ form_end(form) }}
+	</section>
 {% endblock %}
