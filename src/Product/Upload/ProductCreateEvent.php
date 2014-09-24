@@ -8,6 +8,7 @@ use Message\Cog\Event\Event as Event;
 class ProductCreateEvent extends Event
 {
 	private $_product;
+	private $_unit;
 	private $_formData;
 	private $_row;
 
