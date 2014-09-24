@@ -7,15 +7,15 @@
 	<div class="controls">
 		{% if isCancellable %}
 		    <a class="button small cancel" href="{{ url('ms.commerce.order.cancel', {'orderID': order.id }) }}" data-modal-open>
-		    	Cancel
+		    	{{ 'ms.commerce.order.order.cancel' | trans }}
 		    </a>
 		{% elseif order.status.name == 'Cancelled' %}
 			<span class="button small cancel disabled">
-				Cancelled
+		    	{{ 'ms.commerce.order.order.cancelled' | trans }}
 			</span>
 		{% else %}
 			<span class="button small cancel disabled">
-				Can't be cancelled
+		    	{{ 'ms.commerce.order.order.cancel-disabled' | trans }}
 			</span>
 		{% endif %}
 	</div>

@@ -195,10 +195,12 @@ ms.commerce:
       user-email: User E-Mail
 
       cancel: Cancel Order
+      cancelled: Cancelled
+      cancel-disabled: "Can't Cancel"
 
     item:
       none: There are no items to view.
-      cancel: Cancel
+      cancel: Cancel Item
       cancelled: Cancelled
       cancel-disabled: "Can't Cancel"
 
