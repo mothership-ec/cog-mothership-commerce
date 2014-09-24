@@ -167,6 +167,10 @@ class Cancel extends Controller
 		$cancelledItems = $this->_order->items->getByCurrentStatusCode(Order\Statuses::CANCELLED);
 		$lastUncancelledItem = 1 == ($this->_order->items->count() - count($cancelledItems));
 
+		if ($lastUncancelledItem) {
+			return $this->cancelOrder($orderID);
+		}
+
 		$form->handleRequest();
 
 		if ($form->isValid()) {
