@@ -194,8 +194,13 @@ ms.commerce:
       status: Status
       user-email: User E-Mail
 
+      cancel: Cancel Order
+
     item:
       none: There are no items to view.
+      cancel: Cancel
+      cancelled: Cancelled
+      cancel-disabled: "Can't Cancel"
 
       listing-title: Items
       summary-title: Item Summary

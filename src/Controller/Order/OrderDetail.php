@@ -29,6 +29,7 @@ class OrderDetail extends Controller
 			'addresses' => $this->_addresses,
 			'items'     => $this->_items,
 			'metadata'  => $this->_metadata,
+			'itemCancellationSpecification' => $this->get('order.item.specification.cancellable'),
 		));
 	}
 

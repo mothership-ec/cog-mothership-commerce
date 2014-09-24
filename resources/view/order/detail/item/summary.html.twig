@@ -3,11 +3,12 @@
 	<table class="order-listing-overview">
 		<thead>
 		<tr>
-			<th><span>Product</span></th>
-			<th><span>Net</span></th>
-			<th><span>Discount</span></th>
-			<th><span>Tax</span></th>
-			<th><span>Gross</span></th>
+			<th>Product</th>
+			<th>Net</th>
+			<th>Discount</th>
+			<th>Tax</th>
+			<th>Gross</th>
+			<th>Cancel</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -18,6 +19,21 @@
 					<td>{{ item.discount|price(order.currencyID) }}</td>
 					<td>{{ item.tax|price(order.currencyID) }}</td>
 					<td>{{ item.gross|price(order.currencyID) }}</td>
+					<td class="center">
+					{% if itemCancellationSpecification.isSatisfiedBy(item) %} 
+						<a href="{{ url('ms.commerce.order.item.cancel', {'orderID': order.id, 'itemID': item.id }) }}" class="button small cancel" data-modal-open>
+							{{ 'ms.commerce.order.item.cancel' | trans }}
+						</a>
+					{% else %}
+						<span class="button small cancel disabled">
+							{% if item.status.name == 'Cancelled' %}
+								{{ 'ms.commerce.order.item.cancelled' | trans }}
+							{% else %}
+								{{ 'ms.commerce.order.item.cancel-disabled' | trans }}
+							{% endif %}
+						</span> 
+					{% endif %}
+					</td>
 				</tr>
 			{% endfor %}
 		</tbody>
