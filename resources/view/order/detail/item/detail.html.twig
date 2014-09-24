@@ -8,15 +8,15 @@
 				data-modal-open
 				class="button small cancel"
 			>
-				Cancel
+				{{ 'ms.commerce.order.item.cancel' | trans }}
 			</a>
 		{% elseif item.status.name == 'Cancelled' %}
 			<span class="button small cancel disabled">
-				Cancelled
+				{{ 'ms.commerce.order.item.cancelled' | trans }}
 			</span>
 		{% else %}
 			<span class="button small cancel disabled">
-				Can't be cancelled
+				{{ 'ms.commerce.order.item.cancel-disabled' | trans }}
 			</span>
 		{% endif %}
 		</div>
