@@ -113,7 +113,7 @@ class Refund extends Controller implements CompleteControllerInterface
 		), UrlGeneratorInterface::ABSOLUTE_URL);
 
 		return new JsonResponse([
-			'url' => $successUrl,
+			'url' => $this->get('request')->headers->get('referer'),
 		]);
 	}
 
