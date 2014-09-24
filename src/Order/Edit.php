@@ -66,6 +66,21 @@ class Edit implements DB\TransactionalInterface
 			'updatedBy' => $order->authorship->updatedBy(),
 		));
 
+		if ($status->code === Statuses::CANCELLED) {
+			$this->_query->run(
+				'UPDATE
+					`order_shipping`
+				SET
+					`status_code` = :status?i
+				WHERE
+					`order_id` = :id?i',
+				[
+					'id'     => $order->id,
+					'status' => $status->code,
+				]
+			);
+		}
+
 		$order->status = clone $status;
 
 		$event = new Event\TransactionalEvent($order);
