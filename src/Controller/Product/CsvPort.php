@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Controller\Product;
 
+use Message\Mothership\Commerce\Product\Upload\Exception\UploadFrontEndException;
+
 use Message\Cog\Controller\Controller;
 use Message\Cog\Filesystem\FileType\CSVFile;
 
@@ -49,20 +51,24 @@ class CsvPort extends Controller
 			$data = $form->getData();
 
 			foreach ($this->get('http.session')->get(self::VALID_ROWS_SESSION) as $productRows) {
-				if (!is_array($productRows)) {
-					throw new \LogicException('Product rows expected to be array, ' . gettype($productRows) . ' given');
+				try {
+					if (!is_array($productRows)) {
+						throw new \LogicException('Product rows expected to be array, ' . gettype($productRows) . ' given');
+					}
+
+					$productRow = array_values($productRows);
+					$productRow = array_shift($productRow);
+					$product    = $this->get('product.upload.product_builder')->build($productRow);
+					$this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
+
+					foreach ($productRows as $row) {
+						$unit = $this->get('product.upload.unit_builder')->setBaseProduct($product)->build($row);
+						$this->get('product.upload.unit_create_dispatcher')->create($unit, $data, $row);
+					}
 				}
-
-				$productRow = array_values($productRows);
-				$productRow = array_shift($productRow);
-				$product    = $this->get('product.upload.product_builder')->build($productRow);
-				$this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
-
-				foreach ($productRows as $row) {
-					$unit = $this->get('product.upload.unit_builder')->setBaseProduct($product)->build($row);
-					$this->get('product.upload.unit_create_dispatcher')->create($unit, $data, $row);
+				catch (UploadFrontEndException $e) {
+					$this->addFlash('error', $e->getMessage());
 				}
-
 			}
 		}
 

@@ -100,4 +100,9 @@ class Unit
 
 		return $this->options[$type];
 	}
+
+	public function hasOption($type)
+	{
+		return isset($this->options[$type]);
+	}
 }
