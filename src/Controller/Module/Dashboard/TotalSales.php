@@ -25,7 +25,7 @@ class TotalSales extends Controller
 			FROM
 				order_summary
 			WHERE
-				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(NOW(), INTERVAL 6 DAY) AND NOW()
+				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
 			GROUP BY
 				DAY(FROM_UNIXTIME(created_at))
 			ORDER BY
@@ -38,7 +38,7 @@ class TotalSales extends Controller
 			FROM
 				order_summary
 			WHERE
-				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(NOW(), INTERVAL 6 DAY) AND NOW()
+				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
 			")->flatten();
 
 		$rows = [];
