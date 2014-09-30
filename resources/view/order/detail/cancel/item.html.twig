@@ -4,10 +4,6 @@
 
 {% block content %}
 
-{% if lastUncancelledItem %}
-	<p class="warning">You are trying to cancel the last remaining item of this order. You might wish to <a href="{{ url('ms.commerce.order.cancel', {orderID: order.id }) }}" data-modal-open>cancel the entire order</a> instead, to ensure shipping is also refunded.</p>
-{% endif %}
-
 {{ form_start(form) }}
 	{{ form_row(form.stock) }}
 
@@ -20,7 +16,7 @@
 
 	{{ form_rest(form) }}
 
-	<p><i>This action cannot be undone.</i></p>
+	<p><i>{{ 'ms.commerce.order.item.cancel-warn' | trans }}</i></p>
 	<button type="submit" class="button cancel small">{{ 'ms.commerce.order.item.cancel' | trans }}</button>
 
 {{ form_end(form) }}

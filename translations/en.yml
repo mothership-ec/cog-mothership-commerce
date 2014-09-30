@@ -197,6 +197,7 @@ ms.commerce:
       cancel: Cancel Order
       cancelled: Cancelled
       cancel-disabled: "Can't Cancel"
+      cancel-warn: This action cannot be undone
 
     item:
       none: There are no items to view.
@@ -206,6 +207,7 @@ ms.commerce:
 
       listing-title: Items
       summary-title: Item Summary
+      cancel-warn: This action cannot be undone
 
     address:
       none: There are no addresses to view.
