@@ -197,7 +197,7 @@ ms.commerce:
       cancel: Cancel Order
       cancelled: Cancelled
       cancel-disabled: "Can't Cancel"
-      cancel-warn: This action cannot be undone
+      cancel-warn: Shipping will be refunded. This action cannot be undone
 
     item:
       none: There are no items to view.
