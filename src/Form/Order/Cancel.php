@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 use Message\Cog\Security\Hash\HashInterface;
 use Message\User\User;
+use Message\Cog\Localisation\Translator;
 
 class Cancel extends Form\AbstractType
 {
@@ -18,15 +19,18 @@ class Cancel extends Form\AbstractType
 	protected $_stockLocation;
 	protected $_password;
 	protected $_passwordHash;
+	private $_translator;
 
 	public function __construct(
 		Location $stockLocation,
 		$password,
-		HashInterface $passwordHash
+		HashInterface $passwordHash,
+		Translator $trans
 	) {
 		$this->_stockLocation = $stockLocation;
 		$this->_password      = $password;
 		$this->_passwordHash  = $passwordHash;
+		$this->_translator    = $trans;
 	}
 
 	/**
@@ -34,25 +38,27 @@ class Cancel extends Form\AbstractType
 	 */
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
+		$trans = $this->getTranslator();
+
 		$builder->add('stock', 'checkbox', [
-			'label' => sprintf(
-				'Return %s to stock location `%s`?',
-				$options[self::STOCK_LABEL_OPTION],
-				$options[self::STOCK_LOCATION_OPTION]->displayName
-			),
-		]);
+			'label' =>
+				$trans->trans('ms.commerce.order.order.cancel-form.return-stock', [
+					'%items%' => $options[self::STOCK_LABEL_OPTION],
+					'%location%' => $options[self::STOCK_LOCATION_OPTION]->displayName
+				]),
+			]);
 
 		if ($options[self::REFUNDABLE_OPTION]) {
 			$builder->add('refund', 'checkbox', [
-				'label' => 'Issue a refund?',
+				'label' => $trans->trans('ms.commerce.order.order.cancel-form.issue-refund'),
 			]);	
 		}
 
 		$builder->add('notifyCustomer', 'checkbox', [
-			'label' => 'Notify the customer by email?',
+			'label' => $trans->trans('ms.commerce.order.order.cancel-form.notify-customer'),
 		]);
 		$builder->add('password', 'password', [
-			'label' => 'Please confirm your account password to continue',
+			'label' => $trans->trans('ms.commerce.order.order.cancel-form.password-confirm'),
 			'constraints' => [
 				new Constraints\NotBlank,
 			]
@@ -102,4 +108,28 @@ class Cancel extends Form\AbstractType
 		return 'order_cancel';
 	}
 
+
+    /**
+     * Gets the value of _translator.
+     *
+     * @return Translator
+     */
+    public function getTranslator()
+    {
+        return $this->_translator;
+    }
+    
+    /**
+     * Sets the value of _translator.
+     *
+     * @param mixed $_translator the  translator 
+     *
+     * @return self
+     */
+    public function setTranslator(Translator$translator)
+    {
+        $this->_translator = $translator;
+
+        return $this;
+    }
 }

@@ -164,7 +164,8 @@ class Services implements ServicesInterface
 			return new Commerce\Form\Order\Cancel(
 				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE),
 				$c['user.loader']->getUserPassword($c['user.current']),
-				$c['user.password_hash']
+				$c['user.password_hash'],
+				$c['translator']
 			);
 		};
 
