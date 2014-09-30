@@ -29,7 +29,7 @@ class TotalSales extends Controller
 			GROUP BY
 				DAY(FROM_UNIXTIME(created_at))
 			ORDER BY
-				created_at DESC
+				created_at ASC
 			");
 
 		$total = $this->get('db.query')->run("
@@ -44,13 +44,14 @@ class TotalSales extends Controller
 		$rows = [];
 
 		if ($days) {
-			$i = 0;
-			$last = time();
-
+			//$i = 0;
 			$day = 60*60*24;
+
+			$first = time() - ($day * 6);
+
 			for ($i = 0; $i <= 6; $i++) {
-				$label = date('l, jS F Y', $last);
-				$last -= $day;
+				$label = date('l, jS F Y', $first);
+				$first += $day;
 				$rows[$label] = [
 					'label' => $label,
 					'value' => 0.0
@@ -67,7 +68,7 @@ class TotalSales extends Controller
 		}
 
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:area-graph', [
-			'label'   => 'Total sales (week)',
+			'label'   => 'Total sales this week (excl shipping) ',
 			'keys' => [
 				'label' => 'Day',
 				'value' => 'Amount',
