@@ -4,7 +4,7 @@ window.units = [];
 
 
 function Unit(variants) {
-	this.variants = variants ? variants : [];
+	this.variants = variants ? variants : {};
 }
 
 function updateUnits() {
@@ -25,13 +25,20 @@ function updateUnits() {
 		});
 	});
 
-	var units = []; 
-	function cartesian(vars) {
-		
+	var units = [], max = Object.keys(variants).length - 1; 
+	
+	function cartesian(u, i) {
+		var key = Object.keys(vars)[i];
 
+		for (var j=0, l=variants[key].length; j<l; ++j){
+			var a = vars.clone();
+			var unit = new Unit();
 
+			a.push();
+		}
 	}
 
+	console.log(units);
 }
 
 function addVariantField() {
