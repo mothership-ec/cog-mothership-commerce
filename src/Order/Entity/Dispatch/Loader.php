@@ -16,11 +16,27 @@ class Loader extends Order\Entity\BaseLoader
 {
 	protected $_query;
 	protected $_methods;
+	protected $_includeDeleted = false;
 
 	public function __construct(DB\Query $query, MethodCollection $methods)
 	{
 		$this->_query   = $query;
 		$this->_methods = $methods;
+	}
+
+	/**
+	 * Set whether to load deleted dispatches. Also sets include deleted on order loader.
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted dispatches
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_includeDeleted = (bool) $bool;
+		$this->_orderLoader->includeDeleted($this->_includeDeleted);
+
+		return $this;
 	}
 
 	public function getByID($id, Order\Order $order = null)
@@ -121,6 +137,8 @@ class Loader extends Order\Entity\BaseLoader
 			return $alwaysReturnArray ? array() : false;
 		}
 
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL' ;
+
 		$result = $this->_query->run('
 			SELECT
 				*,
@@ -131,6 +149,7 @@ class Loader extends Order\Entity\BaseLoader
 				order_dispatch
 			WHERE
 				dispatch_id IN (?ij)
+			' . $includeDeleted . '
 		', array($ids));
 
 		if (0 === count($result)) {
