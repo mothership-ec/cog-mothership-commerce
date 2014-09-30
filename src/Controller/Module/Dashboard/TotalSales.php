@@ -18,37 +18,57 @@ class TotalSales extends Controller
 	 */
 	public function index()
 	{
-		$dataset  = $this->get('statistics')->get('sales.net');
-		$net      = $dataset->range->getValues($dataset->range->getWeekAgo());
-		$totalNet = $dataset->range->getTotal($dataset->range->getWeekAgo());
+		$days = $this->get('db.query')->run("
+			SELECT
+				created_at AS date,
+				SUM(product_gross) AS gross
+			FROM
+				order_summary
+			WHERE
+				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
+			GROUP BY
+				DAY(FROM_UNIXTIME(created_at))
+			ORDER BY
+				created_at ASC
+			");
+
+		$total = $this->get('db.query')->run("
+			SELECT
+				SUM(product_gross) AS gross
+			FROM
+				order_summary
+			WHERE
+				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
+			")->flatten();
 
 		$rows = [];
 
-		if (count($net)) {
-			// Pre-fill rows with a total of 0 on each day before now to ensure we
-			// don't lose days where there is no value.
-			$first = key($net);
-			$last = time();
+		if ($days) {
+			//$i = 0;
 			$day = 60*60*24;
-			for ($i = $first; $i <= $last; $i += $day) {
-				$label = date('l, jS M', $i);
+
+			$first = time() - ($day * 6);
+
+			for ($i = 0; $i <= 6; $i++) {
+				$label = date('l, jS F Y', $first);
+				$first += $day;
 				$rows[$label] = [
 					'label' => $label,
 					'value' => 0.0
 				];
 			}
 
-			foreach ($net as $timestamp => $value) {
-				$label = date('l, jS M', $timestamp);
+			foreach ($days as $day => $value) {
+				$label = date('l, jS F Y', $value->date);
 				$rows[$label] = [
 					'label' => $label,
-					'value' => (float) $value
+					'value' => (float) $value->gross
 				];
 			}
 		}
 
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:area-graph', [
-			'label'   => 'Total sales (week)',
+			'label'   => 'Total sales this week (excl shipping) ',
 			'keys' => [
 				'label' => 'Day',
 				'value' => 'Amount',
@@ -57,7 +77,7 @@ class TotalSales extends Controller
 			'filterPrice' => true,
 			'numbers' => [
 				[
-					'value'   => $totalNet,
+					'value'   => $total['0'],
 				]
 			]
 		]);
