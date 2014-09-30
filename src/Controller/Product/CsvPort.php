@@ -72,6 +72,15 @@ class CsvPort extends Controller
 			}
 		}
 
+		$completeEvent = $this->get('product.upload.complete_dispatcher')->dispatch();
+
+		if ($completeEvent->getRoute()) {
+			return $this->redirectToRoute(
+				$completeEvent->getRoute(),
+				$completeEvent->getParams()
+			);
+		}
+
 		return $this->redirectToReferer();
 	}
 

@@ -561,6 +561,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Upload\UnitCreateDispatcher($c['product.unit.create'], $c['event.dispatcher']);
 		});
 
+		$services['product.upload.complete_dispatcher'] = $services->factory(function ($c) {
+			return new Commerce\Product\Upload\UploadCompleteDispatcher($c['event.dispatcher']);
+		});
+
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));
