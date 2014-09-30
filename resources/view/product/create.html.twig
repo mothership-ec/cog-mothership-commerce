@@ -5,7 +5,7 @@
 		'@Message:Mothership:Commerce::resources/assets/js/product-create.js'
 
 		output='/assets/js/ms_product_create.js'
-		filter='?jsmin'
+		filter=''
 	%}
 	<script src="{{ asset_url }}"></script>
 	{% endjavascripts %}
@@ -33,16 +33,8 @@
 				</div>
 				<h2>Variants</h2>
 				<div class="variants">
-					<a class="button small add" id="add-variant">{{ 'ms.commerce.product.button.variant' | trans }}</a>
-
-					<div class="field required">
-						<label for="colour">Colour</label>
-						<input type="hidden" id="colour" style="width: 90%;" tabindex="-1" placeholder="Colour" data-main class="select2-offscreen">
-					</div>
-					<div class="field required">
-						<label for="colour">Size</label>
-						<input type="hidden" id="size" style="width: 90%;" tabindex="-1" placeholder="Sizes" data-second class="select2-offscreen">
-					</div>
+					<a class="button small add add-variant">{{ 'ms.commerce.product.button.variant' | trans }}</a>
+					<div class="variant-options"></div>
 					<div class="options">
 						<ul>
 							<li>
