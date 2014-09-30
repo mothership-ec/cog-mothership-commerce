@@ -18,31 +18,50 @@ class TotalSales extends Controller
 	 */
 	public function index()
 	{
-		$dataset  = $this->get('statistics')->get('sales.net');
-		$net      = $dataset->range->getValues($dataset->range->getWeekAgo());
-		$totalNet = $dataset->range->getTotal($dataset->range->getWeekAgo());
+		$days = $this->get('db.query')->run("
+			SELECT
+				created_at AS date,
+				SUM(product_gross) AS gross
+			FROM
+				order_summary
+			WHERE
+				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(NOW(), INTERVAL 6 DAY) AND NOW()
+			GROUP BY
+				DAY(FROM_UNIXTIME(created_at))
+			ORDER BY
+				created_at DESC
+			");
+
+		$total = $this->get('db.query')->run("
+			SELECT
+				SUM(product_gross) AS gross
+			FROM
+				order_summary
+			WHERE
+				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(NOW(), INTERVAL 6 DAY) AND NOW()
+			")->flatten();
 
 		$rows = [];
 
-		if (count($net)) {
-			// Pre-fill rows with a total of 0 on each day before now to ensure we
-			// don't lose days where there is no value.
-			$first = key($net);
+		if ($days) {
+			$i = 0;
 			$last = time();
+
 			$day = 60*60*24;
-			for ($i = $first; $i <= $last; $i += $day) {
-				$label = date('l, jS M', $i);
+			for ($i = 0; $i <= 6; $i++) {
+				$label = date('l, jS F Y', $last);
+				$last -= $day;
 				$rows[$label] = [
 					'label' => $label,
 					'value' => 0.0
 				];
 			}
 
-			foreach ($net as $timestamp => $value) {
-				$label = date('l, jS M', $timestamp);
+			foreach ($days as $day => $value) {
+				$label = date('l, jS F Y', $value->date);
 				$rows[$label] = [
 					'label' => $label,
-					'value' => (float) $value
+					'value' => (float) $value->gross
 				];
 			}
 		}
@@ -57,7 +76,7 @@ class TotalSales extends Controller
 			'filterPrice' => true,
 			'numbers' => [
 				[
-					'value'   => $totalNet,
+					'value'   => $total['0'],
 				]
 			]
 		]);
