@@ -25,20 +25,53 @@ function updateUnits() {
 		});
 	});
 
-	var units = [], max = Object.keys(variants).length - 1; 
-	
-	function cartesian(u, i) {
-		var key = Object.keys(vars)[i];
+	var units = [new Unit];
 
-		for (var j=0, l=variants[key].length; j<l; ++j){
-			var a = vars.clone();
-			var unit = new Unit();
+	// Construct the unit array
+	Object.keys(variants).forEach(function(key){
+		var values = variants[key];
+		
+		units.forEach(function(baseUnit, idx) {
 
-			a.push();
-		}
+			values.forEach(function(val) {
+				unit = new Unit(baseUnit.variants);
+				unit.variants[key] = val;
+				units.push(unit);
+			});
+
+			delete units[idx]; 
+		});
+	}); 
+
+
+	for(var i = 0; i < units.length; ++i) {
+		var e_Units = $('#units');
+		var unit = units[i];
+		var elem = $('<ul><li></li></ul>');
+		e_Units.empty();
+
+		var titleParts = [];
+		Object.keys(unit.variants).forEach(function(key){
+			var val = unit.variants[key];
+
+			titleParts.push('<span class="' + key + '">'+val+'</span>');
+		});
+
+		elem.append(titleParts.join(' - '));
+
+		elem.append(
+			'<fieldset>' +
+				'<label for="sku">SKU</label>' +
+				'<input type="text" id="sku" value="TONIC-1">' +
+			'</fieldset>' +
+			'<fieldset>' +
+				'<label for="stock">Stock value</label>' +
+				'<input type="number" id="stock" placeholder="0">' +
+			'</fieldset>'
+			);
+		var removeBtn = $('<a href="#" class="button remove button-cancel"></a>')
+		e_Units.append(elem);
 	}
-
-	console.log(units);
 }
 
 function addVariantField() {
