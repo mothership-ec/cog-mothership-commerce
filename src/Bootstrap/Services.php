@@ -27,7 +27,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP'], $c['translator']));
 
 			return $factory;
 		});
@@ -442,6 +442,10 @@ class Services implements ServicesInterface
 			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
 
 			return $create;
+		});
+
+		$services['product.form.create'] = $services->factory(function($c){
+			return new Commerce\Product\Form\Create($c['translator']);
 		});
 		
 		$services['product.edit'] = $services->factory(function($c) {

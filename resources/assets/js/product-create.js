@@ -25,32 +25,44 @@ function updateUnits() {
 		});
 	});
 
-	var units = [new Unit];
+	// in no variants, then empty the Units array
+	if (Object.keys(variants).length === 0) {
+		window.units = [];
+	} else{	
+		var units = [new Unit];
 
-	// Construct the unit array
-	Object.keys(variants).forEach(function(key){
-		var values = variants[key];
-		
-		units.forEach(function(baseUnit, idx) {
+		// Construct the unit array
+		Object.keys(variants).forEach(function(key){
+			var values = variants[key],
+				newUnits = [],
+				baseUnit;
 
-			values.forEach(function(val) {
-				unit = new Unit(baseUnit.variants);
-				unit.variants[key] = val;
-				units.push(unit);
-			});
+			while(baseUnit = units.shift()) {
+				values.forEach(function(val) {
+					var variants = {};
+					$.extend(variants, baseUnit.variants);
+					var unit = new Unit(variants);
 
-			delete units[idx]; 
+					unit.variants[key] = val;
+					newUnits.push(unit);
+				});
+			}
+			units = newUnits;
 		});
-	}); 
 
+		// Update units
+		window.units = units;
+	}
 
-	for(var i = 0; i < units.length; ++i) {
-		var e_Units = $('#units');
-		var unit = units[i];
-		var elem = $('<ul><li></li></ul>');
-		e_Units.empty();
+	// Update document
+	var e_Units    = $('#unit-list');
+	e_Units.empty();
+	
+	for(var i = 0; i < window.units.length; ++i) {
+		var unit       = window.units[i],
+			elem       = $('<li></li>'),
+			titleParts = [];
 
-		var titleParts = [];
 		Object.keys(unit.variants).forEach(function(key){
 			var val = unit.variants[key];
 
@@ -59,17 +71,26 @@ function updateUnits() {
 
 		elem.append(titleParts.join(' - '));
 
-		elem.append(
-			'<fieldset>' +
-				'<label for="sku">SKU</label>' +
-				'<input type="text" id="sku" value="TONIC-1">' +
-			'</fieldset>' +
-			'<fieldset>' +
-				'<label for="stock">Stock value</label>' +
-				'<input type="number" id="stock" placeholder="0">' +
-			'</fieldset>'
-			);
-		var removeBtn = $('<a href="#" class="button remove button-cancel"></a>')
+		var form = $($("#product_create_units").data('prototype'));
+
+		elem.append(form);
+
+		// elem.append(
+		// 	'<fieldset>' +
+		// 		'<label for="sku">SKU</label>' +
+		// 		'<input type="text" id="sku">' +
+		// 	'</fieldset>' +
+		// 	'<fieldset>' +
+		// 		'<label for="stock">Stock value</label>' +
+		// 		'<input type="number" id="stock" placeholder="0">' +
+		// 	'</fieldset>'
+		// 	);
+		var removeBtn = $('<a href="#" class="button remove button-cancel"></a>');
+		removeBtn.click(function(){
+			$(this).parent('li').remove();
+		});
+		elem.append(removeBtn);
+
 		e_Units.append(elem);
 	}
 }
@@ -91,7 +112,8 @@ function addVariantField() {
 	value.on("change", updateUnits);
 	
 	$(".remove", field).click(function() {
-		$(this).parent(".variant-type").remove();
+		$(this).parent(".variant-field").remove();
+		updateUnits();
 	});
 
 	$(".variant-options").append(field);

@@ -1,5 +1,22 @@
 ms.commerce:
   product:
+    create:
+      name:
+        label: Name
+        placeholder: The name of the product
+      brand:
+        label: Brand
+        placeholder: The products brand
+      category:
+        label: Category
+        placeholder: The products category
+      price:
+        label: Price
+        placeholder: Price
+      description:
+        label: Description
+        placeholder: Enter a description...
+
     selector:
       unit:
         label: Please select an option...
