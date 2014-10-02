@@ -1,9 +1,8 @@
 {% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
 
-{% block title title %}
+{% block title 'Are you sure you want to create these products' %}
 
 {% block content %}
-	<h3>Are you sure you want to create these products</h3>
 	<p>
 		You are about to port {{ productData | length }} product{{ productData | length > 1 ? 's' : '' }}. This cannot be undone. Please confirm that the data you have submitted is accurate.
 	</p>
