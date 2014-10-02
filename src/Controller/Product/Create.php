@@ -18,15 +18,27 @@ class Create extends Controller
 	{
 		$form = $this->createForm($this->get('product.form.create'));
 		$form->handleRequest();
-		if($form->isValid()) {
-			de($form->getData());
+		if ($form->isValid()) {
+			$productCreator = $this->get('product.create');
+			$unitCreator = $this->get('product.unit.create');
+
+			$data = $form->getData();
+
+			$product = $this->get('product');
+			$product->setName($data['name']);
+
+
+			de($data);
 		}
+
+
+
 		// if ($form->isValid() && $data = $form->getFilteredData()) {
-		// 	$product					= $this->get('product');
-		// 	$product->name				= $data['name'];
-		// 	$product->displayName		= $data['display_name'];
-		// 	$product->shortDescription 	= $data['short_description'];
-		// 	$product->type				= array_key_exists('type', $data) ?
+		// 	$product					 = $this->get('product');
+		// 	$product->name				 = $data['name'];
+		// 	$product->displayName		 = $data['display_name'];
+		// 	$product->shortDescription 	 = $data['short_description'];
+		// 	$product->type				 = array_key_exists('type', $data) ?
 		// 		$this->get('product.types')->get($data['type']) : $this->get('product.types')->getDefault();
 		// 	$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 

@@ -323,4 +323,124 @@ class Product
 	{
 		$this->_details = $details;
 	}
+
+    /**
+     * Gets the value of name.
+     *
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    
+    /**
+     * Sets the value of name.
+     *
+     * @param mixed $name the name 
+     *
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of brand.
+     *
+     * @return mixed
+     */
+    public function getBrand()
+    {
+        return $this->brand;
+    }
+    
+    /**
+     * Sets the value of brand.
+     *
+     * @param mixed $brand the brand 
+     *
+     * @return self
+     */
+    public function setBrand($brand)
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of category.
+     *
+     * @return mixed
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+    
+    /**
+     * Sets the value of category.
+     *
+     * @param mixed $category the category 
+     *
+     * @return self
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of shortDescription.
+     *
+     * @return mixed
+     */
+    public function getShortDescription()
+    {
+        return $this->shortDescription;
+    }
+    
+    /**
+     * Sets the value of shortDescription.
+     *
+     * @param mixed $shortDescription the short description 
+     *
+     * @return self
+     */
+    public function setShortDescription($shortDescription)
+    {
+        $this->shortDescription = $shortDescription;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of description.
+     *
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
+    /**
+     * Sets the value of description.
+     *
+     * @param mixed $description the description 
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
 }

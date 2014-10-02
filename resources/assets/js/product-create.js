@@ -55,16 +55,16 @@ function updateUnits() {
 	}
 
 	// Update document
-	var e_Units    = $('#unit-list');
+	var e_Units    = $('#product_create_units');
 	e_Units.empty();
 	
 	// unit form prototype
-	var unitFormProto    = $($("#product_create_units").data('prototype'));
+	var unitFormProto    = $(e_Units.data('prototype'));
 	for(var i = 0; i < window.units.length; ++i) {
 
 		var unit       = window.units[i],
 			unitForm   = unitFormProto.clone(),
-			elem       = $('<li></li>')
+			elem       = $()
 			titleParts = [],
 			// variant form prototype
 			variantFormProto = $($('#product_create_units___unit___variants', unitFormProto).data('prototype'))
@@ -95,14 +95,14 @@ function updateUnits() {
 			)
 		);
 
-		elem.append(unitForm);
+		// elem.append(unitForm);
 		var removeBtn = $('<a href="#" class="button remove button-cancel"></a>');
 		removeBtn.click(function(){
-			$(this).parent('li').remove();
+			$(this).parent('.field-wrap').remove();
 		});
-		elem.append(removeBtn);
+		unitForm.append(removeBtn);
 
-		e_Units.append(elem);
+		e_Units.append(unitForm);
 	}
 }
 
