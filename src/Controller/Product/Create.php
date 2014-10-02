@@ -9,7 +9,7 @@ class Create extends Controller
 {
 	public function index()
 	{
-		return $this->render('::product:create', array(
+		return $this->render('Message:Mothership:Commerce::product:create', array(
 			'form'  => $this->createForm($this->get('product.form.create')),
 		));
 	}
@@ -17,8 +17,10 @@ class Create extends Controller
 	public function process()
 	{
 		$form = $this->createForm($this->get('product.form.create'));
-
-
+		$form->handleRequest();
+		if($form->isValid()) {
+			de($form->getData());
+		}
 		// if ($form->isValid() && $data = $form->getFilteredData()) {
 		// 	$product					= $this->get('product');
 		// 	$product->name				= $data['name'];

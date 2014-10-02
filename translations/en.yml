@@ -160,6 +160,9 @@ ms.commerce:
         button:
           create: Add unit
     stock:
+      set:
+        label: Stock
+        placeholder: Set stock
       empty: No stock has been moved yet.
       units-empty: To control stock, you first have to add units.
       page-title: Stock Movements

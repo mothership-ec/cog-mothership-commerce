@@ -16,7 +16,7 @@
 	<h1>Add a new product</h1>
 </hgroup>
 <div class="container-content create-product">
-	{{ form_start(form) }}
+	{{ form_start(form, {action: url('ms.commerce.product.create.action')}) }}
 		<section class="group">
 			<h1 class="title">Information</h1>
 			<div class="content">
@@ -38,9 +38,9 @@
 			</div>
 		</section>
 		<div class="save-content">
-			<a href="#" class="button small save">
+			<button type="submit" class="button small save">
 				{{ 'ms.commerce.product.button.create'|trans }}
-			</a>
+			</button>
 		</div>
 	{{ form_end(form) }}
 </div>

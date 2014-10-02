@@ -58,33 +58,44 @@ function updateUnits() {
 	var e_Units    = $('#unit-list');
 	e_Units.empty();
 	
+	// unit form prototype
+	var unitFormProto    = $($("#product_create_units").data('prototype'));
 	for(var i = 0; i < window.units.length; ++i) {
+
 		var unit       = window.units[i],
-			elem       = $('<li></li>'),
-			titleParts = [];
+			unitForm   = unitFormProto.clone(),
+			elem       = $('<li></li>')
+			titleParts = [],
+			// variant form prototype
+			variantFormProto = $($('#product_create_units___unit___variants', unitFormProto).data('prototype'))
+		;
 
 		Object.keys(unit.variants).forEach(function(key){
+			// build title
 			var val = unit.variants[key];
-
 			titleParts.push('<span class="' + key + '">'+val+'</span>');
+
+			// build form
+			var varForm = $(variantFormProto.html()
+				.replace(/__variant__label__/g, key)
+				.replace(/__variant__/g, key)
+			);
+
+			$('#product_create_units___unit___variants_'+key+'_key', varForm).val(key);
+			$('#product_create_units___unit___variants_'+key+'_value', varForm).val(unit.variants[key]);
+
+			$('#product_create_units___unit___variants', unitForm).append(varForm);
 		});
 
-		elem.append(titleParts.join(' - '));
+		// replace names given by symfony
+		unitForm = $(unitForm.html(
+			unitForm.html()
+				.replace(/__unit__label__/g, titleParts.join(' - '))
+				.replace(/__unit__/g, i)
+			)
+		);
 
-		var form = $($("#product_create_units").data('prototype'));
-
-		elem.append(form);
-
-		// elem.append(
-		// 	'<fieldset>' +
-		// 		'<label for="sku">SKU</label>' +
-		// 		'<input type="text" id="sku">' +
-		// 	'</fieldset>' +
-		// 	'<fieldset>' +
-		// 		'<label for="stock">Stock value</label>' +
-		// 		'<input type="number" id="stock" placeholder="0">' +
-		// 	'</fieldset>'
-		// 	);
+		elem.append(unitForm);
 		var removeBtn = $('<a href="#" class="button remove button-cancel"></a>');
 		removeBtn.click(function(){
 			$(this).parent('li').remove();
