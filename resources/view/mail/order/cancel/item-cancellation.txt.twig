@@ -1,0 +1,30 @@
+{% extends 'Message:Mothership:ControlPanel::mail:templates:main' %}
+{% block content %}
+{% block intro %}
+Dear {{ order.user.title }} {{ order.user.name }},
+
+An item of your order has been cancelled.
+{% endblock intro %}
+
+{% block details %}
+ORDER NUMBER: {{ order.id }}
+
+CANCELLED ITEMS:
+{% for item in cancelledItems %}
+1 x {{ item.description }} on {{ item.status.authorship.createdAt|date }}
+{% endfor %}
+
+ORDER DETAILS:
+{% for row in order.items.getRows %}
+	{{ row.quantity }} x {{ row.first.description }}
+{% endfor %}
+
+{% if order.customerNotes|length > 0 %}
+ORDER NOTES:
+{% for note in order.customerNotes %}
+{{ note.note }}
+{% endfor %}
+{% endif %}
+
+{% endblock details %}
+{% endblock content %}

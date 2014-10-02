@@ -22,6 +22,7 @@ class Listing extends Controller
 	{
 		// TODO: Load actual orders!
 		$this->_orders = $this->get('order.loader')->getByStatus(array(
+			Statuses::CANCELLED,
 			Statuses::AWAITING_DISPATCH,
 			Statuses::PROCESSING,
 			Statuses::PARTIALLY_DISPATCHED,

@@ -1,0 +1,23 @@
+{% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
+
+{% block title title %}
+
+{% block content %}
+
+{{ form_start(form) }}
+	{{ form_row(form.stock) }}
+
+	{% if refundable %}
+	<div class="refund">
+		{{ form_row(form.refund) }}
+		<span><strong>{{ refundAmount|price }}</strong></span>
+	</div>
+	{% endif %}
+
+	{{ form_rest(form) }}
+
+	<p><i>{{ 'ms.commerce.order.item.cancel-warn' | trans }}</i></p>
+	<button type="submit" class="button cancel small">{{ 'ms.commerce.order.item.cancel' | trans }}</button>
+
+{{ form_end(form) }}
+{% endblock %}
