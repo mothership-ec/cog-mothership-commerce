@@ -15,6 +15,7 @@
 {% endblock %}
 
 {% block main %}
+	{% include '@Message:Mothership:Commerce::product:csv:warning_modal' %}
 	<section class="container-content">
 	{% set key = 1 %}
 	{# Use flipscroll style at http://elvery.net/demo/responsive-tables/ #}
@@ -49,8 +50,8 @@
 		</tbody>
 	</table>
 
-	{{ form_start(form) }}
-	<button type="submit" >Save</button>
+	{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
+	<button class="button" type="submit" >Save</button>
 	{{ form_end(form) }}
 	</section>
 {% endblock %}

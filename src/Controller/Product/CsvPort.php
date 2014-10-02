@@ -9,7 +9,7 @@ use Message\Cog\Filesystem\FileType\CSVFile;
 
 class CsvPort extends Controller
 {
-	const SPREADSHEET_NAME = 'products';
+	const SPREADSHEET_NAME   = 'products';
 	const VALID_ROWS_SESSION = 'product.csv.valid_rows';
 
 	public function index()
@@ -82,6 +82,10 @@ class CsvPort extends Controller
 		}
 
 		return $this->redirectToReferer();
+	}
+
+	public function displayWarning()
+	{
 	}
 
 	private function _renderPreview(array $data)
