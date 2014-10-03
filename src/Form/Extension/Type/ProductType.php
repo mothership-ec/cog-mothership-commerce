@@ -17,9 +17,15 @@ class ProductType extends Form\AbstractType
 	 */
 	protected $_trans;
 
-	public function __construct(Translator $trans)
+	/**
+	 * @var array
+	 */
+	protected $_prices;
+
+	public function __construct(Translator $trans, array $prices)
 	{
-		$this->_trans       = $trans;
+		$this->_trans  = $trans;
+		$this->_prices = $prices;
 	}
 
 	public function getName()
@@ -54,16 +60,24 @@ class ProductType extends Form\AbstractType
 				'type'      => 'product_unit',
 				'allow_add' => true,
 				'prototype_name' => '__unit__',
-			])
-			->add('price', 'money', [
-				'label' => 'ms.commerce.product.create.price.label',
-				'attr'  => [
-					'placeholder' => $this->_trans->trans('ms.commerce.product.create.price.placeholder'),
-					'currency' => 'GBP',
-				],
-				'constraints' => [ new Constraints\NotBlank, ],
-			])
-			->add('short_description', 'textarea', [
+			]);
+
+			$prices = $builder->create('prices', 'form');
+			foreach ($this->_prices as $price) {
+				$prices->add($price, 'money', [
+					'label' => $price . " " . $this->_trans->trans('ms.commerce.product.create.price.label.'.$price),
+					'attr'  => [
+						'placeholder' => $this->_trans->trans('ms.commerce.product.create.price.placeholder.'.$price),
+						'currency' => 'GBP',
+						'default'  => 0.00,
+					],
+					'constraints' => [ new Constraints\NotBlank, ],
+				]);
+			}
+
+			$builder
+				->add($prices)
+				->add('short_description', 'textarea', [
 				'label' => 'ms.commerce.product.create.description.label',
 				'attr'  => [
 					'placeholder' => $this->_trans->trans('ms.commerce.product.create.description.placeholder'),

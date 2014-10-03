@@ -14,7 +14,10 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 	{
 		$locale = m::mock('\Message\Cog\Localisation\Locale');
 		$locale->shouldReceive('getId')->zeroOrMoreTimes()->andReturn('en-GB');
-		$this->_transformer = new Transformer($locale, ['retail', 'rrp']);
+		
+		$location = m::mock('\Message\Mothership\Commerce\Product\Stock\Location\Location');
+
+		$this->_transformer = new Transformer($locale, $location, ['retail', 'rrp']);
 	}
 
 	public function testTransform()
@@ -56,8 +59,10 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 				'brand' => 'Brand',
 				'category' => 'Category',
 				'short_description' => 'Short Description',
-				'retail_price' => 10,
-				'rrp_price' => 10,
+				'prices' => [
+					'rrp' => 10,
+					'retail' => 10,
+				],
 			]
 		);
 	}
@@ -69,8 +74,10 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 			'brand' => 'Brand',
 			'category' => 'Category',
 			'short_description' => 'Short Description',
-			'retail_price' => 10,
-			'rrp_price' => 20,
+			'prices' => [
+				'retail' => 10,
+				'rrp' => 20,
+			],
 		];
 
 		$result = $this->_transformer->reverseTransform($in);
@@ -79,8 +86,52 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($in['brand'] == $result->getBrand());
 		$this->assertTrue($in['category'] == $result->getCategory());
 		$this->assertTrue($in['short_description'] == $result->getShortDescription());
-		$this->assertTrue($in['retail_price'] == $result->getPrice('retail'));
-		$this->assertTrue($in['rrp_price'] == $result->getPrice('rrp'));
+		$this->assertTrue($in['prices']['retail'] == $result->getPrice('retail'));
+		$this->assertTrue($in['prices']['rrp'] == $result->getPrice('rrp'));
 
+	}
+
+	public function testReverseTransformWithUnits()
+	{
+		$in = [
+			'name' => 'Name',
+			'brand' => 'Brand',
+			'category' => 'Category',
+			'short_description' => 'Short Description',
+			'prices' => [
+				'retail' => 10,
+				'rrp' => 20,
+			],
+			'units' => [
+				[
+					'sku'   => 'SKU1',
+					'stock' => 10,
+					'price' => 20,
+					'variants' => [
+						'colour' => ['key' => 'colour', 'value' => 'red'],
+						'size'   => ['key' => 'size', 'value' => '5'],
+					]
+				],
+				[
+					'sku'   => 'SKU2',
+					'stock' => 10,
+					'price' => 20,
+					'variants' => [
+						'colour' => ['key' => 'colour', 'value' => 'blue'],
+						'size'   => ['key' => 'size', 'value' => '6'],
+					]
+				],
+			],
+		];
+
+
+		$result = $this->_transformer->reverseTransform($in);
+
+		
+		$units  = $result->getAllUnits();
+
+		$this->assertTrue(sizeof($units) == 2);
+		$this->assertTrue($units['SKU1']->getOption('colour') == 'red');
+		$this->assertTrue($units['SKU2']->getOption('size') == 6);
 	}
 }

@@ -7,16 +7,20 @@ use Symfony\Component\Form\Exception\TransformationFailedException as TransFailE
 use Message\Mothership\Commerce\Product\Product;
 use Message\Cog\Localisation\Locale;
 use Message\Mothership\Commerce\Product\Price\TypedPrice;
+use Message\Mothership\Commerce\Product\Unit\Unit;
+use Message\Mothership\Commerce\Product\Stock\Location\Location;
 
 class ProductTransform implements DataTransformerInterface
 {
 	private $_locale;
 	private $_priceTypes;
+	private $_defaultLocation;
 
-	public function __construct(Locale $locale, array $priceTypes = array())
+	public function __construct(Locale $locale, Location $defaultLocation, array $priceTypes = array())
 	{
-		$this->_locale     = $locale;
-		$this->_priceTypes = $priceTypes;
+		$this->_locale          = $locale;
+		$this->_priceTypes      = $priceTypes;
+		$this->_defaultLocation = $defaultLocation;
 	}
 
 	/**
@@ -40,36 +44,62 @@ class ProductTransform implements DataTransformerInterface
 			'brand'       => $product->getBrand(),
 			'category'    => $product->getCategory(),
 			'short_description' => $product->getShortDescription(),
+			'prices'      => []
 		];
 
 		foreach ($product->getPrices() as $key => $pricing) {
-			$properties[$key . '_price'] = $product->getPrice($key);
+			$properties['prices'][$key] = $product->getPrice($key);
 		}
+
+
+		/*
+		 * TODO: Extend to enumerate $properties[units] fully
+		 */
 
 		return $properties;
 	}
 
 	/**
-	 * @param string | array $array              Product data submitted by form
+	 * @param string | array $data              Product data submitted by form
 	 * @throws TransformationFailedException    Exception thrown if invalid type given
 	 *
 	 * @return Product                       Returns instance of Product object
 	 */
-	public function reverseTransform($array)
+	public function reverseTransform($data)
 	{
 		$product = new Product($this->_locale);
 
-		$product->setName($array['name']);
-		$product->setBrand($array['brand']);
-		$product->setCategory($array['category']);
-		$product->setShortDescription($array['short_description']);
+		$product->setName($data['name']);
+		$product->setBrand($data['brand']);
+		$product->setCategory($data['category']);
+		$product->setShortDescription($data['short_description']);
 
+		// setting prices
 		$prices = $product->getPrices();
 
 		foreach ($this->_priceTypes as $type) {
 			$price = new TypedPrice($type, $this->_locale);
-			$price->setPrice('GBP', $array[$type . '_price'], $this->_locale);
+			$price->setPrice('GBP', (isset($data['prices'][$type])?$data['prices'][$type]:0), $this->_locale);
 			$prices->add($price);
+		}
+
+		// create the unit
+		if (!empty($data['units'])){
+			foreach($data['units'] as $unitData) {
+				$unit = new Unit($this->_locale, $this->_priceTypes);
+				$unit->id = $unitData['sku']; // id is set from db inset. use sku instead until stored in db.
+				$unit->setProduct($product);
+				$unit->setSKU($unitData['sku']);
+				$unit->setStockForLocation($unitData['stock'], $this->_defaultLocation);
+				$unit->setPrice($unitData['price']);
+
+				$unit->revisionID = 1;
+
+				foreach ($unitData['variants'] as $option) {
+					$unit->setOption($option['key'], $option['value']);
+				}
+				$product->addUnit($unit);
+			}
 		}
 
 		return $product;

@@ -20,34 +20,23 @@ class Create extends Controller
 		$form->handleRequest();
 		if ($form->isValid()) {
 			$productCreator = $this->get('product.create');
-			$unitCreator = $this->get('product.unit.create');
+			$unitCreator    = $this->get('product.unit.create');
+			$stockManager   = $this->get('stock.manager');
 
-			$data = $form->getData();
+			$product = $form->getData();
 
-			$product = $this->get('product');
-			$product->setName($data['name']);
+			foreach ($product->getUnits as $unit) {
+				$unitCreator->create($unit);
+			}
 
+			$productCreator->create($product);
 
-			de($data);
+			return $this->render('Message:Mothership:Commerce::product:create', array(
+				'form'  => $form,
+			));
 		}
 
-
-
-		// if ($form->isValid() && $data = $form->getFilteredData()) {
-		// 	$product					 = $this->get('product');
-		// 	$product->name				 = $data['name'];
-		// 	$product->displayName		 = $data['display_name'];
-		// 	$product->shortDescription 	 = $data['short_description'];
-		// 	$product->type				 = array_key_exists('type', $data) ?
-		// 		$this->get('product.types')->get($data['type']) : $this->get('product.types')->getDefault();
-		// 	$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
-
-		// 	$product = $this->get('product.create')->create($product);
-
-		// 	if ($product->id) {
-		// 		return $this->redirectToRoute('ms.commerce.product.edit.attributes', array('productID' => $product->id));
-		// 	}
-		// }
+		// $this->addFeedback('Invalid form, check fields');
 
 		return $this->render('Message:Mothership:Commerce::product:create', array(
 			'form'  => $form,

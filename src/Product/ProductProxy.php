@@ -46,6 +46,19 @@ class ProductProxy extends Product
 		return parent::getVisibleUnits();
 	}
 
+	public function getUnitCollection()
+	{
+		if (!in_array('units', $this->_loaded)) {
+			$this->_loaders->get('units')
+				->includeOutOfStock(true)
+				->includeInvisible(true);
+
+			$this->_load('units');
+		}
+		
+		return parent::getUnitCollection();
+	}
+
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
 		if (!in_array('units', $this->_loaded)) {
@@ -87,6 +100,15 @@ class ProductProxy extends Product
 		$this->_load('prices');
 
 		return parent::getPrices();
+	}
+
+	public function addUnit(Unit\Unit $unit)
+	{
+		if (!in_array('units', $this->_loaded)) {
+			return $this->_loaders->get('units')->getByID($unitID);
+		}
+
+		return parent::addUnit($unit);
 	}
 
 	protected function _load($entityName)

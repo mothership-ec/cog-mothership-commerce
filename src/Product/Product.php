@@ -90,6 +90,11 @@ class Product
 		return $this->getUnits(true, false);
 	}
 
+	public function getUnitCollection()
+	{
+		return $this->_units;
+	}
+
 	/**
 	 * Get a specfic unit by the unitID
 	 *
@@ -442,5 +447,17 @@ class Product
         $this->description = $description;
 
         return $this;
+    }
+
+    /**
+     * Adds a unit to the Unit Collection
+     * 
+     * @param Unit\Unit $unit Unit to add
+     */
+    public function addUnit(Unit\Unit $unit)
+    {
+    	$this->_units->add($unit);
+
+    	return $this;
     }
 }

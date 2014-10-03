@@ -15,14 +15,16 @@ class CommerceExtension extends AbstractExtension
 
 	protected $_currencies;
 	private $_translator;
+	private $_prices;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(array $currencies, Translator $translator)
+	public function __construct(array $currencies, Translator $translator, array $prices)
 	{
 		$this->_currencies = $currencies;
 		$this->_translator = $translator;
+		$this->_prices     = $prices;
 	}
 
 	/**
@@ -34,7 +36,7 @@ class CommerceExtension extends AbstractExtension
 			new Type\CurrencySetType($this->_currencies),
 			new Type\UnitType($this->_translator),
 			new Type\VariantType,
-			new Type\ProductType($this->_translator),
+			new Type\ProductType($this->_translator, $this->_prices),
 		];
 	}
 }

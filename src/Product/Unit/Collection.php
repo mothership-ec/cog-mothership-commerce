@@ -16,7 +16,7 @@ class Collection extends BaseCollection
 	protected function _configure()
 	{
 		$this->setType('Message\\Mothership\\Commerce\\Product\\Unit\\Unit');
-		$this->setKey('id');
+		$this->setKey('sku');
 
 	}
 

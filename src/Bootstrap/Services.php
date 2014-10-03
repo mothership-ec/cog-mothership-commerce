@@ -27,7 +27,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP'], $c['translator']));
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP'], $c['translator'], $c['product.price.types']));
 
 			return $factory;
 		});
@@ -445,11 +445,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.form.data_transform'] = $services->factory(function($c) {
-			return new Commerce\Product\Form\DataTransform\ProductTransform($c['locale'], $c['product.price.types']);
+			return new Commerce\Product\Form\DataTransform\ProductTransform($c['locale'], $c['stock.default.location'], $c['product.price.types']);
 		});
 
 		$services['product.form.create'] = $services->factory(function($c){
-			return new Commerce\Product\Form\Create($c['translator'], $c['product.form.data_transform']);
+			return new Commerce\Product\Form\Create($c['translator'], $c['product.price.types'], $c['product.form.data_transform']);
 		});
 		
 		$services['product.edit'] = $services->factory(function($c) {
@@ -612,6 +612,10 @@ class Services implements ServicesInterface
 
 		$services['stock.locations'] = function() {
 			return new Commerce\Product\Stock\Location\Collection;
+		};
+
+		$services['stock.default.location'] = function($c) {
+			return $c['stock.locations']->get('web');
 		};
 
 		$services['stock.movement.loader'] = $services->factory(function($c) {

@@ -95,4 +95,76 @@ class Unit
 
 		return $this->options[$type];
 	}
+
+    /**
+     * Gets the value of product.
+     *
+     * @return mixed
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
+    
+    /**
+     * Sets the value of product.
+     *
+     * @param mixed $product the product 
+     *
+     * @return self
+     */
+    public function setProduct($product)
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of sku.
+     *
+     * @return mixed
+     */
+    public function getSKU()
+    {
+        return $this->sku;
+    }
+    
+    /**
+     * Sets the value of sku.
+     *
+     * @param mixed $sku the sku 
+     *
+     * @return self
+     */
+    public function setSKU($sku)
+    {
+        $this->sku = $sku;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of price.
+     *
+     * @param mixed $price the price 
+     *
+     * @return self
+     */
+    public function setPrice($price, $type = 'retail', $currencyID = 'GBP')
+    {
+        $this->price[$type]->setPrice($currencyID, (float) $price, $this->_locale);
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of options.
+     *
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
 }
