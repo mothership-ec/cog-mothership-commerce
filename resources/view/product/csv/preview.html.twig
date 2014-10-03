@@ -10,6 +10,18 @@
 	</thead>
 {% endmacro %}
 
+{% block javascripts %}
+	{{ parent() }}
+	{% javascripts
+		'@Message:Mothership:Commerce::resources/assets/js/product-upload-warning.js'
+
+		output="/assets/js/ms_upload-*.js"
+		filter="?jsmin"
+	%}
+	<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
 {% block sidebar %}
 	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
 {% endblock %}
@@ -51,7 +63,7 @@
 	</table>
 
 	{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
-	<button class="button" type="submit" >Save</button>
+		<span data-modal-open data-modal="#upload_warning" id="save-button" class="button modal">Save</span>
 	{{ form_end(form) }}
 	</section>
 {% endblock %}
