@@ -28,29 +28,12 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 		$prices = ['retail' => 10, 'rrp' => 10];
 
 		$product = m::mock('\Message\Mothership\Commerce\Product\Product')
-			->shouldReceive('getName')
-			->once()
-			->andReturn('Name')
-			->getMock()
-			->shouldReceive('getBrand')
-			->once()
-			->andReturn('Brand')
-			->getMock()
-			->shouldReceive('getCategory')
-			->once()
-			->andReturn('Category')
-			->getMock()
-			->shouldReceive('getShortDescription')
-			->once()
-			->andReturn('Short Description')
-			->getMock()
-			->shouldReceive('getPrices')
-			->once()
-			->andReturn($prices)
-			->getMock()
-			->shouldReceive('getPrice')
-			->twice()
-			->andReturn(10)
+			->shouldReceive('getName')->once()->andReturn('Name')
+			->shouldReceive('getBrand')->once()->andReturn('Brand')
+			->shouldReceive('getCategory')->once()->andReturn('Category')
+			->shouldReceive('getShortDescription')->once()->andReturn('Short Description')
+			->shouldReceive('getPrices')->once()->andReturn($prices)
+			->shouldReceive('getPrice')->twice()->andReturn(10)
 			->getMock()
 		;
 
@@ -136,7 +119,13 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 		$units  = $result->getAllUnits();
 
 		$this->assertTrue(sizeof($units) == 2);
-		$this->assertTrue($units['SKU1']->getOption('colour') == 'red');
-		$this->assertTrue($units['SKU2']->getOption('size') == 6);
+
+		foreach ($units as $unit) {
+			if ($unit->getOption('colour') == 'red') {
+				$this->assertTrue($unit->getOption('size') == '5');
+			} else {
+				$this->assertTrue($unit->getOption('size') == 6);
+			}
+		}
 	}
 }
