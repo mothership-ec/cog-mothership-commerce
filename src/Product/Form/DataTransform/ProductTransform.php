@@ -81,7 +81,6 @@ class ProductTransform implements DataTransformerInterface
 		$product->setCategory($data['category']);
 		$product->setShortDescription($data['short_description']);
 		$product->setType($this->_productTypes->get($data['type']));
-
 		// setting prices
 		$prices = $product->getPrices();
 
@@ -95,11 +94,11 @@ class ProductTransform implements DataTransformerInterface
 		if (!empty($data['units'])){
 			foreach($data['units'] as $unitData) {
 				$unit = new Unit($this->_locale, $this->_priceTypes);
-				$unit->id = $unitData['sku']; // id is set from db inset. use sku instead until stored in db.
 				$unit->setProduct($product);
 				$unit->setSKU($unitData['sku']);
 				$unit->setStockForLocation($unitData['stock'], $this->_defaultLocation);
 				$unit->setPrice($unitData['price']);
+				$unit->setVisible(true);
 
 				$unit->revisionID = 1;
 

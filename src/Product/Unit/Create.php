@@ -59,6 +59,7 @@ class Create
 		]);
 
 		$unitID = $result->id();
+		$unit->sku = $unit->sku ?: $unitID;
 
 		$this->_query->run(
 			'INSERT INTO

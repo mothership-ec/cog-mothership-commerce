@@ -21,30 +21,34 @@ class Create extends Controller
 		if ($form->isValid()) {
 			$productCreator = $this->get('product.create');
 			$unitCreator    = $this->get('product.unit.create');
-			$stockManager   = $this->get('stock.manager');
 			$stockLocations = $this->get('stock.locations');
+			$stockManager   = $this->get('stock.manager');
 
 			$product = $form->getData();
 			$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
+			$product = $productCreator->create($product);
 
-			foreach ($product->getUnits() as $unit) {
+			$stockManager->setReason($this->get('stock.movement.reasons')->get('new_order'));
+
+			foreach ($product->getAllUnits() as $unit) {
+
+				$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 				$unit = $unitCreator->create($unit);
-				$stockManager->setReason('stock added'); // TODO
 
 				foreach($unit->getStockArray() as $location => $stock) {
 					$stockManager->set(
-							$unit->id,
+							$unit,
 							$stockLocations->get($location),
 							$stock
 						);
 				}
 
-				if (!$stockManager->commit()) {
-					$this->addFlash('error', 'Could not update stock');
-				}
 			}
 
-			$productCreator->create($product);
+			if (!$stockManager->commit()) {
+				$this->addFlash('error', 'Could not update stock');
+			}
+
 
 			// return $this->render('Message:Mothership:Commerce::product:create', [
 			// 	'form'  => $form,

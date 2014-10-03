@@ -172,4 +172,28 @@ class Unit
     {
         return $this->options;
     }
+
+    /**
+     * Gets the value of visible.
+     *
+     * @return mixed
+     */
+    public function isVisible()
+    {
+        return $this->visible;
+    }
+    
+    /**
+     * Sets the value of visible.
+     *
+     * @param boolean $visible true if visible 
+     *
+     * @return self
+     */
+    public function setVisible($visible)
+    {
+        $this->visible = $visible;
+
+        return $this;
+    }
 }

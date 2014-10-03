@@ -72,11 +72,8 @@ class ProductType extends Form\AbstractType
 			$prices = $builder->create('prices', 'form');
 			foreach ($this->_prices as $price) {
 				$prices->add($price, 'money', [
-					'label' => $price . " " . $this->_trans->trans('ms.commerce.product.create.price.label.'.$price),
-					'attr'  => [
-						'placeholder' => $this->_trans->trans('ms.commerce.product.create.price.placeholder.'.$price),
-						'default'  => 0.00,
-					],
+					'label' => $this->_trans->trans('ms.commerce.product.pricing.'.$price.'.label'),
+					'data'  => 0.00,
 					'currency' => 'GBP',
 					'constraints' => [ new Constraints\NotBlank, ],
 				]);
