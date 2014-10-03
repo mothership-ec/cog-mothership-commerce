@@ -9,9 +9,9 @@ class Create extends Controller
 {
 	public function index()
 	{
-		return $this->render('Message:Mothership:Commerce::product:create', array(
+		return $this->render('Message:Mothership:Commerce::product:create', [
 			'form'  => $this->createForm($this->get('product.form.create')),
-		));
+		]);
 	}
 
 	public function process()
@@ -22,24 +22,36 @@ class Create extends Controller
 			$productCreator = $this->get('product.create');
 			$unitCreator    = $this->get('product.unit.create');
 			$stockManager   = $this->get('stock.manager');
+			$stockLocations = $this->get('stock.locations');
 
 			$product = $form->getData();
 
-			foreach ($product->getUnits as $unit) {
-				$unitCreator->create($unit);
+			foreach ($product->getUnits() as $unit) {
+				$unit = $unitCreator->create($unit);
+				$stockManager->setReason('stock added'); // TODO
+
+				foreach($unit->getStockArray() as $location => $stock) {
+					$stockManager->set(
+							$unit->id,
+							$stockLocations->get($location),
+							$stock
+						);
+				}
+
+				if (!$stockManager->commit()) {
+					$this->addFlash('error', 'Could not update stock');
+				}
 			}
 
 			$productCreator->create($product);
 
-			return $this->render('Message:Mothership:Commerce::product:create', array(
-				'form'  => $form,
-			));
+			// return $this->render('Message:Mothership:Commerce::product:create', [
+			// 	'form'  => $form,
+			// ]);
 		}
 
-		// $this->addFeedback('Invalid form, check fields');
-
-		return $this->render('Message:Mothership:Commerce::product:create', array(
+		return $this->render('Message:Mothership:Commerce::product:create', [
 			'form'  => $form,
-		));
+		]);
 	}
 }

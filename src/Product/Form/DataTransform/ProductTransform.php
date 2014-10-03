@@ -9,18 +9,25 @@ use Message\Cog\Localisation\Locale;
 use Message\Mothership\Commerce\Product\Price\TypedPrice;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
+use Message\Mothership\Commerce\Product\Type\Collection as ProductTypeCollection;
 
 class ProductTransform implements DataTransformerInterface
 {
 	private $_locale;
 	private $_priceTypes;
 	private $_defaultLocation;
+	private $_productTypes;
 
-	public function __construct(Locale $locale, Location $defaultLocation, array $priceTypes = array())
+	public function __construct(
+		Locale $locale, 
+		Location $defaultLocation, 
+		array $priceTypes = array(), 
+		ProductTypeCollection $productTypes)
 	{
 		$this->_locale          = $locale;
 		$this->_priceTypes      = $priceTypes;
 		$this->_defaultLocation = $defaultLocation;
+		$this->_productTypes    = $productTypes;
 	}
 
 	/**
@@ -73,6 +80,7 @@ class ProductTransform implements DataTransformerInterface
 		$product->setBrand($data['brand']);
 		$product->setCategory($data['category']);
 		$product->setShortDescription($data['short_description']);
+		$product->setType($this->_productTypes->get($data['type']));
 
 		// setting prices
 		$prices = $product->getPrices();

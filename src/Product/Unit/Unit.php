@@ -87,6 +87,11 @@ class Unit
 		return $this;
 	}
 
+	public function getStockArray()
+	{
+		return $this->stock;
+	}
+
 	public function getOption($type)
 	{
 		if (!isset($this->options[$type])) {

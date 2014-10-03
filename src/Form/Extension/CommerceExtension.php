@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Form\Extension;
 
 use Symfony\Component\Form\AbstractExtension;
 use Message\Cog\Localisation\Translator;
+use Message\Mothership\Commerce\Product\Type\Collection as ProductTypeCollection;
 
 /**
  * Extension for Commerce-specific types
@@ -16,15 +17,17 @@ class CommerceExtension extends AbstractExtension
 	protected $_currencies;
 	private $_translator;
 	private $_prices;
+	private $_productTypes;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(array $currencies, Translator $translator, array $prices)
+	public function __construct(array $currencies, Translator $translator, array $prices, ProductTypeCollection $productTypes)
 	{
 		$this->_currencies = $currencies;
 		$this->_translator = $translator;
 		$this->_prices     = $prices;
+		$this->_productTypes = $productTypes;
 	}
 
 	/**
@@ -36,7 +39,7 @@ class CommerceExtension extends AbstractExtension
 			new Type\CurrencySetType($this->_currencies),
 			new Type\UnitType($this->_translator),
 			new Type\VariantType,
-			new Type\ProductType($this->_translator, $this->_prices),
+			new Type\ProductType($this->_translator, $this->_prices, $this->_productTypes),
 		];
 	}
 }

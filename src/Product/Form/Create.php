@@ -10,6 +10,7 @@ use Symfony\Component\Form;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Message\Mothership\Commerce\Product\Form\DataTransform\ProductTransform;
+use Message\Mothership\Commerce\Product\Type\Collection as ProductTypeCollection;
 
 class Create extends ProductType
 {
@@ -18,9 +19,9 @@ class Create extends ProductType
 	 */
 	protected $_transformer;
 
-	public function __construct(Translator $trans, array $prices, ProductTransform $transformer)
+	public function __construct(Translator $trans, array $prices, ProductTypeCollection $productTypes, ProductTransform $transformer)
 	{
-		parent::__construct($trans, $prices);
+		parent::__construct($trans, $prices, $productTypes);
 
 		$this->_transformer = $transformer;
 	}
