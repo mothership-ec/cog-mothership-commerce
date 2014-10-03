@@ -25,6 +25,7 @@ class Create extends Controller
 			$stockLocations = $this->get('stock.locations');
 
 			$product = $form->getData();
+			$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 
 			foreach ($product->getUnits() as $unit) {
 				$unit = $unitCreator->create($unit);

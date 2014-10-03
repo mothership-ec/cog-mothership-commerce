@@ -15,9 +15,12 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 		$locale = m::mock('\Message\Cog\Localisation\Locale');
 		$locale->shouldReceive('getId')->zeroOrMoreTimes()->andReturn('en-GB');
 		
-		$location = m::mock('\Message\Mothership\Commerce\Product\Stock\Location\Location');
+		$location     = m::mock('\Message\Mothership\Commerce\Product\Stock\Location\Location');
+		$productTypes = m::mock('\Message\Mothership\Commerce\Product\Type\Collection');
+		$type         = m::mock('\Message\Mothership\Commerce\Product\Type\BasicProductType');
+		$productTypes->shouldReceive('get')->once()->andReturn($type);
 
-		$this->_transformer = new Transformer($locale, $location, ['retail', 'rrp']);
+		$this->_transformer = new Transformer($locale, $location, ['retail', 'rrp'], $productTypes);
 	}
 
 	public function testTransform()
@@ -73,6 +76,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 			'name' => 'Name',
 			'brand' => 'Brand',
 			'category' => 'Category',
+			'type'  => 'basic',
 			'short_description' => 'Short Description',
 			'prices' => [
 				'retail' => 10,
@@ -98,6 +102,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 			'brand' => 'Brand',
 			'category' => 'Category',
 			'short_description' => 'Short Description',
+			'type'  => 'basic',
 			'prices' => [
 				'retail' => 10,
 				'rrp' => 20,

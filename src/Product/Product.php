@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
+use Message\Mothership\Commerce\Product\Type\ProductTypeInterface as ProductType;
 
 class Product
 {
@@ -459,5 +460,29 @@ class Product
     	$this->_units->add($unit);
 
     	return $this;
+    }
+
+    /**
+     * Gets the value of type.
+     *
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+    
+    /**
+     * Sets the value of type.
+     *
+     * @param mixed $type the type 
+     *
+     * @return self
+     */
+    public function setType(ProductType $type)
+    {
+        $this->type = $type;
+
+        return $this;
     }
 }
