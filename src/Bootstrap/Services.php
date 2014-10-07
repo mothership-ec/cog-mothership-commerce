@@ -849,7 +849,7 @@ class Services implements ServicesInterface
 			});
 
 			return $factory;
-		});		
+		});
 	}
 
 	public function registerProductPageMapper($services)

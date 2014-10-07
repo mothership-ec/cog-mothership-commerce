@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Controller\Product;
 
 use Message\Mothership\Commerce\Product\Upload\Exception\UploadFrontEndException;
+use Message\Mothership\Commerce\Product\Upload\SessionNames;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\Filesystem\FileType\CSVFile;
@@ -38,7 +39,7 @@ class CsvPort extends Controller
 
 	public function template()
 	{
-		return $this->get('product.upload.csv_download')->download(self::SPREADSHEET_NAME);
+		return $this->get('product.upload.csv_download')->download(SessionNames::SPREADSHEET_NAME);
 	}
 
 	public function createProducts()
@@ -50,7 +51,7 @@ class CsvPort extends Controller
 		if ($form->isValid()) {
 			$data = $form->getData();
 
-			foreach ($this->get('http.session')->get(self::VALID_ROWS_SESSION) as $productRows) {
+			foreach ($this->get('http.session')->get(SessionNames::VALID_ROWS_SESSION) as $productRows) {
 				try {
 					if (!is_array($productRows)) {
 						throw new \LogicException('Product rows expected to be array, ' . gettype($productRows) . ' given');
@@ -84,10 +85,6 @@ class CsvPort extends Controller
 		return $this->redirectToReferer();
 	}
 
-	public function displayWarning()
-	{
-	}
-
 	private function _renderPreview(array $data)
 	{
 		$data = $this->get('product.upload.csv_converter')->convert($data['file']);
@@ -99,7 +96,7 @@ class CsvPort extends Controller
 
 		$productData = $this->get('product.upload.unique_sorter')->sort($validRows);
 
-		$this->get('http.session')->set(self::VALID_ROWS_SESSION, $productData);
+		$this->get('http.session')->set(SessionNames::VALID_ROWS_SESSION, $productData);
 
 		$form = $this->createForm($this->get('product.form.upload_confirm'));
 
