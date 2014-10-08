@@ -12,7 +12,6 @@ use Message\Cog\Event\DispatcherInterface;
  * Order refund creator.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
- * @author Iris Schaffer <iris@message.co.uk>
  */
 class Create implements DB\TransactionalInterface
 {

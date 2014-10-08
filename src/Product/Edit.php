@@ -127,10 +127,10 @@ class Edit implements TransactionalInterface
 		$options = array();
 		$inserts = array();
 
-		foreach ($product->price as $type => $price) {
+		foreach ($product->getPrices() as $type => $price) {
 			$options[] = $product->id;
 			$options[] = $type;
-			$options[] = $product->price[$type]->getPrice('GBP', $this->_locale);
+			$options[] = $product->getPrices()[$type]->getPrice('GBP', $this->_locale);
 			$options[] = 'GBP';
 			$options[] = $this->_locale->getID();
 			$inserts[] = '(?i,?s,?s,?s,?s)';

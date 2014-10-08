@@ -124,7 +124,7 @@ class Edit extends Controller
 		$images = [];
 		$types  = $this->get('product.image.types');
 
-		foreach ($this->_product->images as $image) {
+		foreach ($this->_product->getImages() as $image) {
 			$label = $types->get($image->type);
 
 			if (!array_key_exists($label, $images)) {
@@ -290,7 +290,7 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->details = $detailEdit->updateDetails($data, $product->details);
+			$product->setDetails($detailEdit->updateDetails($data, $product->getDetails()));
 			$detailEdit->save($product);
 
 			$product = $productEdit->save($product);
@@ -328,7 +328,7 @@ class Edit extends Controller
 			foreach ($data as $key => $value) {
 				if (preg_match("/^price/us", $key)) {
 					$type = str_replace('price_', '', $key);
-					$product->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+					$product->getPrices()[$type]->setPrice('GBP', $value, $this->get('locale'));
 				}
 			}
 
@@ -779,7 +779,7 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->get('field.form')->generate($this->_product->details, [
+		return $this->get('field.form')->generate($this->_product->getDetails(), [
 			'action' => $this->generateUrl('ms.commerce.product.edit.details.action', [
 					'productID' => $this->_product->id,
 				])
@@ -793,7 +793,7 @@ class Edit extends Controller
 			->setAction($this->generateUrl('ms.commerce.product.edit.pricing.action', array('productID' => $this->_product->id)))
 			->setMethod('post');
 
-		foreach ($this->_product->price as $type => $value) {
+		foreach ($this->_product->getPrices() as $type => $value) {
 			$form->add(
 				'price_'.$type,
 				'money',
