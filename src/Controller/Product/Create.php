@@ -26,7 +26,10 @@ class Create extends Controller
 
 			$product = $form->getData();
 			$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
+			// save overwrite product with saved product to get new id
 			$product = $productCreator->create($product);
+			// save prices
+			$product = $this->get('product.edit')->savePrices($product);
 
 			$stockManager->setReason($this->get('stock.movement.reasons')->get('new_order'));
 
@@ -50,9 +53,9 @@ class Create extends Controller
 			}
 
 
-			// return $this->render('Message:Mothership:Commerce::product:create', [
-			// 	'form'  => $form,
-			// ]);
+			return $this->render('Message:Mothership:Commerce::product:create', [
+				'form'  => $form,
+			]);
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:create', [
