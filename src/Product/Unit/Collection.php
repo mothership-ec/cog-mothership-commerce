@@ -3,114 +3,49 @@
 namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\ProductEntityLoaderInterface;
+use Message\Cog\ValueObject\Collection as BaseCollection;
 
 /**
- * Collection of entities relating to a specific order.
+ * Collection of units
  *
- * Entities are lazy loaded on demand.
- *
- * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Iris Schaffer <iris@message.co.uk>
  */
-class Collection implements \ArrayAccess, \IteratorAggregate, \Countable
+class Collection extends BaseCollection
 {
-	protected $_product;
-	protected $_loader;
-
-	protected $_items = null;
-
-	public function __construct(Product $product, LoaderInterface $loader)
+	protected function _configure()
 	{
-		$this->_product  = $product;
-		$this->_loader = $loader;
+		$this->setType('Message\\Mothership\\Commerce\\Product\\Unit\\Unit');
+		$this->setKey('id');
+
 	}
 
-	public function get($id)
+	public function getByCriteria($includeOutOfStock = true, $includeInvisible = false)
 	{
-		$this->load();
+		$return = [];
 
-		if (!$this->exists($id)) {
-			throw new \InvalidArgumentException(sprintf('Identifier `%s` does not exist on entity collection', $id));
-		}
+		foreach ($this->all() as $id => $unit) {
+			$outOfStockCriteria = !$unit->isOutOfStock() || $includeOutOfStock;
+			$invisibleCriteria  = $unit->visible || $includeInvisible;
 
-		return $this->_items[$id];
-	}
-
-	public function getByProperty($property, $value)
-	{
-		$this->load();
-
-		$return = array();
-
-		foreach ($this->_items as $id => $item) {
-			if (property_exists($item, $property) && $item->{$property} == $value) {
-				$return[$id] = $item;
+			if ($outOfStockCriteria && $invisibleCriteria) {
+				$return[$id] = $unit;
 			}
 		}
 
 		return $return;
 	}
 
-	public function exists($id)
+	public function getByProperty($property, $value)
 	{
-		$this->load();
+		$return = [];
 
-		return array_key_exists($id, $this->_items);
-	}
-
-	public function all()
-	{
-		$this->load();
-
-		return $this->_items;
-	}
-
-	public function count()
-	{
-		$this->load();
-
-		return count($this->_items);
-	}
-
-	public function offsetSet($id, $value)
-	{
-		throw new \BadMethodCallException('`Entity\Collection` does not allow setting entities using array access');
-	}
-
-	public function offsetGet($id)
-	{
-		return $this->get($id);
-	}
-
-	public function offsetExists($id)
-	{
-		return $this->exists($id);
-	}
-
-	public function offsetUnset($id)
-	{
-		$this->load();
-
-		unset($this->_items[$id]);
-	}
-
-	public function getIterator()
-	{
-		$this->load();
-
-		return new \ArrayIterator($this->_items);
-	}
-
-	public function load($showOutOfStock = true, $showInvisibleUnits = true)
-	{
-		$this->_loader->includeInvisible($showInvisibleUnits);
-		$this->_loader->includeOutOfStock($showOutOfStock);
-
-		if (null === $this->_items) {
-			$this->_items = $this->_loader->getByProduct($this->_product) ?: array();
-
-			return true;
+		foreach ($this->all() as $id => $unit) {
+			if (property_exists($unit, $property) && $unit->{$property} == $value) {
+				$return[$id] = $unit;
+			}
 		}
 
-		return false;
+		return $return;
 	}
 }

@@ -24,7 +24,7 @@ class Create implements DB\TransactionalInterface
 	);
 
 	protected $_query;
-	protected $_transOverriden = false;
+	protected $_transOverridden = false;
 
 	protected $_loader;
 	protected $_eventDispatcher;
@@ -39,10 +39,18 @@ class Create implements DB\TransactionalInterface
 		$this->_currentUser     = $currentUser;
 	}
 
+	/**
+	 * Sets transaction and sets $_transOverridden to true.
+	 *
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
+	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query          = $trans;
-		$this->_transOverriden = true;
+		$this->_query           = $trans;
+		$this->_transOverridden = true;
+
+		return $this;
 	}
 
 	public function create(Item $item)
@@ -74,6 +82,7 @@ class Create implements DB\TransactionalInterface
 				created_by        = :createdBy?in,
 				list_price        = :listPrice?f,
 				actual_price      = :actualPrice?f,
+				base_price        = :basePrice?f,
 				net               = :net?f,
 				discount          = :discount?f,
 				tax               = :tax?f,
@@ -98,6 +107,7 @@ class Create implements DB\TransactionalInterface
 			'createdBy'      => $item->authorship->createdBy(),
 			'listPrice'      => $item->listPrice,
 			'actualPrice'    => $item->actualPrice,
+			'basePrice'      => $item->basePrice,
 			'net'            => $item->net,
 			'discount'       => $item->discount,
 			'tax'            => $item->tax,
@@ -118,7 +128,7 @@ class Create implements DB\TransactionalInterface
 			'stockLocation'  => $item->stockLocation->name,
 		));
 
-		$sqlVariable = 'ITEM_ID_' . spl_object_hash($item);
+		$sqlVariable = 'ITEM_ID_' . uniqid();
 
 		$this->_query->setIDVariable($sqlVariable);
 		$item->id = '@' . $sqlVariable;
@@ -175,7 +185,7 @@ class Create implements DB\TransactionalInterface
 		}
 
 		// If the query was not in a transaction, return the re-loaded item
-		if (!$this->_transOverriden) {
+		if (!$this->_transOverridden) {
 			$this->_query->commit();
 
 			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $item->order);

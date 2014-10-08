@@ -148,16 +148,16 @@ class Loader
 	{
 		$result = $this->_query->run('
 			SELECT
-				id
+				transaction.transaction_id
 			FROM
 				transaction
 			JOIN
-				transaction_record ON transaction.id = transaction_record.transaction_id
+				transaction_record ON transaction.transaction_id = transaction_record.transaction_id
 			WHERE
 				transaction.type = :transactionType?s
-			AND WHERE
-				transaction_record.id = :recordID?i
-			AND WHERE
+			AND
+				transaction_record.record_id = :recordID?i
+			AND
 				transaction_record.type = :recordType?s
 		', [
 			'transactionType' => $type,
@@ -165,7 +165,7 @@ class Loader
 			'recordType'      => $record->getRecordType(),
 		]);
 
-		return $this->_load($result->flatten(), true);
+		return $this->_load($result->flatten(), false);
 	}
 
 	/**
@@ -228,6 +228,10 @@ class Loader
 			$entities[$key]->records    = new RecordCollection($this->_loadRecords($entities[$key]));
 			$entities[$key]->attributes = $this->_loadAttributes($entities[$key]);
 
+			if ($row->voided_at) {
+				$entities[$key]->voidedAt = new DateTimeImmutable(date('c', $row->voided_at));
+			}
+
 			$return[$row->id] = $entities[$key];
 		}
 
@@ -260,6 +264,11 @@ class Loader
 		$records = [];
 		foreach($results as $key => $row) {
 			$loader = $this->_getLoader($row->type);
+
+			if ($loader instanceof DeletableRecordLoaderInterface) {
+				$loader->includeDeleted($this->_includeVoided);
+			}
+			
 			$records[] = $loader->getByRecordID($row->record_id);
 		}
 

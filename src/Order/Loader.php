@@ -16,7 +16,7 @@ use Message\User\UserInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Transaction\RecordLoaderInterface
+class Loader implements Transaction\DeletableRecordLoaderInterface
 {
 	protected $_query;
 	protected $_eventDispatcher;
@@ -25,15 +25,21 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected $_itemStatuses;
 	protected $_entities;
 	protected $_orderBy;
+	protected $_includeDeleted = false;
 
-	public function __construct(DB\Query $query, User\Loader $userLoader,
-		Status\Collection $statuses, Status\Collection $itemStatuses, array $entities)
-	{
+	public function __construct(
+		DB\Query $query,
+		User\Loader $userLoader,
+		Status\Collection $statuses,
+		Status\Collection $itemStatuses,
+		array $entities
+	) {
 		$this->_query        = $query;
 		$this->_userLoader   = $userLoader;
 		$this->_statuses     = $statuses;
 		$this->_itemStatuses = $itemStatuses;
 		$this->_entities     = $entities;
+		$this->_prepareEntities();
 	}
 
 	public function getEntities()
@@ -61,9 +67,32 @@ class Loader implements Transaction\RecordLoaderInterface
 		}
 
 		$loader = $this->_entities[$name]->getLoader();
-		$loader->setOrderLoader($this);
 
 		return $loader;
+	}
+
+	/**
+	 * Set whether to load deleted orders.
+	 *
+	 * @param  bool $bool    true / false as to whether to include deleted orders
+	 *
+	 * @return Loader        Loader object in order to chain the methods
+	 */
+	public function includeDeleted($bool = true)
+	{
+		$this->_includeDeleted = (bool) $bool;
+
+		return $this;
+	}
+
+	/**
+	 * Gets whether this loader also loads deleted orders.
+	 * 
+	 * @return bool Whether the loader loads deleted orders or not.
+	 */
+	public function getIncludeDeleted()
+	{
+		return $this->_includeDeleted;
 	}
 
 	/**
@@ -222,6 +251,7 @@ class Loader implements Transaction\RecordLoaderInterface
 	protected function _load($ids, $returnArray = false)
 	{
 		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
+		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL';
 		$this->_orderBy = '';
 
 		if (!is_array($ids)) {
@@ -237,7 +267,9 @@ class Loader implements Transaction\RecordLoaderInterface
 				order_summary.*,
 				order_summary.order_id         AS id,
 				order_summary.order_id         AS orderID,
-				order_summary.user_email	   AS userEmail,
+				order_summary.deleted_at       AS deletedAt,
+				order_summary.deleted_by       AS deletedBy,
+				order_summary.user_email       AS userEmail,
 				order_summary.currency_id      AS currencyID,
 				order_summary.conversion_rate  AS conversionRate,
 				order_summary.product_net      AS productNet,
@@ -262,6 +294,7 @@ class Loader implements Transaction\RecordLoaderInterface
 				order_shipping USING (order_id)
 			WHERE
 				order_summary.order_id IN (?ij)
+			' . $includeDeleted .'
 			GROUP BY
 				order_summary.order_id
 			' . ($orderBy) . '
@@ -316,6 +349,13 @@ class Loader implements Transaction\RecordLoaderInterface
 				$row->created_by
 			);
 
+			if ($row->deleted_at) {
+				$order->authorship->delete(
+					new DateTimeImmutable(date('c', $row->deleted_at)),
+					$row->deleted_by
+				);
+			}
+
 			if ($row->updated_at) {
 				$order->authorship->update(
 					new DateTimeImmutable(date('c', $row->updated_at)),
@@ -343,5 +383,18 @@ class Loader implements Transaction\RecordLoaderInterface
 		});
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	/**
+	 * Prepares entities by setting their loaders' order loader to $this.
+	 * This is necessary to make sure the entity loaders will always have an
+	 * order loader.
+	 */
+	protected function _prepareEntities()
+	{
+		foreach ($this->_entities as $entity) {
+			$loader = $entity->getLoader();
+			$loader->setOrderLoader($this);
+		}
 	}
 }

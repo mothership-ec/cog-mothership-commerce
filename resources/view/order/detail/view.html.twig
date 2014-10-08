@@ -4,7 +4,7 @@
 {% endblock %}
 {% block main %}
 	<hgroup class="title">
-		<h1>{{ 'Order'|trans }} {{ order.id }} <span class="updated-date">Placed: {{ order.authorship.createdAt|date }}</span></h1>
+		<h1>{{ 'Order'|trans }} #{{ order.id }} <span class="updated-date">Placed: {{ order.authorship.createdAt|date }}, Status: {{ order.status }}</span></h1>
 	</hgroup>
 	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#tabs', { 'orderID': order.id } )) }}
 	{% block order_content %}

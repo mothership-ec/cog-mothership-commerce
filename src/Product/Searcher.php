@@ -113,7 +113,7 @@ class Searcher {
 	/**
 	 * Sets $_queryString and $_searchParams
 	 *
-	 * @throws \LogixException If no requirements have been set yet
+	 * @throws \LogicException If no requirements have been set yet
 	 */
 	protected function _buildQuery()
 	{
@@ -134,16 +134,17 @@ class Searcher {
 
 			if ('description' == $field) {
 				$field = 'product_info.' . $field;
-				$wheres[] = '(LOWER(' . $field . ') LIKE :' . $field . ' OR LOWER(product_info.short_description) LIKE :' . $field .')';
+				$wheres[] = '(LOWER(' . $field . ') LIKE :' . $field . '?s OR LOWER(product_info.short_description) LIKE :' . $field .'?s)';
 			} else {
 				$field = 'product.' . $field;
-				$wheres[] = 'LOWER(' . $field . ') LIKE :' . $field;
+				$wheres[] = 'LOWER(' . $field . ') LIKE :' . $field . '?s';
 			}
 
-			$this->_searchParams[$field] = str_replace('*', '%', $term);
+			// replace '*' with '%' and add '%' in end and beginning
+			$this->_searchParams[$field]             = '%' . str_replace('*', '%', $term) . '%';
 		}
 
-		$where = join($wheres, ' AND ');
+		$where = implode(' AND ', $wheres);
 
 		$this->_queryString = '
 			SELECT

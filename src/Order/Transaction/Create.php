@@ -88,8 +88,10 @@ class Create
 			'type'          => $transaction->type,
 		));
 
-		$this->_query->setIDVariable('TRANSACTION_ID');
-		$transaction->id = '@TRANSACTION_ID';
+		$sqlVariable = 'TRANSACTION_ID_' . uniqid();
+
+		$this->_query->setIDVariable($sqlVariable);
+		$transaction->id = '@' . $sqlVariable;
 
 		$this->_createRecords($transaction);
 		$this->_createAttributes($transaction);
@@ -98,9 +100,9 @@ class Create
 
 		$this->_query->attachEvent(
 			Events::CREATE_COMPLETE,
-			function ($dbTrans) use ($loader) {
+			function ($dbTrans) use ($loader, $sqlVariable) {
 				return new Event\Event(
-					$loader->getByID($dbTrans->getIDVariable('TRANSACTION_ID'))
+					$loader->getByID($dbTrans->getIDVariable($sqlVariable))
 				);
 			}
 		);
@@ -119,8 +121,7 @@ class Create
 	 */
 	protected function _createRecords(Transaction $transaction)
 	{
-		foreach ($transaction->records as $record)
-		{
+		foreach ($transaction->records as $record) {
 			$this->_query->run('
 				INSERT INTO
 					transaction_record

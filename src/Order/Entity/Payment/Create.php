@@ -2,111 +2,130 @@
 
 namespace Message\Mothership\Commerce\Order\Entity\Payment;
 
-use Message\User\UserInterface;
-
 use Message\Mothership\Commerce\Order;
+use Message\Mothership\Commerce\Payment\Create as BaseCreate;
 
 use Message\Cog\DB;
-use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Order payment creator.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Iris Schaffer <iris@message.co.uk>
  */
 class Create implements DB\TransactionalInterface
 {
-	protected $_query;
+	protected $_trans;
 	protected $_loader;
-	protected $_currentUser;
-	protected $_transOverriden = false;
+	protected $_eventDispatcher;
+	protected $_paymentCreate;
+	protected $_transOverridden = false;
 
 	public function __construct(
 		DB\Transaction $query,
+		BaseCreate $paymentCreate,
 		Loader $loader,
-		DispatcherInterface $eventDispatcher,
-		UserInterface $currentUser
-	)
-	{
-		$this->_query           = $query;
+		DispatcherInterface $eventDispatcher
+	) {
+		$this->_trans           = $query;
 		$this->_loader          = $loader;
 		$this->_eventDispatcher = $eventDispatcher;
-		$this->_currentUser     = $currentUser;
+		$this->_paymentCreate   = $paymentCreate;
+
+		// Set the base payment creator to use the same transaction
+		$this->_paymentCreate->setTransaction($this->_trans);
 	}
 
 	/**
-	 * Sets transaction and sets $_transOverriden to true
-	 * @param DBTransaction $trans transaction
+	 * Sets transaction and sets $_transOverridden to true.
+	 *
+	 * @param  DB\Transaction $trans transaction
+	 * @return Create                $this for chainability
 	 */
 	public function setTransaction(DB\Transaction $trans)
 	{
-		$this->_query = $trans;
-		$this->_transOverriden = true;
+		$this->_trans           = $trans;
+		$this->_transOverridden = true;
+
+		$this->_paymentCreate->setTransaction($this->_trans);
 
 		return $this;
 	}
 
+	/**
+	 * Creates a payment.
+	 *
+	 * Dispatches Order\Events::ENTITY_CREATE and Order\Events::ENTITY_CREATE_END
+	 * events.
+	 *
+	 * Commits the transaction if $_transOverridden is false.
+	 *
+	 * @param  Payment $payment Payment to be created
+	 *
+	 * @return Payment          The created payment, reloaded if the transaction
+	 *                          was not overridden
+	 */
 	public function create(Payment $payment)
 	{
-		// Set create authorship data if not already set
-		if (!$payment->authorship->createdAt()) {
-			$payment->authorship->create(
-				new DateTimeImmutable,
-				$this->_currentUser->id
-			);
-		}
+		$this->_validate($payment);
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE,
 			$event
 		)->getEntity();
 
-		$result = $this->_query->run('
+		if (!$payment->payment->id) {
+			$this->_paymentCreate->create($payment->payment);
+		}
+
+		$this->_trans->run('
 			INSERT INTO
 				order_payment
 			SET
 				order_id   = :orderID?i,
-				return_id  = :returnID?in,
-				created_at = :createdAt?d,
-				created_by = :createdBy?in,
-				method     = :method?sn,
-				amount     = :amount?f,
-				`change`   = :change?fn,
-				reference  = :reference?sn
-		', array(
-			'orderID'     => $payment->order->id,
-			'returnID'    => $payment->return ? $payment->return->id : null,
-			'createdAt'   => $payment->authorship->createdAt(),
-			'createdBy'   => $payment->authorship->createdBy(),
-			'method'      => $payment->method->getName(),
-			'amount'      => $payment->amount,
-			'change'      => $payment->change,
-			'reference'   => $payment->reference,
-		));
-
-		$sqlVariable = 'PAYMENT_ID_' . spl_object_hash($payment);
-
-		$this->_query->setIDVariable($sqlVariable);
-		$payment->id = '@' . $sqlVariable;
+				payment_id = :paymentID?i
+		', [
+			'orderID'   => $payment->order->id,
+			'paymentID' => $payment->id,
+		]);
 
 		$event = new Order\Event\EntityEvent($payment->order, $payment);
-		$event->setTransaction($this->_query);
+		$event->setTransaction($this->_trans);
 
 		$payment = $this->_eventDispatcher->dispatch(
 			Order\Events::ENTITY_CREATE_END,
 			$event
 		)->getEntity();
 
-		if (!$this->_transOverriden) {
-			$this->_query->commit();
+		if (!$this->_transOverridden) {
+			$this->_trans->commit();
 
-			return $this->_loader->getByID($this->_query->getIDVariable($sqlVariable), $payment->order);
+			return $this->_loader->getByID($this->_trans->getIDVariable(str_replace('@', '', $payment->id)));
 		}
 
 		return $payment;
+	}
+
+	protected function _validate(Payment $payment)
+	{
+		if (!$payment->order) {
+			throw new \InvalidArgumentException('Could not create payment: no order specified');
+		}
+
+		if (!$payment->payment->currencyID) {
+			$payment->payment->currencyID = $payment->order->currencyID;
+		}
+
+		if ($payment->order->currencyID !== $payment->payment->currencyID) {
+			throw new \InvalidArgumentException(sprintf(
+				'Could not create payment: currency ID (%s) must match order currency ID (%s)',
+				$payment->payment->currencyID,
+				$payment->order->currencyID
+			));
+		}
 	}
 }

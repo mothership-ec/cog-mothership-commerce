@@ -6,6 +6,8 @@
 	</ul>
 
 	<div class="controls">
+		<a href="{{ url('ms.commerce.product.barcodes', {productID: productID}) }}" data-modal-open id="print-barcodes" type="submit" class="button small print-barcodes">{{ 'Print barcodes'|trans }}</a>
+
 	    <form action="{{ url('ms.commerce.product.delete', {productID: productID}) }}" method="post" id="delete-page">
 	        <input type="hidden" name="_method" value="DELETE">
 	        <button name="delete[delete]" value="delete" id="delete" type="submit" class="button small delete">{{ 'Delete'|trans }}</button>

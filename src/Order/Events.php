@@ -10,12 +10,16 @@ final class Events
 	const CREATE_END            = 'commerce.order.create.end';
 	const CREATE_COMPLETE       = 'commerce.order.create.complete';
 	const EDIT                  = 'commerce.order.edit';
+	const DELETE_START          = 'commerce.order.delete.start';
+	const DELETE_END            = 'commerce.order.delete.end';
 	const SET_STATUS            = 'commerce.order.status';
+	const STATUS_CHANGE         = 'commerce.order.status.change';
 	const ITEM_STATUS_CHANGE    = 'commerce.order.item.status.change';
 	const DISPATCH_POSTAGE_AUTO = 'commerce.order.dispatch.postage.automatically';
 	const DISPATCH_SHIPPED      = 'commerce.order.dispatch.shipped';
 	const DISPATCH_NOTIFICATION = 'commerce.order.dispatch.notification';
-	const ENTITY_CREATE        	= 'commerce.order.entity.create';
+
+	const ENTITY_CREATE         = 'commerce.order.entity.create';
 	const ENTITY_CREATE_END     = 'commerce.order.entity.create.end';
 
 	const BUILD_ORDER_SIDEBAR   = 'commerce.order.sidebar.create';

@@ -8,14 +8,20 @@ class Tabs extends Controller
 {
 	public function index($productID)
 	{
+		$product	= $this->get('product.loader')->getByID($productID);
+
 		$tabs = array(
 			'Attributes' => 'ms.commerce.product.edit.attributes',
-			'Details'	 => 'ms.commerce.product.edit.details',
-			'Pricing' 	 => 'ms.commerce.product.edit.pricing',
-			'Units'  	 => 'ms.commerce.product.edit.units',
-			'Stock'  	 => 'ms.commerce.product.edit.stock',
-			'Images'  	 => 'ms.commerce.product.edit.images',
 		);
+
+		if ($product->getDetails()->count() > 0) {
+			$tabs['Details']	= 'ms.commerce.product.edit.details';
+		}
+
+		$tabs['Pricing'] 	 = 'ms.commerce.product.edit.pricing';
+		$tabs['Units']  	 = 'ms.commerce.product.edit.units';
+		$tabs['Stock']  	 = 'ms.commerce.product.edit.stock';
+		$tabs['Images']  	 = 'ms.commerce.product.edit.images';
 
 		$current = $this->get('http.request.master')->get('_route');
 

@@ -39,4 +39,15 @@ class Collection extends BaseCollection
 
 		return $return;
 	}
+
+	public function getTotalBasePrice()
+	{
+		$return = 0;
+
+		foreach ($this->all() as $item) {
+			$return += $item->basePrice;
+		}
+
+		return $return;
+	}
 }
