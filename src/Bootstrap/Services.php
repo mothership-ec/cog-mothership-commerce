@@ -591,6 +591,15 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Upload\UploadCompleteDispatcher($c['event.dispatcher']);
 		});
 
+		$services['product.upload.unit_stock'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\UnitStockSetter(
+				$c['stock.manager'],
+				$c['stock.movement.reasons']->get(Reason\Reasons::NEW_ORDER),
+				$c['stock.locations'],
+				$c['product.upload.heading_keys']
+			);
+		});
+
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));

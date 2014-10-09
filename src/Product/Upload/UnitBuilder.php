@@ -64,6 +64,8 @@ class UnitBuilder
 		$this->_setData($row);
 		$this->_addAuthorship();
 
+		$this->_unit->stock = [];
+
 		return $this->_unit;
 	}
 
