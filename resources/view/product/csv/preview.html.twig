@@ -37,7 +37,7 @@
 		<tbody>
 			{% for product in productData %}
 				{% for unit in product %}
-					<tr class="{{ (key is odd) ? "odd" : "even" }}">
+					<tr class="{{ (key is odd) ? "odd" : "even" }} {{ (key > numProducts) ? "hide" : "" }}">
 						{% for column in unit %}
 							<td>{{ column }}</td>
 						{% endfor %}
@@ -52,8 +52,8 @@
 	<table>
 		{{ _self.getHeading(heading) }}
 		<tbody>
-		{% for invalidRow in invalid %}
-			<tr>
+		{% for iKey, invalidRow in invalid %}
+			<tr class="{{ ((iKey + 1) > numProducts) ? "hide" : "" }}">
 				{% for invalidColumn in invalidRow %}
 					<td>{{ invalidColumn }}</td>
 				{% endfor %}

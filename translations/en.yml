@@ -163,6 +163,9 @@ ms.commerce:
         taxRate:
           name: Tax rate (%)
           help:
+        stock:
+          name: Stock
+          help:
         var_name:
           name: Variant name
           help:

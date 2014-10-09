@@ -66,6 +66,7 @@ class HeadingBuilder implements \Countable
 		'rrp'      => 'rrp',
 		'cost'     => 'cost',
 		'taxRate'  => 'taxRate',
+		'stock'    => 'stock',
 	];
 
 	/**
