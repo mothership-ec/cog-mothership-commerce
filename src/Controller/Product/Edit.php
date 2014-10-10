@@ -15,6 +15,8 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 
 class Edit extends Controller
 {
+	const HIDDEN_SUFFIX = '_hidden';
+
 	protected $_product;
 	protected $_units = array();
 
@@ -122,7 +124,7 @@ class Edit extends Controller
 		$images = [];
 		$types  = $this->get('product.image.types');
 
-		foreach ($this->_product->images as $image) {
+		foreach ($this->_product->getImages() as $image) {
 			$label = $types->get($image->type);
 
 			if (!array_key_exists($label, $images)) {
@@ -152,6 +154,7 @@ class Edit extends Controller
 		$form           = $this->_getUnitForm();
 
 		if ($form->isValid() && $data = $form->getFilteredData()) {
+
 			foreach ($data as $unitID => $values) {
 				// original unit
 				$unit = clone $this->_units[$unitID];
@@ -167,8 +170,15 @@ class Edit extends Controller
 					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
 				}
 
-				foreach ($values['optionForm'] as $type => $value) {
-					$changedUnit->options[$type] = $value;
+				// Labels are stored in hidden fields to allow for spaces and special characters, we don't want to save
+				// this to the unit, so we need to check the current field against the previous one.
+				$previousOption = null;
+				foreach ($values['optionForm'] as $typeField => $value) {
+					if ($typeField !== $previousOption . self::HIDDEN_SUFFIX) {
+						$type = $values['optionForm'][$typeField . self::HIDDEN_SUFFIX];
+						$changedUnit->options[$type] = $value;
+						$previousOption = $typeField;
+					}
 				}
 
 				if ($changedUnit != $unit) {
@@ -280,7 +290,7 @@ class Edit extends Controller
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
-			$product->details = $detailEdit->updateDetails($data, $product->details);
+			$product->setDetails($detailEdit->updateDetails($data, $product->getDetails()));
 			$detailEdit->save($product);
 
 			$product = $productEdit->save($product);
@@ -318,7 +328,7 @@ class Edit extends Controller
 			foreach ($data as $key => $value) {
 				if (preg_match("/^price/us", $key)) {
 					$type = str_replace('price_', '', $key);
-					$product->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+					$product->getPrices()[$type]->setPrice('GBP', $value, $this->get('locale'));
 				}
 			}
 
@@ -535,7 +545,7 @@ class Edit extends Controller
 
 		$form->add('image', 'ms_file', $this->trans('ms.commerce.product.image.file.label'), array(
 			'choices' => $choices,
-			'empty_value' => 'Please select&hellip;',
+			'empty_value' => 'Please select…',
 			'attr' => array('data-help-key' => 'ms.commerce.product.image.file.help'),
 		));
 
@@ -640,8 +650,16 @@ class Edit extends Controller
 					$choices[$choice] = $choice;
 				}
 
-				$optionForm->add($type, 'choice', ucfirst($type), array('choices' => $choices))
-					->val()->optional();
+				$fieldName = preg_replace('/[^a-z0-9]/i', '_', $type);
+
+				$optionForm->add($fieldName, 'datalist', ucfirst($type), [
+					'choices' => $choices,
+					'data'    => (!empty($unit->options[$type])) ? $unit->options[$type] : null,
+				])->val()->optional();
+
+				$optionForm->add($fieldName . self::HIDDEN_SUFFIX, 'hidden', $fieldName, [
+					'data' => $type,
+				]);
 			}
 			// Add the option forms to the parent form
 			$form->add($optionForm, 'form');
@@ -761,7 +779,7 @@ class Edit extends Controller
 
 	protected function _getProductDetailsForm()
 	{
-		return $this->get('field.form')->generate($this->_product->details, [
+		return $this->get('field.form')->generate($this->_product->getDetails(), [
 			'action' => $this->generateUrl('ms.commerce.product.edit.details.action', [
 					'productID' => $this->_product->id,
 				])
@@ -775,7 +793,7 @@ class Edit extends Controller
 			->setAction($this->generateUrl('ms.commerce.product.edit.pricing.action', array('productID' => $this->_product->id)))
 			->setMethod('post');
 
-		foreach ($this->_product->price as $type => $value) {
+		foreach ($this->_product->getPrices() as $type => $value) {
 			$form->add(
 				'price_'.$type,
 				'money',

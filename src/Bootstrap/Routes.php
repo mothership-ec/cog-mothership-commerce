@@ -11,6 +11,9 @@ class Routes implements RoutesInterface
 		$router['ms.product']->setParent('ms.cp')->setPrefix('/product');
 		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');
 
+		$router['ms.product']->add('ms.commerce.product.search', 'search-results', 'Message:Mothership:Commerce::Controller:Product:Search#process')
+			->setMethod('GET');
+
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', 'Message:Mothership:Commerce::Controller:Product:Dashboard#index');
 
 
@@ -78,10 +81,15 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.edit.images', 'edit/{productID}/images', 'Message:Mothership:Commerce::Controller:Product:Edit#images')
 			->setRequirement('productID', '\d+');
 
-
 		$router['ms.product.basket']->add('ms.commerce.product.add.basket', '/basket/add/{productID}', 'Message:Mothership:Commerce::Controller:Module:ProductSelector#process')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');
+
+		$router['ms.product']->add('ms.commerce.product.barcodes.action', '/barcode/print/{productID}', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodesAction')
+			->setRequirement('productID', '\d+')
+			->setMethod('POST');
+		$router['ms.product']->add('ms.commerce.product.barcodes', '/barcode/print/{productID}', 'Message:Mothership:Commerce::Controller:Product:Barcode#productBarcodes')
+			->setRequirement('productID', '\d+');
 
 		$router['ms.product']->add('ms.commerce.product.barcode.stock_take', '/barcode/stock-take', 'Message:Mothership:Commerce::Controller:Product:Barcode#stockTake');
 
@@ -111,5 +119,13 @@ class Routes implements RoutesInterface
 			->setRequirement('orderID', '\d+');
 
 		$router['ms.order']->add('ms.commerce.order.document.print', 'document/{documentID}/print', 'Message:Mothership:Commerce::Controller:Order:Document#printDocument');
+
+		// Order cancellation routes
+		$router['ms.order']->add('ms.commerce.order.cancel', 'view/{orderID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel:Cancel#cancelOrder')
+			->setRequirement('orderID', '\d+');
+
+		$router['ms.order']->add('ms.commerce.order.item.cancel', 'view/{orderID}/item/{itemID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel:Cancel#cancelItem')
+			->setRequirement('orderID', '\d+')
+			->setRequirement('itemID', '\d+');
 	}
 }

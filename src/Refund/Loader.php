@@ -14,7 +14,7 @@ use Message\Cog\ValueObject\DateTimeImmutable;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader implements Order\Transaction\RecordLoaderInterface
+class Loader implements Order\Transaction\DeletableRecordLoaderInterface
 {
 	protected $_query;
 	protected $_methods;
@@ -29,7 +29,7 @@ class Loader implements Order\Transaction\RecordLoaderInterface
 	}
 
 	/**
-	 * Toggle whether to load deleted refunds.
+	 * Set whether to load deleted refunds.
 	 *
 	 * @param  bool $bool True to load deleted refunds, false otherwise
 	 *
