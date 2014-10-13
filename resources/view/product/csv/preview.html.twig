@@ -27,12 +27,15 @@
 {% endblock %}
 
 {% block main %}
-	{% include '@Message:Mothership:Commerce::product:csv:warning_modal' %}
-	<section class="container-content">
+	<!-- {% include '@Message:Mothership:Commerce::product:csv:warning_modal' %} -->
+	<hgroup class="title">
+		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
+	</hgroup>
+	<section class="container-content csv-preview">
 	{% set key = 1 %}
 	{# Use flipscroll style at http://elvery.net/demo/responsive-tables/ #}
 	<h3>Valid rows</h3>
-	<table>
+	<table class="valid">
 		{{ _self.getHeading(heading) }}
 		<tbody>
 			{% for product in productData %}
@@ -47,9 +50,10 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<a class="csv-show valid button small">Show all rows</a>
 
 	<h3>Invalid rows</h3>
-	<table>
+	<table class="invalid">
 		{{ _self.getHeading(heading) }}
 		<tbody>
 		{% for iKey, invalidRow in invalid %}
@@ -62,8 +66,10 @@
 		</tbody>
 	</table>
 
+	<a class="csv-show invalid button small">Show all rows</a>
+
 	{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
-		<span data-modal-open data-modal="#upload_warning" id="save-button" class="button modal">Save</span>
+		<span data-modal-open data-modal="#upload_warning" id="save-content" class="button save small">Save</span>
 	{{ form_end(form) }}
 	</section>
 {% endblock %}
