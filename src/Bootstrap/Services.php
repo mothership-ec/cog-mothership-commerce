@@ -19,6 +19,7 @@ class Services implements ServicesInterface
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
 		$this->registerStatisticsDatasets($services);
+		$this->registerReports($services);
 
 		$services['order'] = $services->factory(function($c) {
 			$order = new Commerce\Order\Order($c['order.entities']);
@@ -825,6 +826,16 @@ class Services implements ServicesInterface
 			$statistics->add(new Commerce\Statistic\ProductsSales($c['db.query'], $c['statistics.counter.key'], $c['statistics.range.date']));
 
 			return $statistics;
+		});
+	}
+
+	public function registerReports($services)
+	{
+		if(!isset($services['report.collection'])) {
+			return;
+		}
+		$services->extend('report.collection', function($collection, $c) {
+			$collection->add(new Commerce\Report\StockSummary($c['db.query.builder.factory']));
 		});
 	}
 }
