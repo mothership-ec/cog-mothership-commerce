@@ -67,6 +67,7 @@ class ProductType extends Form\AbstractType
 				'type'      => 'product_unit',
 				'allow_add' => true,
 				'prototype_name' => '__unit__',
+				'label' => false,
 			]);
 
 			$prices = $builder->create('prices', 'form');

@@ -51,6 +51,7 @@ class UnitType extends Form\AbstractType
 				'type'      => 'product_variant',
 				'allow_add' => true,
 				'prototype_name' => '__variant__',
+				'label' => false,
 			]);
 	
 		return $this;

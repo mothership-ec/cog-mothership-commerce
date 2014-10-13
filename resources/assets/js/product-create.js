@@ -77,7 +77,7 @@ function updateUnits() {
 
 			// build form
 			var varForm = $(variantFormProto.html()
-				.replace(/__variant__label__/g, key)
+				.replace(/__variant__label__/g, '')
 				.replace(/__variant__/g, key)
 			);
 
