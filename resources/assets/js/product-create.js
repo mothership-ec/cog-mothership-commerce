@@ -7,6 +7,7 @@ function Unit(variants) {
 	this.variants = variants ? variants : {};
 }
 
+// Updates the units from the fields
 function updateUnits() {
 	var variants = {};
 
@@ -79,7 +80,7 @@ function updateUnits() {
 			var varForm = $(variantFormProto.html()
 				.replace(/__variant__label__/g, '')
 				.replace(/__variant__/g, key)
-			);
+			).children('label').remove();
 
 			$('#product_create_units___unit___variants_'+key+'_key', varForm).val(key);
 			$('#product_create_units___unit___variants_'+key+'_value', varForm).val(unit.variants[key]);
@@ -133,5 +134,4 @@ function addVariantField() {
 $(function(){
 	addVariantField();
 	$(".add-variant").on("click", addVariantField);
-
 });
