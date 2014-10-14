@@ -9,6 +9,7 @@
 					<tr>
 						<th colspan="4">Subtotal</th>
 						<td>{{ order.productGross|price(order.currencyID) }}</td>
+						<td></td>
 					</tr>
 					<tr>
 						<th colspan="4">
@@ -16,10 +17,12 @@
 							{% if order.shippingDisplayName %}<em>({{ order.shippingDisplayName }})</em>{% endif %}
 						</th>
 						<td>{{ order.shippingGross|price(order.currencyID) }}</td>
+						<td></td>
 					</tr>
 					<tr>
 						<th colspan="4">Grand Total</th>
 						<td>{{ order.totalGross|price(order.currencyID) }}</td>
+						<td></td>
 					</tr>
 				</tfoot>
 			{% endif %}

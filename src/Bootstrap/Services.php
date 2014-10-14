@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason;
 use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
 use Message\Cog\DB\Entity\EntityLoaderCollection;
 
@@ -158,6 +159,16 @@ class Services implements ServicesInterface
 			);
 		});
 
+		// Order forms
+		$services['order.form.cancel'] = function($c) {
+			return new Commerce\Form\Order\Cancel(
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE),
+				$c['user.loader']->getUserPassword($c['user.current']),
+				$c['user.password_hash'],
+				$c['translator']
+			);
+		};
+
 		// Order address entity
 		$services['order.address.loader'] = $services->factory(function($c) {
 			return $c['order.loader']->getEntityLoader('addresses');
@@ -202,8 +213,12 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		});
 
+		$services['order.dispatch.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Dispatch\Delete($c['db.query'], $c['user.current']);
+		});
+
 		$services['order.dispatch.edit'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current'], $c['event.dispatcher']);
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.transaction'], $c['user.current'], $c['event.dispatcher']);
 		});
 
 		// Order document entity
@@ -221,7 +236,10 @@ class Services implements ServicesInterface
 
 		// Order item status
 		$services['order.item.status.loader'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
+			return new Commerce\Order\Entity\Item\Status\Loader(
+				$c['db.query'],
+				$c['order.item.statuses']
+			);
 		});
 
 		// Order payment entity
@@ -304,6 +322,14 @@ class Services implements ServicesInterface
 				new Commerce\Order\Status\Status(OrderStatuses::DISPATCHED,        'Dispatched'),
 				new Commerce\Order\Status\Status(OrderStatuses::RECEIVED,          'Received'),
 			));
+		};
+
+		$services['order.specification.cancellable'] = function($c) {
+			return new Commerce\Order\Specification\OrderCanBeCancelledSpecification;
+		};
+
+		$services['order.item.specification.cancellable'] = function($c) {
+			return new Commerce\Order\Entity\Item\ItemCanBeCancelledSpecification;
 		};
 
 		// Configurable/optional event listeners
@@ -631,14 +657,15 @@ class Services implements ServicesInterface
 		});
 
 		$services['stock.movement.reasons'] = function() {
-			return new Commerce\Product\Stock\Movement\Reason\Collection([
-				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
-				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
-				new Commerce\Product\Stock\Movement\Reason\Reason(
-					\Message\Mothership\Commerce\Task\Stock\Barcode::REASON,
-					'Stock Take'
-				),
-			]);
+			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
+				new Reason\Reason(Reason\Reasons::NEW_ORDER, 'New Order'),
+				new Reason\Reason(Reason\Reasons::CANCELLED_ORDER, 'Cancelled Order'),
+				new Reason\Reason(Reason\Reasons::CANCELLED_ITEM, 'Cancelled Item'),
+				new Reason\Reason(Commerce\Task\Stock\Barcode::REASON, 'Stock Take'),
+
+				// add this as constant somewhere
+				new Reason\Reason('void_transaction', 'Voided Transaction'),
+			));
 		};
 
 		$services['stock.movement.iterator'] = $services->factory(function($c) {
@@ -708,6 +735,46 @@ class Services implements ServicesInterface
 
 			return $factory;
 		});
+
+
+		$services['mail.factory.order.cancellation'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email);
+				$message->setSubject(sprintf('Your %s order has been cancelled - %d', $appName, $factory->order->orderID));
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:order-cancellation', array(
+					'order'       => $factory->order,
+					'companyName' => $appName,
+				));
+			});
+
+			return $factory;
+		});
+
+		$services['mail.factory.order.item.cancellation'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email);
+				$message->setSubject(sprintf('An item of your %s order has been cancelled - %d', $appName, $factory->order->orderID));
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:item-cancellation', array(
+					'order'          => $factory->order,
+					'cancelledItems' => $factory->order->items->getByCurrentStatusCode(OrderStatuses::CANCELLED),
+					'companyName'    => $appName,
+				));
+			});
+
+			return $factory;
+		});		
 	}
 
 	public function registerProductPageMapper($services)

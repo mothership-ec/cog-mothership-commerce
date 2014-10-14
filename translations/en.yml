@@ -215,11 +215,25 @@ ms.commerce:
       status: Status
       user-email: User E-Mail
 
+      cancel: Cancel Order
+      cancelled: Cancelled
+      cancel-disabled: "Can't Cancel"
+      cancel-warn: Shipping will be refunded. This action cannot be undone
+      cancel-form:
+        return-stock: "Return %items% to stock location %location%?"
+        issue-refund: Issue a refund?
+        notify-customer: Notify the customer by email?
+        password-confirm: Please confirm your account password to continue
+
     item:
       none: There are no items to view.
+      cancel: Cancel Item
+      cancelled: Cancelled
+      cancel-disabled: "Can't Cancel"
 
       listing-title: Items
       summary-title: Item Summary
+      cancel-warn: This action cannot be undone
 
     address:
       none: There are no addresses to view.

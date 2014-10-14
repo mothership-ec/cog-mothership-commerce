@@ -13,6 +13,7 @@ final class Events
 	const DELETE_START          = 'commerce.order.delete.start';
 	const DELETE_END            = 'commerce.order.delete.end';
 	const SET_STATUS            = 'commerce.order.status';
+	const STATUS_CHANGE         = 'commerce.order.status.change';
 	const ITEM_STATUS_CHANGE    = 'commerce.order.item.status.change';
 	const DISPATCH_POSTAGE_AUTO = 'commerce.order.dispatch.postage.automatically';
 	const DISPATCH_SHIPPED      = 'commerce.order.dispatch.shipped';
