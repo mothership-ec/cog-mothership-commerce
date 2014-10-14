@@ -90,12 +90,13 @@ function updateUnits() {
 			var varForm = $(variantFormProto.html()
 				.replace(/__variant__label__/g, '')
 				.replace(/__variant__/g, key)
-			).children('label').remove();
-
-			$('#product_create_units___unit___variants_'+key+'_key', varForm).val(key);
-			$('#product_create_units___unit___variants_'+key+'_value', varForm).val(unit.variants[key]);
+			).children().remove('label');
 
 			$('#product_create_units___unit___variants', unitForm).append(varForm);
+			
+			$('#product_create_units___unit___variants_'+key+'_key', unitForm).val(key);
+			$('#product_create_units___unit___variants_'+key+'_value', unitForm).val(unit.variants[key]);
+
 		});
 
 		// replace names given by symfony

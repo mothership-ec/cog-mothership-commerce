@@ -37,7 +37,7 @@ class Create extends Controller
 
 				$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 				$unit = $unitCreator->create($unit);
-
+				d($unit->options);
 				foreach($unit->getStockArray() as $location => $stock) {
 					$stockManager->set(
 							$unit,
