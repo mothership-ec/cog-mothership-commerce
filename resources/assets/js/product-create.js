@@ -146,6 +146,7 @@ function addVariantField() {
 $(function(){
 	$('a.create-similar').on('click', function(e) {
 		$('.complete-hide').fadeOut(150);
+		$('.save').show();
 
 		e.preventDefault();
 	});
@@ -159,6 +160,7 @@ $(function(){
 			data   : self.serialize(),
 			success: function(data) {
 				$('.complete-hide').fadeIn(150);
+				$('.save').hide();
 			},
 			error  : function(data) {
 			}
