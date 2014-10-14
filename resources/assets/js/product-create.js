@@ -145,7 +145,7 @@ function addVariantField() {
 
 $(function(){
 	$('a.create-similar').on('click', function(e) {
-		$('.complete').addClass('hidden');
+		$('.complete-hide').fadeOut(150);
 
 		e.preventDefault();
 	});
@@ -158,7 +158,7 @@ $(function(){
 			method : self.attr('method'),
 			data   : self.serialize(),
 			success: function(data) {
-				$('.complete').removeClass('hidden');
+				$('.complete-hide').fadeIn(150);
 			},
 			error  : function(data) {
 			}
