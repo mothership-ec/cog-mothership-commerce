@@ -9,6 +9,12 @@ function Unit(variants) {
 
 // Updates the units from the fields
 function updateUnits() {
+	
+	/*
+	|
+	|  Update unit objects.
+	|
+	*/
 	var variants = {};
 
 	// create variant array
@@ -55,7 +61,11 @@ function updateUnits() {
 		window.units = units;
 	}
 
-	// Update document
+	/*
+	|
+	|  Update document.
+	|
+	*/
 	var e_Units    = $('#product_create_units');
 	e_Units.empty();
 	
