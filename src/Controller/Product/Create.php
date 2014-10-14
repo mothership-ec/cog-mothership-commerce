@@ -17,6 +17,7 @@ class Create extends Controller
 	public function process()
 	{
 		$form = $this->createForm($this->get('product.form.create'));
+
 		$form->handleRequest();
 		if ($form->isValid()) {
 			$productCreator = $this->get('product.create');
@@ -49,12 +50,12 @@ class Create extends Controller
 
 			if (!$stockManager->commit()) {
 				$this->addFlash('error', 'Could not update stock');
+			} else {
+				return $this->redirectToRoute('ms.commerce.product.edit.attributes', [
+					'productID'  => $product->id,
+				]);
 			}
 
-
-			return $this->render('Message:Mothership:Commerce::product:create', [
-				'form'  => $form,
-			]);
 		}
 
 		return $this->render('Message:Mothership:Commerce::product:create', [

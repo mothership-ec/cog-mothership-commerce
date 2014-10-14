@@ -93,7 +93,7 @@ function updateUnits() {
 			).children().remove('label');
 
 			$('#product_create_units___unit___variants', unitForm).append(varForm);
-			
+
 			$('#product_create_units___unit___variants_'+key+'_key', unitForm).val(key);
 			$('#product_create_units___unit___variants_'+key+'_value', unitForm).val(unit.variants[key]);
 
@@ -142,7 +142,35 @@ function addVariantField() {
 	$(".variant-options").append(field);
 }
 
+
 $(function(){
+	$('a.create-similar').on('click', function(e) {
+		$('.complete').addClass('hidden');
+
+		e.preventDefault();
+	});
+
+	$('form').on('ms_product_create_submit', function() {
+		var self = $(this);
+
+		$.ajax({
+			action : self.attr('action'),
+			method : self.attr('method'),
+			data   : self.serialize(),
+			success: function(data) {
+				$('.complete').removeClass('hidden');
+			},
+			error  : function(data) {
+			}
+		});
+	});
+
 	addVariantField();
 	$(".add-variant").on("click", addVariantField);
+
+	$('form#ms-create-form').on('submit', function(e) {
+		$(this).trigger('ms_product_create_submit');
+
+		e.preventDefault();
+	});
 });
