@@ -74,7 +74,6 @@ class ProductTransform implements DataTransformerInterface
 	 */
 	public function reverseTransform($data)
 	{
-		d($data);
 		$product = new Product($this->_locale);
 
 		$product->setName($data['name']);
