@@ -4,6 +4,10 @@ namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Report\ReportInterface;
+use Message\Mothership\Report\Report\AbstractReport;
+use Message\Cog\DB\QueryBuilderFactory;
+use Message\Mothership\Report\Chart\TableChart;
+use Message\Mothership\Report\Filter\DateFilter;
 
 
 class StockSummary extends AbstractReport
@@ -18,7 +22,12 @@ class StockSummary extends AbstractReport
 	{
 		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
-		$this->_filters = [new DateFilter]
+		$this->_filters = [new DateFilter];
+	}
+
+	public function getName()
+	{
+		return "stock.summary.report";
 	}
 
 	public function getCharts()
@@ -69,7 +78,7 @@ class StockSummary extends AbstractReport
 					$this->_builderFactory->getQueryBuilder()
 						->select()
 				)
-			->
+			;
 
 
 		return $queryBuilder->getQuery();

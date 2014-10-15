@@ -11,6 +11,7 @@ use Message\Cog\DB\Entity\EntityLoaderCollection;
 use Message\User\AnonymousUser;
 
 use Message\Cog\Bootstrap\ServicesInterface;
+use Message\Mothership\Report\Report\Collection as ReportCollection;
 
 class Services implements ServicesInterface
 {
@@ -831,11 +832,17 @@ class Services implements ServicesInterface
 
 	public function registerReports($services)
 	{
-		if(!isset($services['report.collection'])) {
-			return;
-		}
-		$services->extend('report.collection', function($collection, $c) {
-			$collection->add(new Commerce\Report\StockSummary($c['db.query.builder.factory']));
+		$services['commerce.stock.summary_report'] = $services->factory(function($c) {
+			return new Commerce\Report\StockSummary($c['db.query.builder.factory']);
 		});
+
+		$services['commerce.reports'] = function($c) {
+			$reports = new ReportCollection;
+			$reports
+				->add($c['commerce.stock.summary_report'])
+			;
+
+			return $reports;
+		};
 	}
 }

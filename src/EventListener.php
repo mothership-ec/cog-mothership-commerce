@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Message\Mothership\Report\Event as ReportEvents;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -67,6 +68,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			ActivitySummaryEvent::DASHBOARD_ACTIVITY_SUMMARY => array(
 				'buildDashboardBlockUserSummary',
 			),
+			ReportEvents\ReportEvent::REGISTER_REPORTS => [
+				'registerReports'
+			],
 		);
 	}
 
@@ -271,6 +275,13 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$dataset = $this->get('statistics')->get('products.sales');
 		foreach ($event->getOrder()->getItemRows() as $unitID => $items) {
 			$dataset->counter->decrement($unitID, count($items));
+		}
+	}
+
+	public function registerReports(ReportEvents\BuildReportCollectionEvent $event)
+	{
+		foreach ($this->get('commerce.reports') as $report) {
+			$event->registerReport($report);
 		}
 	}
 }
