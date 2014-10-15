@@ -9,7 +9,6 @@ use Message\Cog\DB\QueryBuilderFactory;
 use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateFilter;
 
-
 class StockSummary extends AbstractReport
 {
 	private $_to = [];
@@ -33,8 +32,6 @@ class StockSummary extends AbstractReport
 
 	public function getCharts()
 	{
-
-
 		$data = $this->dataTransform($this->getQuery()->run());
 
 		foreach ($this->_charts as $chart) {
@@ -56,7 +53,7 @@ class StockSummary extends AbstractReport
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 
-			
+
 		// if ($date){
 			$queryBuilder->from("product_unit_stock stock");
 		// } else {
@@ -66,17 +63,17 @@ class StockSummary extends AbstractReport
 		// }
 
 		$queryBuilder
-			->select("product.category")
-			->select("product.name")
-			->select("options")
-			->select("stock.stock")
+			->select('product.category AS "Category"')
+			->select('product.name AS "Name"')
+			->select('options AS "Options"')
+			->select('stock.stock AS "Stock"')
 			->join("unit","unit.unit_id = stock.unit_id","product_unit")
 			->leftJoin("product","unit.product_id = product.product_id")
 			->leftJoin("unit_options","unit_options.unit_id = unit.unit_id",
 				$this->_builderFactory->getQueryBuilder()
 					->select('unit_id')
 					->select('revision_id')
-					->select("GROUP_CONCAT(option_name, \": \", option_value SEPARATOR ', ') AS `options`")
+					->select('GROUP_CONCAT(option_value ORDER BY option_name SEPARATOR ", ") AS options')
 					->from('t1',
 						$this->_builderFactory->getQueryBuilder()
 							->select('unit_id')
@@ -88,7 +85,6 @@ class StockSummary extends AbstractReport
 							->groupBy('option_name')
 						)
 					->groupBy('unit_id')
-					->orderBy('option_value')
 				)
 			->where("stock.location = 'web'")
 			->where("product.deleted_at IS NULL")
@@ -101,15 +97,16 @@ class StockSummary extends AbstractReport
 		;
 
 		return $queryBuilder->getQuery();
-
 	}
 
 	protected function dataTransform($data)
 	{
 		$result = [];
 		$result[] = $data->columns();
-		foreach ($data->transpose() as $row) {
+
+		foreach ($data as $row) {
 			$result[] = get_object_vars($row);
+
 		}
 
 		return $result;
