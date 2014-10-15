@@ -20,6 +20,7 @@ class StockSummary extends AbstractReport
 
 	public function __construct(QueryBuilderFactory $builderFactory)
 	{
+		$this->name = "stock-summary-report";
 		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
 		$this->_filters = [new DateFilter];
@@ -27,17 +28,17 @@ class StockSummary extends AbstractReport
 
 	public function getName()
 	{
-		return "stock.summary.report";
+		return $this->name;
 	}
 
 	public function getCharts()
 	{
 
-		$data = $this->getQuery()->run();
+
+		$data = $this->dataTransform($this->getQuery()->run());
 
 		foreach ($this->_charts as $chart) {
-			// populate $chart from getQuery->run();
-			// $chart->setData($data);
+			$chart->setData($data);
 		}
 
 		return $this->_charts;
@@ -53,36 +54,59 @@ class StockSummary extends AbstractReport
 	 */
 	private function getQuery()
 	{
-		if ($date) { // get from filter
-			$this->_date = $date;
-		}
-
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
+
+			
+		// if ($date){
+			$queryBuilder->from("product_unit_stock stock");
+		// } else {
+		// 	$this->_queryBuilder->from("product_unit_stock_snapshot stock");
+			// $this->_queryBuilder->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?), INTERVAL 3 HOUR)');
+			// $this->_queryBuilder->where('? <= stock.created_at');
+		// }
 
 		$queryBuilder
 			->select("product.category")
 			->select("product.name")
 			->select("options")
-			->select("stock.stock");
-
-		if ($date){
-			$this->_queryBuilder->from("product_unit_stock stock");
-		} else {
-			$this->_queryBuilder->from("product_unit_stock_snapshot stock");
-		}
-
-		$this->_queryBuilder
+			->select("stock.stock")
 			->join("unit","unit.unit_id = stock.unit_id","product_unit")
 			->leftJoin("product","unit.product_id = product.product_id")
 			->leftJoin("unit_options","unit_options.unit_id = unit.unit_id",
-					$this->_builderFactory->getQueryBuilder()
-						->select()
+				$this->_builderFactory->getQueryBuilder()
+					->select('unit_id')
+					->select('revision_id')
+					->select("GROUP_CONCAT(option_name, \": \", option_value SEPARATOR ', ') AS `options`")
+					->from('t1',
+						$this->_builderFactory->getQueryBuilder()
+							->select('unit_id')
+							->select('MAX(revision_id) AS revision_id')
+							->select('option_name')
+							->select('option_value')
+							->from('product_unit_option')
+							->groupBy('unit_id')
+							->groupBy('option_name')
+						)
+					->groupBy('unit_id')
+					->orderBy('option_value')
 				)
-			;
-
+			->where("stock.location = 'web'")
+			->where("product.deleted_at IS NULL")
+			->where("unit.deleted_at IS NULL")
+			->where("unit.deleted_at IS NULL")
+			->groupBy('stock.unit_id')
+			->orderBy('product.category')
+			->orderBy('product.name')
+			->orderBy('options ASC')
+		;
 
 		return $queryBuilder->getQuery();
 
+	}
+
+	protected function dataTransform($data)
+	{
+		return $data->transpose();
 	}
 }
 
