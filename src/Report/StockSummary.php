@@ -106,7 +106,13 @@ class StockSummary extends AbstractReport
 
 	protected function dataTransform($data)
 	{
-		return $data->transpose();
+		$result = [];
+		$result[] = $data->columns();
+		foreach ($data->transpose() as $row) {
+			$result[] = get_object_vars($row);
+		}
+
+		return $result;
 	}
 }
 
