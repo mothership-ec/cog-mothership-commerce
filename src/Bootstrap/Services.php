@@ -460,8 +460,8 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.create'] = $services->factory(function($c) {
-			$create = new Commerce\Product\Create($c['db.query'], 
-				$c['locale'], 
+			$create = new Commerce\Product\Create($c['db.query'],
+				$c['locale'],
 				$c['user.current'],
 				$c['product.price.types'],
 				$c['product.price.currency_IDs']
@@ -471,7 +471,7 @@ class Services implements ServicesInterface
 
 			return $create;
 		});
-		
+
 		$services['product.edit'] = $services->factory(function($c) {
 			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		});
@@ -764,7 +764,7 @@ class Services implements ServicesInterface
 			});
 
 			return $factory;
-		});		
+		});
 	}
 
 	public function registerProductPageMapper($services)
@@ -832,14 +832,14 @@ class Services implements ServicesInterface
 
 	public function registerReports($services)
 	{
-		$services['commerce.stock.summary_report'] = $services->factory(function($c) {
+		$services['commerce.stock.summary.report'] = $services->factory(function($c) {
 			return new Commerce\Report\StockSummary($c['db.query.builder.factory']);
 		});
 
 		$services['commerce.reports'] = function($c) {
 			$reports = new ReportCollection;
 			$reports
-				->add($c['commerce.stock.summary_report'])
+				->add($c['commerce.stock.summary.report'])
 			;
 
 			return $reports;
