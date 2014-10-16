@@ -41,14 +41,6 @@ class StockSummary extends AbstractReport
 		return $this->_charts;
 	}
 
-	/**
-	 * Gets the query as an string
-	 *
-	 * @param  string | null     $from        Date from which to get data
-	 * @param  string | null     $to          Get data to this date
-	 *
-	 * @return string
-	 */
 	private function getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();

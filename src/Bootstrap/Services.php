@@ -832,14 +832,19 @@ class Services implements ServicesInterface
 
 	public function registerReports($services)
 	{
-		$services['commerce.stock.summary.report'] = $services->factory(function($c) {
+		$services['commerce.stock_summary_report'] = $services->factory(function($c) {
 			return new Commerce\Report\StockSummary($c['db.query.builder.factory']);
+		});
+
+		$services['commerce.sales_report'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesReport($c['db.query.builder.factory']);
 		});
 
 		$services['commerce.reports'] = function($c) {
 			$reports = new ReportCollection;
 			$reports
-				->add($c['commerce.stock.summary.report'])
+				->add($c['commerce.stock_summary_report'])
+				->add($c['commerce.sales_report'])
 			;
 
 			return $reports;
