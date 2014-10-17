@@ -51,7 +51,7 @@ class Create extends Controller
 			if (!$stockManager->commit()) {
 				$this->addFlash('error', 'Could not update stock');
 			} else {
-				return $this->redirectToRoute('ms.commerce.product.edit.attributes', [
+				return $this->render('Message:Mothership:Commerce::product:create-complete-modal', [
 					'productID'  => $product->id,
 				]);
 			}

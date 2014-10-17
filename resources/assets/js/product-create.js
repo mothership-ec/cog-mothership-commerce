@@ -144,35 +144,14 @@ function addVariantField() {
 
 
 $(function(){
-	$('a.create-similar').on('click', function(e) {
-		$('.complete-hide').fadeOut(150);
-		$('.save').show();
-
-		e.preventDefault();
+	$('body').on('click.modal', '[data-modal-open]', function() {
+		$('.save.button').fadeOut(100);
 	});
 
-	$('form').on('ms_product_create_submit', function() {
-		var self = $(this);
-
-		$.ajax({
-			action : self.attr('action'),
-			method : self.attr('method'),
-			data   : self.serialize(),
-			success: function(data) {
-				$('.complete-hide').fadeIn(150);
-				$('.save').hide();
-			},
-			error  : function(data) {
-			}
-		});
+	$('body').on('click.modal', '[data-modal-close]', function() {
+		$('.save.button').fadeIn(100);
 	});
 
 	addVariantField();
 	$(".add-variant").on("click", addVariantField);
-
-	$('form#ms-create-form').on('submit', function(e) {
-		$(this).trigger('ms_product_create_submit');
-
-		e.preventDefault();
-	});
 });
