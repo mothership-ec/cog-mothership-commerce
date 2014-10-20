@@ -17,6 +17,7 @@ $(function() {
 			null,
 			{ type: "text" },
 			{ type: "text" },
+			{ type: "text" },
 			null
 		]
 	});
