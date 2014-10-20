@@ -32,6 +32,7 @@ class Unit
 	public $product;
 
 	protected $_locale;
+	protected $_defaultCurrency;
 
     public function __clone() {
 		foreach ($this->price as $name => $pricing) {
@@ -39,8 +40,9 @@ class Unit
 		}
     }
 
-	public function __construct(Locale $locale, array $priceTypes)
+	public function __construct(Locale $locale, array $priceTypes, $defaultCurrency)
 	{
+		$this->_defaultCurrency = $defaultCurrency;
 		$this->authorship = new Authorship;
 		$this->_locale = $locale;
 		foreach ($priceTypes as $type) {
@@ -61,8 +63,10 @@ class Unit
 		return ucfirst($options);
 	}
 
-	public function getPrice($type = 'retail', $currencyID = 'GBP')
+	public function getPrice($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID?:$this->_defaultCurrency;
+
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 

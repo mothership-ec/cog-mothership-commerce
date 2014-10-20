@@ -34,6 +34,7 @@ class Loader implements ProductEntityLoaderInterface
 	protected $_loadOutOfStock = false;
 
 	protected $_prices;
+	protected $_defaultCurrency;
 
 	protected $_returnArray = false;
 
@@ -44,8 +45,9 @@ class Loader implements ProductEntityLoaderInterface
 	 * @param Locale $locale Locale Object
 	 * @param array $prices
 	 */
-	public function __construct(Query $query, Locale $locale, array $prices)
+	public function __construct(Query $query, Locale $locale, array $prices, $defaultCurrency)
 	{
+		$this->_defaultCurrency = $defaultCurrency;
 		$this->_query   = $query;
 		$this->_locale  = $locale;
 		$this->_prices  = $prices;
@@ -156,7 +158,8 @@ class Loader implements ProductEntityLoaderInterface
 			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
 			array(
 				$this->_locale,
-				$this->_prices
+				$this->_prices,
+				$this->_defaultCurrency
 			)
 		);
 

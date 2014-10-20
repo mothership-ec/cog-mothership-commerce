@@ -19,6 +19,7 @@ class Services implements ServicesInterface
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
 		$this->registerStatisticsDatasets($services);
+		$this->setupCurrencies($services);
 
 		$services['order'] = $services->factory(function($c) {
 			$order = new Commerce\Order\Order($c['order.entities']);
@@ -28,7 +29,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP'])); // TODO
 
 			return $factory;
 		});
@@ -41,7 +42,7 @@ class Services implements ServicesInterface
 			if (!$c['http.session']->get('basket.order')) {
 				$order             = $c['order'];
 				$order->locale     = $c['locale']->getId();
-				$order->currencyID = 'GBP';
+				$order->currencyID = $c['currency'];
 				$order->type       = 'web';
 
 				if ($c['user.current']
@@ -104,7 +105,7 @@ class Services implements ServicesInterface
 			$order = $c['order'];
 
 			$order->locale     = $c['locale']->getId();
-			$order->currencyID = 'GBP';
+			$order->currencyID = $c['currency'];
 
 			$assembler = new Commerce\Order\Assembler(
 				$order,
@@ -393,11 +394,11 @@ class Services implements ServicesInterface
 
 		// Product
 		$services['product'] = $services->factory(function($c) {
-			return new Commerce\Product\Product($c['locale'], $c['product.price.types']);
+			return new Commerce\Product\Product($c['locale'], $c['product.price.types'], $c['currency']);
 		});
 
 		$services['product.unit'] = $services->factory(function($c) {
-			return new Commerce\Product\Unit\Unit($c['locale'], $c['product.price.types']);
+			return new Commerce\Product\Unit\Unit($c['locale'], $c['product.price.types'], $c['currency']);
 		});
 
 		$services['product.price.types'] = function($c) {
@@ -408,7 +409,7 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.price.currency_IDs'] = function($c) {
+		$services['product.price.currency_IDs'] = function($c) { // TODO
 			return [
 				'GBP',
 			];
@@ -419,7 +420,8 @@ class Services implements ServicesInterface
 				'units'  => new Commerce\Product\Unit\Loader(
 					$c['db.query'],
 					$c['locale'],
-					$c['product.price.types']
+					$c['product.price.types'],
+					$c['currency']
 				),
 				'images' => new Commerce\Product\Image\Loader(
 					$c['db.query'],
@@ -445,7 +447,8 @@ class Services implements ServicesInterface
 				$c['product.types'],
 				$c['product.detail.loader'],
 				$c['product.entity_loaders'],
-				$c['product.price.types']
+				$c['product.price.types'],
+				$c['currency']
 			);
 		});
 
@@ -667,7 +670,7 @@ class Services implements ServicesInterface
 			return new Commerce\Shipping\MethodCollection;
 		};
 
-		$services['forex'] = function($c) {
+		$services['forex'] = function($c) { // TODO
 			return new Commerce\Forex\Forex(
 				$c['db.query'],
 				'GBP',
@@ -825,6 +828,19 @@ class Services implements ServicesInterface
 			$statistics->add(new Commerce\Statistic\ProductsSales($c['db.query'], $c['statistics.counter.key'], $c['statistics.range.date']));
 
 			return $statistics;
+		});
+	}
+
+	public function setupCurrencies($services)
+	{
+		$services['currency'] = function($c) {
+			return $c['cfg']->currency->defaultCurrency;
+		};
+
+		$services->extend('templating.twig.environment', function($twgEnv, $c) {
+			$twgEnv->getExtension('price_twig_extension')->setDefaultCurrency($c['currency']);
+
+			return $twgEnv;
 		});
 	}
 }
