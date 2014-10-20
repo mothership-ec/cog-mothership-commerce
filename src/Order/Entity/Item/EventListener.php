@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Order\Entity\Item;
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status as BaseStatus;
+use Message\Mothership\Commerce\Order\Statuses;
 
 use Message\Cog\Event\SubscriberInterface;
 
@@ -16,6 +17,7 @@ use Message\Cog\Event\SubscriberInterface;
 class EventListener implements SubscriberInterface
 {
 	protected $_defaultStatus;
+	protected $_itemEdit;
 
 	/**
 	 * {@inheritdoc}
@@ -37,6 +39,9 @@ class EventListener implements SubscriberInterface
 				array('setBasePrice'),
 				array('calculateAllItemsTax'),
 			),
+			OrderEvents::STATUS_CHANGE => array(
+				array('updateStatus'),
+			),
 		);
 	}
 
@@ -45,9 +50,26 @@ class EventListener implements SubscriberInterface
 	 *
 	 * @param BaseStatus $defaultStatus The default status to set on new order items
 	 */
-	public function __construct(BaseStatus $defaultStatus)
+	public function __construct(BaseStatus $defaultStatus, Edit $itemEdit)
 	{
 		$this->_defaultStatus = $defaultStatus;
+		$this->_itemEdit      = $itemEdit;
+	}
+
+	/**
+	 * Update the items' statuses to match their parent order's status, where
+	 * the order status is 'cancelled'.
+	 *
+	 * @param  EventTransactionalEvent $event
+	 */
+	public function updateStatus(Event\TransactionalEvent $event)
+	{
+		$order = $event->getOrder();
+
+		if (Statuses::CANCELLED === $order->status->code) {
+			$this->_itemEdit->setTransaction($event->getTransaction());
+			$this->_itemEdit->updateStatus($order->items->all(), Statuses::CANCELLED);
+		}
 	}
 
 	/**
