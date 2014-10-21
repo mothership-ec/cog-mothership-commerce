@@ -1,6 +1,6 @@
 $(function() {
 	// Product table JS setup
-	$('.table-filter.products').dataTable({
+	var dataTable = $('.table-filter.products').dataTable({
 		iDisplayLength: 25,
 		"oLanguage": {
 			"sLengthMenu": 'Display <select>'+
@@ -20,5 +20,30 @@ $(function() {
 			{ type: "text" },
 			null
 		]
+	});
+
+
+    // Hide and show columns when ajax slide happens
+	var showCol = 2;
+	$('#main-slide').on('ms-cp-livePane-show', function() {
+		$('.dataTables_length').hide();
+
+		for (var i = 0; i < dataTable.fnSettings().aoColumns.length; ++i) {
+			if (i!==showCol) {
+				dataTable.fnSetColumnVis( i, false);
+			}
+		}
+
+		$('table, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
+	});
+
+	$('#main-slide').on('ms-cp-livePane-hide', function() {
+		$('.dataTables_length').show();
+		for (var i = 0; i < dataTable.fnSettings().aoColumns.length; ++i) {
+			if (i!==showCol) {
+				dataTable.fnSetColumnVis( i, true);
+			}
+		}
+		$('table, .dataTables_paginate, .dataTables_info').animate({width: "100%"});
 	});
 });

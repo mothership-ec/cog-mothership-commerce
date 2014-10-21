@@ -1,17 +1,27 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/cp' %}
+{% extends 'Message:Mothership:ControlPanel::_templates/full_slideout' %}
 {% block javascripts %}
 	{{ parent() }}
 	{% javascripts
 		'@Message:Mothership:Commerce::resources/assets/js/setup.js'
-
+		
 		output='/assets/js/ms_commerce.js'
 		filter='?jsmin'
 
 	%}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
+
+	<script>
+	$(function() {
+		$(document).on('click', function() {
+			$('#slide').toggle();
+		});
+	});
+	</script>
+
 {% endblock %}
-{% block content %}
+{% block main %}
+
 	<hgroup class="title">
 		<h1>Products</h1>
 		<div class="controls">
