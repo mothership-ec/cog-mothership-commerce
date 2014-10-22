@@ -29,7 +29,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP'])); // TODO
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['supported_currencies']));
 
 			return $factory;
 		});
@@ -835,6 +835,10 @@ class Services implements ServicesInterface
 	{
 		$services['currency'] = function($c) {
 			return $c['cfg']->currency->defaultCurrency;
+		};
+
+		$services['supported_currencies'] = function($c) {
+			return $c['cfg']->currency->supportedCurrencies;
 		};
 
 		$services->extend('templating.twig.environment', function($twgEnv, $c) {

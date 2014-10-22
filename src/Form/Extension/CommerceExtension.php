@@ -29,6 +29,7 @@ class CommerceExtension extends AbstractExtension
 	{
 		return array(
 			new Type\CurrencySetType($this->_currencies),
+			new Type\CurrencySelect($this->_currencies),
 		);
 	}
 }
