@@ -1,1 +1,5 @@
 default-currency: GBP
+supported-currencies:
+    - GBP
+    - CAD
+    - USD
