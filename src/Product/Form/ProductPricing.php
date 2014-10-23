@@ -19,13 +19,18 @@ class ProductPricing extends AbstractType
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
+		$product = $options['product'];
+
 		foreach ($options['currencies'] as $currency) {
-			$builder->add($currency, 'price_group', ['currency' => $currency]);
+			$builder->add($currency, 'price_group', [
+				'currency' => $currency,
+				'label'    => $currency,
+			]);
 		}
 
 		$builder->add('tax_rates', 'choice', [
 			'choices' => $options['tax_rates'],
-			'data'    => isset($options['tax_rate'])?$options['tax_rate']:null,
+			'data'    => $product->taxRate,
 		]);
 	}
 
@@ -38,6 +43,7 @@ class ProductPricing extends AbstractType
 	{
 		$resolver->setRequired([
 			'product',
+			'tax_rates',
 		]);
 
 		$resolver->setDefaults([

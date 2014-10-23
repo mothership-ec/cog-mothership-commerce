@@ -788,6 +788,6 @@ class Edit extends Controller
 
 	protected function _getProductPricingForm()
 	{
-		return $this->createForm($this->get('product.form.prices')); // need to pass a product in here
+		return $this->createForm($this->get('product.form.prices'), null, ['product' => $this->_product]); // need to pass a product in here
 	}
 }

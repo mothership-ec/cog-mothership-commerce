@@ -37,7 +37,7 @@ class PriceGroup extends Form\AbstractType
 		]);
 
 		$resolver->setDefaults([
-			'price_types' => $this->_priceTypes,
+			'price_types' => array_combine($this->_priceTypes, $this->_priceTypes),
 		]);
 	}
 
