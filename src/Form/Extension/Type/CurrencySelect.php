@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Form\Extension\Type;
 
 use Symfony\Component\Form;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class CurrencySelect extends Form\AbstractType
 {
@@ -15,7 +16,7 @@ class CurrencySelect extends Form\AbstractType
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
-		$resolver->setDefaults(['choices' => $this->_currencies])
+		$resolver->setDefaults(['choices' => array_combine($this->_currencies, $this->_currencies)]);
 	}
 
 	public function getParent()

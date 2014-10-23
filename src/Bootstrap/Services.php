@@ -834,7 +834,7 @@ class Services implements ServicesInterface
 	public function setupCurrencies($services)
 	{
 		$services['currency'] = function($c) {
-			return $c['cfg']->currency->defaultCurrency;
+			return $c['currency.resolver']->getCurrency();
 		};
 
 		$services['supported_currencies'] = function($c) {
@@ -845,6 +845,22 @@ class Services implements ServicesInterface
 			$twgEnv->getExtension('price_twig_extension')->setDefaultCurrency($c['currency']);
 
 			return $twgEnv;
+		});
+
+		$services['currency.form.select'] = $services->factory(function($c) {
+			return new Commerce\Form\Currency\CurrencySelect;
+		});
+
+		$services['currency.cookie.name'] = function($c) {
+			return $c['cfg']->currency->cookieName;
+		};
+
+		$services['currency.cookie.value'] = function($c) {
+			return $c['request']->cookies->get($c['currency.cookie.name']);
+		};
+
+		$services['currency.resolver'] = $services->factory(function($c) {
+			return new Commerce\Currency\CurrencyResolver($c['cfg']->currency->defaultCurrency, $c['currency.cookie.value']);
 		});
 	}
 }
