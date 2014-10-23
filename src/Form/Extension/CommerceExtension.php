@@ -13,13 +13,15 @@ class CommerceExtension extends AbstractExtension
 {
 
 	protected $_currencies;
+	protected $_priceTypes;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(array $currencies)
+	public function __construct(array $currencies, array $priceTypes)
 	{
 		$this->_currencies = $currencies;
+		$this->_priceTypes = $priceTypes;
 	}
 
 	/**
@@ -30,6 +32,7 @@ class CommerceExtension extends AbstractExtension
 		return array(
 			new Type\CurrencySetType($this->_currencies),
 			new Type\CurrencySelect($this->_currencies),
+			new Type\PriceGroup($this->_priceTypes),
 		);
 	}
 }

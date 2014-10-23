@@ -24,7 +24,10 @@ class CurrencySelect extends Controller
 
 		if ($form->isValid()) {
 			$this->get('http.cookies')
-				->add(new Cookie($this->get('cfg')->currency->cookieName, $form->getData()['currency'], date(time() + 9999999))); // dont expire
+				->add(new Cookie(
+						$this->get('cfg')->currency->cookieName, 
+						$form->getData()['currency'], 
+						date(time() + 9999999))); // dont expire anytime soon
 		}
 
 		return $this->redirectToReferer();

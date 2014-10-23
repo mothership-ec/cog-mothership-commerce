@@ -29,7 +29,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['supported_currencies']));
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['supported_currencies'], $c['product.price.types']));
 
 			return $factory;
 		});
@@ -562,6 +562,10 @@ class Services implements ServicesInterface
 
 		$services['product.form.barcode'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\Barcode($c['stock.locations']);
+		});
+
+		$services['product.form.prices'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\ProductPricing($c['supported_currencies'], $c['product.tax.rates']);
 		});
 
 		$services['product.detail.loader'] = function($c) {

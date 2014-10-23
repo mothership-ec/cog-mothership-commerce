@@ -788,55 +788,6 @@ class Edit extends Controller
 
 	protected function _getProductPricingForm()
 	{
-		$form = $this->get('form')
-			->setName('product-pricing-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.pricing.action', array('productID' => $this->_product->id)))
-			->setMethod('post');
-
-		foreach ($this->_product->getPrices() as $type => $value) {
-			$form->add(
-				'price_'.$type,
-				'money',
-				$this->trans('ms.commerce.product.pricing.'.$type.'.label'),
-				array(
-					'currency' => 'GBP',
-					'data' =>  $value->getPrice('GBP', $this->get('locale')),
-					'attr' => array(
-						'data-help-key' => 'ms.commerce.product.pricing.'.$type.'.help',
-					)
-				)
-			)->val()->number();
-		}
-
-		$form->add('tax_rate', 'choice', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
-			'data' => $this->_product->taxRate,
-			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help'),
-			'choices' => $this->get('product.tax.rates'),
-			'empty_value' => '-- Please select --'
-		))
-			->val()
-			->number()
-			->maxLength(255);
-
-		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.pricing.tax-strategy.label'), array(
-			'choices' => array(
-				'inclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.inclusive'),
-				'exclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.exclusive'),
-			),
-			'data' => $this->_product->taxStrategy,
-			'required' => true, // will remove the empty value from the choice-list
-			'attr' 	   => array('data-help-key' => 'ms.commerce.product.pricing.tax-strategy.help'),
-		));
-
-		$form->add('export_value', 'money', $this->trans('ms.commerce.product.pricing.export-value.label'), array(
-			'currency' => 'GBP',
-			'data' => $this->_product->exportValue,
-			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.export-value.help')
-		))
-			->val()
-			->number()
-			->optional();
-
-		return $form;
+		return $this->createForm($this->get('product.form.prices')); // need to pass a product in here
 	}
 }
