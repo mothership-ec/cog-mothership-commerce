@@ -22,7 +22,11 @@ class PriceGroup extends Form\AbstractType
 
 		foreach ($priceTypes as $type => $value) {
 			$value = $value?:0;
-			$builder->add($type, 'money', ['currency' => $currency]);
+			$builder->add($type, 'money', [
+				'currency' => $currency,
+				'label'    => "ms.commerce.product.pricing.$type.label",
+				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : 0,
+			]);
 		}
 	}
 
@@ -31,6 +35,9 @@ class PriceGroup extends Form\AbstractType
 	 */
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
+		$resolver->setOptional([
+			'pricing',
+		]);
 
 		$resolver->setRequired([
 			'currency',

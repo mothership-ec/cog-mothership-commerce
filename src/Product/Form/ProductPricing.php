@@ -19,18 +19,31 @@ class ProductPricing extends AbstractType
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
-		$product = $options['product'];
+		$product   = $options['product'];
+		$priceData = [];
 
+		$currencyCollection = $builder->create('currencies', 'form');
 		foreach ($options['currencies'] as $currency) {
-			$builder->add($currency, 'price_group', [
+			foreach($product->getPrices() as $type => $price) {
+				$priceData[$type] = $price->getPrice($currency, $options['locale']);
+			}
+
+			$currencyCollection->add($currency, 'price_group', [
 				'currency' => $currency,
 				'label'    => $currency,
+				'pricing'  => $priceData,
 			]);
 		}
 
-		$builder->add('tax_rates', 'choice', [
-			'choices' => $options['tax_rates'],
+		$builder->add($currencyCollection);
+
+		$builder->add('tax_rate', 'choice', [
+			'choices' => $options['tax_rate'],
 			'data'    => $product->taxRate,
+		]);
+
+		$builder->add('export_value', 'money', [
+			'data' => $product->exportValue,
 		]);
 	}
 
@@ -43,12 +56,17 @@ class ProductPricing extends AbstractType
 	{
 		$resolver->setRequired([
 			'product',
-			'tax_rates',
+			'tax_rate',
+		]);
+
+		$resolver->setOptional([
+			'locale',
 		]);
 
 		$resolver->setDefaults([
 			'currencies' => $this->_currencies,
-			'tax_rates'  => $this->_taxRates,
+			'tax_rate'   => $this->_taxRates,
+			'locale'     => null,
 		]);
 	}
 

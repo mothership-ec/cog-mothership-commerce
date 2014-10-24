@@ -29,7 +29,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['supported_currencies'], $c['product.price.types']));
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['currency.supported'], $c['product.price.types']));
 
 			return $factory;
 		});
@@ -565,7 +565,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.form.prices'] = $services->factory(function($c) {
-			return new Commerce\Product\Form\ProductPricing($c['supported_currencies'], $c['product.tax.rates']);
+			return new Commerce\Product\Form\ProductPricing($c['currency.supported'], $c['product.tax.rates']);
+		});
+
+		$services['product.form.unit.edit'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\UnitEdit($c['currency.supported']);
 		});
 
 		$services['product.detail.loader'] = function($c) {
@@ -841,7 +845,7 @@ class Services implements ServicesInterface
 			return $c['currency.resolver']->getCurrency();
 		};
 
-		$services['supported_currencies'] = function($c) {
+		$services['currency.supported'] = function($c) {
 			return $c['cfg']->currency->supportedCurrencies;
 		};
 

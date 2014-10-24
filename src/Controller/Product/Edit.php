@@ -166,8 +166,10 @@ class Edit extends Controller
 				$changedUnit->weight 	= (null === $values['weight'] ? null : (int) $values['weight']);
 				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
-				foreach ($values['price'] as $type => $value) {
-					$changedUnit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+				foreach ($values['price'] as $currency => $currPrices) {
+					foreach($currPrices as $type => $price) {
+						$changedUnit->price[$type]->setPrice($currency, $value, $this->get('locale'));
+					}
 				}
 
 				// Labels are stored in hidden fields to allow for spaces and special characters, we don't want to save
@@ -316,22 +318,23 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
 		$form = $this->_getProductPricingForm();
-		if ($form->isValid() && $data = $form->getFilteredData()) {
+		$form->handleRequest();
+		if ($form->isValid() && $data = $form->getData()) {
 			$product = $this->_product;
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 
 			$product->taxRate                    = $data['tax_rate'];
-			$product->taxStrategy                = $data['tax_strategy'];
+			// $product->taxStrategy                = $data['tax_strategy'];
 			$product->exportValue                = $data['export_value'];
-
-			foreach ($data as $key => $value) {
-				if (preg_match("/^price/us", $key)) {
-					$type = str_replace('price_', '', $key);
-					$product->getPrices()[$type]->setPrice('GBP', $value, $this->get('locale'));
+			//set prices on the product
+			foreach($data['currencies'] as $currency => $typePrices) {
+				foreach ($typePrices as $type => $price) {
+					$product->getPrices()[$type]->setPrice($currency, $price, $this->get('locale'));
 				}
 			}
 
+			// save
 			$product = $this->get('product.edit')->save($product);
 			$product = $this->get('product.edit')->savePrices($product);
 
@@ -585,6 +588,8 @@ class Edit extends Controller
 	 */
 	protected function _getUnitForm()
 	{
+
+		return $this->createForm($this->get('product.form.unit'));
 		// Main form
 		$mainForm = $this->get('form')
 			->setName('units-edit')
@@ -788,6 +793,6 @@ class Edit extends Controller
 
 	protected function _getProductPricingForm()
 	{
-		return $this->createForm($this->get('product.form.prices'), null, ['product' => $this->_product]); // need to pass a product in here
+		return $this->createForm($this->get('product.form.prices'), null, ['product' => $this->_product]);
 	}
 }
