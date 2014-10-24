@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Product;
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
 
-class Product
+class Product implements Price\PricedInterface
 {
 	public $id;
 	public $catalogueID;

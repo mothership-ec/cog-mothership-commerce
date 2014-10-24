@@ -589,7 +589,7 @@ class Edit extends Controller
 	protected function _getUnitForm()
 	{
 
-		return $this->createForm($this->get('product.form.unit'));
+		return $this->createForm($this->get('product.form.unit.edit'), null, ['units' => $this->_units]);
 		// Main form
 		$mainForm = $this->get('form')
 			->setName('units-edit')

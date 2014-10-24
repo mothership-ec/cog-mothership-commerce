@@ -6,8 +6,9 @@ use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\Commerce\Product\Price\Pricing;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
+use Message\Mothership\Commerce\Product\Price\PricedInterface;
 
-class Unit
+class Unit implements PricedInterface
 {
 	const DEFAULT_STOCK_LEVEL = 0;
 
@@ -34,11 +35,11 @@ class Unit
 	protected $_locale;
 	protected $_defaultCurrency;
 
-    public function __clone() {
+	public function __clone() {
 		foreach ($this->price as $name => $pricing) {
 			$this->price[$name] = clone $pricing;
 		}
-    }
+	}
 
 	public function __construct(Locale $locale, array $priceTypes, $defaultCurrency)
 	{
@@ -61,6 +62,11 @@ class Unit
 		$options = implode(', ', $this->options);
 
 		return ucfirst($options);
+	}
+
+	public function getPrices()
+	{
+		return $this->price;
 	}
 
 	public function getPrice($type = 'retail', $currencyID = null)

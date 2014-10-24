@@ -27,15 +27,13 @@
 				<tr>
 					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
 					<td>
-						{{ form_widget(form[unit.id]['optionForm']) }}
+						{{ form_widget(form[unit.id]['options']) }}
 					</td>
 					<td>
 						<div class="multi-inline">
-						{% for name, value in unit.price %}
 							<div class="inline">
-								{{ form_row(form[unit.id]['price'][name]) }}
+								{{ form_row(form[unit.id]['currencies']) }}
 							</div>
-						{% endfor %}
 						</div>
 					</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
