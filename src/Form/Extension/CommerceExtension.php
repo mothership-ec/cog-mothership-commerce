@@ -33,6 +33,7 @@ class CommerceExtension extends AbstractExtension
 			new Type\CurrencySetType($this->_currencies),
 			new Type\CurrencySelect($this->_currencies),
 			new Type\PriceGroup($this->_priceTypes),
+			new Type\PriceForm($this->_currencies),
 		);
 	}
 }

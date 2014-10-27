@@ -152,8 +152,9 @@ class Edit extends Controller
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$this->_units   = $this->_product->getAllUnits();
 		$form           = $this->_getUnitForm();
+		$form->handleRequest();
 
-		if ($form->isValid() && $data = $form->getFilteredData()) {
+		if ($form->isValid() && $data = $form->getData()) {
 
 			foreach ($data as $unitID => $values) {
 				// original unit
@@ -166,27 +167,19 @@ class Edit extends Controller
 				$changedUnit->weight 	= (null === $values['weight'] ? null : (int) $values['weight']);
 				$changedUnit->visible 	= (int) (bool) $values['visible'];
 
-				foreach ($values['price'] as $currency => $currPrices) {
+				foreach ($values['prices']['currencies'] as $currency => $currPrices) {
 					foreach($currPrices as $type => $price) {
-						$changedUnit->price[$type]->setPrice($currency, $value, $this->get('locale'));
+						$changedUnit->price[$type]->setPrice($currency, $price, $this->get('locale'));
 					}
 				}
 
-				// Labels are stored in hidden fields to allow for spaces and special characters, we don't want to save
-				// this to the unit, so we need to check the current field against the previous one.
-				$previousOption = null;
-				foreach ($values['optionForm'] as $typeField => $value) {
-					if ($typeField !== $previousOption . self::HIDDEN_SUFFIX) {
-						$type = $values['optionForm'][$typeField . self::HIDDEN_SUFFIX];
-						$changedUnit->options[$type] = $value;
-						$previousOption = $typeField;
-					}
+				foreach ($values['options'] as $type => $value) {
+					$changedUnit->options[$type] = $value;
 				}
 
 				if ($changedUnit != $unit) {
 					$changedUnit = $this->get('product.unit.edit')->save($changedUnit);
 				}
-
 				if ($changedUnit->price !== $unit->price) {
 					$changedUnit = $this->get('product.unit.edit')->savePrices($changedUnit);
 				}
@@ -328,7 +321,7 @@ class Edit extends Controller
 			// $product->taxStrategy                = $data['tax_strategy'];
 			$product->exportValue                = $data['export_value'];
 			//set prices on the product
-			foreach($data['currencies'] as $currency => $typePrices) {
+			foreach($data['prices']['currencies'] as $currency => $typePrices) {
 				foreach ($typePrices as $type => $price) {
 					$product->getPrices()[$type]->setPrice($currency, $price, $this->get('locale'));
 				}
@@ -588,118 +581,7 @@ class Edit extends Controller
 	 */
 	protected function _getUnitForm()
 	{
-
 		return $this->createForm($this->get('product.form.unit.edit'), null, ['units' => $this->_units]);
-		// Main form
-		$mainForm = $this->get('form')
-			->setName('units-edit')
-			->setAction($this->generateUrl('ms.commerce.product.edit.units.action', array('productID' => $this->_product->id)));
-		// Create a nested form for each of the units in this product
-		foreach ($this->_units as $id => $unit) {
-			$form = $this->get('form')
-				->setName($id)
-				->addOptions(array(
-					'auto_initialize' => false,
-				));
-
-			// create a nested form for prices so we can have name="units-edit[unitID][price][retail]"
-			$priceForm = $this->get('form')
-				->setName('price')
-				->addOptions(array(
-					'auto_initialize' => false,
-			));
-
-			foreach ($unit->price as $type => $value) {
-				$priceForm->add(
-					$type,
-					'money',
-					$this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
-					array(
-						'currency' => 'GBP',
-						'data' 	   => $value->getPrice('GBP', $this->get('locale')),
-						'attr'     => array(
-							'data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help',
-						)
-					)
-				)
-					->val()
-					->number()
-					->optional();
-			}
-
-			// Add the price form to the parent form
-			$form->add($priceForm, 'form');
-
-
-			// Work out the default options which should be 'selected' in the option drop downs
-			$defaults = array();
-			foreach ($unit->options as $type => $value) {
-				$defaults[$type] = $value;
-			}
-
-			// create a nested form for the unit options so we can have name="units-edit[unitID][optionForm][colour]"
-			$optionForm = $this->get('form')
-				->setName('optionForm')
-				->setDefaultValues($defaults)
-				->addOptions(array(
-					'auto_initialize' => false,
-			));
-
-
-			// Build the options
-			foreach ($this->_getAllOptionsAndHeadings() as $type => $displayName) {
-				// populate the select menu options by getting all available options from the DB
-				$choices = array();
-				foreach ($this->get('option.loader')->getByName($type) as $choice) {
-					$choice = trim($choice);
-					$choices[$choice] = $choice;
-				}
-
-				$fieldName = preg_replace('/[^a-z0-9]/i', '_', $type);
-
-				$optionForm->add($fieldName, 'datalist', ucfirst($type), [
-					'choices' => $choices,
-					'data'    => (!empty($unit->options[$type])) ? $unit->options[$type] : null,
-				])->val()->optional();
-
-				$optionForm->add($fieldName . self::HIDDEN_SUFFIX, 'hidden', $fieldName, [
-					'data' => $type,
-				]);
-			}
-			// Add the option forms to the parent form
-			$form->add($optionForm, 'form');
-
-			// Populate the rest of the editbale unit attributes
-			$form->add('sku', 'text','', array(
-				'data' =>  $unit->sku,
-				'attr' => array(
-					'data-help-key' => 'ms.commerce.product.units.sku.help',
-				)
-			));
-			$form->add('weight', 'text','', array(
-				'data' => $unit->weight,
-				'attr' => array(
-					'data-help-key' => 'ms.commerce.product.details.weight-grams.help'
-				)
-			))
-				->val()
-				->optional()
-				->number();
-
-			$form->add('visible', 'checkbox','', array(
-				'data' =>  $unit->visible,
-				'attr' => array(
-					'data-help-key' => 'ms.commerce.product.units.visible.help'
-				)
-			))
-				->val()
-				->optional();
-
-			// Add the unit form to the main form
-			$mainForm->add($form, 'form');
-		}
-
-		return $mainForm;
 	}
 
 	/**

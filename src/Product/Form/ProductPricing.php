@@ -5,37 +5,27 @@ namespace Message\Mothership\Commerce\Product\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Message\Mothership\Commerce\Product\Product;
 
 class ProductPricing extends AbstractType
 {
-	protected $_currencies;
 	protected $_taxRates;
 
-	public function __construct(array $currencies, array $taxRates)
+	public function __construct(array $taxRates)
 	{
-		$this->_currencies = $currencies;
 		$this->_taxRates   = $taxRates;
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$product   = $options['product'];
-		$priceData = [];
-
-		$currencyCollection = $builder->create('currencies', 'form');
-		foreach ($options['currencies'] as $currency) {
-			foreach($product->getPrices() as $type => $price) {
-				$priceData[$type] = $price->getPrice($currency, $options['locale']);
-			}
-
-			$currencyCollection->add($currency, 'price_group', [
-				'currency' => $currency,
-				'label'    => $currency,
-				'pricing'  => $priceData,
-			]);
+		if(!$product instanceof Product) {
+			throw new \InvalidArgumentException('Option `product` must be instance of Product');
 		}
 
-		$builder->add($currencyCollection);
+		$builder->add('prices', 'price_form', [
+			'priced_entity' => $product,
+		]);
 
 		$builder->add('tax_rate', 'choice', [
 			'choices' => $options['tax_rate'],
@@ -64,7 +54,6 @@ class ProductPricing extends AbstractType
 		]);
 
 		$resolver->setDefaults([
-			'currencies' => $this->_currencies,
 			'tax_rate'   => $this->_taxRates,
 			'locale'     => null,
 		]);

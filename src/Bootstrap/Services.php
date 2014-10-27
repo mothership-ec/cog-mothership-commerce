@@ -409,10 +409,11 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.price.currency_IDs'] = function($c) { // TODO
-			return [
-				'GBP',
-			];
+		/**	
+		 * @deprecated  use currency.supported
+		 */
+		$services['product.price.currency_IDs'] = function($c) {
+			return $c['currency.supported'];
 		};
 
 		$services['product.entity_loaders'] = $services->factory(function($c) {

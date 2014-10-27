@@ -305,7 +305,14 @@ class Loader implements ProductEntityLoaderInterface
 			JOIN
 				product_unit ON (product_price.product_id = product_unit.product_id)
 			LEFT JOIN
-				product_unit_price ON (product_unit.unit_id = product_unit_price.unit_id AND product_price.type = product_unit_price.type)
+				product_unit_price 
+			ON (
+				product_unit.unit_id = product_unit_price.unit_id 
+			AND 
+				product_price.type = product_unit_price.type
+			AND
+				product_price.currency_id = product_unit_price.currency_id
+			)
 			WHERE
 				product_unit.unit_id IN (?ij)
 		', 	array(

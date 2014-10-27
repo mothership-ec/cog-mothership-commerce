@@ -21,6 +21,14 @@ class UnitEdit extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$units   = $options['units']; 
+		// Options Headings
+		$headings = [];
+
+		foreach ($units as $unit) {
+			foreach ($unit->options as $name => $value) {
+				$headings[$name] = ucfirst($name);
+			}
+		}
 
 		foreach ($units as $unit) {
 			$unitForm = $builder->create($unit->id, 'form');
@@ -30,15 +38,6 @@ class UnitEdit extends AbstractType
 				'data'  => $unit->sku,
 				'attr'  => ['placeholder' => 'ms.commerce.product.units.sku.placeholder'],
 			]);
-
-			// Options Headings
-			$headings = [];
-
-			foreach ($units as $unit) {
-				foreach ($unit->options as $name => $value) {
-					$headings[$name] = ucfirst($name);
-				}
-			}
 
 			// Create options form
 			$optionsForm = $builder->create('options', 'form');
@@ -57,26 +56,14 @@ class UnitEdit extends AbstractType
 			}
 			$unitForm->add($optionsForm);
 
-			// Make the pricing form section
-			$currencyCollection = $builder->create('currencies', 'form');
-			foreach ($options['currencies'] as $currency) {
-				foreach($unit->getPrices() as $type => $price) {
-					$priceData[$type] = $price->getPrice($currency, $options['locale']);
-				}
-
-				$currencyCollection->add($currency, 'price_group', [
-					'currency' => $currency,
-					'label'    => $currency,
-					'pricing'  => $priceData,
-				]);
-			}
-
-			$unitForm->add($currencyCollection);
+			$unitForm->add('prices', 'price_form', [
+				'priced_entity' => $unit,
+			]);
 
 			$unitForm->add('weight', 'text', [
 				'data' => $unit->weight,
 				'attr' => [
-					'data-help-key' => 'ms.commerce.product.details.weight-grams.help'
+					'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
 				],
 			]);
 
