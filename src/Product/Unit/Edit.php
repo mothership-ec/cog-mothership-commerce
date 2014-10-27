@@ -146,7 +146,7 @@ class Edit implements DB\TransactionalInterface
 				$inserts[] = '(?i,?s,?s,?s,?s)';
 			}
 		}
-		// de($options);
+
 		if ($options) {
 			$result = $this->_query->run(
 				// replace into won't work
