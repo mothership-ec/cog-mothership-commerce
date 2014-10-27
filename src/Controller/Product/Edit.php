@@ -193,8 +193,9 @@ class Edit extends Controller
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 		$form = $this->_addNewUnitForm();
+		$form->handleRequest();
 
-		if ($form->isValid() && $data = $form->getFilteredData()) {
+		if ($form->isValid() && $data = $form->getData()) {
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
@@ -202,8 +203,10 @@ class Edit extends Controller
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
-			foreach ($data['price'] as $type => $value) {
-				$unit->price[$type]->setPrice('GBP', $value, $this->get('locale'));
+			foreach ($data['prices']['currencies'] as $currency => $types) {
+				foreach ($types as $type => $value) {
+					$unit->price[$type]->setPrice($currency, $value, $this->get('locale'));
+				}
 			}
 
 			$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
@@ -589,74 +592,11 @@ class Edit extends Controller
 	 */
 	protected function _addNewUnitForm()
 	{
-		$headings = array();
-		foreach ($this->get('option.loader')->getAllOptionNames() as $name => $value) {
-			$headings[$value] = ucfirst($value);
-		}
-
-		$form = $this->get('form')
-			->setName('new')
-			->setAction($this->generateUrl('ms.commerce.product.edit.units.create.action', array('productID' => $this->_product->id)))
-			->setDefaultValues(array(
-				'visible' => false,
-		));
-
-		$form->add('sku', 'text','',array('attr' => array(
-			'list' 			=> 'option_value',
-			'placeholder' 	=> $this->trans('ms.commerce.product.units.sku.placeholder'),
-			'data-help-key' => 'ms.commerce.product.image.option.units.sku.help'),
-		));
-
-		$form->add('weight', 'text','',  array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
-		)))
-			->val()
-			->number();
-
-		$optionType = new Field\OptionType($headings,
-			array('attr' => array(
-				'data-help-key' => array(
-					'name'  => 'ms.commerce.product.units.option.name.help',
-					'value' => 'ms.commerce.product.units.option.value.help',
-				)
-			)));
-
-		$optionType
-			->setNameLabel($this->trans('ms.commerce.product.units.option.name.label'))
-			->setValueLabel($this->trans('ms.commerce.product.units.option.value.label'));
-
-		$form->add('options', 'collection', 'Options',
-			array(
-				'type'         => $optionType,
-				'label'        => 'Options',
-				'allow_add'    => true,
-				'allow_delete' => true
-			)
-		);
-
-		$priceForm = $this->get('form')
-			->setName('price')
-			->addOptions(array(
-				'auto_initialize' => false,
-			)
-		);
-
-		foreach ($this->get('product.price.types') as $type) {
-			$priceForm
-				->add($type, 'money', $this->trans('ms.commerce.product.pricing.'.strtolower($type).'.label-sans'),
-					array(
-						'currency' => 'GBP',
-						'attr' => array('data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help')
-					)
-				)
-				->val()
-				->number()
-				->optional();
-		}
-
-		$form->add($priceForm, 'form');
-
-		return $form;
+		return $this->createForm($this->get('product.form.unit.add'), null, [
+			'action' => $this->generateUrl('ms.commerce.product.edit.units.create.action', [
+				'productID' => $this->_product->id,
+			]),
+		]);
 	}
 
 	protected function _getProductAttributesForm()

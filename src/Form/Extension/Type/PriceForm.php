@@ -19,7 +19,7 @@ class PriceForm extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$entity   = $options['priced_entity'];
-		if (!$entity instanceof PricedInterface) {
+		if ($entity !== null && !$entity instanceof PricedInterface) {
 			throw new \IllegalArgumentException('Option `priced_entity` must be instance of PricedInterface');
 		}
 
@@ -27,14 +27,16 @@ class PriceForm extends AbstractType
 
 		$currencyCollection = $builder->create('currencies', 'form', ['label' => false,]);
 		foreach ($options['currencies'] as $currency) {
-			foreach($entity->getPrices() as $type => $price) {
-				$priceData[$type] = $price->getPrice($currency, $options['locale']);
+			if ($entity) {	
+				foreach($entity->getPrices() as $type => $price) {
+					$priceData[$type] = $price?$price->getPrice($currency, $options['locale']):null;
+				}
 			}
 
 			$currencyCollection->add($currency, 'price_group', [
 				'currency' => $currency,
 				'label'    => $currency,
-				'pricing'  => $priceData,
+				'pricing'  => $entity?$priceData:null,
 			]);
 		}
 
@@ -59,6 +61,7 @@ class PriceForm extends AbstractType
 		$resolver->setDefaults([
 			'currencies' => $this->_currencies,
 			'locale'     => null,
+			'priced_entity' => null,
 		]);
 	}
 
