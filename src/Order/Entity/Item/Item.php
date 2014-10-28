@@ -101,6 +101,7 @@ class Item implements EntityInterface, RecordInterface
 		$this->options         = implode($unit->options, ', ');
 		$this->brand           = $unit->product->brand;
 		$this->weight          = (int) $unit->weight;
+		$this->actualPrice     = null;
 
 		return $this;
 	}

@@ -4,6 +4,8 @@ namespace Message\Mothership\Commerce\Controller\Module;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\HTTP\Cookie;
+use Message\Mothership\Commerce\Events;
+use Message\Mothership\Commerce\Event\CurrencyChangeEvent;
 
 class CurrencySelect extends Controller
 {
@@ -23,10 +25,17 @@ class CurrencySelect extends Controller
 		$form->handleRequest();
 
 		if ($form->isValid()) {
+			$currency = $form->getData()['currency'];
+
+			$this->get('event.dispatcher')->dispatch(
+				Events::CURRENCY_CHANGE,
+				new CurrencyChangeEvent($currency)
+			);
+
 			$this->get('http.cookies')
 				->add(new Cookie(
 						$this->get('cfg')->currency->cookieName, 
-						$form->getData()['currency'], 
+						$currency, 
 						date(time() + 9999999))); // dont expire anytime soon
 		}
 
