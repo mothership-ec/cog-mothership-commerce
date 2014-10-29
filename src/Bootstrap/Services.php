@@ -832,19 +832,49 @@ class Services implements ServicesInterface
 
 	public function registerReports($services)
 	{
-		$services['commerce.stock_summary_report'] = $services->factory(function($c) {
-			return new Commerce\Report\StockSummary($c['db.query.builder.factory']);
+		$services['commerce.stock_summary'] = $services->factory(function($c) {
+			return new Commerce\Report\StockSummary($c['db.query.builder.factory'],$c['translator']);
 		});
 
-		$services['commerce.sales_report'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesReport($c['db.query.builder.factory']);
+		$services['commerce.sales_by_month'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByMonth($c['db.query.builder.factory'],$c['translator']);
+		});
+
+		$services['commerce.sales_by_day'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByDay($c['db.query.builder.factory'],$c['translator']);
+		});
+
+		$services['commerce.sales_by_order'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByOrder($c['db.query.builder.factory'],$c['translator']);
+		});
+
+		$services['commerce.sales_by_item'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByItem($c['db.query.builder.factory'],$c['translator']);
+		});
+
+		$services['commerce.sales_by_product'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByProduct($c['db.query.builder.factory'],$c['translator']);
+		});
+
+		$services['commerce.sales_by_location'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByLocation($c['db.query.builder.factory'],$c['translator']);
+		});
+
+		$services['commerce.sales_by_user'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByUser($c['db.query.builder.factory'],$c['translator']);
 		});
 
 		$services['commerce.reports'] = function($c) {
 			$reports = new ReportCollection;
 			$reports
-				->add($c['commerce.stock_summary_report'])
-				->add($c['commerce.sales_report'])
+				->add($c['commerce.stock_summary'])
+				->add($c['commerce.sales_by_month'])
+				->add($c['commerce.sales_by_day'])
+				->add($c['commerce.sales_by_order'])
+				->add($c['commerce.sales_by_item'])
+				->add($c['commerce.sales_by_product'])
+				->add($c['commerce.sales_by_location'])
+				->add($c['commerce.sales_by_user'])
 			;
 
 			return $reports;

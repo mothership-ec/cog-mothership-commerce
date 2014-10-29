@@ -3,11 +3,13 @@
 namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
-use Message\Report\ReportInterface;
-use Message\Mothership\Report\Report\AbstractReport;
 use Message\Cog\DB\QueryBuilderFactory;
+use Message\Cog\Localisation\Translator;
+
+use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
-use Message\Mothership\Report\Filter\DateFilter;
+
+use Message\Report\ReportInterface;
 
 class StockSummary extends AbstractReport
 {
@@ -15,14 +17,13 @@ class StockSummary extends AbstractReport
 	private $_from = [];
 	private $_builderFactory;
 	private $_charts;
-	private $_filters;
 
-	public function __construct(QueryBuilderFactory $builderFactory)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans)
 	{
-		$this->name = "stock-summary-report";
+		$this->name = 'stock_summary';
+		$this->reportGroup = "Products";
 		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
-		$this->_filters = [new DateFilter];
 	}
 
 	public function getName()
@@ -30,17 +31,35 @@ class StockSummary extends AbstractReport
 		return $this->name;
 	}
 
+	public function getReportGroup()
+	{
+		return $this->reportGroup;
+	}
+
 	public function getCharts()
 	{
 		$data = $this->dataTransform($this->getQuery()->run());
+		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
+			$chart->setColumns($columns);
 			$chart->setData($data);
 		}
 
 		return $this->_charts;
 	}
 
+	public function getColumns()
+	{
+		$columns = [
+			['type' => 'string', 	'name' => "Category",	],
+			['type' => 'string',	'name' => "Name",		],
+			['type' => 'string',	'name' => "Options",	],
+			['type' => 'number',	'name' => "Stock",		],
+		];
+
+		return json_encode($columns);
+	}
 	private function getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
@@ -94,14 +113,18 @@ class StockSummary extends AbstractReport
 	protected function dataTransform($data)
 	{
 		$result = [];
-		$result[] = $data->columns();
 
 		foreach ($data as $row) {
-			$result[] = get_object_vars($row);
-
+			$result[] = [
+				$row->Category,
+				$row->Name,
+				$row->Options,
+				$row->Stock,
+			];
 		}
 
-		return $result;
+		return json_encode($result);
 	}
+
 }
 
