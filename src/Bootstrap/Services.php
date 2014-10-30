@@ -851,6 +851,13 @@ class Services implements ServicesInterface
 		};
 
 		$services['currency.supported'] = function($c) {
+			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->supportedCurrencies))) {
+				/**
+				 * @deprecated The site needs to be updated if it ends up here - use currency config files
+				 */
+				return ['GBP'];
+			}
+
 			return $c['cfg']->currency->supportedCurrencies;
 		};
 
@@ -865,6 +872,10 @@ class Services implements ServicesInterface
 		});
 
 		$services['currency.cookie.name'] = function($c) {
+			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->cookieName))) {
+				return 'ms.commerce.currency';
+			}
+
 			return $c['cfg']->currency->cookieName;
 		};
 
@@ -873,7 +884,16 @@ class Services implements ServicesInterface
 		};
 
 		$services['currency.resolver'] = $services->factory(function($c) {
-			return new Commerce\Currency\CurrencyResolver($c['cfg']->currency->defaultCurrency, $c['currency.cookie.value']);
+			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->defaultCurrency))) {
+				/**
+				 * @deprecated The site needs to be updated if it ends up here - use currency config files
+				 */
+				$default = 'GBP';
+			} else {
+				$default = $c['cfg']->currency->defaultCurrency;
+			}
+
+			return new Commerce\Currency\CurrencyResolver($default, $c['currency.cookie.value']);
 		});
 	}
 }
