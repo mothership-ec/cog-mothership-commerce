@@ -1,6 +1,4 @@
 default-currency: GBP
 supported-currencies:
     - GBP
-    - CAD
-    - USD
 cookie-name: "ms-commerce-currency"
