@@ -877,6 +877,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['currency.cookie.value'] = function($c) {
+			if (!isset($c['request'])) {
+				// not a request so no cookie will be set.
+				return null;
+			}
+
 			return $c['request']->cookies->get($c['currency.cookie.name']);
 		};
 
