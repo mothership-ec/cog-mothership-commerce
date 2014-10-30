@@ -852,10 +852,7 @@ class Services implements ServicesInterface
 
 		$services['currency.supported'] = function($c) {
 			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->supportedCurrencies))) {
-				/**
-				 * @deprecated The site needs to be updated if it ends up here - use currency config files
-				 */
-				return ['GBP'];
+				return [ $c['currency'] ];
 			}
 
 			return $c['cfg']->currency->supportedCurrencies;
