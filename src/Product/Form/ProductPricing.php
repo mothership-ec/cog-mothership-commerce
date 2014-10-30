@@ -9,12 +9,6 @@ use Message\Mothership\Commerce\Product\Product;
 
 class ProductPricing extends AbstractType
 {
-	protected $_taxRates;
-
-	public function __construct(array $taxRates)
-	{
-		$this->_taxRates   = $taxRates;
-	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
@@ -28,8 +22,13 @@ class ProductPricing extends AbstractType
 		]);
 
 		$builder->add('tax_rate', 'choice', [
-			'choices' => $options['tax_rate'],
+			'choices' => $options['tax_rates'],
 			'data'    => $product->taxRate,
+		]);
+
+		$builder->add('tax_strategy', 'choice', [
+			'choices' => $options['tax_strategies'],
+			'data'    => $product->taxStrategy,
 		]);
 
 		$builder->add('export_value', 'money', [
@@ -46,7 +45,8 @@ class ProductPricing extends AbstractType
 	{
 		$resolver->setRequired([
 			'product',
-			'tax_rate',
+			'tax_rates',
+			'tax_strategies',
 		]);
 
 		$resolver->setOptional([
@@ -54,7 +54,6 @@ class ProductPricing extends AbstractType
 		]);
 
 		$resolver->setDefaults([
-			'tax_rate'   => $this->_taxRates,
 			'locale'     => null,
 		]);
 	}
