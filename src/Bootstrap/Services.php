@@ -465,7 +465,7 @@ class Services implements ServicesInterface
 				$c['product.price.currency_IDs']
 			);
 
-			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
+			$create->setDefaultTaxStrategy($c['product.tax.strategy']);
 
 			return $create;
 		});
@@ -533,6 +533,10 @@ class Services implements ServicesInterface
 				'20.00' => 'VAT - 20%'
 			);
 		};
+
+		$services['product.tax.strategy'] = function($c) {
+			$c['cfg']->tax->taxStrategy;
+		}
 
 		$services['product.option.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
