@@ -5,40 +5,25 @@ namespace Message\Mothership\Commerce\Report;
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
+use Message\Cog\Routing\UrlGenerator;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
 
-use Message\Report\ReportInterface;
-
 class SalesByUser extends AbstractReport
 {
-	private $_to = [];
-	private $_from = [];
-	private $_builderFactory;
-	private $_charts;
-
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
 	{
 		$this->name = 'sales_by_user';
-		$this->reportGroup = "Sales";
-		$this->_builderFactory = $builderFactory;
+		$this->displayName = 'Sales by User';
+		$this->reportGroup = 'Sales';
 		$this->_charts = [new TableChart];
-	}
-
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getReportGroup()
-	{
-		return $this->reportGroup;
+		parent::__construct($builderFactory,$trans,$routingGenerator);
 	}
 
 	public function getCharts()
 	{
-		$data = $this->dataTransform($this->getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run());
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -52,7 +37,6 @@ class SalesByUser extends AbstractReport
 	public function getColumns()
 	{
 		$columns = [
-			['type' => 'number', 	'name' => "ID",			],
 			['type' => 'string', 	'name' => "User",		],
 			['type' => 'string',	'name' => "Email",		],
 			['type' => 'string',	'name' => "Currency",	],
@@ -64,11 +48,9 @@ class SalesByUser extends AbstractReport
 		return json_encode($columns);
 	}
 
-	private function getQuery()
+	private function _getQuery()
 	{
-		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$salesQuery = $this->_builderFactory->getQueryBuilder();
-
 		$salesQuery
 			->select('item.created_at AS date')
 			->select('order_summary.currency_id AS currency')
@@ -96,6 +78,7 @@ class SalesByUser extends AbstractReport
 			->where('item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())')
 		;
 
+		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$queryBuilder
 			->select('totals.user_id AS "ID"')
 			->select('totals.user AS "User"')
@@ -108,24 +91,24 @@ class SalesByUser extends AbstractReport
 			->where('user_id IS NOT NULL')
 			->orderBy('SUM(totals.gross) DESC')
 			->groupBy('totals.user_id, totals.currency')
+			->limit('25')
 		;
 
 		return $queryBuilder->getQuery();
 	}
 
-	protected function dataTransform($data)
+	private function _dataTransform($data)
 	{
 		$result = [];
 
 		foreach ($data as $row) {
 			$result[] = [
-				$row->ID,
-				$row->User,
+				'<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->ID]).'">'.$row->User.'</a>',
 				$row->Email,
 				$row->Currency,
-				[ 'v' => (float) $row->Net,   'f' => $row->Net],
-				[ 'v' => (float) $row->Tax,   'f' => $row->Tax],
-				[ 'v' => (float) $row->Gross, 'f' => $row->Gross],
+				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
+				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
+				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
 			];
 		}
 

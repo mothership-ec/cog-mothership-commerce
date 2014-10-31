@@ -5,40 +5,25 @@ namespace Message\Mothership\Commerce\Report;
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
+use Message\Cog\Routing\UrlGenerator;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
 
-use Message\Report\ReportInterface;
-
 class SalesByOrder extends AbstractReport
 {
-	private $_to = [];
-	private $_from = [];
-	private $_builderFactory;
-	private $_charts;
-
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
 	{
 		$this->name = 'sales_by_order';
+		$this->displayName = 'Sales by Order';
 		$this->reportGroup = "Sales";
-		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
-	}
-
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getReportGroup()
-	{
-		return $this->reportGroup;
+		parent::__construct($builderFactory,$trans,$routingGenerator);
 	}
 
 	public function getCharts()
 	{
-		$data = $this->dataTransform($this->getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run());
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -52,8 +37,8 @@ class SalesByOrder extends AbstractReport
 	public function getColumns()
 	{
 		$columns = [
-			['type' => 'string', 	'name' => "Date",		],
-			['type' => 'number',	'name' => "Order",		],
+			['type' => 'string',	'name' => "Order",		],
+			['type' => 'number', 	'name' => "Date",		],
 			['type' => 'string',	'name' => "User",		],
 			['type' => 'string',	'name' => "Type",		],
 			['type' => 'string',	'name' => "Currency",	],
@@ -66,7 +51,7 @@ class SalesByOrder extends AbstractReport
 		return json_encode($columns);
 	}
 
-	private function getQuery()
+	private function _getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$salesQuery = $this->_builderFactory->getQueryBuilder();
@@ -99,8 +84,10 @@ class SalesByOrder extends AbstractReport
 		;
 
 		$queryBuilder
-			->select('date AS "Date"')
+			->select('date AS "UnixDate"')
+			->select('FROM_UNIXTIME(date, "%d-%b-%Y %k:%i") AS "Date"')
 			->select('totals.order_id AS "Order"')
+			->select('totals.user_id AS "UserID"')
 			->select('totals.user AS "User"')
 			->select('totals.type AS "Type"')
 			->select('totals.currency AS "Currency"')
@@ -111,25 +98,26 @@ class SalesByOrder extends AbstractReport
 			->from('totals', $salesQuery)
 			->orderBy('order_id DESC')
 			->groupBy('order_id')
+			->limit('50')
 		;
 
 		return $queryBuilder->getQuery();
 	}
 
-	protected function dataTransform($data)
+	private function _dataTransform($data)
 	{
 		$result = [];
 
 		foreach ($data as $row) {
 			$result[] = [
-				date('Y-m-d H:i', $row->Date),
-				$row->Order,
-				$row->User,
+				'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
+				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date],
+				'<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->UserID]).'">'.$row->User.'</a>',
 				ucwords($row->Type),
 				$row->Currency,
-				[ 'v' => (float) $row->Net,   'f' => $row->Net],
-				[ 'v' => (float) $row->Tax,   'f' => $row->Tax],
-				[ 'v' => (float) $row->Gross, 'f' => $row->Gross],
+				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
+				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
+				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
 				$row->Country,
 			];
 		}

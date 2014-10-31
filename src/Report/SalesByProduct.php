@@ -5,40 +5,25 @@ namespace Message\Mothership\Commerce\Report;
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
+use Message\Cog\Routing\UrlGenerator;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
 
-use Message\Report\ReportInterface;
-
 class SalesByProduct extends AbstractReport
 {
-	private $_to = [];
-	private $_from = [];
-	private $_builderFactory;
-	private $_charts;
-
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
 	{
 		$this->name = 'sales_by_product';
+		$this->displayName = 'Sales by Product';
 		$this->reportGroup = "Sales";
-		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
-	}
-
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getReportGroup()
-	{
-		return $this->reportGroup;
+		parent::__construct($builderFactory,$trans,$routingGenerator);
 	}
 
 	public function getCharts()
 	{
-		$data = $this->dataTransform($this->getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run());
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -52,7 +37,6 @@ class SalesByProduct extends AbstractReport
 	public function getColumns()
 	{
 		$columns = [
-			['type' => 'number',	'name' => "ID",			],
 			['type' => 'string',	'name' => "Product",	],
 			['type' => 'string',	'name' => "Option",		],
 			['type' => 'string',	'name' => "Currency",	],
@@ -65,7 +49,7 @@ class SalesByProduct extends AbstractReport
 		return json_encode($columns);
 	}
 
-	private function getQuery()
+	private function _getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$salesQuery = $this->_builderFactory->getQueryBuilder();
@@ -98,7 +82,7 @@ class SalesByProduct extends AbstractReport
 		;
 
 		$queryBuilder
-			->select('totals.product_id AS "ID"')
+			->select('totals.product_id AS "Product_ID"')
 			->select('totals.product AS "Product"')
 			->select('totals.option AS "Option"')
 			->select('totals.currency AS "Currency"')
@@ -114,19 +98,18 @@ class SalesByProduct extends AbstractReport
 		return $queryBuilder->getQuery();
 	}
 
-	protected function dataTransform($data)
+	private function _dataTransform($data)
 	{
 		$result = [];
 
 		foreach ($data as $row) {
 			$result[] = [
-				$row->ID,
-				$row->Product,
+				'<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => (int) $row->Product_ID]).'">'.(string) $row->Product.'</a>',
 				ucwords($row->Option),
 				$row->Currency,
-				[ 'v' => (float) $row->Net,   'f' => $row->Net],
-				[ 'v' => (float) $row->Tax,   'f' => $row->Tax],
-				[ 'v' => (float) $row->Gross, 'f' => $row->Gross],
+				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
+				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
+				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
 				$row->NumberSold,
 			];
 		}

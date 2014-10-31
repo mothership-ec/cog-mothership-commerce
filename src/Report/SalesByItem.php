@@ -5,40 +5,25 @@ namespace Message\Mothership\Commerce\Report;
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
+use Message\Cog\Routing\UrlGenerator;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
 
-use Message\Report\ReportInterface;
-
 class SalesByItem extends AbstractReport
 {
-	private $_to = [];
-	private $_from = [];
-	private $_builderFactory;
-	private $_charts;
-
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
 	{
 		$this->name = 'sales_by_item';
+		$this->displayName = 'Sales by Item';
 		$this->reportGroup = "Sales";
-		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
-	}
-
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getReportGroup()
-	{
-		return $this->reportGroup;
+		parent::__construct($builderFactory,$trans,$routingGenerator);
 	}
 
 	public function getCharts()
 	{
-		$data = $this->dataTransform($this->getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run());
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -52,9 +37,8 @@ class SalesByItem extends AbstractReport
 	public function getColumns()
 	{
 		$columns = [
-			['type' => 'string', 	'name' => "Date",		],
-			['type' => 'number',	'name' => "Order",		],
-			['type' => 'number',	'name' => "Item",		],
+			['type' => 'number', 	'name' => "Date",		],
+			['type' => 'string',	'name' => "Order",		],
 			['type' => 'string',	'name' => "Type",		],
 			['type' => 'string',	'name' => "Product",	],
 			['type' => 'string',	'name' => "Option",		],
@@ -62,13 +46,12 @@ class SalesByItem extends AbstractReport
 			['type' => 'number',	'name' => "Net",		],
 			['type' => 'number',	'name' => "Tax",		],
 			['type' => 'number',	'name' => "Gross",		],
-			['type' => 'string',	'name' => "Country",	],
 		];
 
 		return json_encode($columns);
 	}
 
-	private function getQuery()
+	private function _getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$salesQuery = $this->_builderFactory->getQueryBuilder();
@@ -101,41 +84,41 @@ class SalesByItem extends AbstractReport
 		;
 
 		$queryBuilder
-			->select('date AS "Date"')
+			->select('date AS "UnixDate"')
+			->select('FROM_UNIXTIME(date, "%d-%b-%Y") AS "Date"')
 			->select('totals.order_id AS "Order"')
 			->select('totals.item_id AS "Item"')
 			->select('totals.type AS "Type"')
+			->select('totals.product_id AS "Product_ID"')
 			->select('totals.product AS "Product"')
 			->select('totals.option AS "Option"')
 			->select('totals.currency AS "Currency"')
 			->select('totals.net AS "Net"')
 			->select('totals.tax AS "Tax"')
 			->select('totals.gross AS "Gross"')
-			->select('totals.country AS "Country"')
 			->from('totals', $salesQuery)
 			->orderBy('date DESC')
+			->limit('50')
 		;
 
 		return $queryBuilder->getQuery();
 	}
 
-	protected function dataTransform($data)
+	private function _dataTransform($data)
 	{
 		$result = [];
 
 		foreach ($data as $row) {
 			$result[] = [
-				date('Y-m-d H:i', $row->Date),
-				$row->Order,
-				$row->Item,
+				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date],
+				'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
 				ucwords($row->Type),
-				$row->Product,
+				'<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => (int) $row->Product_ID]).'">'.$row->Product.'</a>',
 				ucwords($row->Option),
 				$row->Currency,
-				[ 'v' => (float) $row->Net,   'f' => $row->Net],
-				[ 'v' => (float) $row->Tax,   'f' => $row->Tax],
-				[ 'v' => (float) $row->Gross, 'f' => $row->Gross],
-				$row->Country,
+				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
+				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
+				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
 			];
 		}
 

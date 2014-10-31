@@ -5,40 +5,25 @@ namespace Message\Mothership\Commerce\Report;
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
+use Message\Cog\Routing\UrlGenerator;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
 
-use Message\Report\ReportInterface;
-
 class SalesByDay extends AbstractReport
 {
-	private $_to = [];
-	private $_from = [];
-	private $_builderFactory;
-	private $_charts;
-
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
 	{
 		$this->name = 'sales_by_day';
+		$this->displayName = 'Sales by Day';
 		$this->reportGroup = "Sales";
-		$this->_builderFactory = $builderFactory;
 		$this->_charts = [new TableChart];
-	}
-
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getReportGroup()
-	{
-		return $this->reportGroup;
+		parent::__construct($builderFactory,$trans,$routingGenerator);
 	}
 
 	public function getCharts()
 	{
-		$data = $this->dataTransform($this->getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run());
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -52,23 +37,17 @@ class SalesByDay extends AbstractReport
 	public function getColumns()
 	{
 		$columns = [
-			['type' => 'string', 	'name' => "Date",		],
-			['type' => 'number',	'name' => "Order",		],
-			['type' => 'number',	'name' => "Item",		],
-			['type' => 'string',	'name' => "Type",		],
-			['type' => 'string',	'name' => "Product",	],
-			['type' => 'string',	'name' => "Option",		],
+			['type' => 'number', 	'name' => "Date",		],
 			['type' => 'string',	'name' => "Currency",	],
 			['type' => 'number',	'name' => "Net",		],
 			['type' => 'number',	'name' => "Tax",		],
 			['type' => 'number',	'name' => "Gross",		],
-			['type' => 'string',	'name' => "Country",	],
 		];
 
 		return json_encode($columns);
 	}
 
-	private function getQuery()
+	private function _getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$salesQuery = $this->_builderFactory->getQueryBuilder();
@@ -101,41 +80,31 @@ class SalesByDay extends AbstractReport
 		;
 
 		$queryBuilder
-			->select('date AS "Date"')
-			->select('totals.order_id AS "Order"')
-			->select('totals.item_id AS "Item"')
-			->select('totals.type AS "Type"')
-			->select('totals.product AS "Product"')
-			->select('totals.option AS "Option"')
+			->select('date AS "UnixDate"')
+			->select('FROM_UNIXTIME(date, "%d-%b-%Y") AS "Date"')
 			->select('totals.currency AS "Currency"')
-			->select('totals.net AS "Net"')
-			->select('totals.tax AS "Tax"')
-			->select('totals.gross AS "Gross"')
-			->select('totals.country AS "Country"')
+			->select('SUM(totals.net) AS "Net"')
+			->select('SUM(totals.tax) AS "Tax"')
+			->select('SUM(totals.gross) AS "Gross"')
 			->from('totals', $salesQuery)
-			->orderBy('date DESC')
+			->groupBy('FROM_UNIXTIME(date, "%d-%b-%Y"),currency')
+			->orderBy('UnixDate DESC')
 		;
 
 		return $queryBuilder->getQuery();
 	}
 
-	protected function dataTransform($data)
+	private function _dataTransform($data)
 	{
 		$result = [];
 
 		foreach ($data as $row) {
 			$result[] = [
-				date('Y-m-d H:i', $row->Date),
-				$row->Order,
-				$row->Item,
-				ucwords($row->Type),
-				$row->Product,
-				ucwords($row->Option),
+				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date], //Link to all orders in this day?
 				$row->Currency,
-				[ 'v' => (float) $row->Net,   'f' => $row->Net],
-				[ 'v' => (float) $row->Tax,   'f' => $row->Tax],
-				[ 'v' => (float) $row->Gross, 'f' => $row->Gross],
-				$row->Country,
+				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
+				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
+				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
 			];
 		}
 
