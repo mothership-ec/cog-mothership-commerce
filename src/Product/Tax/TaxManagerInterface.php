@@ -51,7 +51,7 @@ interface TaxManagerInterface
 	 * 
 	 * @param  Product    $product The product to calulate tax for
 	 * @param  Address    $address The address delvered to
-	 * @return Collection          The tax rate
+	 * @return Collection          The tax rates to be applied
 	 */
 	public function getTaxRates(Product $product, Address $address);
 } 

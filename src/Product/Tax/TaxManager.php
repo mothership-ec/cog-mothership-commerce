@@ -80,9 +80,9 @@ class TaxManager implements TaxManagerInterface
 	/**
 	 * {@inheritDocs}
 	 *
-	 * @todo Implement this. Use TaxResolver.
+	 * @todo Implement this. Use TaxResolver to return the tax rates.
 	 */
-	public function getTaxRate(Product $product, Address $address)
+	public function getTaxRates(Product $product, Address $address)
 	{
 
 	}
