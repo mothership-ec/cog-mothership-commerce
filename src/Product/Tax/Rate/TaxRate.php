@@ -18,7 +18,7 @@ class TaxRate
 	 * @param string $name The name/key. This should be unique
 	 * @param string $type The type of tax eg VAT/QST/PST etc...
 	 */
-	public function __construct($rate, $name, $type)
+	public function __construct($rate, $type, $name)
 	{
 		$this->_taxRate = $rate;
 		$this->_name    = $name;
@@ -52,7 +52,7 @@ class TaxRate
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price .' given');
 		}
 		
-		return $price * ($this->_taxRate / 100);
+		return $price * ($this->getRate() / 100);
 	}
 
 	/**
@@ -63,6 +63,16 @@ class TaxRate
 	public function getType()
 	{
 		return $this->_type;
+	}
+
+	/**
+	 * Returns the rate as a float
+	 * 
+	 * @return string The name of the tax rate
+	 */
+	public function getRate()
+	{
+		return $this->_taxRate;
 	}
 
 	/**

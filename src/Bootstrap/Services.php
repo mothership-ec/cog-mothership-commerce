@@ -536,7 +536,7 @@ class Services implements ServicesInterface
 
 		$services['product.tax.strategy'] = function($c) {
 			$c['cfg']->tax->taxStrategy;
-		}
+		};
 
 		$services['product.option.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);

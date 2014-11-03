@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Product\Tax;
 
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Product;
-use Message\Cog\ValueObject\Collection;
 
 class TaxManager implements TaxManagerInterface 
 {
@@ -16,15 +15,11 @@ class TaxManager implements TaxManagerInterface
 	public function __construct(TaxResolver $taxResolver)
 	{
 		$this->_taxResolver = $taxResolver;
-		$_taxRates = new Collection;
-		$_taxRates
-			->setType('Message\Mothership\Commerce\Product\Tax\Rate\TaxRate')
-			->setKey(function($item) { return $item->getName(); })
-		;
+		$this->_taxRates = new Rate\TaxRateCollection;
 	}
 
 	/**
-	 * {@inheritDocs}
+	 * {@inheritDoc}
 	 */
 	public function setTaxStrategy(Strategy\TaxStrategyInterface $strategy)
 	{
@@ -34,7 +29,7 @@ class TaxManager implements TaxManagerInterface
 	}
 
 	/**
-	 * {@inheritDocs}
+	 * {@inheritDoc}
 	 */
 	public function getTaxStrategy()
 	{
@@ -42,7 +37,7 @@ class TaxManager implements TaxManagerInterface
 	}
 
 	/**
-	 * {@inheritDocs}
+	 * {@inheritDoc}
 	 */
 	public function addTaxRate(Rate\TaxRate $rate)
 	{
@@ -52,7 +47,7 @@ class TaxManager implements TaxManagerInterface
 	}
 
 	/**
-	 * {@inheritDocs}
+	 * {@inheritDoc}
 	 */
 	public function getTaxRates()
 	{
@@ -60,7 +55,7 @@ class TaxManager implements TaxManagerInterface
 	}
 
 	/**
-	 * {@inheritDocs}
+	 * {@inheritDoc}
 	 */
 	public function setDefaultTaxRate($rate)
 	{
@@ -78,7 +73,7 @@ class TaxManager implements TaxManagerInterface
 	}
 
 	/**
-	 * {@inheritDocs}
+	 * {@inheritDoc}
 	 *
 	 * @todo Implement this. Use TaxResolver to return the tax rates.
 	 */

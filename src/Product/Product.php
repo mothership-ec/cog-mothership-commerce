@@ -309,6 +309,16 @@ class Product
 		return $this->getImage($type, $options);
 	}
 
+	/**
+	 * Get the object type
+	 * 
+	 * @return ProductType The product's type
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
+
 	public function hasTag($tag)
 	{
 		return in_array($tag, $this->tags);
