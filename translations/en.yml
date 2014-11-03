@@ -48,15 +48,15 @@ ms.commerce:
         label: Tax Rate
         help: Select a tax rate applicable to your region and product type.
       retail:
-        label: Retail Price
+        label: Retail price
         label-sans: Retail
         help: The price customers will pay on your website.
       cost:
-        label: Cost Price
+        label: Cost price
         label-sans: Cost
         help: The nominal cost of manufacture of the product.
       rrp:
-        label: RRP Price
+        label: RRP price
         label-sans: RRP
         help: The recommended retail price, which can from the Retail Price.
       tax-strategy:

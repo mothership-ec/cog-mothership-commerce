@@ -51,7 +51,7 @@ class Edit extends Controller
 	{
 		$this->_product = $this->get('product.loader')->getByID($productID);
 
-		return $this->render('::product:edit-form', array(
+		return $this->render('::product:edit-pricing', array(
 			'product' => $this->_product,
 			'form'    => $this->_getProductPricingForm(),
 		));

@@ -1,0 +1,25 @@
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
+{% block edit %}
+	{{ form_start(form) }}
+		<div class="currency-group">
+		{% for currency, price in form.prices.currencies %}
+			<section class="module">
+				<h2 class="title">{{ currency }}</h2>
+				{{ form_widget(price) }}
+			</section>
+		{% endfor %}
+		</div>
+		<h4>Tax Rate</h4>
+		{{ form_widget(form.tax_rate) }}
+		
+		<h4>Tax Strategy</h4>
+		{{ form_widget(form.tax_strategy) }}
+		
+		<h4>Export Value</h4>
+		{{ form_widget(form.export_value) }}
+
+		<button type="submit" class="button small save" id="save-content">
+			{{ 'ms.commerce.product.button.save'|trans }}
+		</button>
+	{{ form_end(form) }}
+{% endblock %}

@@ -32,7 +32,12 @@
 					<td>
 						<div class="multi-inline">
 							<div class="inline">
-								{{ form_row(form[unit.id]['prices']) }}
+									{% for currency, price in form[unit.id].prices.currencies %}
+									<div class="currency-units">
+										<h4>{{ currency }}</h4>
+									    {{ form_widget(price) }}
+									</div>
+									{% endfor %}
 							</div>
 						</div>
 					</td>
