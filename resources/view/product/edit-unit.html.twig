@@ -59,6 +59,12 @@
 		{{ form_start(addForm) }}
 			{{ form_row(addForm.sku) }}
 			{{ option.renderRepeatable(addForm.options) }}
+			{% for currency, price in addForm.prices.currencies %}
+				<div class="currency-units">
+				    <h4>{{ currency }}</h4>
+					{{ form_widget(price) }}
+				</div>	
+			{% endfor %}
 			{{ form_rest(addForm) }}
 			<button type="submit" class="button small update">
 				{{ 'ms.commerce.product.button.sku'|trans }}
