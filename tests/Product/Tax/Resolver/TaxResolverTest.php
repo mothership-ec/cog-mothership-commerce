@@ -99,7 +99,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
 	}
 
-	public function testNoTaxProduct()
+	public function testNotTaxableProduct()
 	{
 		$this->compiler->add(file_get_contents(__DIR__ . '/../cfg/tax-1.yml'));
 		$data = $this->compiler->compile();
@@ -114,7 +114,11 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$resolver = new Resolver($data->rates);
 		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
 
-		// Only VAT returned
 		$this->assertEquals(0, $rates->count());
+	}
+
+	public function testMultipleTaxProduct()
+	{
+		
 	}
 }
