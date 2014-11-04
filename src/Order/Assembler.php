@@ -288,7 +288,7 @@ class Assembler
 		// Remove the item as many times needed to make the count equal the given
 		// quantity
 		if ($quantity < $unitCount) {
-			for ($i = $unitCount ; $i > $quantity; $i--) {
+			for ($i = $unitCount; $i > $quantity; $i--) {
 				$this->_order->items->remove(array_shift($items));
 			}
 		}
@@ -315,6 +315,37 @@ class Assembler
 	public function updateQuantity(Unit $unit, $quantity = 1)
 	{
 		return $this->setQuantity($unit, $quantity);
+	}
+
+	/*
+	 * Update the actual price of items for a given unit on the order being
+	 * assembled.
+	 *
+	 * @param  Unit $unit     The unit to change quantity for
+	 * @param  int  $quantity The quantity to set
+	 *
+	 * @return Assembler      Returns $this for chainability
+	 */
+	public function setActualPrice(Unit $unit, $actualPrice)
+	{
+		// Disable event dispatching while we update the quantities
+		$this->_dispatchEvents = false;
+
+		$row       = $this->_order->items->getRows()[$unit->id];
+		$items     = $row->all();
+
+		// if the actual prices are the same then return
+		if ($row->first()->actualPrice === $actualPrice) {
+			return $this;
+		}
+
+		foreach($items as $item) {
+			$item->actualPrice = $actualPrice;
+		}
+
+		$this->_dispatchEvents = true;
+
+		return $this->dispatchEvent();
 	}
 
 	public function addPayment(Payment\MethodInterface $paymentMethod, $amount, $reference)
