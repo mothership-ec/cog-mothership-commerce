@@ -3,22 +3,31 @@
 namespace Message\Mothership\Commerce\Product\Tax\Strategy;
 
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
+use Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection;
 
 class InclusiveTaxStrategy implements TaxStrategyInterface
 {
 	/**
 	 * {@inheritDocs}
-	 * 
-	 * @param  double  $price   The price
-	 * @param  TaxRate $taxRate The tax rate to use
-	 * @return double           The display price
 	 */
-	public function getDisplayPrice($price, TaxRate $taxRate)
+	public function getDisplayPrice($price, $taxRate)
 	{
 		if (!is_numeric($price)) {
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		return $taxRate->getTaxedPrice($price);
+		if ($taxRate instanceof TaxRateCollection) {
+			$tax = 0.000;
+			foreach ($taxRate as $rate) {
+				$tax += $rate->getTax($price);
+			}
+			$price += $tax;
+
+			return $price;
+		} else if ($taxRate instanceof TaxRate) {
+			return $taxRate->getTaxedPrice($price);
+		} else {
+			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
+		}
 	}
 }

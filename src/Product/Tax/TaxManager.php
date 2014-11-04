@@ -4,24 +4,22 @@ namespace Message\Mothership\Commerce\Product\Tax;
 
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class TaxManager implements TaxManagerInterface 
 {
-	private $_taxRates;
+	private $_defaultAddress;
 	private $_taxStrategy;
-	private $_defaultTaxKey = null;
-	private $_taxResolver;
 
-	public function __construct(TaxResolver $taxResolver)
+	public function __construct(TaxStrategyInterface $strategy)
 	{
-		$this->_taxResolver = $taxResolver;
-		$this->_taxRates = new Rate\TaxRateCollection;
+		$this->_taxStrategy = $strategy;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setTaxStrategy(Strategy\TaxStrategyInterface $strategy)
+	public function setTaxStrategy(TaxStrategyInterface $strategy)
 	{
 		$this->_taxStrategy = $taxStrategy;
 
@@ -35,16 +33,7 @@ class TaxManager implements TaxManagerInterface
 	{
 		return $this->_taxStrategy;
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function addTaxRate(Rate\TaxRate $rate)
-	{
-		$this->_taxRates->add($rate);
-
-		return $this;
-	}
+	
 
 	/**
 	 * {@inheritDoc}
@@ -53,32 +42,36 @@ class TaxManager implements TaxManagerInterface
 	{
 		return $this->_taxRates;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getDisplayPrice($price, $tax)
+	{
+		return $this->_taxStrategy->getDisplayPrice($price, $tax);
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setDefaultTaxRate($rate)
+	public function getNetPrice($price, $tax)
 	{
-		if ($rate instanceof Rate\TaxRate) {
-			if (!$_taxRates->contains($rate->getName())) {
-				$this->addTaxRate($rate);
-			}
-
-			$this->setDefaultTaxRate($rate->getName());
-		} else {
-			$this->_defaultTaxKey = $rate;
+		if (!is_numeric($price)) {
+			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		return $this;
-	}
+		if ($taxRate instanceof TaxRateCollection) {
+			$tax = 0.000;
+			foreach ($taxRate as $rate) {
+				$tax += $rate->getTax($price);
+			}
+			$price += $tax;
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @todo Implement this. Use TaxResolver to return the tax rates.
-	 */
-	public function getTaxRates(Product $product, Address $address)
-	{
-
+			return $price;
+		} else if ($taxRate instanceof TaxRate) {
+			return $taxRate->getTaxedPrice($price);
+		} else {
+			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
+		}
 	}
-} 
+}

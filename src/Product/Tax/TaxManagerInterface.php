@@ -25,33 +25,23 @@ interface TaxManagerInterface
 	public function getTaxStrategy();
 
 	/**
-	 * Add a possible tax rate
+	 * Gets the display price based on the tax strategy
 	 * 
-	 * @param Rate\TaxRate $strategy The tax strategy to add
+	 * @param  double                    $price The price to calculate tax for
+	 * @param  TaxRate|TaxRateCollection $tax   The tax rate/collection of tax rates to use
+	 * @return double                           The adjusted price
 	 */
-	public function addTaxRate(Rate\TaxRate $rate);
+	public function getDisplayPrice($price, $tax);
+	{
+		return $this->_taxStrategy->getDisplayPrice($price, $tax);
+	}
 
 	/**
-	 * Returns the available strategies
+	 * Gets the net price ignoring the tax strategy
 	 * 
-	 * @return Message\Cog\ValueObject\Collection The strategies
+	 * @param  double                    $price The price to calculate tax for
+	 * @param  TaxRate|TaxRateCollection $tax   The tax rate/collection of tax rates to use
+	 * @return double                           The adjusted price
 	 */
-	public function getTaxRates();
-
-	/**
-	 * Set the default tax rate. This will be used if no tax rate found for an address
-	 * or if tax strategy is inclusive
-	 * 
-	 * @param string|Rate\TaxRate $rate The default rate at which to tax
-	 */
-	public function setDefaultTaxRate($rate);
-
-	/**
-	 * Get the tax rate for an item to an address
-	 * 
-	 * @param  Product    $product The product to calulate tax for
-	 * @param  Address    $address The address delvered to
-	 * @return Collection          The tax rates to be applied
-	 */
-	public function getTaxRates(Product $product, Address $address);
+	public function getNetPrice($price, $tax);
 } 

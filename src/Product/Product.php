@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
+use Message\Mothership\Commerce\Product\Tax\TaxManagerInterface;
 
 class Product
 {
@@ -41,6 +42,9 @@ class Product
 	protected $_units;
 	protected $_images;
 	protected $_locale;
+	protected $_taxes;
+
+	protected $_taxManager;
 
 	/**
 	 * Initiate the object and set some basic properties up
@@ -49,16 +53,18 @@ class Product
 	 * @param array  $entities   	array of entities, this will proabbly only be units for now
 	 * @param array  $priceTypes 	array of price types
 	 */
-	public function __construct(Locale $locale, array $priceTypes = array())
+	public function __construct(Locale $locale, array $priceTypes = array(), TaxManagerInterface $taxManager)
 	{
 		$this->authorship = new Authorship;
 		$this->priceTypes = $priceTypes;
 		$this->_locale    = $locale;
+		$this->_taxManager = $taxManager;
 
-		$this->_units   = new Unit\Collection;
-		$this->_images  = new Image\Collection;
-		$this->_details = new Type\DetailCollection;
-		$this->_prices  = new Price\PriceCollection($priceTypes);
+		$this->_units      = new Unit\Collection;
+		$this->_images     = new Image\Collection;
+		$this->_details    = new Type\DetailCollection;
+		$this->_prices     = new Price\PriceCollection($priceTypes);
+		$this->_taxes      = new Tax\TaxRate\TaxRateCollection;
 	}
 
 	/**
@@ -150,6 +156,9 @@ class Product
 		return $prices ? array_shift($prices) : $basePrice;
 	}
 
+	/**
+	 * @todo use taxmanager 
+	 */
 	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		$price = $this->getPrice($type, $currencyID);
@@ -161,6 +170,9 @@ class Product
 		return $price / (1 + ($this->taxRate / 100));
 	}
 
+	/**
+	 * @todo use taxmanager 
+	 */
 	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
 	{
 		$price = $this->getPriceFrom($type, $currencyID);
@@ -307,6 +319,16 @@ class Product
 	public function hasImage($type = 'default', array $options = null)
 	{
 		return $this->getImage($type, $options);
+	}
+
+	/**
+	 * Get the tax rates
+	 * 
+	 * @return TaxRateCollection The collection of tax rates
+	 */
+	public function getTaxRates()
+	{
+		return $this->_taxes;
 	}
 
 	/**

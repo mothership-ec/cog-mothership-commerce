@@ -13,9 +13,10 @@ class ProductProxy extends Product
 	public function __construct(
 		Locale $locale,
 		array $priceTypes = array(),
-		EntityLoaderCollection $loaders
+		EntityLoaderCollection $loaders,
+		TaxManagerInterface $taxmanager
 	) {
-		parent::__construct($locale, $priceTypes);
+		parent::__construct($locale, $priceTypes, $taxManager);
 
 		$this->_loaders = $loaders;
 	}
@@ -87,6 +88,13 @@ class ProductProxy extends Product
 		$this->_load('prices');
 
 		return parent::getPrices();
+	}
+
+	public function getTaxRates()
+	{
+		$this->_load('taxes');
+
+		return parent::getTaxRates();
 	}
 
 	protected function _load($entityName)

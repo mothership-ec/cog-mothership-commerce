@@ -11,6 +11,7 @@ use Message\Cog\DB\Entity\EntityLoaderCollection;
 use Message\User\AnonymousUser;
 
 use Message\Cog\Bootstrap\ServicesInterface;
+use Message\Mothership\Commerce\Product\Tax\TaxManager;
 
 class Services implements ServicesInterface
 {
@@ -434,6 +435,10 @@ class Services implements ServicesInterface
 					$c['db.query'],
 					$c['locale']
 				),
+				'taxes' => new Commerce\Product\Tax\TaxLoader(
+					$c['product.tax.resolver'],
+					$c['product.tax.default_address']
+				),
 			]);
 		});
 
@@ -445,7 +450,8 @@ class Services implements ServicesInterface
 				$c['product.types'],
 				$c['product.detail.loader'],
 				$c['product.entity_loaders'],
-				$c['product.price.types']
+				$c['product.price.types'],
+				$c['product.tax.manager']
 			);
 		});
 
@@ -523,19 +529,29 @@ class Services implements ServicesInterface
 			return new \Message\Mothership\Commerce\FieldType\Helper\ProductList($c['db.query']);
 		};
 
-		// DO NOT USE: LEFT IN FOR BC
+		/**
+		 * @deprecated Left in for BC. Use product.option.loader
+		 */
 		$services['option.loader'] = $services->factory(function($c) {
 			return $c['product.option.loader'];
 		});
 
-		$services['product.tax.rates'] = function($c) {
-			return array(
-				'20.00' => 'VAT - 20%'
-			);
+		/**
+		 * @todo implement this
+		 */
+		$services['product.tax.default_address'] = function($c) {
+			$address = new Address;
+			$address->countryID = 'GB';
+			$address->regionID  = 'DEF';
+			return $address;
 		};
-		
-		$services['product.tax.strategy'] = function($c) {
-			
+
+		$services['product.tax.manager'] = function($c) {
+			return new Commerce\Product\Tax\TaxManager($c['product.tax.strategy']);
+		};
+
+		$services['product.tax.resolver'] = function($c) {
+			return new Commerce\Product\Tax\Resolver\StdOTaxResolver($c['cfg']->tax->rates);
 		};
 
 		$services['product.tax.strategy'] = function($c) {
