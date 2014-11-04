@@ -56,7 +56,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 
 		// Only VAT returned
 		$this->assertEquals(1, $rates->count());
-		$rate = $rates->get('gb.default.' . Resolver::DEFAULT_PRODUCT_TAX);
+		$rate = $rates->get('gb.default.' . Resolver::DEFAULT_PRODUCT_TAX . '.vat');
 		$this->assertEquals('VAT', $rate->getType());
 		$this->assertEquals(20, $rate->getRate());
 	}
@@ -119,6 +119,47 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 
 	public function testMultipleTaxProduct()
 	{
-		
+		$this->compiler->add(file_get_contents(__DIR__ . '/../cfg/tax-2.yml'));
+		$data = $this->compiler->compile();
+
+		$this->productType->shouldReceive("getName")
+			->once()
+			->andReturn('book')
+		;
+
+		$this->address->countryID = 'UK';
+
+		$resolver = new Resolver($data->rates);
+		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+
+		$this->assertEquals(4, $rates->count());
+
+		$this->productType->shouldReceive("getName")
+			->once()
+			->andReturn('alcohol')
+		;
+
+		$rates  = $resolver->getProductTaxRates($this->productType, $this->address);
+
+		$this->assertEquals(2, $rates->count());
+	}
+
+	/**
+	 * @expectedException LogicException
+	 */
+	public function testMultipleTaxDeclarationException()
+	{
+		$this->compiler->add(file_get_contents(__DIR__ . '/../cfg/tax-2.yml'));
+		$data = $this->compiler->compile();
+
+		$this->productType->shouldReceive("getName")
+			->once()
+			->andReturn('basic')
+		;
+
+		$this->address->countryID = 'CA';
+
+		$resolver = new Resolver($data->rates);
+		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
 	}
 }

@@ -61,7 +61,11 @@ class StdOTaxResolver implements TaxResolverInterface
 
 		$taxRates = new TaxRateCollection();
 		foreach ($taxes as $rate) {
-			$taxRates->add(new TaxRate($rate->rate, $rate->name, implode('.', [$country, $region, $type])));
+			try {
+				$taxRates->add(new TaxRate($rate->rate, $rate->name, implode('.', [$country, $region, $type, strtolower($rate->name)])));
+			} catch (\Exception $e) {
+				throw new \LogicException("Could not set TaxRate on collection, ensure no duplicate taxes declared!"); 
+			}
 		}
 
 		return $taxRates;
