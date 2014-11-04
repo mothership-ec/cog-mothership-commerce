@@ -32,7 +32,8 @@ class ProductPricing extends AbstractType
 		]);
 
 		$builder->add('export_value', 'money', [
-			'data' => $product->exportValue,
+			'data'     => $product->exportValue,
+			'currency' => $options['currency']
 		]);
 	}
 
@@ -54,7 +55,8 @@ class ProductPricing extends AbstractType
 		]);
 
 		$resolver->setDefaults([
-			'locale'     => null,
+			'locale'   => null,
+			'currency' => 'GBP'
 		]);
 	}
 

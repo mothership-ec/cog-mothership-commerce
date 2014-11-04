@@ -25,7 +25,7 @@ class PriceGroup extends Form\AbstractType
 			$builder->add($type, 'money', [
 				'currency' => $currency,
 				'label'    => "ms.commerce.product.pricing.$type.label",
-				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : null,
+				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : 0,
 				'attr'     => [
 					'data-help-key' => 'ms.commerce.product.pricing.'.strtolower($type).'.help',
 				],
