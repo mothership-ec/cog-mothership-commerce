@@ -533,9 +533,13 @@ class Services implements ServicesInterface
 				'20.00' => 'VAT - 20%'
 			);
 		};
+		
+		$services['product.tax.strategy'] = function($c) {
+			
+		};
 
 		$services['product.tax.strategy'] = function($c) {
-			$c['cfg']->tax->taxStrategy;
+			return $c['cfg']->tax->taxStrategy === 'inclusive' ? new Strategy\InclusiveTaxStrategy : new Strategy\ExnclusiveTaxStrategy;
 		};
 
 		$services['product.option.loader'] = $services->factory(function($c) {
