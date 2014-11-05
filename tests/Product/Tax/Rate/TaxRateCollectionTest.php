@@ -17,6 +17,6 @@ class TaxRateCollectionTest extends \PHPUnit_Framework_TestCase
 
 		$collection = new TaxRateCollection($taxes);
 
-		var_dump($collection->getTotalTaxRate());
+		$this->assertEquals(90, $collection->getTotalTaxRate());
 	}
 }
