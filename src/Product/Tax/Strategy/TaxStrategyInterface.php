@@ -29,4 +29,11 @@ interface TaxStrategyInterface
 	 * @return double                    The display price
 	 */
 	public function getGrossPrice($price, $taxRate);
+
+	/**
+	 * Returns the name of the strategy
+	 * 
+	 * @return string name of the strategy
+	 */
+	public function getName();
 }

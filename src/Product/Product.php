@@ -367,10 +367,22 @@ class Product
      *
      * @return self
      */
-    protected function sgetTaxManager($taxManager)
+    protected function setTaxManager($taxManager)
     {
         $this->_taxManager = $taxManager;
 
         return $this;
+    }
+
+    /**
+     * Get the value of _taxManager.
+     *
+     * @param mixed $_taxManager the tax manager
+     *
+     * @return self
+     */
+    public function getTaxManager()
+    {
+        return $this->_taxManager;
     }
 }

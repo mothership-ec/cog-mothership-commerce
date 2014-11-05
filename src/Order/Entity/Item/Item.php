@@ -90,8 +90,8 @@ class Item implements EntityInterface, RecordInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = (float) $unit->product->taxRate;
-		$this->taxStrategy     = $unit->product->taxStrategy;
+		$this->productTaxRate  = (float) $unit->product->getTaxRates()->getTotalTaxRate();
+		$this->taxStrategy     = $unit->product->getTaxManager()->getTaxStrategy()->getName();
 		$this->productID       = $unit->product->id;
 		$this->productName     = $unit->product->name;
 		$this->unitID          = $unit->id;

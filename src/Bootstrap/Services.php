@@ -541,6 +541,14 @@ class Services implements ServicesInterface
 		 * @todo implement this
 		 */
 		$services['product.tax.default_address'] = function($c) {
+			if ($addresses = $c['commerce.user.address.loader']->getByUser($c['user.current'])) {
+				foreach ($addresses as $address) {
+					if($address->type === 'delivery') {
+						return $address;
+					}
+				}
+			}
+
 			$address = new Commerce\Address\Address;
 			$address->countryID = 'GB';
 			$address->regionID  = 'DEF';

@@ -70,7 +70,10 @@ class Unit
 	{
 		$product = $this->getProduct();
 
-		return $product->getTaxManager()->getNetPrice($this->getPrice($type, $currencyID), $product->getTaxRates());
+		return $product->getTaxManager()->getNetPrice(
+			$this->getPrice($type, $currencyID), 
+			$product->getTaxRates()
+		);
 	}
 
 	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')

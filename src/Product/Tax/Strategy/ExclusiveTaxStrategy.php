@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Product\Tax\Strategy;
 
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
+use Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection;
 
 class ExclusiveTaxStrategy implements TaxStrategyInterface
 {
@@ -15,10 +16,10 @@ class ExclusiveTaxStrategy implements TaxStrategyInterface
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		if ($taxRate instanceof TaxRateCollection || $taxRate instanceof TaxRate) {
+		if ( ($taxRate instanceof TaxRateCollection) || ($taxRate instanceof TaxRate) ) {
 			return $taxRate->getTaxedPrice($price);
 		} else {
-			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
+			throw new \InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
 		}
 	}
 
@@ -32,5 +33,13 @@ class ExclusiveTaxStrategy implements TaxStrategyInterface
 		}
 
 		return $price;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getName()
+	{
+		return 'exclusive';
 	}
 }

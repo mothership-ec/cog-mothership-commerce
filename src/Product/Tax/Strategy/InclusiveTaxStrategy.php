@@ -38,7 +38,15 @@ class InclusiveTaxStrategy implements TaxStrategyInterface
 
 			return $price / (1 + $rate/100);
 		} else {
-			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
+			throw new \InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getName()
+	{
+		return 'inclusive';
 	}
 }
