@@ -31,11 +31,11 @@ class InclusiveTaxStrategy implements TaxStrategyInterface
 		if ($taxRate instanceof TaxRateCollection) {
 			$rate = $tRate += $rate->getTotalTaxRate();
 
-			return $price / (1 + $rate);
+			return $price / (1 + $rate/100);
 		} else if ($taxRate instanceof TaxRate) {
 			$rate = $tRate += $rate->getTaxRate();
 
-			return $price / (1 + $rate);
+			return $price / (1 + $rate/100);
 		} else {
 			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
 		}

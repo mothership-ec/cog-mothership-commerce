@@ -66,6 +66,23 @@ class Unit
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 
+	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		$product = $this->getProduct();
+
+		return $product->getTaxManager()->getNetPrice($this->getPrice($type, $currencyID), $product->getTaxRates());
+	}
+
+	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		$product = $this->getProduct();
+
+		return $product->getTaxManager()->getGrossPrice(
+			$this->getPrice($type, $currencyID), 
+			$product->getTaxRates()
+		);
+	}
+
 	/**
 	 * Returns whether unit is out of stock in all locations
 	 * 
@@ -94,5 +111,10 @@ class Unit
 		}
 
 		return $this->options[$type];
+	}
+
+	public function getProduct()
+	{
+		return $this->product;
 	}
 }

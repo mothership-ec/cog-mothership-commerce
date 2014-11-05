@@ -556,7 +556,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.tax.strategy'] = function($c) {
-			return $c['cfg']->tax->taxStrategy === 'inclusive' ? new Strategy\InclusiveTaxStrategy : new Strategy\ExnclusiveTaxStrategy;
+			return $c['cfg']->tax->taxStrategy === 'inclusive' ? new Strategy\InclusiveTaxStrategy : new Strategy\ExclusiveTaxStrategy;
 		};
 
 		$services['product.option.loader'] = $services->factory(function($c) {

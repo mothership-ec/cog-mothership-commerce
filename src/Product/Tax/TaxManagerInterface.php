@@ -25,15 +25,6 @@ interface TaxManagerInterface
 	public function getTaxStrategy();
 
 	/**
-	 * Gets the display price based on the tax strategy
-	 * 
-	 * @param  double                    $price The price to calculate tax for
-	 * @param  TaxRate|TaxRateCollection $tax   The tax rate/collection of tax rates to use
-	 * @return double                           The adjusted price
-	 */
-	public function getDisplayPrice($price, $tax);
-
-	/**
 	 * Gets the net price ignoring the tax strategy
 	 * 
 	 * @param  double                    $price The price to calculate tax for
@@ -41,4 +32,13 @@ interface TaxManagerInterface
 	 * @return double                           The adjusted price
 	 */
 	public function getNetPrice($price, $tax);
-} 
+
+	/**
+	 * Gets the display price based on the tax strategy
+	 * 
+	 * @param  double                    $price The price to calculate tax for
+	 * @param  TaxRate|TaxRateCollection $tax   The tax rate/collection of tax rates to use
+	 * @return double                           The adjusted price
+	 */
+	public function getGrossPrice($price, $tax);
+}

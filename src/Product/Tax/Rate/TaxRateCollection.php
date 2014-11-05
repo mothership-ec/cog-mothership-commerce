@@ -26,12 +26,12 @@ class TaxRateCollection extends Collection
 
 	public function getTotalTaxRate()
 	{
-		$rate = 0.00;
+		$rawRate = 0.00;
 
 		foreach($this as $rate) {
-			$rate += $rate->getRate();
+			$rawRate += $rate->getRate();
 		}
 
-		return $rate;
+		return $rawRate;
 	}
 }

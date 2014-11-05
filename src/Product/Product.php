@@ -161,13 +161,7 @@ class Product
 	 */
 	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
 	{
-		$price = $this->getPrice($type, $currencyID);
-
-		if ('exclusive' === $this->taxStrategy) {
-			return $price;
-		}
-
-		return $price / (1 + ($this->taxRate / 100));
+		return $this->_taxManager->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());		
 	}
 
 	/**
@@ -175,13 +169,7 @@ class Product
 	 */
 	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
 	{
-		$price = $this->getPriceFrom($type, $currencyID);
-
-		if ('exclusive' === $this->taxStrategy) {
-			return $price;
-		}
-
-		return $price / (1 + ($this->taxRate / 100));
+		return $this->_taxManager->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
@@ -355,4 +343,18 @@ class Product
 	{
 		$this->_details = $details;
 	}
+
+    /**
+     * Sets the value of _taxManager.
+     *
+     * @param mixed $_taxManager the tax manager
+     *
+     * @return self
+     */
+    protected function sgetTaxManager($taxManager)
+    {
+        $this->_taxManager = $taxManager;
+
+        return $this;
+    }
 }

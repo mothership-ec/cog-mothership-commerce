@@ -55,7 +55,7 @@ class TaxLoader implements ProductEntityLoaderInterface
 			throw new \LogicException('No address given and no default address set. Either provide an address or ensure a default address is set on the loader.');
 		}
 
-		return $this->_taxResolver->getProductTaxRates($product, $address);
+		return $this->_taxResolver->getProductTaxRates($product->getType(), $address);
 	}
 
 	/**
