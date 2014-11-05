@@ -157,19 +157,35 @@ class Product
 	}
 
 	/**
-	 * @todo use taxmanager 
+	 * Get the net price
 	 */
 	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->_taxManager->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());		
+		return $this->_taxManager->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
-	 * @todo use taxmanager 
+	 * Get the lowest possible net price
 	 */
 	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
 	{
 		return $this->_taxManager->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * Get the gross price
+	 */
+	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		return $this->_taxManager->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * Get the lowest possible gross price
+	 */
+	public function getGrossPriceFrom($type = 'retail', $currencyID = 'GBP')
+	{
+		return $this->_taxManager->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**

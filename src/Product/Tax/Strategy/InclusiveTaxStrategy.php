@@ -28,12 +28,13 @@ class InclusiveTaxStrategy implements TaxStrategyInterface
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
+		$rate = 0.00;
 		if ($taxRate instanceof TaxRateCollection) {
-			$rate = $tRate += $rate->getTotalTaxRate();
+			$rate += $taxRate->getTotalTaxRate();
 
 			return $price / (1 + $rate/100);
 		} else if ($taxRate instanceof TaxRate) {
-			$rate = $tRate += $rate->getTaxRate();
+			$rate += $taxRate->getTaxRate();
 
 			return $price / (1 + $rate/100);
 		} else {

@@ -19,4 +19,17 @@ class TaxRateCollectionTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals(90, $collection->getTotalTaxRate());
 	}
+
+	public function testGetTaxedPrice()
+	{
+		$taxes = [
+			new TaxRate(20, 'PST', 't1'),
+			new TaxRate(30, 'PST', 't2'),
+			new TaxRate(40, 'PST', 't3'),
+		];
+
+		$collection = new TaxRateCollection($taxes);
+
+		$this->assertEquals(190, $collection->getTaxedPrice(100));
+	}
 }

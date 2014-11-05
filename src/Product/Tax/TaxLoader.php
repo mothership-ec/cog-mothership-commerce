@@ -65,7 +65,7 @@ class TaxLoader implements ProductEntityLoaderInterface
 	 */
 	public function getByProduct(Product $product)
 	{
-		$this->getProductTaxRates($product);
+		return $this->getProductTaxRates($product);
 	}
 
 	/**

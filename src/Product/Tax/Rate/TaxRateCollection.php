@@ -21,7 +21,7 @@ class TaxRateCollection extends Collection
 
 	public function getTaxedPrice($price)
 	{
-		return $price * (1 + $this->getTotalTaxRate);
+		return $price * (1 + $this->getTotalTaxRate()/100);
 	}
 
 	public function getTotalTaxRate()
