@@ -538,7 +538,7 @@ class Services implements ServicesInterface
 		});
 
 		/**
-		 * @todo implement this
+		 * Get the tax address
 		 */
 		$services['product.tax.default_address'] = function($c) {
 			if ($addresses = $c['commerce.user.address.loader']->getByUser($c['user.current'])) {

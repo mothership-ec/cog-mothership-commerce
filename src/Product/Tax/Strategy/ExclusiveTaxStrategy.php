@@ -16,11 +16,7 @@ class ExclusiveTaxStrategy implements TaxStrategyInterface
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		if ( ($taxRate instanceof TaxRateCollection) || ($taxRate instanceof TaxRate) ) {
-			return $taxRate->getTaxedPrice($price);
-		} else {
-			throw new \InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
-		}
+		return $price;
 	}
 
 	/**
@@ -32,7 +28,11 @@ class ExclusiveTaxStrategy implements TaxStrategyInterface
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		return $price;
+		if ( ($taxRate instanceof TaxRateCollection) || ($taxRate instanceof TaxRate) ) {
+			return $taxRate->getTaxedPrice($price);
+		} else {
+			throw new \InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
+		}
 	}
 	
 	/**
