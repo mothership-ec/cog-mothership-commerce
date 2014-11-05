@@ -19,7 +19,13 @@ class ExclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 		$strategy = new ExclusiveTaxStrategy;
 		$price = 100;
 
-		$this->assertEquals(100, $strategy->getDisplayPrice($price, $this->_taxRate));
+		$this->_taxRate->shouldReceive('getTaxedPrice')
+			->with($price)
+			->zeroOrMoreTimes()
+			->andReturn(120);
+
+
+		$this->assertEquals(120, $strategy->getNetPrice($price, $this->_taxRate));
 	}
 
 	/**
@@ -29,6 +35,6 @@ class ExclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 	{
 		$strategy = new ExclusiveTaxStrategy;
 
-		$strategy->getDisplayPrice('Not a string', $this->_taxRate);
+		$strategy->getNetPrice('Not a string', $this->_taxRate);
 	}
 }

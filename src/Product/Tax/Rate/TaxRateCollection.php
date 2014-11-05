@@ -18,4 +18,20 @@ class TaxRateCollection extends Collection
 			->setKey(function($item) { return $item->getName(); })
 		;
 	}
+
+	public function getTaxedPrice($price)
+	{
+		return $price * (1 + $this->getTotalTaxRate);
+	}
+
+	public function getTotalTaxRate()
+	{
+		$rate = 0.00;
+
+		foreach($this as $rate) {
+			$rate += $rate->getRate();
+		}
+
+		return $rate;
+	}
 }

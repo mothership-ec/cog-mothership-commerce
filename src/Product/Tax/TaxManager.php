@@ -46,32 +46,16 @@ class TaxManager implements TaxManagerInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDisplayPrice($price, $tax)
+	public function getNetPrice($price, $tax)
 	{
-		return $this->_taxStrategy->getDisplayPrice($price, $tax);
+		return $this->_taxStrategy->getNetPrice($price, $tax);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getNetPrice($price, $tax)
+	public function getGrossPrice($price, $tax)
 	{
-		if (!is_numeric($price)) {
-			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
-		}
-
-		if ($taxRate instanceof TaxRateCollection) {
-			$tax = 0.000;
-			foreach ($taxRate as $rate) {
-				$tax += $rate->getTax($price);
-			}
-			$price += $tax;
-
-			return $price;
-		} else if ($taxRate instanceof TaxRate) {
-			return $taxRate->getTaxedPrice($price);
-		} else {
-			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
-		}
+		return $this->_taxStrategy->getGrossPrice($price, $tax);
 	}
 }

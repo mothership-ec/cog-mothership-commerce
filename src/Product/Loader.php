@@ -23,6 +23,7 @@ class Loader
 	protected $_detailLoader;
 	protected $_entityLoaders;
 	protected $_taxManager;
+	protected $_priceTypes;
 
 	public function __construct(
 		Query $query,
@@ -42,6 +43,10 @@ class Loader
 		$this->_fileLoader    = $fileLoader;
 		$this->_entityLoaders = $entityLoaders;
 		$this->_taxManager    = $taxManager;
+
+		if(empty($priceTypes)) {
+			de('hi');
+		}
 	}
 
 	public function getEntityLoader($entityName)

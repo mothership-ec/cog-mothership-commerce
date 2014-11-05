@@ -55,16 +55,16 @@ class Product
 	 */
 	public function __construct(Locale $locale, array $priceTypes = array(), TaxManagerInterface $taxManager)
 	{
-		$this->authorship = new Authorship;
-		$this->priceTypes = $priceTypes;
-		$this->_locale    = $locale;
+		$this->authorship  = new Authorship;
+		$this->priceTypes  = $priceTypes;
+		$this->_locale     = $locale;
 		$this->_taxManager = $taxManager;
 
 		$this->_units      = new Unit\Collection;
 		$this->_images     = new Image\Collection;
 		$this->_details    = new Type\DetailCollection;
 		$this->_prices     = new Price\PriceCollection($priceTypes);
-		$this->_taxes      = new Tax\TaxRate\TaxRateCollection;
+		$this->_taxes      = new Tax\Rate\TaxRateCollection;
 	}
 
 	/**

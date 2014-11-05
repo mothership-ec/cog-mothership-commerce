@@ -12,6 +12,7 @@ use Message\User\AnonymousUser;
 
 use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Mothership\Commerce\Product\Tax\TaxManager;
+use Message\Mothership\Commerce\Product\Tax\Strategy;
 
 class Services implements ServicesInterface
 {
@@ -540,7 +541,7 @@ class Services implements ServicesInterface
 		 * @todo implement this
 		 */
 		$services['product.tax.default_address'] = function($c) {
-			$address = new Address;
+			$address = new Commerce\Address\Address;
 			$address->countryID = 'GB';
 			$address->regionID  = 'DEF';
 			return $address;

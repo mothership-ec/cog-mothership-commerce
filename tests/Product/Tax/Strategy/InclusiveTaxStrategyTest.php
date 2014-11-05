@@ -19,13 +19,7 @@ class InclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 		$strategy = new InclusiveTaxStrategy;
 		$price = 100;
 
-		$this->_taxRate->shouldReceive('getTaxedPrice')
-			->with($price)
-			->zeroOrMoreTimes()
-			->andReturn(120);
-
-
-		$this->assertEquals(120, $strategy->getDisplayPrice($price, $this->_taxRate));
+		$this->assertEquals(100, $strategy->getNetPrice($price, $this->_taxRate));
 	}
 
 	/**
@@ -35,6 +29,6 @@ class InclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 	{
 		$strategy = new InclusiveTaxStrategy;
 
-		$strategy->getDisplayPrice('Not a string', $this->_taxRate);
+		$strategy->getNetPrice('Not a string', $this->_taxRate);
 	}
 }

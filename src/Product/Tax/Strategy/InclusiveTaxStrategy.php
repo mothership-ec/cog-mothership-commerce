@@ -10,22 +10,32 @@ class InclusiveTaxStrategy implements TaxStrategyInterface
 	/**
 	 * {@inheritDocs}
 	 */
-	public function getDisplayPrice($price, $taxRate)
+	public function getNetPrice($price, $taxRate)
+	{
+		if (!is_numeric($price)) {
+			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
+		}
+
+		return $price;
+	}
+
+	/**
+	 * {@inheritDocs}
+	 */
+	public function getGrossPrice($price, $taxRate)
 	{
 		if (!is_numeric($price)) {
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
 		if ($taxRate instanceof TaxRateCollection) {
-			$tax = 0.000;
-			foreach ($taxRate as $rate) {
-				$tax += $rate->getTax($price);
-			}
-			$price += $tax;
+			$rate = $tRate += $rate->getTotalTaxRate();
 
-			return $price;
+			return $price / (1 + $rate);
 		} else if ($taxRate instanceof TaxRate) {
-			return $taxRate->getTaxedPrice($price);
+			$rate = $tRate += $rate->getTaxRate();
+
+			return $price / (1 + $rate);
 		} else {
 			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
 		}

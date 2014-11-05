@@ -32,9 +32,6 @@ interface TaxManagerInterface
 	 * @return double                           The adjusted price
 	 */
 	public function getDisplayPrice($price, $tax);
-	{
-		return $this->_taxStrategy->getDisplayPrice($price, $tax);
-	}
 
 	/**
 	 * Gets the net price ignoring the tax strategy

@@ -9,7 +9,23 @@ class ExclusiveTaxStrategy implements TaxStrategyInterface
 	/**
 	 * {@inheritDocs}
 	 */
-	public function getDisplayPrice($price, $taxRate)
+	public function getNetPrice($price, $taxRate)
+	{
+		if (!is_numeric($price)) {
+			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
+		}
+
+		if ($taxRate instanceof TaxRateCollection || $taxRate instanceof TaxRate) {
+			return $taxRate->getTaxedPrice($price);
+		} else {
+			throw new InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
+		}
+	}
+
+	/**
+	 * {@inheritDocs}
+	 */
+	public function getGrossPrice($price, $taxRate)
 	{
 		if (!is_numeric($price)) {
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
