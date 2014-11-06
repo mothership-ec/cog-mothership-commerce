@@ -2,6 +2,8 @@
 
 <a href="{{ url('ms.commerce.product.create')}}" class="button small create product" data-live>Add a new product</a>
 
+<a href="{{ url('ms.commerce.product.upload')}}" class="button small create product" data-live>Upload a CSV</a>
+
 <ol class="menu">
 	{% for category, products in listing %}
 		<li><a href="#">{{ category }}</a>
