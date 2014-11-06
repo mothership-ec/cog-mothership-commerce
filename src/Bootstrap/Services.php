@@ -551,13 +551,13 @@ class Services implements ServicesInterface
 
 			$address = new Commerce\Address\Address;
 			$address->countryID = 'GB';
-			$address->regionID  = 'DEF';
+
 			return $address;
 		};
 
-		$services['product.tax.manager'] = function($c) {
+		$services['product.tax.manager'] = $services->factory(function($c) {
 			return new Commerce\Product\Tax\TaxManager($c['product.tax.strategy']);
-		};
+		});
 
 		$services['product.tax.resolver'] = function($c) {
 			return new Commerce\Product\Tax\Resolver\StdOTaxResolver($c['cfg']->tax->rates);

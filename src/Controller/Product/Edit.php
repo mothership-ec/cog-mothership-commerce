@@ -320,10 +320,7 @@ class Edit extends Controller
 			$product = $this->_product;
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
-
-			$product->taxRate                    = $data['tax_rate'];
-			$product->taxStrategy                = $data['tax_strategy'];
-			$product->exportValue                = $data['export_value'];
+			$product->exportValue = $data['export_value'];
 
 			foreach ($data as $key => $value) {
 				if (preg_match("/^price/us", $key)) {
@@ -807,26 +804,6 @@ class Edit extends Controller
 				)
 			)->val()->number();
 		}
-
-		$form->add('tax_rate', 'choice', $this->trans('ms.commerce.product.pricing.tax-rate.label'), array(
-			'data' => $this->_product->taxRate,
-			'attr' => array('data-help-key' => 'ms.commerce.product.pricing.tax-rate.help'),
-			'choices' => $this->get('product.tax.rates'),
-			'empty_value' => '-- Please select --'
-		))
-			->val()
-			->number()
-			->maxLength(255);
-
-		$form->add('tax_strategy', 'choice', $this->trans('ms.commerce.product.pricing.tax-strategy.label'), array(
-			'choices' => array(
-				'inclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.inclusive'),
-				'exclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.exclusive'),
-			),
-			'data' => $this->_product->taxStrategy,
-			'required' => true, // will remove the empty value from the choice-list
-			'attr' 	   => array('data-help-key' => 'ms.commerce.product.pricing.tax-strategy.help'),
-		));
 
 		$form->add('export_value', 'money', $this->trans('ms.commerce.product.pricing.export-value.label'), array(
 			'currency' => 'GBP',
