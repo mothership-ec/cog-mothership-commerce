@@ -38,7 +38,7 @@ class PaymentsAndRefunds extends AbstractReport
 	{
 		$columns = [
 			['type' => 'string',	'name' => "Date",		 ],
-			['type' => 'string',	'name' => "Created By",	 ],
+			['type' => 'string',	'name' => "User",		 ],
 			['type' => 'string',	'name' => "Currency",	 ],
 			['type' => 'string',	'name' => "Method",		 ],
 			['type' => 'number',	'name' => "Amount",		 ],

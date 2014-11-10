@@ -50,7 +50,6 @@ class StockSummary extends AbstractReport
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 
-
 		// if ($date){
 			$queryBuilder->from("product_unit_stock stock");
 		// } else {
@@ -60,6 +59,7 @@ class StockSummary extends AbstractReport
 		// }
 
 		$queryBuilder
+			->select('product.product_id AS "ID"')
 			->select('product.category AS "Category"')
 			->select('product.name AS "Name"')
 			->select('options AS "Options"')
@@ -103,7 +103,7 @@ class StockSummary extends AbstractReport
 		foreach ($data as $row) {
 			$result[] = [
 				$row->Category,
-				$row->Name,
+				[ 'v' => ucwords($row->Name), 'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'.ucwords($row->Name).'</a>'],
 				$row->Options,
 				$row->Stock,
 			];
