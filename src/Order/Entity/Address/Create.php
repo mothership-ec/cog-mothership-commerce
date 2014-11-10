@@ -31,7 +31,7 @@ class Create implements DB\TransactionalInterface
 		$this->_query = $trans;
 	}
 
-	public function create(Address $address)
+	public function create(Address $address, $deleteOld = false)
 	{
 		// Set create authorship data if not already set
 		if (!$address->authorship->createdAt()) {
@@ -42,7 +42,9 @@ class Create implements DB\TransactionalInterface
 		}
 
 		// Delete old address
-		$this->_delete->delete($address);
+		if($deleteOld) {
+			$this->_delete->delete($address);
+		}
 
 		$result = $this->_query->run('
 			INSERT INTO

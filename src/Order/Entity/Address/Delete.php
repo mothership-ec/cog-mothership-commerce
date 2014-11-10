@@ -51,7 +51,6 @@ class Delete implements DB\TransactionalInterface
 	 */
 	public function delete(Address $address)
 	{
-
 		$old_id = $this->_query->run('
 			SELECT
 				MAX(address_id) AS address_id
