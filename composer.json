@@ -29,14 +29,18 @@
 	"require": {
 		"php": ">=5.4.0",
 
-		"message/cog"                        : "~3.0",
+		"message/cog"                        : "~3.4",
 		"message/cog-user"                   : "~1.0",
 		"message/cog-imageresize"            : "~1.0",
-		"message/cog-mothership-file-manager": "~1.2",
-		"message/cog-mothership-cp"          : "~1.2",
+		"message/cog-mothership-file-manager": "~2.0",
+		"message/cog-mothership-cp"          : "~1.3",
 
 		"domisys/image_barcode2"             : "3.0.0"
 	},
+	"require-dev": {
+		"mockery/mockery" : "dev-master@dev"
+	},
+
 	"suggest": {
 	}
 }

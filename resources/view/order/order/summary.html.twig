@@ -32,7 +32,13 @@
 						{% endif %}
 					</td>
 					<td>{{ order.status }}</td>
-					<td>{{ order.shippingDisplayName }}</td>
+					<td>
+						{% if order.shippingDisplayName %}
+							{{ order.shippingDisplayName }}
+						{% else %}
+							<em>Unknown</em>
+						{% endif %}
+					</td>
 					<td>{{ order.totalGross|price(order.currencyID) }}</td>
 				</tr>
 			{% endfor %}

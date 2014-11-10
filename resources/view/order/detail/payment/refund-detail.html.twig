@@ -1,0 +1,37 @@
+<section class="group">
+	<h2 class="title">
+		{{ refund.method.displayName }}, {{ refund.authorship }}
+	</h2>
+	<div class="content">
+		<dl class="order-details">
+			<dt>{{ 'ms.commerce.order.refund.method'|trans }}</dt>
+				<dd>{{ refund.method.displayName }}</dd>
+			<dt>{{ 'ms.commerce.order.refund.amount'|trans }}</dt>
+				<dd>{{ refund.amount|price(order.currencyID) }}</dd>
+			<dt>{{ 'ms.commerce.order.refund.reason'|trans }}</dt>
+				<dd>
+					{% if refund.refund.reason %}
+						{{ refund.refund.reason }}
+					{% else %}
+						<em>Unknown</em>
+					{% endif %}
+				</dd>
+			<dt>{{ 'ms.commerce.order.refund.payment'|trans }}</dt>
+				<dd>
+					{% if refund.refund.payment %}
+						#{{ refund.refund.payment }}
+					{% else %}
+						<em>Unknown</em>
+					{% endif %}
+				</dd>
+			<dt>{{ 'ms.commerce.order.refund.reference'|trans }}</dt>
+				<dd>
+					{% if refund.refund.reference %}
+						{{ refund.refund.reference }}
+					{% else %}
+						<em>Unknown</em>
+					{% endif %}
+				</dd>
+		</dl>
+	</div>
+</section>

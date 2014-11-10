@@ -120,7 +120,7 @@ class ProductAttributes extends Handler
 
 	protected function _getCategories()
 	{
-		return $this->_container['product.category.loader']->getCategories();
+		return $this->_container['product.category.loader']->getAll();
 	}
 
 

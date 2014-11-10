@@ -4,7 +4,9 @@ namespace Message\Mothership\Commerce\Bootstrap;
 
 use Message\Mothership\Commerce;
 use Message\Mothership\Commerce\Order\Statuses as OrderStatuses;
+use Message\Mothership\Commerce\Product\Stock\Movement\Reason;
 use Message\Mothership\Commerce\Order\Transaction\Types as TransactionTypes;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
 
 use Message\User\AnonymousUser;
 
@@ -29,6 +31,10 @@ class Services implements ServicesInterface
 			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension(['GBP']));
 
 			return $factory;
+		});
+
+		$services['commerce.form.order.simple_search'] = $services->factory(function($c) {
+			return new Commerce\Form\Order\SimpleSearch;
 		});
 
 		$services['basket.order'] = $services->factory(function($c) {
@@ -153,6 +159,16 @@ class Services implements ServicesInterface
 			);
 		});
 
+		// Order forms
+		$services['order.form.cancel'] = function($c) {
+			return new Commerce\Form\Order\Cancel(
+				$c['stock.locations']->getRoleLocation($c['stock.locations']::SELL_ROLE),
+				$c['user.loader']->getUserPassword($c['user.current']),
+				$c['user.password_hash'],
+				$c['translator']
+			);
+		};
+
 		// Order address entity
 		$services['order.address.loader'] = $services->factory(function($c) {
 			return $c['order.loader']->getEntityLoader('addresses');
@@ -201,8 +217,12 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Dispatch\Create($c['db.transaction'], $c['order.dispatch.loader'], $c['user.current']);
 		});
 
+		$services['order.dispatch.delete'] = $services->factory(function($c) {
+			return new Commerce\Order\Entity\Dispatch\Delete($c['db.query'], $c['user.current']);
+		});
+
 		$services['order.dispatch.edit'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Dispatch\Edit($c['db.query'], $c['user.current'], $c['event.dispatcher']);
+			return new Commerce\Order\Entity\Dispatch\Edit($c['db.transaction'], $c['user.current'], $c['event.dispatcher']);
 		});
 
 		// Order document entity
@@ -220,7 +240,10 @@ class Services implements ServicesInterface
 
 		// Order item status
 		$services['order.item.status.loader'] = $services->factory(function($c) {
-			return new Commerce\Order\Entity\Item\Status\Loader($c['db.query'], $c['order.item.statuses']);
+			return new Commerce\Order\Entity\Item\Status\Loader(
+				$c['db.query'],
+				$c['order.item.statuses']
+			);
 		});
 
 		// Order payment entity
@@ -305,6 +328,14 @@ class Services implements ServicesInterface
 			));
 		};
 
+		$services['order.specification.cancellable'] = function($c) {
+			return new Commerce\Order\Specification\OrderCanBeCancelledSpecification;
+		};
+
+		$services['order.item.specification.cancellable'] = function($c) {
+			return new Commerce\Order\Entity\Item\ItemCanBeCancelledSpecification;
+		};
+
 		// Configurable/optional event listeners
 		$services['order.listener.vat'] = $services->factory(function($c) {
 			return new Commerce\Order\EventListener\VatListener($c['country.list']);
@@ -366,7 +397,7 @@ class Services implements ServicesInterface
 
 		// Product
 		$services['product'] = $services->factory(function($c) {
-			return new Commerce\Product\Product($c['locale'], $c['product.entities'], $c['product.price.types']);
+			return new Commerce\Product\Product($c['locale'], $c['product.price.types']);
 		});
 
 		$services['product.unit'] = $services->factory(function($c) {
@@ -381,15 +412,34 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.entities'] = function($c) {
-			return array(
-				'units' => new Commerce\Product\Unit\Loader(
+		$services['product.price.currency_IDs'] = function($c) {
+			return [
+				'GBP',
+			];
+		};
+
+		$services['product.entity_loaders'] = $services->factory(function($c) {
+			return 	new EntityLoaderCollection([
+				'units'  => new Commerce\Product\Unit\Loader(
 					$c['db.query'],
 					$c['locale'],
 					$c['product.price.types']
 				),
-			);
-		};
+				'images' => new Commerce\Product\Image\Loader(
+					$c['db.query'],
+					$c['file_manager.file.loader']
+				),
+				'details' => new Commerce\Product\Type\DetailLoader(
+					$c['db.query'],
+					$c['field.factory'],
+					$c['product.types']
+				),
+				'prices' => new Commerce\Product\Price\PriceLoader(
+					$c['db.query'],
+					$c['locale']
+				),
+			]);
+		});
 
 		$services['product.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\Loader(
@@ -398,7 +448,7 @@ class Services implements ServicesInterface
 				$c['file_manager.file.loader'],
 				$c['product.types'],
 				$c['product.detail.loader'],
-				$c['product.entities'],
+				$c['product.entity_loaders'],
 				$c['product.price.types']
 			);
 		});
@@ -412,11 +462,20 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.create'] = $services->factory(function($c) {
-			$create = new Commerce\Product\Create($c['db.query'], $c['locale'], $c['user.current']);
+			$create = new Commerce\Product\Create($c['db.query'], 
+				$c['locale'], 
+				$c['user.current'],
+				$c['product.price.types'],
+				$c['product.price.currency_IDs']
+			);
 
 			$create->setDefaultTaxStrategy($c['cfg']->product->defaultTaxStrategy);
 
 			return $create;
+		});
+		
+		$services['product.edit'] = $services->factory(function($c) {
+			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		});
 
 		$services['product.delete'] = $services->factory(function($c) {
@@ -433,12 +492,16 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Image\Create($c['db.transaction'], $c['user.current']);
 		});
 
-		$services['product.unit.loader'] = $services->factory(function($c) {
-			return $c['product.loader']->getEntityLoader('units');
+		$services['product.image.delete'] = $services->factory(function($c) {
+			return new Commerce\Product\Image\Delete($c['db.transaction'], $c['user.current']);
 		});
 
-		$services['product.edit'] = $services->factory(function($c) {
-			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
+		$services['product.image.loader'] = $services->factory(function($c) {
+			return $c['product.loader']->getEntityLoader('images');
+		});
+
+		$services['product.unit.loader'] = $services->factory(function($c) {
+			return $c['product.loader']->getEntityLoader('units');
 		});
 
 		$services['product.unit.edit'] = $services->factory(function($c) {
@@ -493,12 +556,17 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\ProductAttributes($c);
 		});
 
+
+		$services['product.form.search'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\ProductSearch($c['translator']);
+		});
+
+		$services['product.form.barcode'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\Barcode($c['stock.locations']);
+		});
+
 		$services['product.detail.loader'] = function($c) {
-			return new Commerce\Product\Type\DetailLoader(
-				$c['db.query'],
-				$c['field.factory'],
-				$c['product.types']
-			);
+			return $c['product.entity_loaders']->get('details');
 		};
 
 		$services['product.detail.edit'] = function($c) {
@@ -581,14 +649,15 @@ class Services implements ServicesInterface
 		});
 
 		$services['stock.movement.reasons'] = function() {
-			return new Commerce\Product\Stock\Movement\Reason\Collection([
-				new Commerce\Product\Stock\Movement\Reason\Reason('new_order', 'New Order'),
-				new Commerce\Product\Stock\Movement\Reason\Reason('void_transaction', 'Voided transaction'),
-				new Commerce\Product\Stock\Movement\Reason\Reason(
-					\Message\Mothership\Commerce\Task\Stock\Barcode::REASON,
-					'Stock Take'
-				),
-			]);
+			return new Commerce\Product\Stock\Movement\Reason\Collection(array(
+				new Reason\Reason(Reason\Reasons::NEW_ORDER, 'New Order'),
+				new Reason\Reason(Reason\Reasons::CANCELLED_ORDER, 'Cancelled Order'),
+				new Reason\Reason(Reason\Reasons::CANCELLED_ITEM, 'Cancelled Item'),
+				new Reason\Reason(Commerce\Task\Stock\Barcode::REASON, 'Stock Take'),
+
+				// add this as constant somewhere
+				new Reason\Reason('void_transaction', 'Voided Transaction'),
+			));
 		};
 
 		$services['stock.movement.iterator'] = $services->factory(function($c) {
@@ -629,9 +698,9 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Basket\Delete($c['db.query']);
 		});
 
-		$services['order.basket.loader'] = $services->factory(function($c) {
+		$services['order.basket.loader'] = function($c) {
 			return new Commerce\Order\Basket\Loader($c['db.query'], $c['order.basket.token']);
-		});
+		};
 
 		$services['order.basket.token'] = $services->factory(function($c) {
 			return new Commerce\Order\Basket\Token($c['user.password_hash'], $c['cfg']);
@@ -658,6 +727,46 @@ class Services implements ServicesInterface
 
 			return $factory;
 		});
+
+
+		$services['mail.factory.order.cancellation'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email);
+				$message->setSubject(sprintf('Your %s order has been cancelled - %d', $appName, $factory->order->orderID));
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:order-cancellation', array(
+					'order'       => $factory->order,
+					'companyName' => $appName,
+				));
+			});
+
+			return $factory;
+		});
+
+		$services['mail.factory.order.item.cancellation'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Mail\Factory($c['mail.message']);
+
+			$factory->requires('order');
+
+			$appName = $c['cfg']->app->name;
+
+			$factory->extend(function($factory, $message) use ($appName) {
+				$message->setTo($factory->order->user->email);
+				$message->setSubject(sprintf('An item of your %s order has been cancelled - %d', $appName, $factory->order->orderID));
+				$message->setView('Message:Mothership:Commerce::mail:order:cancel:item-cancellation', array(
+					'order'          => $factory->order,
+					'cancelledItems' => $factory->order->items->getByCurrentStatusCode(OrderStatuses::CANCELLED),
+					'companyName'    => $appName,
+				));
+			});
+
+			return $factory;
+		});		
 	}
 
 	public function registerProductPageMapper($services)

@@ -1,8 +1,6 @@
 <section class="group">
 	<h2 class="title">
-		{{ payment.method.displayName }},
-		Created by {{ payment.authorship.createdBy }}
-		at {{ payment.authorship.createdAt|date }}
+		{{ payment.method.displayName }}, {{ payment.authorship }}
 	</h2>
 	<div class="content">
 		<dl class="order-details">
@@ -11,7 +9,13 @@
 			<dt>{{ 'ms.commerce.order.payment.amount'|trans }}</dt>
 				<dd>{{ payment.amount|price(order.currencyID) }}</dd>
 			<dt>{{ 'ms.commerce.order.payment.reference'|trans }}</dt>
-				<dd>{{ payment.reference }}</dd>
+				<dd>
+					{% if payment.payment.reference %}
+						{{ payment.payment.reference }}
+					{% else %}
+						<em>Unknown</em>
+					{% endif %}
+				</dd>
 		</dl>
 	</div>
 </section>

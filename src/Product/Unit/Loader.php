@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Mothership\Commerce\Product\Unit\LoaderInterface;
 use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product\ProductEntityLoaderInterface;
 use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,7 +13,7 @@ use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 
 
-class Loader implements LoaderInterface
+class Loader implements ProductEntityLoaderInterface
 {
 	/**
 	 * @var \Message\Cog\DB\Query
@@ -52,6 +53,7 @@ class Loader implements LoaderInterface
 
 	public function setProductLoader(ProductLoader $loader)
 	{
+		// @todo this should be set to product loader's include deleted flag
 		$loader->includeDeleted(true);
 		$this->_productLoader = $loader;
 	}

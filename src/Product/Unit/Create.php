@@ -29,32 +29,34 @@ class Create
 
 	public function create(Unit $unit)
 	{
-		if (is_null($unit->authorship->createdAt())) {
+		if (!$unit->authorship->createdAt()) {
 			$unit->authorship->create(new DateTimeImmutable, $this->_user->id);
 		}
 
-		$result = $this->_query->run(
-			'INSERT INTO
+		$result = $this->_query->run("
+			INSERT INTO
 				product_unit
 			SET
 				product_id   = :productID?i,
 				visible      = :visible?i,
-				barcode      = :barcode?s,
+				barcode      = IF(
+					:barcode?sn IS NOT NULL,
+					:barcode?sn,
+					(SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='product_unit')
+				),
 				supplier_ref = :sup_ref?sn,
 				weight_grams = :weight?i,
 				created_at   = :createdAt?d,
-				created_by   = :createdBy?i',
-			array(
-				'productID' => $unit->product->id,
-				'visible'	=> (bool) $unit->visible,
-				'barcode'	=> $unit->barcode,
-				'sup_ref'	=> $unit->supplierRef,
-				'weight'	=> $unit->weight,
-				'createdAt' => $unit->authorship->createdAt(),
-				'createdBy' => $unit->authorship->createdBy()->id,
-				$unit->id
-			)
-		);
+				created_by   = :createdBy?i
+		", [
+			'productID' => $unit->product->id,
+			'visible'	=> (bool) $unit->visible,
+			'barcode'	=> $unit->barcode,
+			'sup_ref'	=> $unit->supplierRef,
+			'weight'	=> $unit->weight,
+			'createdAt' => $unit->authorship->createdAt(),
+			'createdBy' => $unit->authorship->createdBy()->id,
+		]);
 
 		$unitID = $result->id();
 

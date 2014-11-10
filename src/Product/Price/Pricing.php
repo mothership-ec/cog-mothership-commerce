@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Mothership\Commerce\Product;
+namespace Message\Mothership\Commerce\Product\Price;
 
 use  Message\Cog\Localisation\Locale;
 
@@ -17,6 +17,8 @@ class Pricing
 	public function setPrice($currencyID, $price, Locale $locale)
 	{
 		$this->pricing[is_null($locale) ? $this->_locale->getID() : $locale->getID()][$currencyID] = $price;
+
+		return $this;
 	}
 
 	public function getPrice($currencyID, Locale $locale)
