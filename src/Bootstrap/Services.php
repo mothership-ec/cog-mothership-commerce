@@ -567,6 +567,13 @@ class Services implements ServicesInterface
 			return $c['cfg']->tax->taxStrategy === 'inclusive' ? new Strategy\InclusiveTaxStrategy : new Strategy\ExclusiveTaxStrategy;
 		};
 
+		/**
+		 * @deprecated Here to prevent BC breaks, some sites extend this
+		 */
+		$services['product.tax.rates'] = function($c) {
+			return [];
+		};
+
 		$services['product.option.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\OptionLoader($c['db.query'], $c['locale']);
 		});

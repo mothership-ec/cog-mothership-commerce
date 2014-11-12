@@ -30,6 +30,9 @@ class Item implements EntityInterface, RecordInterface
 	public $basePrice      = 0; // Price of the item for this order (before discounts) (actual price with or without tax, as appropriate)
 	public $net            = 0; // Net amount, calculated on discounted price
 	public $discount       = 0; // Discount amount for this item
+	/**
+	 * @todo remove tax. replace with taxes
+	 */
 	public $tax            = 0; // Tax amount for this item
 	public $gross          = 0; // Gross amount paid for this item (after discounts)
 	public $rrp            = 0; // Recommended retail price of the item at time of purchase
@@ -51,6 +54,7 @@ class Item implements EntityInterface, RecordInterface
 
 	public $personalisation;
 
+	protected $_taxes;
 	protected $_product;
 	protected $_unit;
 
@@ -90,17 +94,22 @@ class Item implements EntityInterface, RecordInterface
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = (float) $unit->product->getTaxRates()->getTotalTaxRate();
-		$this->taxStrategy     = $unit->product->getTaxManager()->getTaxStrategy()->getName();
-		$this->productID       = $unit->product->id;
-		$this->productName     = $unit->product->name;
+		$this->productTaxRate  = (float) $unit->getProduct()->getTaxRates()->getTotalTaxRate();
+		$this->taxStrategy     = $unit->getProduct()->getTaxStrategy()->getName();
+		$this->productID       = $unit->getProduct()->id;
+		$this->productName     = $unit->getProduct()->name;
 		$this->unitID          = $unit->id;
 		$this->unitRevision    = $unit->revisionID;
 		$this->sku             = $unit->sku;
 		$this->barcode         = $unit->barcode;
 		$this->options         = implode($unit->options, ', ');
-		$this->brand           = $unit->product->brand;
+		$this->brand           = $unit->getProduct()->brand;
 		$this->weight          = (int) $unit->weight;
+
+		$this->_taxes = [];
+		foreach ($unit->getProduct()->getTaxRates() as $taxRate) {
+			$this->_taxes[$taxRate->getType()] = $taxRate->getRate();
+		}
 
 		return $this;
 	}
@@ -205,5 +214,15 @@ class Item implements EntityInterface, RecordInterface
 	public function getRecordID()
 	{
 		return $this->id;
+	}
+
+	/**
+	 * Retuns the tax rates applied to this item
+	 * 
+	 * @return array the rates
+	 */
+	public function getTaxRates()
+	{
+		return $this->_taxes;
 	}
 }

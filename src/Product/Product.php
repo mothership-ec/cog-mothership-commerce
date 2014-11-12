@@ -385,4 +385,14 @@ class Product
     {
         return $this->_taxManager;
     }
+
+    /**
+     * Gets the tax strategy in use on this product
+     * 
+     * @return Tax\Strategy\TaxStrategyInterface The strategy in use
+     */
+    public function getTaxStrategy()
+    {
+    	return $this->getTaxManager()->getTaxStrategy();
+    }
 }

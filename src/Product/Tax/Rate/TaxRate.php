@@ -20,7 +20,7 @@ class TaxRate
 	 */
 	public function __construct($rate, $type, $name)
 	{
-		$this->_taxRate = $rate;
+		$this->_taxRate = (float) $rate;
 		$this->_name    = $name;
 		$this->_type    = $type;
 	}
