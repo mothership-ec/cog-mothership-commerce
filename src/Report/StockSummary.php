@@ -103,7 +103,7 @@ class StockSummary extends AbstractReport
 		foreach ($data as $row) {
 			$result[] = [
 				$row->Category,
-				[ 'v' => ucwords($row->Name), 'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'.ucwords($row->Name).'</a>'],
+				['v' => ucwords($row->Name), 'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'.ucwords($row->Name).'</a>'],
 				$row->Options,
 				$row->Stock,
 			];

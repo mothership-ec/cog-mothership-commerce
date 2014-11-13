@@ -14,11 +14,12 @@ use Message\Mothership\ControlPanel\Event\Dashboard\Activity;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
+use Message\Mothership\Report\Event as ReportEvents;
+
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Message\Mothership\Report\Event as ReportEvents;
 
 /**
  * Event listener for core Mothership Commerce functionality.
@@ -68,8 +69,14 @@ class EventListener extends BaseListener implements SubscriberInterface
 			ActivitySummaryEvent::DASHBOARD_ACTIVITY_SUMMARY => array(
 				'buildDashboardBlockUserSummary',
 			),
-			ReportEvents\ReportEvent::REGISTER_REPORTS => [
+			ReportEvents\Events::REGISTER_REPORTS => [
 				'registerReports'
+			],
+			Events::SALES_REPORT => [
+				'buildSalesReport'
+			],
+			Events::TRANSACTIONS_REPORT => [
+				'buildTransactionReport'
 			],
 		);
 	}
@@ -284,4 +291,19 @@ class EventListener extends BaseListener implements SubscriberInterface
 			$event->registerReport($report);
 		}
 	}
+
+	public function buildSalesReport(ReportEvents\ReportEvent $event)
+	{
+		foreach ($this->get('commerce.report.sales-data') as $query) {
+			$event->addQueryBuilder($query->getQueryBuilder());
+		}
+	}
+
+	public function buildTransactionReport(ReportEvents\ReportEvent $event)
+	{
+		foreach ($this->get('commerce.report.transaction-data') as $query) {
+			$event->addQueryBuilder($query->getQueryBuilder());
+		}
+	}
+
 }

@@ -6,19 +6,19 @@ use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
+use Message\Cog\Event\DispatcherInterface;
 
-use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
 
-class PaymentsAndRefunds extends AbstractReport
+class PaymentsAndRefunds extends AbstractTransactions
 {
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
+	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
 		$this->name = 'payments_refunds';
 		$this->displayName = 'Payments & Refunds';
 		$this->reportGroup = 'Transactions';
 		$this->_charts = [new TableChart];
-		parent::__construct($builderFactory,$trans,$routingGenerator);
+		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
 	}
 
 	public function getCharts()
@@ -51,41 +51,7 @@ class PaymentsAndRefunds extends AbstractReport
 
 	private function _getQuery()
 	{
-		$unions = [];
-
-		$payments = $this->_builderFactory->getQueryBuilder();
-		$unions[] = $payments
-			->select('payment.payment_id AS ID')
-			->select('payment.created_at')
-			->select('payment.created_by AS created_by_id')
-			->select('CONCAT(user.forename," ",user.surname) AS created_by')
-			->select('currency_id as currency')
-			->select('method')
-			->select('amount')
-			->select('"Payment" AS type')
-			->select('order_id AS order_return_id')
-			->select('reference')
-			->from('payment')
-			->leftJoin('order_payment','payment.payment_id = order_payment.payment_id')
-			->join('user','user.user_id = payment.created_by')
-		;
-
-		$refunds = $this->_builderFactory->getQueryBuilder();
-		$unions[] = $refunds
-			->select('refund.refund_id AS ID')
-			->select('refund.created_at')
-			->select('refund.created_by AS created_by_id')
-			->select('CONCAT(user.forename," ",user.surname) AS created_by')
-			->select('currency_id as currency')
-			->select('method')
-			->select('-amount')
-			->select('"Refund" AS type')
-			->select('return_id AS order_return_id')
-			->select('reference')
-			->from('refund')
-			->leftJoin('return_refund','refund.refund_id = return_refund.refund_id')
-			->join('user','user.user_id = refund.created_by')
-		;
+		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
 		foreach($unions as $query) {
@@ -116,7 +82,7 @@ class PaymentsAndRefunds extends AbstractReport
 
 			$result[] = [
 				date('Y-m-d H:i', $row->created_at),
-				'<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => (int) $row->created_by_id]).'">'.$row->created_by.'</a>',
+				$row->user ? [ 'v' => utf8_encode($row->user), 'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->user_id]).'">'.ucwords(utf8_encode($row->user)).'</a>' ] : $row->user,
 				$row->currency,
 				$row->method,
 				[ 'v' => (float) $row->amount, 'f' => (string) number_format($row->amount,2,'.',',')],

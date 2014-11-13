@@ -833,39 +833,83 @@ class Services implements ServicesInterface
 	public function registerReports($services)
 	{
 		$services['commerce.stock_summary'] = $services->factory(function($c) {
-			return new Commerce\Report\StockSummary($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\StockSummary(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator']
+			);
 		});
 
 		$services['commerce.payments_refunds'] = $services->factory(function($c) {
-			return new Commerce\Report\PaymentsAndRefunds($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\PaymentsAndRefunds(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_month'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByMonth($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByMonth(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_day'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByDay($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByDay(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_order'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByOrder($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByOrder(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_item'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByItem($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByItem(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_product'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByProduct($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByProduct(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_location'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByLocation($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByLocation(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.sales_by_user'] = $services->factory(function($c) {
-			return new Commerce\Report\SalesByUser($c['db.query.builder.factory'],$c['translator'],$c['routing.generator']);
+			return new Commerce\Report\SalesByUser(
+				$c['db.query.builder.factory'],
+				$c['translator'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
 		});
 
 		$services['commerce.reports'] = function($c) {
@@ -884,5 +928,73 @@ class Services implements ServicesInterface
 
 			return $reports;
 		};
+
+		$services['commerce.report.sales-data'] = function($c) {
+			//this will return a collection
+			return [
+				new Commerce\Report\CommerceData\SalesData($c['db.query.builder.factory']),
+				new Commerce\Report\CommerceData\ShippingData($c['db.query.builder.factory']),
+			];
+		};
+
+		$services['commerce.report.transaction-data'] = function($c) {
+			//this will return a collection
+			return [
+				new Commerce\Report\CommerceData\PaymentsData($c['db.query.builder.factory']),
+			];
+		};
+	}
+
+	public function setupCurrencies($services)
+	{
+		$services['currency'] = function($c) {
+			return $c['currency.resolver']->getCurrency();
+		};
+
+		$services['currency.supported'] = function($c) {
+			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->supportedCurrencies))) {
+				return [ $c['currency'] ];
+			}
+
+			return $c['cfg']->currency->supportedCurrencies;
+		};
+
+		$services->extend('templating.twig.environment', function($twgEnv, $c) {
+			$twgEnv->getExtension('price_twig_extension')->setDefaultCurrency($c['currency']);
+
+			return $twgEnv;
+		});
+
+		$services['currency.form.select'] = $services->factory(function($c) {
+			return new Commerce\Form\Currency\CurrencySelect;
+		});
+
+		$services['currency.cookie.name'] = function($c) {
+			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->cookieName))) {
+				return 'ms.commerce.currency';
+			}
+
+			return $c['cfg']->currency->cookieName;
+		};
+
+		$services['currency.cookie.value'] = function($c) {
+			if (!isset($c['request'])) {
+				// not a request so no cookie will be set.
+				return null;
+			}
+
+			return $c['request']->cookies->get($c['currency.cookie.name']);
+		};
+
+		/**
+		 * @deprecated The site needs to be updated - use currency config files
+		 */
+		$services['currency.default'] = $services->factory(function($c) {
+			return isset($c['cfg']->currency->defaultCurrency)?$c['cfg']->currency->defaultCurrency:'GBP';
+		});
+
+		$services['currency.resolver'] = $services->factory(function($c) {
+			return new Commerce\Currency\CurrencyResolver($c['currency.default'], $c['currency.cookie.value']);
+		});
 	}
 }
