@@ -1,8 +1,10 @@
 tax-strategy: inclusive
 rates:
-  default:
-    GB: &GB
+  GB: &GB
+    default:
       product-tax:
         - {name: VAT, rate: 20.000}
       shipping-tax:
         - {name: VAT, rate: 20.000}
+  default:
+    default:
