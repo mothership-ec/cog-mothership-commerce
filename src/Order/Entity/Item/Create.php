@@ -184,6 +184,25 @@ class Create implements DB\TransactionalInterface
 			));
 		}
 
+		// Insert item tax rates
+		$tokens  = [];
+		$inserts = [];
+
+		foreach ($item->getTaxRates() as $type => $rate) {
+			$tokens[] = '(?i, ?s, ?f)';
+			
+			$inserts[] = $item->id;
+			$inserts[] = $type;
+			$inserts[] = $rate;
+		}
+
+		$this->_query->add(
+			"INSERT INTO 
+				`order_item_tax` (`item_id`, `tax_type`, `tax_rate`) 
+			VALUES " . implode(',', $tokens),
+			$inserts
+		);
+
 		// If the query was not in a transaction, return the re-loaded item
 		if (!$this->_transOverridden) {
 			$this->_query->commit();

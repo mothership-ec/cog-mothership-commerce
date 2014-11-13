@@ -96,6 +96,22 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame('inclusive', $item->taxStrategy);
 	}
 
+	public function testSerializeUnserializeWithTax()
+	{
+		$item = new Item;
+		$item->populate($this->_unit);
+
+		$expected = [];
+
+		foreach ($this->_taxRates as $rate) {
+			$expected[$rate->getType()] = $rate->getRate();
+		}
+
+		$this->assertEquals($expected, $item->getTaxRates());
+		$item = unserialize(serialize($item));
+		$this->assertEquals($expected, $item->getTaxRates());
+	}
+
 	public function testPopulateMatchingProductID()
 	{
 		$var = 1337;
@@ -247,5 +263,11 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue(is_int($item->weight));
 		$this->assertFalse(is_string($item->weight));
 		$this->assertFalse(is_float($item->weight));
+	}
+
+	public function testGetTax()
+	{
+		$item = new Item;
+		$item->populate($this->_unit);
 	}
 }

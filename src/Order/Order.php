@@ -463,4 +463,59 @@ class Order implements PayableInterface, Transaction\RecordInterface
 		return $this->_payableTransactionID;
 
 	}
+
+	/**
+	 * Calculates the shipping tax for this order.
+	 * 
+	 * @return $this
+	 */
+	public function updateShippingTax()
+	{
+		if (!$this->shippingListPrice) {
+			$this->shippingGross = 0;
+			$this->shippingTax   = 0;
+			$this->shippingNet   = 0;
+
+			return false;
+		}
+
+		foreach ($this->items as $item) {
+			if ($item->taxRate > $this->shippingTaxRate) {
+				$this->shippingTaxRate = $item->taxRate;
+			}
+		}
+
+		$this->shippingGross = round($this->shippingListPrice - $this->shippingDiscount, 2);
+		$this->shippingTax   = round(($this->shippingGross / (100 + $this->shippingTaxRate)) * $this->shippingTaxRate, 2);
+		$this->shippingNet   = round($this->shippingGross - $this->shippingTax, 2);
+
+		return $this;
+	}
+
+	/**
+	 * Updates the totals
+	 * 
+	 * @return $this
+	 */
+	public function updateTotals()
+	{
+		$this->productNet      = 0;
+		$this->productDiscount = 0;
+		$this->productTax      = 0;
+		$this->productGross    = 0;
+
+		foreach ($this->items as $item) {
+			$this->productNet      += $item->net;
+			$this->productDiscount += $item->discount;
+			$this->productTax      += $item->getTax();
+			$this->productGross    += $item->gross;
+		}
+
+		$this->totalNet        = $this->productNet      + $this->shippingNet;
+		$this->totalDiscount   = $this->productDiscount + $this->shippingDiscount;
+		$this->totalTax        = $this->productTax      + $this->shippingTax;
+		$this->totalGross      = $this->productGross    + $this->shippingGross;
+
+		return $this;
+	}
 }

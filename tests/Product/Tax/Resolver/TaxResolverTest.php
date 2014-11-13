@@ -61,6 +61,26 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(20, $rate->getRate());
 	}
 
+	public function testDefaultCountry()
+	{
+		$this->compiler->add(file_get_contents(__DIR__ . '/../cfg/tax-3.yml'));
+		$data = $this->compiler->compile();
+
+		$this->productType->shouldReceive("getName")
+			->zeroOrMoreTimes()
+			->andReturn('basic')
+		;
+
+		$this->address->countryID = 'UNASSIGED';
+
+		$resolver = new Resolver($data->rates);
+		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+
+		$rate = $rates->get('default.default.' . Resolver::DEFAULT_PRODUCT_TAX . '.tax');
+
+		$this->assertEquals(20, $rate->getRate());
+	}
+
 	/**
 	 * @expectedException LogicException
 	 */

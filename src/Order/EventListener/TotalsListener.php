@@ -73,21 +73,6 @@ class TotalsListener implements SubscriberInterface
 	{
 		$order = $event->getOrder();
 
-		$order->productNet      = 0;
-		$order->productDiscount = 0;
-		$order->productTax      = 0;
-		$order->productGross    = 0;
-
-		foreach ($order->items as $item) {
-			$order->productNet      += $item->net;
-			$order->productDiscount += $item->discount;
-			$order->productTax      += $item->tax;
-			$order->productGross    += $item->gross;
-		}
-
-		$order->totalNet        = $order->productNet      + $order->shippingNet;
-		$order->totalDiscount   = $order->productDiscount + $order->shippingDiscount;
-		$order->totalTax        = $order->productTax      + $order->shippingTax;
-		$order->totalGross      = $order->productGross    + $order->shippingGross;
+		$order->updateTotals();
 	}
 }

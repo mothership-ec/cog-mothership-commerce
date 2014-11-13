@@ -13,6 +13,7 @@ use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
 class StdOTaxResolver implements TaxResolverInterface
 {
 	const DEFAULT_REGION      = 'default';
+	const DEFAULT_COUNTRY     = 'default';
 	const DEFAULT_PRODUCT_TAX = 'product';
 	const PRODUCT_TAX_APPEND  = 'Tax';
 
@@ -29,22 +30,30 @@ class StdOTaxResolver implements TaxResolverInterface
 	public function getProductTaxRates(ProductTypeInterface $productType, Address $address)
 	{
 		// setup defaults etc
-		$data = $this->_data;
+		$data    = $this->_data;
 		$type    = $productType->getName();
 		$country = strtolower($address->countryID);
-		$region  = self::DEFAULT_REGION;
+		$region  = strtolower($address->stateID);
 
-		if (isset($address->stateID)) {
-			$region = strtolower($address->stateID);
+		if (!$region) {
+			$region = self::DEFAULT_REGION;
 		}
 
 		// validation
 		if (!isset($data->{$country})) {
-			throw new \LogicException("Could not find given country tax configuration for country `$country`, make sure these are set in taxes config file");
+			if (!isset($data->{self::DEFAULT_COUNTRY})){
+				throw new \LogicException("Could not find given country tax configuration for country `$country` and no default set, make sure these are set in taxes config file");
+			}
+
+			$country = self::DEFAULT_COUNTRY;
 		}
 
 		if (!property_exists($data->{$country}, $region)) {
-			throw new \LogicException("Could not find given region tax configuration for region `$address->stateID`, no default set. Make sure these are set in taxes config file");
+			if (!property_exists($data->{$country}, self::DEFAULT_REGION)) {
+				throw new \LogicException("Could not find given region tax configuration for region `$address->stateID`, no default set. Make sure these are set in taxes config file");
+			}
+
+			$region = self::DEFAULT_REGION;
 		}
 
 		// create tax collection

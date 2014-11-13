@@ -31,7 +31,7 @@ class Item implements EntityInterface, RecordInterface
 	public $net            = 0; // Net amount, calculated on discounted price
 	public $discount       = 0; // Discount amount for this item
 	/**
-	 * @todo remove tax. replace with taxes
+	 * @todo remove tax. replacing with taxes
 	 */
 	public $tax            = 0; // Tax amount for this item
 	public $gross          = 0; // Gross amount paid for this item (after discounts)
@@ -54,9 +54,9 @@ class Item implements EntityInterface, RecordInterface
 
 	public $personalisation;
 
-	protected $_taxes;
-	protected $_product;
-	protected $_unit;
+	private $_taxes;
+	private $_product;
+	private $_unit;
 
 	public function __construct()
 	{
@@ -76,6 +76,8 @@ class Item implements EntityInterface, RecordInterface
 			}
 			$keys[] = $key;
 		}
+
+		$keys[] = '_taxes';
 
 		return $keys;
 	}
@@ -106,9 +108,9 @@ class Item implements EntityInterface, RecordInterface
 		$this->brand           = $unit->getProduct()->brand;
 		$this->weight          = (int) $unit->weight;
 
-		$this->_taxes = [];
+		$this->taxes = [];
 		foreach ($unit->getProduct()->getTaxRates() as $taxRate) {
-			$this->_taxes[$taxRate->getType()] = $taxRate->getRate();
+			$this->taxes[$taxRate->getType()] = $taxRate->getRate();
 		}
 
 		return $this;
@@ -223,6 +225,11 @@ class Item implements EntityInterface, RecordInterface
 	 */
 	public function getTaxRates()
 	{
-		return $this->_taxes;
+		return $this->taxes;
+	}
+
+	public function getTax()
+	{
+		return $this->tax;
 	}
 }
