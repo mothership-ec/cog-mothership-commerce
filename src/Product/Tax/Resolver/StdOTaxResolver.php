@@ -12,10 +12,11 @@ use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
  */
 class StdOTaxResolver implements TaxResolverInterface
 {
-	const DEFAULT_REGION      = 'default';
-	const DEFAULT_COUNTRY     = 'default';
-	const DEFAULT_PRODUCT_TAX = 'product';
-	const PRODUCT_TAX_APPEND  = 'Tax';
+	const DEFAULT_REGION       = 'default';
+	const DEFAULT_SHIPPING_TAX = 'shipping';
+	const DEFAULT_COUNTRY      = 'default';
+	const DEFAULT_PRODUCT_TAX  = 'product';
+	const PRODUCT_TAX_APPEND   = 'Tax';
 
 	private $_data;
 
@@ -27,11 +28,11 @@ class StdOTaxResolver implements TaxResolverInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getProductTaxRates(ProductTypeInterface $productType, Address $address)
+	public function getTaxRates($name, Address $address)
 	{
 		// setup defaults etc
 		$data    = $this->_data;
-		$type    = $productType->getName();
+		$type    = $name;
 		$country = strtolower($address->countryID);
 		$region  = strtolower($address->stateID);
 
@@ -63,7 +64,7 @@ class StdOTaxResolver implements TaxResolverInterface
 		} else if (isset($data->{$country}->{$region}->{self::DEFAULT_PRODUCT_TAX . self::PRODUCT_TAX_APPEND})) {
 			// only default if property is undefind
 			if (!property_exists($data->{$country}->{$region}, $type . self::PRODUCT_TAX_APPEND)) {
-				$type = self::DEFAULT_PRODUCT_TAX;
+				$type  = self::DEFAULT_PRODUCT_TAX;
 				$taxes = $data->{$country}->{$region}->{self::DEFAULT_PRODUCT_TAX . self::PRODUCT_TAX_APPEND};
 			}
 		}

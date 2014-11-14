@@ -465,34 +465,6 @@ class Order implements PayableInterface, Transaction\RecordInterface
 	}
 
 	/**
-	 * Calculates the shipping tax for this order.
-	 * 
-	 * @return $this
-	 */
-	public function updateShippingTax()
-	{
-		if (!$this->shippingListPrice) {
-			$this->shippingGross = 0;
-			$this->shippingTax   = 0;
-			$this->shippingNet   = 0;
-
-			return false;
-		}
-
-		foreach ($this->items as $item) {
-			if ($item->taxRate > $this->shippingTaxRate) {
-				$this->shippingTaxRate = $item->taxRate;
-			}
-		}
-
-		$this->shippingGross = round($this->shippingListPrice - $this->shippingDiscount, 2);
-		$this->shippingTax   = round(($this->shippingGross / (100 + $this->shippingTaxRate)) * $this->shippingTaxRate, 2);
-		$this->shippingNet   = round($this->shippingGross - $this->shippingTax, 2);
-
-		return $this;
-	}
-
-	/**
 	 * Updates the totals
 	 * 
 	 * @return $this

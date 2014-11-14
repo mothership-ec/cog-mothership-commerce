@@ -19,7 +19,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 	public function registerEvents($dispatcher)
 	{
-		$dispatcher->addSubscriber(new Commerce\Order\EventListener\TotalsListener);
+		$dispatcher->addSubscriber(new Commerce\Order\EventListener\TotalsListener(
+			$this->_services['product.tax.resolver']
+		));
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\ValidateListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\StockAdjustmentListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\StatusListener(

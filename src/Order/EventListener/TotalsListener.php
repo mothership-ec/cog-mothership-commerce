@@ -6,6 +6,9 @@ use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
+use Message\Mothership\Commerce\Product\Tax\Resolver\StdOTaxResolver as Resolver;
+use Message\Mothership\Commerce\Address\Address;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
 
 /**
  * Order event listener for calculating the order totals.
@@ -14,6 +17,13 @@ use Message\Cog\Event\SubscriberInterface;
  */
 class TotalsListener implements SubscriberInterface
 {
+	private $_taxResolver;
+
+	public function __construct(TaxResolverInterface $resolver)
+	{
+		$this->_taxResolver = $resolver;
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -53,9 +63,20 @@ class TotalsListener implements SubscriberInterface
 			return false;
 		}
 
-		foreach ($order->items as $item) {
-			if ($item->taxRate > $order->shippingTaxRate) {
-				$order->shippingTaxRate = $item->taxRate;
+		$taxResolver = $this->_taxResolver;
+
+		// This should always work with a proper tax rate cfg setup.
+		try {
+			$taxRates    = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $order->getAddress(Address::DELIVERY));
+			$order->shippingTaxRate = $taxRates->getTotalTaxRate();
+		}
+		// If not then no shipping tax rates set in cfg.
+		// Revert to old logic.
+		catch (\LogicException $e) {
+			foreach ($order->items as $item) {
+				if ($item->taxRate > $order->shippingTaxRate) {
+					$order->shippingTaxRate = $item->taxRate;
+				}
 			}
 		}
 

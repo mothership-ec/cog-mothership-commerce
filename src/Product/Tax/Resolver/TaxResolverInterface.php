@@ -16,9 +16,9 @@ interface TaxResolverInterface
 	/**
 	 * Get the tax objects based on a product and address
 	 * 
-	 * @param  Product $product The product type to check
+	 * @param  string  $product The product type to check
 	 * @param  Address $address 
 	 * @return TaxRate          The tax rate found
 	 */
-	public function getProductTaxRates(ProductTypeInterface $productType, Address $address);
+	public function getTaxRates($productType, Address $address);
 }

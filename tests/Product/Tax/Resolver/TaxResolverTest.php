@@ -33,7 +33,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'CA';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 
 		// no default taxes
 		$this->assertEquals([], $rates->all());
@@ -52,7 +52,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'GB';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 
 		// Only VAT returned
 		$this->assertEquals(1, $rates->count());
@@ -74,7 +74,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'UNASSIGED';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 
 		$rate = $rates->get('default.default.' . Resolver::DEFAULT_PRODUCT_TAX . '.tax');
 
@@ -97,7 +97,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'INVALID';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'US';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 	}
 
 	public function testNotTaxableProduct()
@@ -132,7 +132,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'GB';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 
 		$this->assertEquals(0, $rates->count());
 	}
@@ -150,7 +150,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'UK';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 
 		$this->assertEquals(4, $rates->count());
 
@@ -159,7 +159,7 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 			->andReturn('alcohol')
 		;
 
-		$rates  = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates  = $resolver->getTaxRates($this->productType->getName(), $this->address);
 
 		$this->assertEquals(2, $rates->count());
 	}
@@ -180,6 +180,6 @@ class TaxResolverTest extends \PHPUnit_Framework_TestCase
 		$this->address->countryID = 'CA';
 
 		$resolver = new Resolver($data->rates);
-		$rates = $resolver->getProductTaxRates($this->productType, $this->address);
+		$rates = $resolver->getTaxRates($this->productType->getName(), $this->address);
 	}
 }
