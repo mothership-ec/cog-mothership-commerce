@@ -108,9 +108,9 @@ class Item implements EntityInterface, RecordInterface
 		$this->brand           = $unit->getProduct()->brand;
 		$this->weight          = (int) $unit->weight;
 
-		$this->taxes = [];
+		$this->_taxes = [];
 		foreach ($unit->getProduct()->getTaxRates() as $taxRate) {
-			$this->taxes[$taxRate->getType()] = $taxRate->getRate();
+			$this->_taxes[$taxRate->getType()] = $taxRate->getRate();
 		}
 
 		return $this;
@@ -225,7 +225,20 @@ class Item implements EntityInterface, RecordInterface
 	 */
 	public function getTaxRates()
 	{
-		return $this->taxes;
+		return $this->_taxes;
+	}
+
+	/** 
+	 * Sets the tax rates as an array
+	 * 
+	 * @param array $rates the rates as an array
+	 * @return $this
+	 */
+	public function setTaxRates(array $rates)
+	{
+		$this->_taxes = $rates;
+
+		return $this;
 	}
 
 	public function getTax()
