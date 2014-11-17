@@ -70,6 +70,8 @@ class ProductSelector extends Controller
 
 			if ($basket->addItem($item)) {
 				$this->addFlash('success', 'The item has been added to your basket');
+			} else {
+				$this->addFlash('error', 'The item could not be added to your basket');
 			}
 		}
 
