@@ -9,6 +9,8 @@ use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
 
 /**
  * {@inheritDoc}
+ *
+ * This class looks at tax.yml to resolve the tax
  */
 class StdOTaxResolver implements TaxResolverInterface
 {

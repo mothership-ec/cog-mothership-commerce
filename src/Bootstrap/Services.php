@@ -452,7 +452,7 @@ class Services implements ServicesInterface
 				$c['product.detail.loader'],
 				$c['product.entity_loaders'],
 				$c['product.price.types'],
-				$c['product.tax.manager']
+				$c['product.tax.strategy']
 			);
 		});
 
@@ -466,7 +466,7 @@ class Services implements ServicesInterface
 
 		$services['product.create'] = $services->factory(function($c) {
 			$create = new Commerce\Product\Create($c['db.query'], 
-				$c['locale'], 
+				$c['locale'],
 				$c['user.current'],
 				$c['product.price.types'],
 				$c['product.price.currency_IDs']
@@ -554,10 +554,6 @@ class Services implements ServicesInterface
 
 			return $address;
 		};
-
-		$services['product.tax.manager'] = $services->factory(function($c) {
-			return new Commerce\Product\Tax\TaxManager($c['product.tax.strategy']);
-		});
 
 		$services['product.tax.resolver'] = function($c) {
 			return new Commerce\Product\Tax\Resolver\StdOTaxResolver($c['cfg']->tax->rates);

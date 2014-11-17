@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
-use Message\Mothership\Commerce\Product\Tax\TaxManagerInterface;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class Product
 {
@@ -44,21 +44,21 @@ class Product
 	protected $_locale;
 	protected $_taxes;
 
-	protected $_taxManager;
+	protected $_taxStrategy;
 
 	/**
 	 * Initiate the object and set some basic properties up
 	 *
 	 * @param Locale $locale     	Current locale instance
-	 * @param array  $entities   	array of entities, this will proabbly only be units for now
 	 * @param array  $priceTypes 	array of price types
+	 * @param array  $taxStrategy   the tax strategy to use to resolve the correct price
 	 */
-	public function __construct(Locale $locale, array $priceTypes = array(), TaxManagerInterface $taxManager)
+	public function __construct(Locale $locale, array $priceTypes = array(), TaxStrategyInterface $taxStrategy)
 	{
 		$this->authorship  = new Authorship;
 		$this->priceTypes  = $priceTypes;
 		$this->_locale     = $locale;
-		$this->_taxManager = $taxManager;
+		$this->_taxStrategy = $taxStrategy;
 
 		$this->_units      = new Unit\Collection;
 		$this->_images     = new Image\Collection;
@@ -161,7 +161,7 @@ class Product
 	 */
 	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->_taxManager->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
+		return $this->_taxStrategy->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
@@ -169,7 +169,7 @@ class Product
 	 */
 	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->_taxManager->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+		return $this->_taxStrategy->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
@@ -177,7 +177,7 @@ class Product
 	 */
 	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->_taxManager->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
+		return $this->_taxStrategy->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
@@ -185,7 +185,7 @@ class Product
 	 */
 	public function getGrossPriceFrom($type = 'retail', $currencyID = 'GBP')
 	{
-		return $this->_taxManager->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+		return $this->_taxStrategy->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
@@ -361,29 +361,17 @@ class Product
 	}
 
     /**
-     * Sets the value of _taxManager.
+     * Sets the tax strategy.
      *
-     * @param mixed $_taxManager the tax manager
+     * @param mixed $_taxStrategy the tax manager
      *
      * @return self
      */
-    protected function setTaxManager($taxManager)
+    protected function setTaxStrategy($taxStrategy)
     {
-        $this->_taxManager = $taxManager;
+        $this->_taxStrategy = $taxManager;
 
         return $this;
-    }
-
-    /**
-     * Get the value of _taxManager.
-     *
-     * @param mixed $_taxManager the tax manager
-     *
-     * @return self
-     */
-    public function getTaxManager()
-    {
-        return $this->_taxManager;
     }
 
     /**
@@ -393,6 +381,6 @@ class Product
      */
     public function getTaxStrategy()
     {
-    	return $this->getTaxManager()->getTaxStrategy();
+        return $this->_taxStrategy;
     }
 }

@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\DB\Entity\EntityLoaderCollection;
-use Message\Mothership\Commerce\Product\Tax\TaxManagerInterface;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class ProductProxy extends Product
 {
@@ -15,9 +15,9 @@ class ProductProxy extends Product
 		Locale $locale,
 		array $priceTypes = array(),
 		EntityLoaderCollection $loaders,
-		TaxManagerInterface $taxManager
+		TaxStrategyInterface $taxStrategy
 	) {
-		parent::__construct($locale, $priceTypes, $taxManager);
+		parent::__construct($locale, $priceTypes, $taxStrategy);
 
 		$this->_loaders = $loaders;
 	}

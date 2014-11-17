@@ -20,5 +20,5 @@ interface TaxResolverInterface
 	 * @param  Address $address 
 	 * @return TaxRate          The tax rate found
 	 */
-	public function getTaxRates($productType, Address $address);
+	public function getTaxRates($token, Address $address);
 }

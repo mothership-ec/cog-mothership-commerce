@@ -10,7 +10,7 @@ use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Mothership\FileManager\File\Loader as FileLoader;
 use Message\Mothership\Commerce\Product\Image\TypeCollection as ImageTypes;
-use Message\Mothership\Commerce\Product\Tax\TaxManagerInterface;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class Loader
 {
@@ -22,7 +22,7 @@ class Loader
 	protected $_productTypes;
 	protected $_detailLoader;
 	protected $_entityLoaders;
-	protected $_taxManager;
+	protected $_taxStrategy;
 	protected $_priceTypes;
 
 	public function __construct(
@@ -33,7 +33,7 @@ class Loader
 		Type\DetailLoader $detailLoader,
 		EntityLoaderCollection $entityLoaders,
 		$priceTypes = array(),
-		TaxManagerInterface $taxManager
+		TaxStrategyInterface $taxStrategy
 	) {
 		$this->_query         = $query;
 		$this->_locale        = $locale;
@@ -42,7 +42,7 @@ class Loader
 		$this->_priceTypes    = $priceTypes;
 		$this->_fileLoader    = $fileLoader;
 		$this->_entityLoaders = $entityLoaders;
-		$this->_taxManager    = $taxManager;
+		$this->_taxStrategy    = $taxStrategy;
 	}
 
 	public function getEntityLoader($entityName)
@@ -343,7 +343,7 @@ class Loader
 
 		$products = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\ProductProxy',
-			[$this->_locale, $this->_priceTypes, $this->_entityLoaders, $this->_taxManager]
+			[$this->_locale, $this->_priceTypes, $this->_entityLoaders, $this->_taxStrategy]
 		);
 
 		foreach ($result as $key => $data) {
