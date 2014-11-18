@@ -26,6 +26,9 @@ class PriceGroup extends Form\AbstractType
 				'currency' => $currency,
 				'label'    => "ms.commerce.product.pricing.$type.label",
 				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : 0,
+				'attr'     => [
+					'class' => 'price-field',
+				]
 			]);
 		}
 	}

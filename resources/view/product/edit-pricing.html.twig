@@ -1,6 +1,6 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 {% block edit %}
-	{{ form_start(form) }}
+	{{ form_start(form, {attr: {id: 'price-form'}}) }}
 		<div class="currency-group">
 		{% for currency, price in form.prices.currencies %}
 			<section class="module">
@@ -18,8 +18,31 @@
 		<h4>Export Value</h4>
 		{{ form_widget(form.export_value) }}
 
-		<button type="submit" class="button small save" id="save-content">
+		<span type="submit" class="button small save" id="save-content" data-modal-open data-modal="#warning-modal">
 			{{ 'ms.commerce.product.button.save'|trans }}
-		</button>
+		</span>
 	{{ form_end(form) }}
+{% endblock %}
+
+{% block after %}
+    {% include 'Message:Mothership:Commerce::product:modals:pricing-warn' %}
+    <script>
+    	(function($) {
+	    	$('#save-content').on('click', function(e) {
+	    		var warn = false;
+	    		$('.price-field').each(function() {
+	    			if($(this).val() == 0) {
+	    				warn = true;
+	    			}
+	    		});
+
+	    		if(warn) {
+		    		$('#warning-content').text('{{"ms.commerce.product.pricing.warning" | trans}}');
+	    		} else {
+	    			$('#price-form').submit();
+		    		e.stopPropagation();
+	    		}
+	    	});
+    	})(jQuery);
+    </script>
 {% endblock %}

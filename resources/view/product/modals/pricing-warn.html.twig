@@ -1,0 +1,10 @@
+{% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
+
+{% block title 'ms.commerce.general.warning'|trans %}
+{% block id 'warning-modal' %}
+{% block attr 'style="display:none;"' %}
+{% block content %}
+	<p id="warning-content"></p>
+	<button class="button small" data-modal-close>{{'ms.commerce.product.button.back'|trans}}</button>
+	<button class="button small" type="submit" form="price-form">{{'ms.commerce.product.button.continue'|trans}}</button>
+{% endblock %}
