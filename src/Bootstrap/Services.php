@@ -885,11 +885,12 @@ class Services implements ServicesInterface
 			return $c['request']->cookies->get($c['currency.cookie.name']);
 		};
 
-		/**
-		 * @deprecated The site needs to be updated - use currency config files
-		 */
 		$services['currency.default'] = $services->factory(function($c) {
 			return isset($c['cfg']->currency->defaultCurrency)?$c['cfg']->currency->defaultCurrency:'GBP';
+		});
+
+		$services['currency.company'] = $services->factory(function($c) {
+			return isset($c['cfg']->currency->defaultCurrency)?$c['cfg']->currency->companyCurrency:$c['currency.default'];
 		});
 
 		$services['currency.resolver'] = $services->factory(function($c) {

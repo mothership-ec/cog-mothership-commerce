@@ -1,4 +1,5 @@
 default-currency: GBP
+company-currency: GBP
 supported-currencies:
     - GBP
 cookie-name: "ms-commerce-currency"

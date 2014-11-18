@@ -622,7 +622,7 @@ class Edit extends Controller
 					'exclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.exclusive'),			
 				],
 				'tax_rates' => $this->get('product.tax.rates'),
-				'currency'  => $this->get('currency.default'),
+				'currency'  => $this->get('currency.company'),
 			]);
 	}
 }
