@@ -131,6 +131,7 @@ class Cancel extends Controller
 			'order'         => $this->_order,
 			'form'          => $form,
 			'refundAmount'  => $refundAmount,
+			'currency'      => $this->_order->currencyID,
 			'title'         => 'Cancel Order',
 			'refundable'    => $refundable,
 		]);
@@ -230,6 +231,7 @@ class Cancel extends Controller
 			'item'                => $item,
 			'form'                => $form,
 			'refundAmount'        => $item->gross,
+			'currency'            => $this->_order->currencyID,
 			'title'               => 'Cancel Item',
 			'lastUncancelledItem' => $lastUncancelledItem,
 			'refundable'          => $refundable,
