@@ -92,17 +92,37 @@ class SalesByItem extends AbstractSales
 		foreach ($data as $row) {
 
 			$result[] = [
-				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date],
+				[
+					'v' => (float) $row->UnixDate,
+					'f' => (string) $row->Date
+				],
 				'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
-				$row->Return ? '<a href ="'.$this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->Return]).'">'.$row->Return.'</a>' : "",
+				$row->Return ?
+					'<a href ="'.$this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->Return]).'">'.$row->Return.'</a>'
+					: "",
 				ucwords($row->Source),
 				ucwords($row->Type),
-				$row->Product_ID ? [ 'v' => ucwords($row->Product), 'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->Product_ID]).'">'.ucwords($row->Product).'</a>'] : $row->Product,
+				$row->Product_ID ?
+					[
+						'v' => ucwords($row->Product),
+						'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->Product_ID]).'">'
+						.ucwords($row->Product).'</a>'
+					]
+					: $row->Product,
 				ucwords($row->Option),
 				$row->Currency,
-				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
-				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
-				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
 			];
 		}
 

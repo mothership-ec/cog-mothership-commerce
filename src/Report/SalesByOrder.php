@@ -90,12 +90,27 @@ class SalesByOrder extends AbstractSales
 			$result[] = [
 				'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
 				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date],
-				$row->User ? [ 'v' => utf8_encode($row->User), 'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->UserID]).'">'.ucwords(utf8_encode($row->User)).'</a>' ] : $row->User,
+				$row->User ?
+					[
+						'v' => utf8_encode($row->User),
+						'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->UserID]).'">'
+						.ucwords(utf8_encode($row->User)).'</a>'
+					]
+					: $row->User,
 				ucwords($row->Type),
 				$row->Currency,
-				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
-				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
-				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
 				$row->Country,
 			];
 		}

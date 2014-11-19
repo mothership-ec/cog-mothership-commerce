@@ -85,12 +85,27 @@ class SalesByProduct extends AbstractSales
 
 		foreach ($data as $row) {
 			$result[] = [
-				$row->ID ? [ 'v' => ucwords($row->Product), 'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'.ucwords($row->Product).'</a>'] : $row->Product,
+				$row->ID ?
+					[
+						'v' => ucwords($row->Product),
+						'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'
+						.ucwords($row->Product).'</a>'
+					]
+					: $row->Product,
 				ucwords($row->Option),
 				$row->Currency,
-				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
-				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
-				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
 				$row->NumberSold,
 			];
 		}

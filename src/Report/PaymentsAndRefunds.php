@@ -37,13 +37,13 @@ class PaymentsAndRefunds extends AbstractTransactions
 	public function getColumns()
 	{
 		$columns = [
-			['type' => 'string',	'name' => "Date",		 ],
-			['type' => 'string',	'name' => "User",		 ],
-			['type' => 'string',	'name' => "Currency",	 ],
-			['type' => 'string',	'name' => "Method",		 ],
-			['type' => 'number',	'name' => "Amount",		 ],
-			['type' => 'string',	'name' => "Type",		 ],
-			['type' => 'string',	'name' => "Order/Return",],
+			['type' => 'string', 'name' => "Date",        ],
+			['type' => 'string', 'name' => "User",        ],
+			['type' => 'string', 'name' => "Currency",    ],
+			['type' => 'string', 'name' => "Method",      ],
+			['type' => 'number', 'name' => "Amount",      ],
+			['type' => 'string', 'name' => "Type",        ],
+			['type' => 'string', 'name' => "Order/Return",],
 		];
 
 		return json_encode($columns);
@@ -74,6 +74,7 @@ class PaymentsAndRefunds extends AbstractTransactions
 		$result = [];
 
 		foreach ($data as $row) {
+
 			if ($row->type == "Payment") {
 				$url = $this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->order_return_id]);
 			} else {
@@ -82,10 +83,19 @@ class PaymentsAndRefunds extends AbstractTransactions
 
 			$result[] = [
 				date('Y-m-d H:i', $row->created_at),
-				$row->user ? [ 'v' => utf8_encode($row->user), 'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->user_id]).'">'.ucwords(utf8_encode($row->user)).'</a>' ] : $row->user,
+				$row->user ?
+					[
+						'v' => utf8_encode($row->user),
+						'f' => 	(string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->user_id]).'">'.
+								ucwords(utf8_encode($row->user)).'</a>'
+					]
+					: $row->user,
 				$row->currency,
 				$row->method,
-				[ 'v' => (float) $row->amount, 'f' => (string) number_format($row->amount,2,'.',',')],
+				[
+					'v' => (float) $row->amount,
+					'f' => (string) number_format($row->amount,2,'.',',')
+				],
 				$row->type,
 				'<a href ="'.$url.'">'.$row->order_return_id.'</a>',
 			];

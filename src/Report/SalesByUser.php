@@ -80,12 +80,27 @@ class SalesByUser extends AbstractSales
 
 		foreach ($data as $row) {
 			$result[] = [
-				$row->User ? [ 'v' => utf8_encode($row->User), 'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->ID]).'">'.ucwords(utf8_encode($row->User)).'</a>' ] : $row->User,
+				$row->User ?
+					[
+						'v' => utf8_encode($row->User),
+						'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->ID]).'">'
+						.ucwords(utf8_encode($row->User)).'</a>'
+					]
+					: $row->User,
 				$row->Email,
 				$row->Currency,
-				['v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
-				['v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
-				['v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
 			];
 		}
 

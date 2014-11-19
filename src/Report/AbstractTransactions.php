@@ -20,7 +20,7 @@ abstract class AbstractTransactions extends AbstractReport
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
 		$this->_eventDispatcher = $eventDispatcher;
-		parent::__construct($builderFactory,$trans,$routingGenerator);
+		parent::__construct($builderFactory, $trans, $routingGenerator);
 	}
 
 	protected function _dispatchEvent()

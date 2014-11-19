@@ -9,16 +9,26 @@ use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
+use Message\Mothership\Report\Form\Type\DateRange;
+use Message\Mothership\Report\Form\Type\Currency;
+
 
 class SalesByDay extends AbstractSales
 {
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
-		$this->name = 'sales_by_day';
+		$this->name        = 'sales_by_day';
 		$this->displayName = 'Sales by Day';
 		$this->reportGroup = "Sales";
-		$this->_charts = [new TableChart];
+		$this->_charts[]   = new TableChart;
+		$this->_form[]     = new DateRange;
+		$this->_form[]     = new Currency;
 		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+	}
+
+	public function getFormTypes()
+	{
+		return $this->_form;
 	}
 
 	public function getCharts()
@@ -78,11 +88,23 @@ class SalesByDay extends AbstractSales
 
 		foreach ($data as $row) {
 			$result[] = [
-				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date], //Link to all orders in this day?
+				[
+					'v' => (float) $row->UnixDate,
+					'f' => (string) $row->Date
+				],
 				$row->Currency,
-				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
-				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
-				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
 			];
 		}
 

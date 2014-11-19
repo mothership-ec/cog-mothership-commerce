@@ -78,11 +78,23 @@ class SalesByMonth extends AbstractSales
 
 		foreach ($data as $row) {
 			$result[] = [
-				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date], //Link to all orders in this day?
+				[
+					'v' => (float) $row->UnixDate,
+					'f' => (string) $row->Date
+				],
 				$row->Currency,
-				[ 'v' => (float) $row->Net, 'f' => (string) number_format($row->Net,2,'.',',')],
-				[ 'v' => (float) $row->Tax, 'f' => (string) number_format($row->Tax,2,'.',',')],
-				[ 'v' => (float) $row->Gross, 'f' => (string) number_format($row->Gross,2,'.',',')],
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
 			];
 		}
 
