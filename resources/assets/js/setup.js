@@ -25,7 +25,7 @@ $(function() {
 
     // Hide and show columns when ajax slide happens
 	var showCol = 2;
-	$('#main-slide').on('ms-cp-livePane-show', function() {
+	$('#main-slide').on('show.cp-livePane-slide', function() {
 		$('.dataTables_length').hide();
 
 		for (var i = 0; i < dataTable.fnSettings().aoColumns.length; ++i) {
@@ -37,7 +37,7 @@ $(function() {
 		$('table, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
 	});
 
-	$('#main-slide').on('ms-cp-livePane-hide', function() {
+	$('#main-slide').on('hide.cp-livePane-slide', function() {
 		$('.dataTables_length').show();
 		for (var i = 0; i < dataTable.fnSettings().aoColumns.length; ++i) {
 			if (i!==showCol) {
