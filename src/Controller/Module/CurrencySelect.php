@@ -14,6 +14,7 @@ class CurrencySelect extends Controller
 		$form = $this->createForm($this->get('currency.form.select'), null, [
 			'action' => $this->generateUrl('ms.commerce.currency'),
 			'data'   => ['currency' => $this->get('currency')],
+			'expanded' => true,
 		]);
 
 		return $this->render('Message:Mothership:Commerce::currency_form', ['form' => $form]);

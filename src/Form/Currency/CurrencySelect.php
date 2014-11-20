@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Form\Currency;
 
 use Symfony\Component\Form;
 use Symfony\Component\Validator\Constraints;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class CurrencySelect extends Form\AbstractType
 {
@@ -17,7 +18,18 @@ class CurrencySelect extends Form\AbstractType
 				new Constraints\NotBlank,
 			],
             'data' => isset($options['data']['currency'])?$options['data']['currency']:null,
+            'expanded' => $options['expanded'],
 		]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults([
+           'expanded' => false,
+        ]);
     }
 
     /**
