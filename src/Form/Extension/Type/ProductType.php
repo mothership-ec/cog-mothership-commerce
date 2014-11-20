@@ -54,7 +54,6 @@ class ProductType extends Form\AbstractType
 				'attr'  => [
 					'placeholder' => $this->_trans->trans('ms.commerce.product.create.brand.placeholder'),
 				],
-				'constraints' => [ new Constraints\NotBlank, ],
 			])
 			->add('category', 'text', [
 				'label' => 'ms.commerce.product.create.category.label',
