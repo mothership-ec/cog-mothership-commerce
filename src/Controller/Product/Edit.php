@@ -651,7 +651,6 @@ class Edit extends Controller
 				}
 
 				$fieldName = preg_replace('/[^a-z0-9]/i', '_', $type);
-
 				$optionForm->add($fieldName, 'datalist', ucfirst($type), [
 					'choices' => $choices,
 					'data'    => (!empty($unit->options[$type])) ? $unit->options[$type] : null,
@@ -661,6 +660,7 @@ class Edit extends Controller
 					'data' => $type,
 				]);
 			}
+
 			// Add the option forms to the parent form
 			$form->add($optionForm, 'form');
 

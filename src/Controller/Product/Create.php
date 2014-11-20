@@ -35,15 +35,14 @@ class Create extends Controller
 			$stockManager->setReason($this->get('stock.movement.reasons')->get('new_order'));
 
 			foreach ($product->getAllUnits() as $unit) {
-
 				$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 				$unit = $unitCreator->create($unit);
 				foreach($unit->getStockArray() as $location => $stock) {
 					$stockManager->set(
-							$unit,
-							$stockLocations->get($location),
-							$stock
-						);
+						$unit,
+						$stockLocations->get($location),
+						$stock
+					);
 				}
 
 			}
