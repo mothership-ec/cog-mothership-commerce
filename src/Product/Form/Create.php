@@ -5,10 +5,7 @@ namespace Message\Mothership\Commerce\Product\Form;
 use Message\Cog\Localisation\Translator;
 
 use Message\Mothership\Commerce\Form\Extension\Type\ProductType;
-use Message\Mothership\Commerce\Form\Extension\Type\UnitType;
 use Symfony\Component\Form;
-use Symfony\Component\Validator\Constraints;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Message\Mothership\Commerce\Product\Form\DataTransform\ProductTransform;
 use Message\Mothership\Commerce\Product\Type\Collection as ProductTypeCollection;
 
