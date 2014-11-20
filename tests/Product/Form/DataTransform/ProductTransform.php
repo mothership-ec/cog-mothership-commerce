@@ -31,7 +31,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 			->shouldReceive('getName')->once()->andReturn('Name')
 			->shouldReceive('getBrand')->once()->andReturn('Brand')
 			->shouldReceive('getCategory')->once()->andReturn('Category')
-			->shouldReceive('getShortDescription')->once()->andReturn('Short Description')
+			->shouldReceive('getDescription')->once()->andReturn('Description')
 			->shouldReceive('getPrices')->once()->andReturn($prices)
 			->shouldReceive('getPrice')->twice()->andReturn(10)
 			->getMock()
@@ -44,7 +44,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 				'name' => 'Name',
 				'brand' => 'Brand',
 				'category' => 'Category',
-				'short_description' => 'Short Description',
+				'description' => 'Description',
 				'prices' => [
 					'rrp' => 10,
 					'retail' => 10,
@@ -60,7 +60,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 			'brand' => 'Brand',
 			'category' => 'Category',
 			'type'  => 'basic',
-			'short_description' => 'Short Description',
+			'description' => 'Short Description',
 			'prices' => [
 				'retail' => 10,
 				'rrp' => 20,
@@ -72,7 +72,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($in['name'] == $result->getName());
 		$this->assertTrue($in['brand'] == $result->getBrand());
 		$this->assertTrue($in['category'] == $result->getCategory());
-		$this->assertTrue($in['short_description'] == $result->getShortDescription());
+		$this->assertTrue($in['description'] == $result->getDescription());
 		$this->assertTrue($in['prices']['retail'] == $result->getPrice('retail'));
 		$this->assertTrue($in['prices']['rrp'] == $result->getPrice('rrp'));
 
@@ -84,7 +84,7 @@ class ProductTransform extends \PHPUnit_Framework_TestCase
 			'name' => 'Name',
 			'brand' => 'Brand',
 			'category' => 'Category',
-			'short_description' => 'Short Description',
+			'description' => 'Short Description',
 			'type'  => 'basic',
 			'prices' => [
 				'retail' => 10,
