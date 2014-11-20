@@ -19,7 +19,7 @@ function updateUnits() {
 
 	// create variant array
 	$('.variant-field').each(function(e) {
-		var type = $(this).children('.type').first().val();
+		var type = $(this).children('.variant-type').first().val();
 		var arr  = $(this).children('.value').first().select2("val");
 		arr.forEach(function(val) {
 			if(!type) return;
@@ -121,7 +121,7 @@ function updateUnits() {
 function addVariantField() {
 	var field = $(
 			'<div class="field required variant-field">'+
-				'<input type="text" class="type" placeholder="Variant">' +
+				'<input type="text" class="variant-type" placeholder="Variant">' +
 				'<input type="hidden" class="value" style="width: 90%;" tabindex="-1" placeholder="Value" data-main class="select2-offscreen">' +
 				'<a href="#" class="button remove button-cancel"></a>' +
 			'</div>'
@@ -144,6 +144,15 @@ function addVariantField() {
 
 
 $(function(){
+	$('.variants').on('keydown', '.variant-type', function(e) {
+		var keyCode = e.keyCode || e.which;
+
+		if (e.keyCode === 9) {
+			$(this).next().find('.select2-input').focus();
+			e.preventDefault();
+		}
+	});
+
 	$('body').on('click.modal', '[data-modal-open]', function() {
 		$('.save.button').fadeOut(100);
 	});

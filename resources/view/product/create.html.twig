@@ -1,16 +1,5 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/cp' %}
 
-{% block javascripts %}
-	{{ parent() }}
-	{% javascripts
-		'@Message:Mothership:Commerce::resources/assets/js/product-create.js'
-
-		output='/assets/js/ms_product_create.js'
-		filter=''
-	%}
-	<script src="{{ asset_url }}"></script>
-	{% endjavascripts %}
-{% endblock %}
 {% block content %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
@@ -44,21 +33,13 @@
 		</div>
 	{{ form_end(form) }}
 </div>
-<!-- <div class="complete-hide hidden">
-<div class="container-content complete">
-	<div class="wrap">
-		<h1><span class="tick animated"></span>Product created</h1>
-		<a href="/admin/product/" class="small button continue-edit">
-			Continue editing product
-		</a>
-		<a href="/admin/product/create" class="small button create-similar">
-			Create similar product
-		</a>
-		<a href="/admin/product/create" class="small button create-new">
-			Create new product
-		</a>
-	</div>
-</div>
-</div> -->
 
+{% javascripts
+	'@Message:Mothership:Commerce::resources/assets/js/product-create.js'
+
+	output='/assets/js/ms_product_create.js'
+	filter=''
+%}
+<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
 {% endblock %}
