@@ -355,6 +355,20 @@ class Product
     }
 
     /**
+     * Sets the value of name.
+     *
+     * @param mixed $name the name 
+     *
+     * @return self
+     */
+    public function setDisplayName($name)
+    {
+        $this->displayName = $name;
+
+        return $this;
+    }
+
+    /**
      * Gets the value of brand.
      *
      * @return mixed
@@ -484,5 +498,15 @@ class Product
         $this->type = $type;
 
         return $this;
+    }
+
+    /**
+     * Gets the value of displayName.
+     *
+     * @return mixed
+     */
+    public function getDisplayName()
+    {
+        return $this->displayName;
     }
 }

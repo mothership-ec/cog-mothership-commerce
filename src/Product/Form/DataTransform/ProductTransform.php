@@ -77,6 +77,7 @@ class ProductTransform implements DataTransformerInterface
 		$product = new Product($this->_locale);
 
 		$product->setName($data['name']);
+		$product->setDisplayName($data['name']);
 		$product->setBrand($data['brand']);
 		$product->setCategory($data['category']);
 		$product->setShortDescription($data['short_description']);
