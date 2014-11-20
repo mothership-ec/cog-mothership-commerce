@@ -159,6 +159,9 @@ $(function(){
 
 	$('body').on('click.modal', '[data-modal-close]', function() {
 		$('.save.button').fadeIn(100);
+
+		$('#product_create_name').val('');
+		$('[id*=product_create_units_]').val('');
 	});
 
 	addVariantField();
