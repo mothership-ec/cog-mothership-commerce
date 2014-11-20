@@ -50,7 +50,7 @@ class ProductTransform implements DataTransformerInterface
 			'name'        => $product->getName(),
 			'brand'       => $product->getBrand(),
 			'category'    => $product->getCategory(),
-			'short_description' => $product->getShortDescription(),
+			'description' => $product->getDescription(),
 			'prices'      => []
 		];
 
@@ -76,12 +76,14 @@ class ProductTransform implements DataTransformerInterface
 	{
 		$product = new Product($this->_locale);
 
-		$product->setName($data['name']);
-		$product->setDisplayName($data['name']);
-		$product->setBrand($data['brand']);
-		$product->setCategory($data['category']);
-		$product->setShortDescription($data['short_description']);
-		$product->setType($this->_productTypes->get($data['type']));
+		$product->setName($data['name'])
+			->setDisplayName($data['name'])
+			->setBrand($data['brand'])
+			->setCategory($data['category'])
+			->setDescription($data['description'])
+			->setType($this->_productTypes->get($data['type']))
+		;
+
 		// setting prices
 		$prices = $product->getPrices();
 

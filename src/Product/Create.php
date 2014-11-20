@@ -84,12 +84,12 @@ class Create
 				product_info.product_id = ?i,
 				product_info.locale = ?s,
 				product_info.display_name = ?s,
-				product_info.short_description   = ?s',
+				product_info.description   = ?s',
 			array(
 				$productID,
 				$this->_locale->getID(),
 				$product->displayName,
-				$product->shortDescription,
+				$product->getDescription(),
 			)
 		);
 

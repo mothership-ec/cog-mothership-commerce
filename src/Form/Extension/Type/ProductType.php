@@ -82,12 +82,11 @@ class ProductType extends Form\AbstractType
 
 			$builder
 				->add($prices)
-				->add('short_description', 'textarea', [
+				->add('description', 'textarea', [
 					'label' => 'ms.commerce.product.create.description.label',
 					'attr'  => [
 						'placeholder' => $this->_trans->trans('ms.commerce.product.create.description.placeholder'),
 					],
-					'constraints' => [ new Constraints\NotBlank, ],
 				])
 				->add('type', 'choice', [
 					'label' => 'ms.commerce.product.attributes.type.label',
