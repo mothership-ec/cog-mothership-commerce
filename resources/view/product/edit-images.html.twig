@@ -14,7 +14,7 @@
 		{% endfor %}
 		{% endfor %}
 	</div>
-		{{ form_start(form) }}
+		{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 	<div class="group">
 		<h2 class="title">Add Image</h2>
 		<div class="content">
@@ -22,9 +22,6 @@
 			{{ form_row(form.type) }}
 			{{ option.renderRepeatable(form.options) }}
 			{{ form_rest(form) }}
-			<button type="submit" class="button small save" id="save-content">
-				{{ 'ms.commerce.product.button.save'|trans }}
-			</button>
 		</div>
 
 	</div>
