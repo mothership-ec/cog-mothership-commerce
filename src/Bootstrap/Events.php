@@ -31,7 +31,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\CancellationListener);
 		$dispatcher->addSubscriber(new Commerce\Order\EventListener\NotificationListener);
 
-		$dispatcher->addSubscriber($this->_services['order.listener.vat']);
 		$dispatcher->addSubscriber($this->_services['order.listener.assembler.stock_check']);
 
 		$dispatcher->addSubscriber(new Commerce\Order\Entity\Address\EventListener);

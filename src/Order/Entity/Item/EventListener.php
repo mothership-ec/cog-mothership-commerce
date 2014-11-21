@@ -178,6 +178,9 @@ class EventListener implements SubscriberInterface
 
 	protected function _calculateTaxForItem(Item $item)
 	{
+		// populate for taxStrategy
+		$item->populate($item->getUnit());
+
 		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
@@ -189,10 +192,8 @@ class EventListener implements SubscriberInterface
 			return;
 		}
 
-		// Set the tax rate to whatever the product's tax rate is, if not already set
-		if (!$item->taxRate) {
-			$item->taxRate = $item->productTaxRate;
-		}
+		// Set the tax rate to whatever the product's tax rate is
+		$item->taxRate = $item->productTaxRate;
 
 		// Set the gross to the list price minus the discount
 		$item->gross = round($item->actualPrice - $item->discount, 2);

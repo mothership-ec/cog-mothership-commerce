@@ -334,11 +334,6 @@ class Services implements ServicesInterface
 			return new Commerce\Order\Entity\Item\ItemCanBeCancelledSpecification;
 		};
 
-		// Configurable/optional event listeners
-		$services['order.listener.vat'] = $services->factory(function($c) {
-			return new Commerce\Order\EventListener\VatListener($c['country.list']);
-		});
-
 		$services['order.listener.assembler.stock_check'] = function($c) {
 			return new Commerce\Order\EventListener\Assembler\StockCheckListener('web');
 		};
@@ -438,7 +433,7 @@ class Services implements ServicesInterface
 				),
 				'taxes' => new Commerce\Product\Tax\TaxLoader(
 					$c['product.tax.resolver'],
-					$c['product.tax.default_address']
+					$c['product.tax.address']
 				),
 			]);
 		});
@@ -547,12 +542,16 @@ class Services implements ServicesInterface
 						return $address;
 					}
 				}
+			} else {
+				$address = new Commerce\Address\Address;
+				$address->countryID = 'GB';
 			}
 
-			$address = new Commerce\Address\Address;
-			$address->countryID = 'GB';
-
 			return $address;
+		};
+
+		$services['product.tax.address'] = function($c) {
+			return $c['basket.order']->getAddress('delivery') ?: $c['product.tax.default_address'];
 		};
 
 		$services['product.tax.resolver'] = function($c) {
