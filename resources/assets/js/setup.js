@@ -34,7 +34,7 @@ $(function() {
 			}
 		}
 
-		$('table, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
+		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
 
 		$('.dataTables_info').css({ paddingBottom: '50px'});
 
@@ -49,7 +49,7 @@ $(function() {
 				dataTable.fnSetColumnVis( i, true);
 			}
 		}
-		$('table, .dataTables_paginate, .dataTables_info').animate({width: "100%"});
+		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "100%"});
 
 		$('.dataTables_info').css({ paddingBottom: '20px'});
 	});

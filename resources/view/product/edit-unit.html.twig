@@ -2,7 +2,7 @@
 {% import 'Message:Mothership:Commerce::options' as option %}
 
 {% block edit %}
-	{{ form_start(form) }}
+	{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 	<table>
 		<colgroup>
 			<col width="125">
@@ -45,9 +45,6 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<button type="submit" class="button small save" id="save-content">
-		{{ 'ms.commerce.product.button.save'|trans }}
-	</button>
 	{{ form_end(form) }}
 
 <div class="group">
