@@ -51,7 +51,10 @@
 						{# <a href="#" class="button small">Duplicate</a> #}
 					</td>
 					<td>
-						<a href="{{ url('ms.commerce.product.delete', {productID:product.id}) }}" class="button small remove">Delete</a>
+						<form action="{{ url('ms.commerce.product.delete', {productID: product.id}) }}" method="post">
+							<input type="hidden" name="_method" value="DELETE">
+							<button name="delete[delete]" value="delete" id="delete" type="submit" class="button small remove">{{ 'Delete'|trans }}</button>
+						</form>
 					</td>
 				</tr>
 			{% endfor %}
