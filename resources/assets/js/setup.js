@@ -36,6 +36,8 @@ $(function() {
 
 		$('table, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
 
+		$('.dataTables_info').css({ paddingBottom: '50px'});
+
 		// Position Add Product button when slide is opened
 		$('.create.product').css({ marginRight: '50px'});
 	});
@@ -48,6 +50,8 @@ $(function() {
 			}
 		}
 		$('table, .dataTables_paginate, .dataTables_info').animate({width: "100%"});
+
+		$('.dataTables_info').css({ paddingBottom: '20px'});
 	});
 
 
