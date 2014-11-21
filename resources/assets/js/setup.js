@@ -35,6 +35,9 @@ $(function() {
 		}
 
 		$('table, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
+
+		// Position Add Product button when slide is opened
+		$('.create.product').css({ marginRight: '50px'});
 	});
 
 	$('#main-slide').on('hide.cp-livePane-slide', function() {
@@ -46,4 +49,7 @@ $(function() {
 		}
 		$('table, .dataTables_paginate, .dataTables_info').animate({width: "100%"});
 	});
+
+
+
 });
