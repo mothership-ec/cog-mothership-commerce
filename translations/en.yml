@@ -48,7 +48,7 @@ ms.commerce:
         label: Export Description
         help: This description of the product is for export purposes and will display on export documentation.
     pricing:
-      warning: Some prices are set to 0. Are you sure you would like to continue
+      warning: Some prices are set to 0. Are you sure you would like to continue?
       tax-rate:
         label: Tax Rate
         help: Select a tax rate applicable to your region and product type.
