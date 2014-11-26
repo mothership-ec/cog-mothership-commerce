@@ -10,7 +10,7 @@ class _1415804834_OrderItemTaxRates extends Migration
 			CREATE TABLE IF NOT EXISTS `order_item_tax` (
 			  `item_id` int(11) unsigned NOT NULL,
 			  `tax_type` varchar(30) NOT NULL,
-			  `tax_rate` decimal(10,2) unsigned NOT NULL,
+			  `tax_rate` decimal(10,3) unsigned NOT NULL,
 			  PRIMARY KEY (`item_id`,`tax_type`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
