@@ -37,7 +37,7 @@ The product Pricing object is a group of prices (float) mapped against Currency 
 Product taxes are loaded onto the product using an instance of `TaxResolverInterface`. Net and Gross prices are calculated using these tax rates and an instance of `TaxStrategyInterface`.
 
 ###TaxResolver
-The `TaxResolverInterface` is an interface for a class that will take a token and an `Address` and return a `TaxCollection` containing all the applicable tax rates for that token/address combination. By default, the `StdOTaxResolver` is used. This looks within the `tax.yml` file to resolve taxes.
+The `TaxResolverInterface` is an interface for a class that will take a token and an `Address` and return a `TaxCollection` containing all the applicable tax rates for that token/address combination. By default, the `TaxResolver` is used. This looks within the `tax.yml` file to resolve taxes.
 
 ###TaxStrategy
 Whilst it is possible to implement the interface to provide further tax strategies, realistically there are only two which will be used. These are Tax Inclusive and Tax Exclusive. These are provided within Commerce.

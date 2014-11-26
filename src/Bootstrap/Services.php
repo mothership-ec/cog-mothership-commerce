@@ -555,7 +555,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.tax.resolver'] = function($c) {
-			return new Commerce\Product\Tax\Resolver\StdOTaxResolver($c['cfg']->tax->rates);
+			return new Commerce\Product\Tax\Resolver\TaxResolver($c['cfg']->tax->rates);
 		};
 
 		$services['product.tax.strategy'] = function($c) {

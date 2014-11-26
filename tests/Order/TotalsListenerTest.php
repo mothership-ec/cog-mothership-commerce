@@ -4,7 +4,7 @@ namespace Message\Mothership\Commerce\Test\Order\EventListener;
 
 use Message\Mothership\Commerce\Order\EventListener\TotalsListener;
 use \Mockery as m;
-use Message\Mothership\Commerce\Product\Tax\Resolver\StdOTaxResolver as Resolver;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
 use Message\Mothership\Commerce\Address\Address;
 
 class TotalsListenerTest extends \PHPUnit_Framework_TestCase
@@ -16,7 +16,7 @@ class TotalsListenerTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_resolver = m::mock('Message\Mothership\Commerce\Product\Tax\Resolver\StdOTaxResolver');
+		$this->_resolver = m::mock('Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver');
 		$this->_listener = new TotalsListener($this->_resolver);
 		$this->_event = m::mock('Message\Mothership\Commerce\Order\Event\Event');
 		$this->_order = m::mock('Message\Mothership\Commerce\Order\Order');

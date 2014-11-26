@@ -3,7 +3,7 @@
 namespace Message\Mothership\Commerce\Test\Product\Tax\Resolver; 
 
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver;
-use Message\Mothership\Commerce\Product\Tax\Resolver\StdOTaxResolver as Resolver;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
 use Mockery as m;
 use Message\Cog\Config\Compiler;
 

@@ -6,7 +6,7 @@ use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
-use Message\Mothership\Commerce\Product\Tax\Resolver\StdOTaxResolver as Resolver;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
 

@@ -12,7 +12,7 @@ use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
  *
  * This class looks at tax.yml to resolve the tax
  */
-class StdOTaxResolver implements TaxResolverInterface
+class TaxResolver implements TaxResolverInterface
 {
 	const DEFAULT_REGION       = 'default';
 	const DEFAULT_SHIPPING_TAX = 'shipping';
