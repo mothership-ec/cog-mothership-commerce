@@ -59,7 +59,6 @@ class Services implements ServicesInterface
 
 		$services['basket'] = $services->factory(function($c) {
 			$assembler = $c['order.assembler'];
-
 			$assembler->setOrder($c['basket.order']);
 
 			return $assembler;
@@ -551,7 +550,12 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.tax.address'] = function($c) {
-			return $c['basket.order']->getAddress('delivery') ?: $c['product.tax.default_address'];
+			// test this to prevent an infinite loop which can occur
+			if ($c['http.session']->get('basket.order')) {
+				return $c['basket.order']->getAddress('delivery') ?: $c['product.tax.default_address'];
+			}
+
+			return $c['product.tax.default_address'];
 		};
 
 		$services['product.tax.resolver'] = function($c) {

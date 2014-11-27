@@ -30,9 +30,6 @@ class Item implements EntityInterface, RecordInterface
 	public $basePrice      = 0; // Price of the item for this order (before discounts) (actual price with or without tax, as appropriate)
 	public $net            = 0; // Net amount, calculated on discounted price
 	public $discount       = 0; // Discount amount for this item
-	/**
-	 * @todo remove tax. replacing with taxes
-	 */
 	public $tax            = 0; // Tax amount for this item
 	public $gross          = 0; // Gross amount paid for this item (after discounts)
 	public $rrp            = 0; // Recommended retail price of the item at time of purchase
