@@ -17,6 +17,8 @@ abstract class AbstractSales extends AbstractReport
 {
 	private $_eventDispatcher;
 
+	protected $_charts = [];
+
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
 		$this->_eventDispatcher = $eventDispatcher;
