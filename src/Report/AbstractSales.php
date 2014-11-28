@@ -12,6 +12,7 @@ use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Event\ReportEvent;
 
 use Message\Mothership\Commerce\Events;
+use Message\Mothership\Report\Filter\Collection as FilterCollecion;
 
 abstract class AbstractSales extends AbstractReport
 {
@@ -25,10 +26,14 @@ abstract class AbstractSales extends AbstractReport
 		parent::__construct($builderFactory, $trans, $routingGenerator);
 	}
 
-	protected function _dispatchEvent()
+	protected function _dispatchEvent(FilterCollecion $filters = null)
 	{
 		$event = new ReportEvent;
 
+		if ($filters) {
+			$event->setFilters($filters);
+		}
+		
 		return $this->_eventDispatcher->dispatch(Events::SALES_REPORT, $event);
 	}
 

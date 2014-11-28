@@ -9,16 +9,18 @@ use Message\Cog\Routing\UrlGenerator;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
+use Message\Mothership\Report\Filter\DateRangeFilter;
 
 class StockSummary extends AbstractReport
 {
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
 	{
+		parent::__construct($builderFactory,$trans,$routingGenerator);
 		$this->name = 'stock_summary';
 		$this->displayName = 'Stock Summary';
 		$this->reportGroup = "Products";
-		$this->_charts = [new TableChart];
-		parent::__construct($builderFactory,$trans,$routingGenerator);
+		$this->_charts  = [new TableChart];
+		// $this->_filters->add(new DateRangeFilter);
 	}
 
 	public function getCharts()
@@ -115,6 +117,5 @@ class StockSummary extends AbstractReport
 
 		return json_encode($result);
 	}
-
 }
 

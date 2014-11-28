@@ -9,21 +9,18 @@ use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
-use Message\Mothership\Report\Form\Type\DateRange;
-use Message\Mothership\Report\Form\Type\Currency;
-
+use Message\Mothership\Report\Filter\DateRangeFilter;
 
 class SalesByDay extends AbstractSales
 {
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
+		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
 		$this->name        = 'sales_by_day';
 		$this->displayName = 'Sales by Day';
 		$this->reportGroup = "Sales";
 		$this->_charts[]   = new TableChart;
-		$this->_form[]     = new DateRange;
-		$this->_form[]     = new Currency;
-		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+		$this->_filters->add(new DateRangeFilter);
 	}
 
 	public function getFormTypes()
@@ -59,7 +56,7 @@ class SalesByDay extends AbstractSales
 
 	private function _getQuery()
 	{
-		$unions = $this->_dispatchEvent()->getQueryBuilders();
+		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
 		foreach($unions as $query) {
@@ -78,6 +75,19 @@ class SalesByDay extends AbstractSales
 			->groupBy('FROM_UNIXTIME(date, "%d-%b-%Y"), currency')
 			->orderBy('UnixDate DESC')
 		;
+
+		// filter dates
+		if($this->_filters->exists('filter_date')) {
+			$dateFilter = $this->_filters->get('filter_date');
+
+			if($date = $dateFilter->getStartDate()) {
+				$queryBuilder->where('Date > ?d', [$date]);
+			}
+
+			if($date = $dateFilter->getEndDate()) {
+				$queryBuilder->where('Date < ?d', [$date]);
+			}
+		}
 
 		return $queryBuilder->getQuery();
 	}
