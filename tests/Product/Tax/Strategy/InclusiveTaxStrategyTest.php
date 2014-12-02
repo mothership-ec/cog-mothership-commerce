@@ -7,31 +7,60 @@ use Message\Mothership\Commerce\Product\Tax\Strategy\InclusiveTaxStrategy;
 
 class InclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 {
-	protected $_taxRate;
+	private $_taxRate;
+	private $_strategy;
 
 	public function setUp()
 	{
-		$this->_taxRate = m::mock('Message\Mothership\Commerce\Product\Tax\Rate\TaxRate');
+		$this->_taxRate = m::mock('Message\Mothership\Commerce\Product\Tax\Rate\TaxRate')
+			->shouldReceive('getTaxRate')
+			->zeroOrMoreTimes()
+			->andReturn('20')
+			->getMock()
+		;
+
+		$resolver = m::mock('Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver');
+		$address = m::mock('Message\Mothership\Commerce\Address\Address');
+		$baseTaxes = m::mock('Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection');
+		$baseTaxes->shouldReceive('getTotalTaxRate')
+			->zeroOrMoreTimes()
+			->andReturn(20.00)
+		;
+
+		$address->countryID = 'GB';
+		$resolver->shouldReceive('getTaxRates')
+			->zeroOrMoreTimes()
+			->andReturn($baseTaxes)
+		;
+
+		$this->_strategy = new InclusiveTaxStrategy($resolver, $address);
 	}
 
 	public function testGetNetPrice()
 	{
-		$strategy = new InclusiveTaxStrategy;
-		$price = 120;
-
-		$this->_taxRate->shouldReceive('getTaxRate')
-			->zeroOrMoreTimes()
-			->andReturn(20);
-
-		$this->assertEquals(100, $strategy->getNetPrice($price, $this->_taxRate));
+		$this->assertEquals(100, $this->_strategy->getNetPrice(120, $this->_taxRate));
 	}
 	
 	public function testGetGrossPrice()
 	{
-		$strategy = new InclusiveTaxStrategy;
+		$strategy = $this->_strategy;
 		$price = 120;
 
-		$this->assertEquals(120, $strategy->getGrossPrice($price, $this->_taxRate));
+		$this->assertEquals(120, $strategy->getGrossPrice(120, $this->_taxRate));
+	}
+
+	public function testGetGrossPriceWithMismatched()
+	{
+		$strategy = $this->_strategy;
+
+		$newRate = m::mock('Message\Mothership\Commerce\Product\Tax\Rate\TaxRate')
+			->shouldReceive('getTaxRate')
+			->zeroOrMoreTimes()
+			->andReturn(10.00)
+			->getMock()
+		;
+
+		$this->assertEquals(110, $strategy->getGrossPrice(120, $newRate));
 	}
 
 	/**
@@ -39,8 +68,7 @@ class InclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testInvalidPriceException()
 	{
-		$strategy = new InclusiveTaxStrategy;
-
+		$strategy = $this->_strategy;
 		$strategy->getNetPrice('Not a string', $this->_taxRate);
 	}
 }
