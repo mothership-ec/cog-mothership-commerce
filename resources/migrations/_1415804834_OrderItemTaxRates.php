@@ -11,6 +11,7 @@ class _1415804834_OrderItemTaxRates extends Migration
 			  `item_id` int(11) unsigned NOT NULL,
 			  `tax_type` varchar(30) NOT NULL,
 			  `tax_rate` decimal(10,3) unsigned NOT NULL,
+			  `tax_amount` decimal(10,2) unsigned NOT NULL,
 			  PRIMARY KEY (`item_id`,`tax_type`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");

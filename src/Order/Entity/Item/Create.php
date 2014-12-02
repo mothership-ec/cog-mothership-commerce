@@ -189,16 +189,17 @@ class Create implements DB\TransactionalInterface
 		$inserts = [];
 
 		foreach ($item->getTaxRates() as $type => $rate) {
-			$tokens[] = '(?i, ?s, ?f)';
+			$tokens[] = '(?i, ?s, ?f, ?f)';
 			
 			$inserts[] = $item->id;
 			$inserts[] = $type;
 			$inserts[] = $rate;
+			$inserts[] = $item->net * $rate/100;
 		}
 
 		$this->_query->add(
 			"INSERT INTO 
-				`order_item_tax` (`item_id`, `tax_type`, `tax_rate`) 
+				`order_item_tax` (`item_id`, `tax_type`, `tax_rate`, `tax_amount`) 
 			VALUES " . implode(',', $tokens),
 			$inserts
 		);
