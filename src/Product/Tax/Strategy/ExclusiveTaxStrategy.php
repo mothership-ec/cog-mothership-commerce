@@ -25,6 +25,11 @@ class ExclusiveTaxStrategy extends AbstractStrategy
 		return new Address;
 	}
 
+	public function getIncludedTaxRate()
+	{
+		return 0.00;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

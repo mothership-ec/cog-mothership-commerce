@@ -44,4 +44,10 @@ interface TaxStrategyInterface
 	 *                                                     in calculations
 	 */
 	public function getDefaultStrategyAddress();
+
+	/**
+	 * Get the tax rate included in the price
+	 * @return float the included tax rate
+	 */
+	public function getIncludedTaxRate();
 }

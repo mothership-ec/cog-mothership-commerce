@@ -88,25 +88,26 @@ class Item implements EntityInterface, RecordInterface
 	 */
 	public function populate(Unit $unit)
 	{
+		$product = $unit->getProduct();
+
 		if ($this->order instanceof Order) {
 			$this->listPrice = $unit->getPrice('retail', $this->order->currencyID);
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = (float) $unit->getProduct()->getTaxRates()->getTotalTaxRate();
-		$this->taxStrategy     = $unit->getProduct()->getTaxStrategy()->getName();
-		$this->productID       = $unit->getProduct()->id;
-		$this->productName     = $unit->getProduct()->name;
+		$this->productTaxRate  = (float) $product->getTaxRates()->getTotalTaxRate();
+		$this->taxStrategy     = $product->getTaxStrategy()->getName();
+		$this->productID       = $product->id;
+		$this->productName     = $product->name;
 		$this->unitID          = $unit->id;
 		$this->unitRevision    = $unit->revisionID;
 		$this->sku             = $unit->sku;
 		$this->barcode         = $unit->barcode;
 		$this->options         = implode($unit->options, ', ');
-		$this->brand           = $unit->getProduct()->brand;
+		$this->brand           = $product->brand;
 		$this->weight          = (int) $unit->weight;
-
 		$this->_taxes = [];
-		foreach ($unit->getProduct()->getTaxRates() as $taxRate) {
+		foreach ($product->getTaxRates() as $taxRate) {
 			$this->_taxes[$taxRate->getType()] = $taxRate->getRate();
 		}
 

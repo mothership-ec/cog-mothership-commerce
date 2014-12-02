@@ -41,14 +41,26 @@ class InclusiveTaxStrategy extends AbstractStrategy
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		$rate = ($this->_includedRate instanceof TaxRate) ? $this->_includedRate->getRate() : $this->_includedRate->getTotalTaxRate();
+		$rate = $this->getIncludedTaxRate();
 
 		return $price / (1 + $rate/100);
 	}
 
+	/**
+	 * Get the default strategy address
+	 * @return Address the address used to resolve included tax
+	 */
 	public function getDefaultStrategyAddress()
 	{
 		return $this->_companyAddress;
+	}
+
+	/**
+	 * {@inhertDoc}
+	 */
+	public function getIncludedTaxRate()
+	{
+		return ($this->_includedRate instanceof TaxRate) ? $this->_includedRate->getRate() : $this->_includedRate->getTotalTaxRate();
 	}
 
 	/**
