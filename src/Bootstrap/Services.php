@@ -541,10 +541,16 @@ class Services implements ServicesInterface
 						return $address;
 					}
 				}
-			} else {
-				$address = new Commerce\Address\Address;
-				$address->countryID = 'GB';
 			}
+
+			return $c['product.tax.strategy']->getDefaultStrategyAddress();
+		};
+
+		$services['product.tax.company_address'] = function($c) {
+			$address = new Commerce\Address\Address;
+
+			$address->countryID = $c['cfg']->tax->taxAddress->country;
+			$address->regionID = $c['cfg']->tax->taxAddress->region;
 
 			return $address;
 		};
@@ -563,7 +569,9 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.tax.strategy'] = function($c) {
-			return $c['cfg']->tax->taxStrategy === 'inclusive' ? new Strategy\InclusiveTaxStrategy : new Strategy\ExclusiveTaxStrategy;
+			return $c['cfg']->tax->taxStrategy === 'inclusive' ? 
+				new Strategy\InclusiveTaxStrategy($c['product.tax.resolver'], $c['product.tax.company_address']) : 
+				new Strategy\ExclusiveTaxStrategy;
 		};
 
 		/**

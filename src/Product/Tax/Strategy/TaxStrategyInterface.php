@@ -19,7 +19,7 @@ interface TaxStrategyInterface
 	 * @param  TaxRate|TaxRateCollection $taxRate The tax rate to use
 	 * @return double                    The display price
 	 */
-	public function getNetPrice($price, $taxRate);
+	public function getNetPrice($price);
 
 	/**
 	 * Gets the price to display based on a price and a tax rate
@@ -36,4 +36,12 @@ interface TaxStrategyInterface
 	 * @return string name of the strategy
 	 */
 	public function getName();
+
+	/**
+	 * Returns the address used by default.
+	 * 
+	 * @return Message\Mothership\Commerce\Address\Address The default address used 
+	 *                                                     in calculations
+	 */
+	public function getDefaultStrategyAddress();
 }

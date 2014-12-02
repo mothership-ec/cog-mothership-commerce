@@ -4,42 +4,51 @@ namespace Message\Mothership\Commerce\Product\Tax\Strategy;
 
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver;
+use Message\Mothership\Commerce\Address\Address;
 
-class InclusiveTaxStrategy implements TaxStrategyInterface
+class InclusiveTaxStrategy extends AbstractStrategy
 {
-	/**
-	 * {@inheritDocs}
-	 */
-	public function getNetPrice($price, $taxRate)
+	private $_includedRate;
+	private $_resolver;
+	private $_companyAddress;
+
+	public function __construct(TaxResolver $resolver, Address $companyAddress)
 	{
-		if (!is_numeric($price)) {
-			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
-		}
+		$this->_resolver       = $resolver;
+		$this->_companyAddress = $companyAddress;
 
-		$rate = 0.00;
-		if ($taxRate instanceof TaxRateCollection) {
-			$rate += $taxRate->getTotalTaxRate();
+		// default to generic 'product' tax
+		$this->_includedRate = $resolver->getTaxRates('product', $companyAddress);
+	}
 
-			return $price / (1 + $rate/100);
-		} else if ($taxRate instanceof TaxRate) {
-			$rate += $taxRate->getTaxRate();
-
-			return $price / (1 + $rate/100);
-		} else {
-			throw new \InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
-		}
+	/**
+	 * Update the included rate for whatever product type
+	 * 
+	 * @param string $type The product type
+	 */
+	public function setProductType($type)
+	{
+		$this->_includedRate = $this->_resolver->getTaxRates($type, $this->_companyAddress);
 	}
 
 	/**
 	 * {@inheritDocs}
 	 */
-	public function getGrossPrice($price, $taxRate)
+	public function getNetPrice($price)
 	{
 		if (!is_numeric($price)) {
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
 		}
 
-		return $price;
+		$rate = ($this->_includedRate instanceof TaxRate) ? $this->_includedRate->getRate() : $this->_includedRate->getTotalTaxRate();
+
+		return $price / (1 + $rate/100);
+	}
+
+	public function getDefaultStrategyAddress()
+	{
+		return $this->_companyAddress;
 	}
 
 	/**

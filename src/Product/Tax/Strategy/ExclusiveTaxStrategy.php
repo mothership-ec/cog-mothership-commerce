@@ -4,13 +4,14 @@ namespace Message\Mothership\Commerce\Product\Tax\Strategy;
 
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection;
+use Message\Mothership\Commerce\Address\Address;
 
-class ExclusiveTaxStrategy implements TaxStrategyInterface
+class ExclusiveTaxStrategy extends AbstractStrategy
 {
 	/**
 	 * {@inheritDocs}
 	 */
-	public function getNetPrice($price, $taxRate)
+	public function getNetPrice($price)
 	{
 		if (!is_numeric($price)) {
 			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
@@ -18,23 +19,12 @@ class ExclusiveTaxStrategy implements TaxStrategyInterface
 
 		return $price;
 	}
-
-	/**
-	 * {@inheritDocs}
-	 */
-	public function getGrossPrice($price, $taxRate)
-	{
-		if (!is_numeric($price)) {
-			throw new \InvalidArgumentException('Price must be numeric, ' . $price . ' given');
-		}
-
-		if ( ($taxRate instanceof TaxRateCollection) || ($taxRate instanceof TaxRate) ) {
-			return $taxRate->getTaxedPrice($price);
-		} else {
-			throw new \InvalidArgumentException('taxRate must be either instance of TaxRate or TaxRateCollection');
-		}
-	}
 	
+	public function getDefaultStrategyAddress()
+	{
+		return new Address;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

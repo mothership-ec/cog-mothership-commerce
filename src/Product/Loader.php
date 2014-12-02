@@ -343,10 +343,15 @@ class Loader
 
 		$products = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\ProductProxy',
-			[$this->_locale, $this->_priceTypes, $this->_entityLoaders, $this->_taxStrategy]
+			[$this->_locale, $this->_priceTypes, $this->_entityLoaders, clone $this->_taxStrategy] // clone strategy as if inclusive, different base tax rates.
 		);
 
 		foreach ($result as $key => $data) {
+
+			// needs to set the product type if inclusive to get the base tax
+			if ($products[$key]->getTaxStrategy() == 'inclusive') {
+				$products[$key]->getTaxStrategy()->setProductType($data->type);
+			}
 
 			$data->taxRate     = (float) $data->taxRate;
 			$data->exportValue = (float) $data->exportValue;
