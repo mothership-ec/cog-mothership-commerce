@@ -68,21 +68,23 @@ class TotalsListener implements SubscriberInterface
 		// This should always work with a proper tax rate cfg setup.
 		try {
 			$taxRates    = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $order->getAddress(Address::DELIVERY));
-			$order->shippingTaxRate = $taxRates->getTotalTaxRate();
+			$rates = [];
+			foreach ($taxRates as $rate) {
+				$rates[$rate->getType()] = $rate->getRate();
+			}
+			$order->setShippingTaxes($rates);
 		}
 		// If not then no shipping tax rates set in cfg.
 		// Revert to old logic.
 		catch (\LogicException $e) {
+			$rate = [];
 			foreach ($order->items as $item) {
 				if ($item->taxRate > $order->shippingTaxRate) {
-					$order->shippingTaxRate = $item->taxRate;
+					$rate = ['VAT' => $item->taxRate];
 				}
 			}
+			$order->setShippingTaxes($rate);
 		}
-
-		$order->shippingGross = round($order->shippingListPrice - $order->shippingDiscount, 2);
-		$order->shippingTax   = round(($order->shippingGross / (100 + $order->shippingTaxRate)) * $order->shippingTaxRate, 2);
-		$order->shippingNet   = round($order->shippingGross - $order->shippingTax, 2);
 	}
 
 	/**

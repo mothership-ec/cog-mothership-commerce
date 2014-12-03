@@ -222,6 +222,26 @@ class Create implements DB\TransactionalInterface
 			}
 		}
 
+		// Insert item tax rates
+		$tokens  = [];
+		$inserts = [];
+
+		foreach ($order->getShippingTaxes() as $type => $rate) {
+			$tokens[] = '(?i, ?s, ?f, ?f)';
+			
+			$inserts[] = $order->id;
+			$inserts[] = $type;
+			$inserts[] = $rate;
+			$inserts[] = $order->shippingNet * $rate/100;
+		}
+
+		$this->_trans->add(
+			"INSERT INTO 
+				`order_shipping_tax` (`order_id`, `tax_type`, `tax_rate`, `tax_amount`) 
+			VALUES " . implode(',', $tokens),
+			$inserts
+		);
+
 		// Fire the "create end" event before committing the transaction
 		$event = new Event\TransactionalEvent($order);
 		$event->setTransaction($this->_trans);

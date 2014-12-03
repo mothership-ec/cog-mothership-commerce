@@ -196,13 +196,14 @@ class Create implements DB\TransactionalInterface
 			$inserts[] = $rate;
 			$inserts[] = $item->net * $rate/100;
 		}
-
-		$this->_query->add(
-			"INSERT INTO 
-				`order_item_tax` (`item_id`, `tax_type`, `tax_rate`, `tax_amount`) 
-			VALUES " . implode(',', $tokens),
-			$inserts
-		);
+		if($inserts) {
+			$this->_query->add(
+				"INSERT INTO 
+					`order_item_tax` (`item_id`, `tax_type`, `tax_rate`, `tax_amount`) 
+				VALUES " . implode(',', $tokens),
+				$inserts
+			);
+		}
 
 		// If the query was not in a transaction, return the re-loaded item
 		if (!$this->_transOverridden) {

@@ -49,6 +49,8 @@ class Order implements PayableInterface, Transaction\RecordInterface
 	public $shippingTaxRate   = 0;
 	public $shippingGross     = 0;
 
+	private $_shippingTaxes = [];
+
 	public $metadata;
 
 	protected $_payableTransactionID;
@@ -490,4 +492,37 @@ class Order implements PayableInterface, Transaction\RecordInterface
 
 		return $this;
 	}
+
+    /**
+     * Gets the shipping taxes.
+     *
+     * @return mixed
+     */
+    public function getShippingTaxes()
+    {
+        return $this->_shippingTaxes;
+    }
+
+    /**
+     * Sets the shipping taxes as well as the total tax rate.
+     *
+     * @param mixed $_shippingTaxes the shipping taxes
+     *
+     * @return self
+     */
+    public function setShippingTaxes($shippingTaxes)
+    {
+        $this->_shippingTaxes = $shippingTaxes;
+        $this->shippingTaxRate = 0;
+
+        foreach($shippingTaxes as $rate) {
+        	$this->shippingTaxRate += $rate;
+        }
+
+        $this->shippingGross = round($this->shippingListPrice - $this->shippingDiscount, 2);
+		$this->shippingTax   = round(($this->shippingGross / (100 + $this->shippingTaxRate)) * $this->shippingTaxRate, 2);
+		$this->shippingNet   = round($this->shippingGross - $this->shippingTax, 2);
+
+        return $this;
+    }
 }
