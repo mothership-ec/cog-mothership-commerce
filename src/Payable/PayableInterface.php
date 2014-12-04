@@ -39,4 +39,9 @@ interface PayableInterface
 	 * @return string
 	 */
 	public function getPayableTransactionID();
+
+	/**
+	 * @return mixed
+	 */
+	public function getPayments();
 }
