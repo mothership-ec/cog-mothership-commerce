@@ -70,7 +70,7 @@ class Unit
 	{
 		$product = $this->getProduct();
 
-		return $product->getTaxManager()->getNetPrice(
+		return $product->getTaxStrategy()->getNetPrice(
 			$this->getPrice($type, $currencyID), 
 			$product->getTaxRates()
 		);
@@ -80,7 +80,7 @@ class Unit
 	{
 		$product = $this->getProduct();
 
-		return $product->getTaxManager()->getGrossPrice(
+		return $product->getTaxStrategy()->getGrossPrice(
 			$this->getPrice($type, $currencyID), 
 			$product->getTaxRates()
 		);

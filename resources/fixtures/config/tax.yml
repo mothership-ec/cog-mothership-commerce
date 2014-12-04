@@ -11,3 +11,6 @@ rates:
     default:
       voucher-tax:
       shipping-tax:
+tax-address:
+  country: GB
+  region:
