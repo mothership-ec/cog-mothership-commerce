@@ -23,11 +23,6 @@ class SalesByDay extends AbstractSales
 		$this->_filters->add(new DateRangeFilter);
 	}
 
-	public function getFormTypes()
-	{
-		return $this->_form;
-	}
-
 	public function getCharts()
 	{
 		$data = $this->_dataTransform($this->_getQuery()->run());
@@ -81,11 +76,11 @@ class SalesByDay extends AbstractSales
 			$dateFilter = $this->_filters->get('filter_date');
 
 			if($date = $dateFilter->getStartDate()) {
-				$queryBuilder->where('Date > ?d', [$date]);
+				$queryBuilder->where('date > ?d', [$date->format('U')]);
 			}
 
 			if($date = $dateFilter->getEndDate()) {
-				$queryBuilder->where('Date < ?d', [$date]);
+				$queryBuilder->where('date < ?d', [$date->format('U')]);
 			}
 		}
 

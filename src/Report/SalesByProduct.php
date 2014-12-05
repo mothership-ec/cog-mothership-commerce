@@ -9,16 +9,18 @@ use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
+use Message\Mothership\Report\Filter\DateRangeFilter;
 
 class SalesByProduct extends AbstractSales
 {
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
+		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
 		$this->name = 'sales_by_product';
 		$this->displayName = 'Sales by Product';
 		$this->reportGroup = "Sales";
 		$this->_charts = [new TableChart];
-		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+		$this->_filters->add(new DateRangeFilter);
 	}
 
 	public function getCharts()
@@ -74,7 +76,18 @@ class SalesByProduct extends AbstractSales
 			->groupBy('product_id, currency')
 		;
 
-		//de($queryBuilder->getQuery())->length(-1);
+		// filter dates
+		if($this->_filters->exists('filter_date')) {
+			$dateFilter = $this->_filters->get('filter_date');
+
+			if($date = $dateFilter->getStartDate()) {
+				$queryBuilder->where('date > ?d', [$date->format('U')]);
+			}
+
+			if($date = $dateFilter->getEndDate()) {
+				$queryBuilder->where('date < ?d', [$date->format('U')]);
+			}
+		}
 
 		return $queryBuilder->getQuery();
 	}
