@@ -21,10 +21,10 @@ class Create
 
 	protected $_defaultTaxStrategy = 'inclusive';
 
-	public function __construct(Query $query, 
-		Locale $locale, 
-		UserInterface $user, 
-		array $priceTypes, 
+	public function __construct(Query $query,
+		Locale $locale,
+		UserInterface $user,
+		array $priceTypes,
 		array $currencyIDs)
 	{
 		$this->_query        = $query;
@@ -99,10 +99,12 @@ class Create
 		$queryVars   = [];
 		foreach($this->_priceTypes as $type) {
 			foreach($this->_currencyIDs as $currency) {
-				$queryAppend[] = "(?i, ?s, 0, ?s, ?s)";
+				$price = $product->getPrices()->exists($type) ? $product->getPrice($type, $currency) : 0;
+				$queryAppend[] = "(?i, ?s, ?f, ?s, ?s)";
 				$vars          = [
 					$productID,
 					$type,
+					$price,
 					$currency,
 					$this->_locale->getId(),
 				];
@@ -112,13 +114,13 @@ class Create
 		}
 
 		$defaultPrices = $this->_query->run(
-			'INSERT INTO 
+			'INSERT INTO
 				product_price (product_id, type, price, currency_id, locale)
 			VALUES
 				' . implode(', ', $queryAppend),
 			$queryVars
 			);
-	
+
 		$product->id = $productID;
 
 		return $product;
