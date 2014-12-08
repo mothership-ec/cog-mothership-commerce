@@ -31,14 +31,20 @@ class UnitBuilder
 		'cost',
 	];
 
-	private $_currencyID = 'GBP';
-
-	public function __construct(HeadingKeys $headingKeys, Validate $validator, Locale $locale, UserInterface $user)
+	public function __construct(
+		HeadingKeys $headingKeys,
+		Validate $validator,
+		Locale $locale,
+		UserInterface $user,
+		array $currencies,
+		$defaultCurrency
+	)
 	{
 		$this->_headingKeys = $headingKeys;
 		$this->_validator   = $validator;
 		$this->_locale      = $locale;
-		$this->_unit        = new Unit($this->_locale, $this->_priceTypes);
+		$this->_currencies  = $currencies;
+		$this->_unit        = new Unit($this->_locale, $this->_priceTypes, $defaultCurrency);
 		$this->_user        = $user;
 	}
 
@@ -93,11 +99,12 @@ class UnitBuilder
 	private function _setPrices(array $row)
 	{
 		foreach ($this->_priceTypes as $type) {
-			$key = $this->_headingKeys->getKey($type);
-			$price = $row[$key];
-
-			if ($price && $price !== $this->_getProductPrice($type)) {
-				$this->_unit->setPrice($price, $type, $this->_currencyID);
+			foreach ($this->_currencies as $currency) {
+				$key = $this->_headingKeys->getKey($type . '.' . $currency);
+				$price = $row[$key];
+				if ($price && $price !== $this->_getProductPrice($type, $currency)) {
+					$this->_unit->setPrice($price, $type, $currency);
+				}
 			}
 		}
 
@@ -116,9 +123,9 @@ class UnitBuilder
 		return $this;
 	}
 
-	private function _getProductPrice($type)
+	private function _getProductPrice($type, $currency)
 	{
-		return (float) $this->_unit->getPrice($type, $this->_currencyID);
+		return (float) $this->_unit->getPrice($type, $currency);
 	}
 
 }

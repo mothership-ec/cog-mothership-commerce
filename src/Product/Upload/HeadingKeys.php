@@ -10,22 +10,31 @@ class HeadingKeys
 
 	private $_columns;
 
+	private $_currencies;
+
 	private $_required = [
 		'name',
 		'category',
-		'retail'
+	];
+
+	private $_requiredPrices = [
+		'retail',
 	];
 
 	private $_floats = [
-		'retail',
-		'rrp',
-		'cost',
 		'taxRate',
 	];
 
-	public function __construct(array $headingColumns)
+	private $_prices = [
+		'cost',
+		'retail',
+		'rrp',
+	];
+
+	public function __construct(array $headingColumns, array $currencies)
 	{
 		$this->_columns = $headingColumns;
+		$this->_currencies = $currencies;
 		$this->_setRequiredKeys();
 		$this->_setFloatKeys();
 	}
@@ -79,12 +88,24 @@ class HeadingKeys
 		foreach ($this->_required as $key => $value) {
 			$this->_required[$key] = $this->getKey($value);
 		}
+
+		foreach ($this->_requiredPrices as $price) {
+			foreach ($this->_currencies as $currency) {
+				$this->_required[] = $this->getKey($price . '.' . $currency);
+			}
+		}
 	}
 
 	private function _setFloatKeys()
 	{
 		foreach ($this->_floats as $key => $value) {
 			$this->_floats[$key] = $this->getKey($value);
+		}
+
+		foreach ($this->_prices as $price) {
+			foreach ($this->_currencies as $currency) {
+				$this->_floats[] = $this->getKey($price . '.' . $currency);
+			}
 		}
 	}
 }

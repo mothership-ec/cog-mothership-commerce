@@ -527,11 +527,11 @@ class Services implements ServicesInterface
 
 		$services['product.upload.heading_builder'] = function($c) {
 			return new Commerce\Product\Upload\HeadingBuilder(
-				$c['product.field_crawler'], $c['translator']);
+				$c['product.field_crawler'], $c['translator'], $c['currency.supported'], $c['currency']);
 		};
 
 		$services['product.upload.heading_keys'] = function($c) {
-			return new Commerce\Product\Upload\HeadingKeys($c['product.upload.heading_builder']->getColumns());
+			return new Commerce\Product\Upload\HeadingKeys($c['product.upload.heading_builder']->getColumns(), $c['currency.supported']);
 		};
 
 		$services['product.upload.csv_template'] = function($c) {
@@ -564,7 +564,9 @@ class Services implements ServicesInterface
 				$c['product.field_crawler'],
 				$c['user.current'],
 				$c['product'],
-				$c['locale']
+				$c['locale'],
+				$c['currency.supported'],
+				$c['currency']
 			);
 		});
 
@@ -573,7 +575,9 @@ class Services implements ServicesInterface
 				$c['product.upload.heading_keys'],
 				$c['product.upload.validator'],
 				$c['locale'],
-				$c['user.current']
+				$c['user.current'],
+				$c['currency.supported'],
+				$c['currency']
 			);
 		});
 

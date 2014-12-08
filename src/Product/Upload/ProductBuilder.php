@@ -38,6 +38,10 @@ class ProductBuilder
 
 	private $_locale;
 
+	private $_currencies;
+
+	private $_defaultCurrency;
+
 	/**
 	 * Default tax rate
 	 * @todo make dynamic depending on locale
@@ -60,8 +64,6 @@ class ProductBuilder
 		'cost',
 	];
 
-	private $_currencyID = 'GBP';
-
 	public function __construct(
 		HeadingKeys $headingKeys,
 		Validate $validator,
@@ -69,16 +71,20 @@ class ProductBuilder
 		Product\Type\FieldCrawler $fieldCrawler,
 		UserInterface $user,
 		Product\Product $product,
-		Locale $locale
+		Locale $locale,
+		array $currencies,
+		$defaultCurrency
 	)
 	{
-		$this->_headingKeys  = $headingKeys;
-		$this->_validator    = $validator;
-		$this->_productTypes = $productTypes;
-		$this->_fieldCrawler = $fieldCrawler;
-		$this->_user         = $user;
-		$this->_product      = $product;
-		$this->_locale       = $locale;
+		$this->_headingKeys     = $headingKeys;
+		$this->_validator       = $validator;
+		$this->_productTypes    = $productTypes;
+		$this->_fieldCrawler    = $fieldCrawler;
+		$this->_user            = $user;
+		$this->_product         = $product;
+		$this->_locale          = $locale;
+		$this->_currencies      = $currencies;
+		$this->_defaultCurrency = $defaultCurrency;
 	}
 
 	public function build(array $data)
@@ -133,31 +139,20 @@ class ProductBuilder
 
 	private function _setPrices(array $row)
 	{
-		$basePrice = null;
-
 		foreach ($this->_priceTypes as $type) {
-			$key = $this->_headingKeys->getKey($type);
-
-			if (null === $basePrice) {
-				$basePrice = $row[$key];
-			}
-
-			$price = ($row[$key]) ?: $basePrice;
-
-			if (null === $basePrice) {
-				$basePrice = $price;
-			}
-
-			$price = $this->_getPriceObject($type, $price);
+			$price = $this->_getPriceObject($type, $row);
 			$this->_product->getPrices()->add($price);
 		}
 	}
 
-	private function _getPriceObject($type, $price)
+	private function _getPriceObject($type, array $row)
 	{
 		$priceObject = new Product\Price\TypedPrice($type, $this->_locale);
 
-		$priceObject->setPrice($this->_currencyID, $price);
+		foreach ($this->_currencies as $currency) {
+			$key = $this->_headingKeys->getKey($type . '.' . $currency);
+			$priceObject->setPrice($currency, $row[$key]);
+		}
 
 		return $priceObject;
 	}

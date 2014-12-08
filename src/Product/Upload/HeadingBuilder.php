@@ -28,11 +28,6 @@ class HeadingBuilder implements \Countable
 	private $_crawler;
 
 	/**
-	 * @var HeadingKeys
-	 */
-	private $_headingKeys;
-
-	/**
 	 * @var \Message\Cog\Localisation\Translator
 	 */
 	private $_trans;
@@ -43,17 +38,17 @@ class HeadingBuilder implements \Countable
 	 * @var array
 	 */
 	private $_prefixCols = [
-		'name'                        => 'name',
-		'sortName'                    => 'sortName',
-		'category'                    => 'category',
-		'brand'                       => 'brand',
-		'description'                 => 'description',
-		'shortDescription'            => 'shortDescription',
-		'exportDescription'           => 'exportDescription',
-		'supplierRef'                 => 'supplierRef',
-		'weight'                      => 'weight',
-		'notes'                       => 'notes',
-		'exportManufactureCountryID'  => 'exportManufactureCountryID',
+		'name' => 'name',
+		'sortName' => 'sortName',
+		'category' => 'category',
+		'brand' => 'brand',
+		'description' => 'description',
+		'shortDescription' => 'shortDescription',
+		'exportDescription' => 'exportDescription',
+		'supplierRef' => 'supplierRef',
+		'weight' => 'weight',
+		'notes' => 'notes',
+		'exportManufactureCountryID' => 'exportManufactureCountryID',
 	];
 
 	/**
@@ -62,11 +57,8 @@ class HeadingBuilder implements \Countable
 	 * @var array
 	 */
 	private $_suffixCols = [
-		'retail'   => 'retail',
-		'rrp'      => 'rrp',
-		'cost'     => 'cost',
-		'taxRate'  => 'taxRate',
-		'stock'    => 'stock',
+		'taxRate' => 'taxRate',
+		'stock' => 'stock',
 	];
 
 	/**
@@ -84,6 +76,13 @@ class HeadingBuilder implements \Countable
 	private $_productFields = [];
 
 	/**
+	 * Array of column headings for price types
+	 *
+	 * @var array
+	 */
+	private $_priceFields = [];
+
+	/**
 	 * Array of columns that will appear in the rendered spreadsheet
 	 *
 	 * @var array
@@ -98,21 +97,36 @@ class HeadingBuilder implements \Countable
 	private $_required = [
 		'name',
 		'category',
-		'price'
 	];
+
+	/**
+	 * @var array
+	 */
+	private $_priceTypes = [
+		'cost'   =>'cost',
+		'retail' => 'retail',
+		'rrp'    => 'rrp',
+	];
+
+	/**
+	 * @var array
+	 */
+	private $_currencies;
 
 	/**
 	 * @todo inject column headings via HeadingKeys, caused a dependency loop so that will need working out
 	 *
 	 * @param FieldCrawler $crawler
 	 * @param Translator $trans
+	 * @param array $currencies
 	 */
-	public function __construct(FieldCrawler $crawler, /*HeadingKeys $headingKeys, */Translator $trans)
+	public function __construct(FieldCrawler $crawler, Translator $trans, array $currencies)
 	{
-		$this->_crawler     = $crawler;
-		$this->_trans       = $trans;
-//		$this->_headingKeys = $headingKeys;
-		$this->_required    = $this->_translate($this->_required);
+		$this->_crawler = $crawler;
+		$this->_trans = $trans;
+		$this->_currencies = $currencies;
+		$this->_setPriceFields();
+		$this->_required = $this->_translate($this->_required) + $this->_priceFields;
 	}
 
 	/**
@@ -137,8 +151,8 @@ class HeadingBuilder implements \Countable
 		return count($this->_prefixCols) +
 			count($this->_suffixCols) +
 			count($this->_productFields) +
-			count($this->_variantColumns)
-		;
+			count($this->_priceFields) +
+			count($this->_variantColumns);
 	}
 
 	/**
@@ -179,13 +193,13 @@ class HeadingBuilder implements \Countable
 	{
 		for ($i = 1; $i <= HeadingKeys::NUM_VARIANTS; $i++) {
 			$varName = HeadingKeys::VAR_NAME_PREFIX . $i;
-			$varVal  = HeadingKeys::VAR_VAL_PREFIX . $i;
+			$varVal = HeadingKeys::VAR_VAL_PREFIX . $i;
 
 			$transName = $this->_trans->trans(self::TRANS_PREFIX . HeadingKeys::VAR_NAME_PREFIX) . ' ' . $i;
-			$transVal  = $this->_trans->trans(self::TRANS_PREFIX . HeadingKeys::VAR_VAL_PREFIX) . ' ' . $i;
+			$transVal = $this->_trans->trans(self::TRANS_PREFIX . HeadingKeys::VAR_VAL_PREFIX) . ' ' . $i;
 
 			$this->_variantColumns[$varName] = $transName;
-			$this->_variantColumns[$varVal]  = $transVal;
+			$this->_variantColumns[$varVal] = $transVal;
 		}
 	}
 
@@ -229,7 +243,25 @@ class HeadingBuilder implements \Countable
 		return $this->_translate($this->_prefixCols) +
 			$this->_productFields +
 			$this->_translate($this->_suffixCols) +
+			$this->_priceFields +
 			$this->_variantColumns;
+	}
+
+	/**
+	 * Set price columns for spreadsheet
+	 */
+	private function _setPriceFields()
+	{
+		$priceFields = [];
+		$priceTypes  = $this->_translate($this->_priceTypes);
+
+		foreach ($priceTypes as $key => $priceType) {
+			foreach ($this->_currencies as $currency) {
+				$priceFields[$key . '.' . $currency] = $priceType . ' (' . $currency . ')';
+			}
+		}
+
+		$this->_priceFields = $priceFields;
 	}
 
 }
