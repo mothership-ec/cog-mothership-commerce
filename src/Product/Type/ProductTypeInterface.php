@@ -16,4 +16,10 @@ use Message\Cog\Field\ContentTypeInterface;
 interface ProductTypeInterface extends ContentTypeInterface
 {
 	public function getProductDisplayName(Product $product);
+
+	public function getName();
+
+	public function getDescription();
+
+	public function setFields(Factory $factory, Product $product = null);
 }

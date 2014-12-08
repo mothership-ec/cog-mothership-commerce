@@ -29,15 +29,17 @@ class Loader
 		Type\Collection $productTypes,
 		Type\DetailLoader $detailLoader,
 		EntityLoaderCollection $entityLoaders,
-		$priceTypes = array()
+		$priceTypes = array(),
+		$defaultCurrency
 	) {
-		$this->_query         = $query;
-		$this->_locale        = $locale;
-		$this->_productTypes  = $productTypes;
-		$this->_detailLoader  = $detailLoader;
-		$this->_priceTypes    = $priceTypes;
-		$this->_fileLoader    = $fileLoader;
-		$this->_entityLoaders = $entityLoaders;
+		$this->_query           = $query;
+		$this->_locale          = $locale;
+		$this->_productTypes    = $productTypes;
+		$this->_detailLoader    = $detailLoader;
+		$this->_priceTypes      = $priceTypes;
+		$this->_fileLoader      = $fileLoader;
+		$this->_entityLoaders   = $entityLoaders;
+		$this->_defaultCurrency = $defaultCurrency;
 	}
 
 	public function getEntityLoader($entityName)
@@ -338,7 +340,7 @@ class Loader
 
 		$products = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\ProductProxy',
-			[$this->_locale, $this->_priceTypes, $this->_entityLoaders]
+			[$this->_locale, $this->_priceTypes, $this->_defaultCurrency, $this->_entityLoaders]
 		);
 
 		foreach ($result as $key => $data) {

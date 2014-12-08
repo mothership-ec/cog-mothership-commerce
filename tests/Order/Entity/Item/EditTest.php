@@ -35,39 +35,4 @@ class EditTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_edit->updateStatus(new Item\Item, 100);
 	}
-
-	public function testUpdateStatusIgnoresFalseyValues()
-	{
-		$this->markTestIncomplete('This test needs looking at, the return value has changed so we need another way to test this');
-		$status = new Status(100, 'Something');
-
-		$this->_statuses
-			->expects($this->any())
-			->method('exists')
-			->with(100)
-			->will($this->returnValue(true));
-
-		$this->_statuses
-			->expects($this->any())
-			->method('get')
-			->with(100)
-			->will($this->returnValue($status));
-
-		$item = new Item\Item;
-		$item->status = $status;
-
-		$items = [
-			null,
-			$item,
-			false
-		];
-
-		$this->assertFalse($this->_edit->updateStatus($items, 100));
-
-		$collection = new Item\Collection;
-
-		$collection->append($item); // this method don't allow any falsey values anyways
-
-		$this->assertFalse($this->_edit->updateStatus($collection, 100));
-	}
 }
