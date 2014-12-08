@@ -30,9 +30,11 @@
 				<dt>Discount</dt>
 					<dd>{{ item.discount|price(order.currencyID) }}</dd>
 				<dt>Tax</dt>
-				{% for type,rate in item.taxRates %}
-				    <dd>{{ type }}: {{ (item.net*(rate/100))|price(order.currencyID) }}</dd>
-				{% endfor %}
+					<dd>	
+						{% for type,rate in item.taxRates %}
+						    <p>{{ type }}: {{ (item.net*(rate/100))|price(order.currencyID) }}</p>
+						{% endfor %}
+					</dd>
 				<dt>Gross</dt>
 					<dd>{{ item.gross|price(order.currencyID) }}</dd>
 				<dt>List price</dt>

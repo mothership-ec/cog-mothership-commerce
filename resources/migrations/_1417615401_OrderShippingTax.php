@@ -2,7 +2,7 @@
 
 use Message\Cog\Migration\Adapter\MySQL\Migration;
 
-class _1415804834_OrderItemTaxRates extends Migration
+class _1417615401_OrderShippingTax extends Migration
 {
 	public function up()
 	{
