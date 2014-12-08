@@ -13,9 +13,10 @@ class ProductProxy extends Product
 	public function __construct(
 		Locale $locale,
 		array $priceTypes = array(),
+		$defaultCurrency,
 		EntityLoaderCollection $loaders
 	) {
-		parent::__construct($locale, $priceTypes);
+		parent::__construct($locale, $priceTypes, $defaultCurrency);
 
 		$this->_loaders = $loaders;
 	}

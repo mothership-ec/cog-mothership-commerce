@@ -79,7 +79,8 @@ class TotalSales extends Controller
 				[
 					'value'   => $total['0'],
 				]
-			]
+			],
+			'currency' => $this->get('currency.company'),
 		]);
 	}
 }

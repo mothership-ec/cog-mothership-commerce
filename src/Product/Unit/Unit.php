@@ -6,8 +6,9 @@ use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\Commerce\Product\Price\Pricing;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
+use Message\Mothership\Commerce\Product\Price\PricedInterface;
 
-class Unit
+class Unit implements PricedInterface
 {
 	const DEFAULT_STOCK_LEVEL = 0;
 
@@ -32,9 +33,11 @@ class Unit
 	public $product;
 
 	protected $_locale;
+	protected $_defaultCurrency;
 
-	public function __construct(Locale $locale, array $priceTypes)
+	public function __construct(Locale $locale, array $priceTypes, $defaultCurrency)
 	{
+		$this->_defaultCurrency = $defaultCurrency;
 		$this->authorship = new Authorship;
 		$this->_locale = $locale;
 		foreach ($priceTypes as $type) {
@@ -61,8 +64,15 @@ class Unit
 		return ucfirst($options);
 	}
 
-	public function getPrice($type = 'retail', $currencyID = 'GBP')
+	public function getPrices()
 	{
+		return $this->price;
+	}
+
+	public function getPrice($type = 'retail', $currencyID = null)
+	{
+		$currencyID = $currencyID?:$this->_defaultCurrency;
+
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 
