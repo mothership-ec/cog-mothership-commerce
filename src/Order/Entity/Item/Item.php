@@ -110,6 +110,7 @@ class Item implements EntityInterface, RecordInterface
 		foreach ($product->getTaxRates() as $taxRate) {
 			$this->_taxes[$taxRate->getType()] = $taxRate->getRate();
 		}
+		$this->actualPrice     = null;
 
 		return $this;
 	}

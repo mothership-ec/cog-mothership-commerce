@@ -82,6 +82,20 @@ class Assembler
 	}
 
 	/**
+	 * Updates the currency of the order and alters the items in response
+	 * 
+	 * @param  string $currency the currency to update
+	 * @return $this            for chaining
+	 */
+	public function updateCurrency($currency)
+	{
+		$this->getOrder()->currencyID = $currency;
+		$this->_refreshItems();
+
+		return $this;
+	}
+
+	/**
 	 * Set a property to be used on a specific collection of entities as the ID
 	 * property.
 	 *
@@ -455,6 +469,22 @@ class Assembler
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Refresh the item prices. For when a contextual update happens such as 
+	 * currency changes
+	 * 
+	 * @return Assembler Returns $this for chainability
+	 */
+	protected function _refreshItems()
+	{
+		foreach ($this->getOrder()->getItems() as $item) {
+			$unit = $item->getUnit();
+			$item->populate($unit);
+		}
+
+		return $this->dispatchEvent();
 	}
 
 	/**

@@ -33,6 +33,7 @@ class Loader
 		Type\DetailLoader $detailLoader,
 		EntityLoaderCollection $entityLoaders,
 		$priceTypes = array(),
+		$defaultCurrency,
 		TaxStrategyInterface $taxStrategy
 	) {
 		$this->_query         = $query;
@@ -42,6 +43,7 @@ class Loader
 		$this->_priceTypes    = $priceTypes;
 		$this->_fileLoader    = $fileLoader;
 		$this->_entityLoaders = $entityLoaders;
+		$this->_defaultCurrency = $defaultCurrency;
 		$this->_taxStrategy    = $taxStrategy;
 	}
 
@@ -343,7 +345,7 @@ class Loader
 
 		$products = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\ProductProxy',
-			[$this->_locale, $this->_priceTypes, $this->_entityLoaders, clone $this->_taxStrategy] // clone strategy as if inclusive, different base tax rates.
+			[$this->_locale, $this->_priceTypes, $this->_defaultCurrency, $this->_entityLoaders, clone $this->_taxStrategy] // clone strategy as if inclusive, different base tax rates.
 		);
 
 		foreach ($result as $key => $data) {

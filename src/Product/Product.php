@@ -6,7 +6,7 @@ use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
 use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
-class Product
+class Product implements Price\PricedInterface
 {
 	public $id;
 	public $catalogueID;
@@ -46,6 +46,8 @@ class Product
 
 	protected $_taxStrategy;
 
+	protected $_defaultCurrency;
+
 	/**
 	 * Initiate the object and set some basic properties up
 	 *
@@ -53,12 +55,13 @@ class Product
 	 * @param array  $priceTypes 	array of price types
 	 * @param array  $taxStrategy   the tax strategy to use to resolve the correct price
 	 */
-	public function __construct(Locale $locale, array $priceTypes = array(), TaxStrategyInterface $taxStrategy)
+	public function __construct(Locale $locale, array $priceTypes = array(), $defaultCurrency, TaxStrategyInterface $taxStrategy)
 	{
 		$this->authorship  = new Authorship;
 		$this->priceTypes  = $priceTypes;
 		$this->_locale     = $locale;
 		$this->_taxStrategy = $taxStrategy;
+		$this->_defaultCurrency = $defaultCurrency;
 
 		$this->_units      = new Unit\Collection;
 		$this->_images     = new Image\Collection;
@@ -126,8 +129,10 @@ class Product
 	 *
 	 * @return string             Loaded price
 	 */
-	public function getPrice($type = 'retail', $currencyID = 'GBP')
+	public function getPrice($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->getPrices()[$type]->getPrice($currencyID, $this->_locale);
 	}
 
@@ -140,8 +145,10 @@ class Product
 	 *
 	 * @return string|false       Lowest price or false if $prices is empty
 	 */
-	public function getPriceFrom($type = 'retail', $currencyID = 'GBP')
+	public function getPriceFrom($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		$basePrice = $this->getPrice($type, $currencyID);
 		$prices    = array();
 
@@ -159,16 +166,20 @@ class Product
 	/**
 	 * Get the net price
 	 */
-	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
+	public function getNetPrice($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->_taxStrategy->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
 	 * Get the lowest possible net price
 	 */
-	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
+	public function getNetPriceFrom($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->_taxStrategy->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
 	}
 
@@ -201,8 +212,10 @@ class Product
 	 *
 	 * @return boolean                Result of checkPunit
 	 */
-	public function hasVariablePricing($type = 'retail', $currencyID = 'GBP', array $options = null)
+	public function hasVariablePricing($type = 'retail', $currencyID = null, array $options = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		$basePrice = $this->getPrice($type, $currencyID);
 		foreach ($this->getVisibleUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) != $basePrice) {

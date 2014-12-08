@@ -32,7 +32,7 @@ class ApparelProductType implements ProductTypeInterface
 		return 'A wearable item e.g. clothing';
 	}
 
-	public function setFields(Factory $factory)
+	public function setFields(Factory $factory, Product $product = null)
 	{
 		$factory->add($factory->getField('text', 'year', 'Year'));
 

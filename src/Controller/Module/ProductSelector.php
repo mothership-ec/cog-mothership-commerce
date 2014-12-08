@@ -13,6 +13,7 @@ use Message\Mothership\Commerce\Field\ProductUnitInStockOnlyChoiceType;
 use Message\Mothership\CMS\Page\Content;
 
 use Message\Cog\Controller\Controller;
+use Message\Mothership\Commerce\Event\CurrencyChangeEvent;
 
 class ProductSelector extends Controller
 {
