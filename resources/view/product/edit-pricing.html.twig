@@ -1,0 +1,41 @@
+{% extends 'Message:Mothership:Commerce::product:edit-layout' %}
+
+{% block edit %}
+	{{ form_start(form, {attr: {id: 'price-form'}}) }}
+		<div class="currency-group">
+		{% for currency, price in form.prices.currencies %}
+			<section class="module">
+				<h2 class="title">{{ currency }}</h2>
+				{{ form_widget(price) }}
+			</section>
+		{% endfor %}
+		</div>
+		<h4>Tax Rate</h4>
+		{{ form_widget(form.tax_rate) }}
+		
+		<h4>Tax Strategy</h4>
+		{{ form_widget(form.tax_strategy) }}
+		
+		<h4>Export Value</h4>
+		{{ form_widget(form.export_value) }}
+
+		<span type="submit" class="button small save" id="save-content" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
+			{{ 'ms.commerce.product.button.save'|trans }}
+		</span>
+	{{ form_end(form) }}
+{% endblock %}
+
+{% block after %}
+	{% include 'Message:Mothership:Commerce::product:modals:pricing-warn' %}
+	<script>
+		window.priceWarning = '{{"ms.commerce.product.pricing.warning" | trans}}';
+	</script>
+	{% javascripts 
+		'@Message:Mothership:Commerce::resources/assets/js/price-warn.js'
+
+		output='/assets/js/commerce/price-warn.js'
+		filter='?jsmin'
+	%}
+	<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+{% endblock %}
