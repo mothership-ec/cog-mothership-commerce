@@ -9,16 +9,18 @@ use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
+use Message\Mothership\Report\Filter\DateRange;
 
 class PaymentsAndRefunds extends AbstractTransactions
 {
 	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
-		$this->name = 'payments_refunds';
+		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+		$this->name        = 'payments_refunds';
 		$this->displayName = 'Payments & Refunds';
 		$this->reportGroup = 'Transactions';
-		$this->_charts = [new TableChart];
-		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+		$this->_charts[]   = new TableChart;
+		$this->_filters->add(new DateRange);
 	}
 
 	public function getCharts()
@@ -65,6 +67,18 @@ class PaymentsAndRefunds extends AbstractTransactions
 			->orderBy('created_at DESC')
 			->limit('25')
 		;
+
+		// filter dates
+		if($this->_filters->exists('date_range')) {
+			$dateFilter = $this->_filters->get('date_range');
+			if($date = $dateFilter->getStartDate()) {
+				$queryBuilder->where('date > ?d', [$date->format('U')]);
+			}
+
+			if($date = $dateFilter->getEndDate()) {
+				$queryBuilder->where('date < ?d', [$date->format('U')]);
+			}
+		}
 
 		return $queryBuilder->getQuery();
 	}

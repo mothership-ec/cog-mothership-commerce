@@ -6,10 +6,11 @@ use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Chart\TableChart;
-use Message\Mothership\Report\Filter\DateRangeFilter;
+use Message\Mothership\Report\Filter\DateForm;
 
 class StockSummary extends AbstractReport
 {
@@ -20,7 +21,7 @@ class StockSummary extends AbstractReport
 		$this->displayName = 'Stock Summary';
 		$this->reportGroup = "Products";
 		$this->_charts  = [new TableChart];
-		// $this->_filters->add(new DateRangeFilter);
+		$this->_filters->add(new DateForm);
 	}
 
 	public function getCharts()
@@ -52,13 +53,21 @@ class StockSummary extends AbstractReport
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 
-		// if ($date){
-			$queryBuilder->from("product_unit_stock stock");
-		// } else {
-		// 	$this->_queryBuilder->from("product_unit_stock_snapshot stock");
-			// $this->_queryBuilder->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?), INTERVAL 3 HOUR)');
-			// $this->_queryBuilder->where('? <= stock.created_at');
-		// }
+		$queryBuilder->from("product_unit_stock stock");
+
+		if($this->_filters->get('date_form')->getDateChoice()) {
+
+			$dateFilter = $this->_filters->get('date_form');
+			$today = new DateTimeImmutable();
+			$date = $dateFilter->getDateChoice();
+
+			if($date->format('YMd') < $today->format('YMd')) {
+
+				$queryBuilder->from("product_unit_stock_snapshot stock");
+				$queryBuilder->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?d), INTERVAL 3 HOUR)', [$date->format('U')]);
+				$queryBuilder->where('?d <= stock.created_at', [$date->format('U')]);
+			}
+		}
 
 		$queryBuilder
 			->select('product.product_id AS "ID"')

@@ -9,7 +9,7 @@ use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
-use Message\Mothership\Report\Filter\DateRangeFilter;
+use Message\Mothership\Report\Filter\DateRange;
 
 class SalesByMonth extends AbstractSales
 {
@@ -20,7 +20,7 @@ class SalesByMonth extends AbstractSales
 		$this->displayName = 'Sales by Month';
 		$this->reportGroup = "Sales";
 		$this->_charts = [new TableChart];
-		$this->_filters->add(new DateRangeFilter);
+		$this->_filters->add(new DateRange);
 	}
 
 	public function getCharts()
@@ -72,8 +72,8 @@ class SalesByMonth extends AbstractSales
 		;
 
 		// filter dates
-		if($this->_filters->exists('filter_date')) {
-			$dateFilter = $this->_filters->get('filter_date');
+		if($this->_filters->exists('date_range')) {
+			$dateFilter = $this->_filters->get('date_range');
 
 			if($date = $dateFilter->getStartDate()) {
 				$queryBuilder->where('date > ?d', [$date->format('U')]);
