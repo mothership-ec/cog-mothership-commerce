@@ -88,7 +88,6 @@ class SalesByOrder extends AbstractSales
 
 			if($date = $dateFilter->getStartDate()) {
 				$queryBuilder->where('date > ?d', [$date->format('U')]);
-				de("here");
 			}
 
 			if($date = $dateFilter->getEndDate()) {
@@ -96,7 +95,7 @@ class SalesByOrder extends AbstractSales
 			}
 
 			if(!$dateFilter->getStartDate() && !$dateFilter->getEndDate()) {
-				$queryBuilder->where('date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND UNIX_TIMESTAMP(NOW())');
+				$queryBuilder->where('date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH)) AND UNIX_TIMESTAMP(NOW())');
 			}
 		}
 
