@@ -10,6 +10,8 @@ use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateRange;
+use Message\Mothership\Report\Filter\Choices;
+
 
 class PaymentsAndRefunds extends AbstractTransactions
 {
@@ -21,6 +23,11 @@ class PaymentsAndRefunds extends AbstractTransactions
 		$this->reportGroup = 'Transactions';
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
+		$this->_filters->add(new Choices("type", "Type",[
+				'payment' => 'Payment',
+				'refund' => 'Refund'
+			],false)
+		);
 	}
 
 	public function getCharts()
@@ -77,6 +84,17 @@ class PaymentsAndRefunds extends AbstractTransactions
 
 			if($date = $dateFilter->getEndDate()) {
 				$queryBuilder->where('date < ?d', [$date->format('U')]);
+			}
+		}
+
+		// filter type
+		if($this->_filters->exists('type')) {
+			$type = $this->_filters->get('type');
+			if($type = $type->getChoices()) {
+				is_array($type) ?
+					$queryBuilder->where('Type IN (?js)', [$type]) :
+					$queryBuilder->where('Type = (?s)', [$type])
+				;
 			}
 		}
 

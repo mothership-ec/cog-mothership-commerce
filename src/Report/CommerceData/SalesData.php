@@ -44,7 +44,6 @@ class SalesData
 			->where('order_summary.status_code >= 0')
 			->where('item.product_id NOT IN (9)')
 			->where('return_item.exchange_item_id IS NULL')
-			->where('item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())')
 		;
 
 		return $data;

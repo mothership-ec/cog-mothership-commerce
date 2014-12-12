@@ -10,6 +10,8 @@ use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateRange;
+use Message\Mothership\Report\Filter\Choices;
+
 
 class SalesByProduct extends AbstractSales
 {
@@ -19,8 +21,6 @@ class SalesByProduct extends AbstractSales
 		$this->name = 'sales_by_product';
 		$this->displayName = 'Sales by Product';
 		$this->reportGroup = "Sales";
-		$this->_charts = [new TableChart];
-		$this->_filters->add(new DateRange);
 	}
 
 	public function getCharts()
@@ -77,15 +77,54 @@ class SalesByProduct extends AbstractSales
 		;
 
 		// filter dates
-		if($this->_filters->exists('date_range')) {
+		if($this->_filters->count('date_range')) {
+
 			$dateFilter = $this->_filters->get('date_range');
 
 			if($date = $dateFilter->getStartDate()) {
 				$queryBuilder->where('date > ?d', [$date->format('U')]);
+				de("here");
 			}
 
 			if($date = $dateFilter->getEndDate()) {
 				$queryBuilder->where('date < ?d', [$date->format('U')]);
+			}
+
+			if(!$dateFilter->getStartDate() && !$dateFilter->getEndDate()) {
+				$queryBuilder->where('date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND UNIX_TIMESTAMP(NOW())');
+			}
+		}
+
+		// filter currency
+		if($this->_filters->exists('currency')) {
+			$currency = $this->_filters->get('currency');
+			if($currency = $currency->getChoices()) {
+				is_array($currency) ?
+					$queryBuilder->where('Currency IN (?js)', [$currency]) :
+					$queryBuilder->where('Currency = (?s)', [$currency])
+				;
+			}
+		}
+
+		// filter source
+		if($this->_filters->exists('source')) {
+			$source = $this->_filters->get('source');
+			if($source = $source->getChoices()) {
+				is_array($source) ?
+					$queryBuilder->where('Source IN (?js)', [$source]) :
+					$queryBuilder->where('Source = (?s)', [$source])
+				;
+			}
+		}
+
+		// filter type
+		if($this->_filters->exists('type')) {
+			$type = $this->_filters->get('type');
+			if($type = $type->getChoices()) {
+				is_array($type) ?
+					$queryBuilder->where('Type IN (?js)', [$type]) :
+					$queryBuilder->where('Type = (?s)', [$type])
+				;
 			}
 		}
 

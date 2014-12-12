@@ -41,7 +41,6 @@ class ShippingData
 			->leftJoin('order_address', 'order_summary.order_id = order_address.order_id AND order_address.type = "delivery"') // AND order_address.deleted_at IS NULL
 			->leftJoin('user', 'order_summary.user_id = user.user_id')
 			->where('order_summary.status_code >= 0')
-			->where('order_summary.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())')
 		;
 
 		return $data;
