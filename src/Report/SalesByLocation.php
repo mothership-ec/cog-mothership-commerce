@@ -20,15 +20,18 @@ class SalesByLocation extends AbstractSales
 		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
 		$this->name = 'sales_by_location';
 		$this->displayName = 'Sales by Location';
+		$this->description =
+			"This report groups total income by the country of the order delivery address.
+			By default it includes all data (orders, returns, shipping) from the last 12 months.";
 		$this->reportGroup = "Sales";
 	}
 
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
-		$columns = $this->getColumns();
-
 		foreach ($this->_charts as $chart) {
+			$data = $this->_dataTransform($this->_getQuery()->run(), $chart);
+			$columns = $this->getColumns();
+
 			$chart->setColumns($columns);
 			$chart->setData($data);
 		}
@@ -126,27 +129,29 @@ class SalesByLocation extends AbstractSales
 		return $queryBuilder->getQuery();
 	}
 
-	private function _dataTransform($data)
+	private function _dataTransform($data, $chart)
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				$row->Country,
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-			];
+		if ($chart instanceof TableChart ) {
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Country,
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+				];
+			}
 		}
 
 		return json_encode($result);
