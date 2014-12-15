@@ -196,12 +196,20 @@ class Product implements Price\PricedInterface
 	 *
 	 * @return boolean                Result of checkPunit
 	 */
-	public function hasVariablePricing($type = 'retail', $currencyID = null, array $options = null)
+	public function hasVariablePricing($type = 'retail', $currencyID = null, array $options = [])
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$basePrice = $this->getPrice($type, $currencyID);
 		foreach ($this->getVisibleUnits() as $unit) {
+			$valid = true;
+			foreach($options as $option => $val) {
+				if($unit->getOption($option) !== $val) {
+					$valid = false;
+					break;
+				}
+			}
+
 			if ($unit->getPrice($type, $currencyID) != $basePrice) {
 				return true;
 			}
