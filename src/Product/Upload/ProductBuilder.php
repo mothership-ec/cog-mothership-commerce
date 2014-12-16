@@ -36,10 +36,19 @@ class ProductBuilder
 	 */
 	private $_fieldCrawler;
 
+	/**
+	 * @var \Message\Cog\Localisation\Locale
+	 */
 	private $_locale;
 
+	/**
+	 * @var array
+	 */
 	private $_currencies;
 
+	/**
+	 * @var
+	 */
 	private $_defaultCurrency;
 
 	/**
@@ -121,7 +130,7 @@ class ProductBuilder
 			}
 		}
 
-		$this->_product->type = $this->_productTypes->get('basic');
+		$this->_product->type = $this->_productTypes->getDefault();
 	}
 
 	private function _setDetails(array $data)

@@ -85,12 +85,14 @@ class Create
 				locale            = :locale?s,
 				display_name      = :displayName?s,
 				sort_name         = :sortName?s,
+				description       = :description?s,
 				short_description = :shortDesc?s',
 			[
 				'id'          => $productID,
 				'locale'      => $this->_locale->getID(),
 				'displayName' => $product->displayName,
 				'sortName'    => $product->sortName,
+				'description' => $product->description,
 				'shortDesc'   => $product->shortDescription,
 			]
 		);

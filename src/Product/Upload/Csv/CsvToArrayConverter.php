@@ -11,6 +11,10 @@ class CsvToArrayConverter
 		$rows = [];
 
 		foreach ($csv as $row) {
+			array_walk($row, function(&$value) {
+				$value = trim($value);
+			});
+
 			$rows[] = $row;
 		}
 
