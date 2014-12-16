@@ -41,7 +41,7 @@ class StockSummary extends AbstractReport
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run(),"json");
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -75,7 +75,7 @@ class StockSummary extends AbstractReport
 	 *
 	 * @return Query
 	 */
-	private function _getQuery()
+	protected function _getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 
@@ -142,7 +142,7 @@ class StockSummary extends AbstractReport
 	 *
 	 * @return String|Array  Returns columns as string in JSON format or array.
 	 */
-	private function _dataTransform($data, $output)
+	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 

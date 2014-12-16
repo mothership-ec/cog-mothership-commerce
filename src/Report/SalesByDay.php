@@ -41,7 +41,7 @@ class SalesByDay extends AbstractSales
 	public function getCharts()
 	{
 		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
-		$columns = $this->getColumns();
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -54,19 +54,17 @@ class SalesByDay extends AbstractSales
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'number', 'name' => "Date",     ],
-			['type' => 'string', 'name' => "Currency", ],
-			['type' => 'number', 'name' => "Net",      ],
-			['type' => 'number', 'name' => "Tax",      ],
-			['type' => 'number', 'name' => "Gross",    ],
+		return [
+			'Date'     => 'number',
+			'Currency' => 'string',
+			'Net'      => 'number',
+			'Tax'      => 'number',
+			'Gross'    => 'number',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -78,7 +76,7 @@ class SalesByDay extends AbstractSales
 	 *
 	 * @return Query
 	 */
-	private function _getQuery()
+	protected function _getQuery()
 	{
 		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
 
@@ -156,8 +154,6 @@ class SalesByDay extends AbstractSales
 			}
 		}
 
-		//de($queryBuilder->getQueryString())->length(-1);
-
 		return $queryBuilder->getQuery();
 	}
 
@@ -169,7 +165,7 @@ class SalesByDay extends AbstractSales
 	 *
 	 * @return String|Array  Returns columns as string in JSON format or array.
 	 */
-	private function _dataTransform($data, $output)
+	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 
@@ -201,7 +197,6 @@ class SalesByDay extends AbstractSales
 
 			foreach ($data as $row) {
 				$result[] = [
-					$row->UnixDate,
 					$row->Date,
 					$row->Currency,
 					$row->Net,

@@ -42,7 +42,7 @@ class SalesByLocation extends AbstractSales
 	{
 		foreach ($this->_charts as $chart) {
 			$data = $this->_dataTransform($this->_getQuery()->run(), $chart);
-			$columns = $this->getColumns();
+			$columns = $this->_parseColumns($this->getColumns());
 
 			$chart->setColumns($columns);
 			$chart->setData($data);
@@ -78,7 +78,7 @@ class SalesByLocation extends AbstractSales
 	 *
 	 * @return Query
 	 */
-	private function _getQuery()
+	protected function _getQuery()
 	{
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
@@ -166,29 +166,27 @@ class SalesByLocation extends AbstractSales
 	 *
 	 * @return String|Array  Returns columns as string in JSON format or array.
 	 */
-	private function _dataTransform($data, $chart)
+	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 
-		if ($chart instanceof TableChart ) {
-			foreach ($data as $row) {
-				$result[] = [
-					$row->Country,
-					$row->Currency,
-					[
-						'v' => (float) $row->Net,
-						'f' => (string) number_format($row->Net,2,'.',',')
-					],
-					[
-						'v' => (float) $row->Tax,
-						'f' => (string) number_format($row->Tax,2,'.',',')
-					],
-					[
-						'v' => (float) $row->Gross,
-						'f' => (string) number_format($row->Gross,2,'.',',')
-					],
-				];
-			}
+		foreach ($data as $row) {
+			$result[] = [
+				$row->Country,
+				$row->Currency,
+				[
+					'v' => (float) $row->Net,
+					'f' => (string) number_format($row->Net,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Tax,
+					'f' => (string) number_format($row->Tax,2,'.',',')
+				],
+				[
+					'v' => (float) $row->Gross,
+					'f' => (string) number_format($row->Gross,2,'.',',')
+				],
+			];
 		}
 
 		return json_encode($result);

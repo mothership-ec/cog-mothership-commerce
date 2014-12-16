@@ -40,8 +40,8 @@ class SalesByItem extends AbstractSales
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
-		$columns = $this->getColumns();
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -58,21 +58,19 @@ class SalesByItem extends AbstractSales
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'number', 'name' => "Date",     ],
-			['type' => 'string', 'name' => "Order",    ],
-			['type' => 'string', 'name' => "Return",   ],
-			['type' => 'string', 'name' => "Source",   ],
-			['type' => 'string', 'name' => "Type",     ],
-			['type' => 'string', 'name' => "Product",  ],
-			['type' => 'string', 'name' => "Option",   ],
-			['type' => 'string', 'name' => "Currency", ],
-			['type' => 'number', 'name' => "Net",      ],
-			['type' => 'number', 'name' => "Tax",      ],
-			['type' => 'number', 'name' => "Gross",    ],
+		return [
+			'Date'     => 'number',
+			'Order'    => 'string',
+			'Return'   => 'string',
+			'Source'   => 'string',
+			'Type'     => 'string',
+			'Product'  => 'string',
+			'Option'   => 'string',
+			'Currency' => 'string',
+			'Net'      => 'number',
+			'Tax'      => 'number',
+			'Gross'    => 'number',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -84,7 +82,7 @@ class SalesByItem extends AbstractSales
 	 *
 	 * @return Query
 	 */
-	private function _getQuery()
+	protected function _getQuery()
 	{
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
@@ -179,47 +177,67 @@ class SalesByItem extends AbstractSales
 	 *
 	 * @return String|Array  Returns columns as string in JSON format or array.
 	 */
-	private function _dataTransform($data)
+	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 
-		foreach ($data as $row) {
+		if ($output === "json") {
 
-			$result[] = [
-				[
-					'v' => (float) $row->UnixDate,
-					'f' => (string) $row->Date
-				],
-				'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
-				$row->Return ?
-					'<a href ="'.$this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->Return]).'">'.$row->Return.'</a>'
-					: "",
-				ucwords($row->Source),
-				ucwords($row->Type),
-				$row->Product_ID ?
+			foreach ($data as $row) {
+
+				$result[] = [
 					[
-						'v' => ucwords($row->Product),
-						'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->Product_ID]).'">'
-						.ucwords($row->Product).'</a>'
-					]
-					: $row->Product,
-				ucwords($row->Option),
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-			];
-		}
+						'v' => (float) $row->UnixDate,
+						'f' => (string) $row->Date
+					],
+					'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
+					$row->Return ?
+						'<a href ="'.$this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->Return]).'">'.$row->Return.'</a>'
+						: "",
+					ucwords($row->Source),
+					ucwords($row->Type),
+					$row->Product_ID ?
+						[
+							'v' => ucwords($row->Product),
+							'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->Product_ID]).'">'
+							.ucwords($row->Product).'</a>'
+						]
+						: $row->Product,
+					ucwords($row->Option),
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+				];
+			}
+			return json_encode($result);
+		} else {
 
-		return json_encode($result);
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Date,
+					$row->Order,
+					$row->Return ? $row->Return : "",
+					ucwords($row->Source),
+					ucwords($row->Type),
+					$row->Product_ID ? $row->Product : "",
+					ucwords($row->Option),
+					$row->Currency,
+					$row->Net,
+					$row->Tax,
+					$row->Gross,
+				];
+			}
+			return $result;
+		}
 	}
 }

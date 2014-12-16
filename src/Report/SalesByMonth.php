@@ -78,7 +78,7 @@ class SalesByMonth extends AbstractSales
 	 *
 	 * @return Query
 	 */
-	private function _getQuery()
+	protected function _getQuery()
 	{
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
@@ -158,7 +158,7 @@ class SalesByMonth extends AbstractSales
 		return $queryBuilder->getQuery();
 	}
 
-	private function _dataTransform($data)
+	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 

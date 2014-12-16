@@ -80,7 +80,7 @@ class SalesByProduct extends AbstractSales
 	 *
 	 * @return Query
 	 */
-	private function _getQuery()
+	protected function _getQuery()
 	{
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
@@ -171,7 +171,7 @@ class SalesByProduct extends AbstractSales
 	 *
 	 * @return String|Array  Returns columns as string in JSON format or array.
 	 */
-	private function _dataTransform($data)
+	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 
