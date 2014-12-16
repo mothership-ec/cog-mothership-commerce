@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
-use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
@@ -15,17 +14,33 @@ use Message\Mothership\Report\Filter\Choices;
 
 class SalesByDay extends AbstractSales
 {
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 * @param UrlGenerator          $routingGenerator
+	 * @param DispatcherInterface   $eventDispatcher
+	 */
+	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
-		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
 		$this->name        = 'sales_by_day';
 		$this->displayName = 'Sales by Day';
+		$this->description =
+			"This report groups the total income by the day the order/return was completed.
+			By default it includes all data (orders, returns, shipping) from the last month (by completed date).";
 		$this->reportGroup = "Sales";
 	}
 
+	/**
+	 * Retrieves JSON representation of the data and columns.
+	 * Applies data to chart types set on report.
+	 *
+	 * @return Array  Returns all types of chart set on report with appropriate data.
+	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
 		$columns = $this->getColumns();
 
 		foreach ($this->_charts as $chart) {
@@ -36,6 +51,11 @@ class SalesByDay extends AbstractSales
 		return $this->_charts;
 	}
 
+	/**
+	 * Set columns for use in reports.
+	 *
+	 * @return String  Returns columns in JSON format.
+	 */
 	public function getColumns()
 	{
 		$columns = [
@@ -49,11 +69,21 @@ class SalesByDay extends AbstractSales
 		return json_encode($columns);
 	}
 
+	/**
+	 * Dispatches event to get all sales, returns & shipping queries.
+	 *
+	 * Unions all sub queries & creates parent query.
+	 * Sum all totals and grouping by DATE & CURRENCY.
+	 * Order by DATE.
+	 *
+	 * @return Query
+	 */
 	private function _getQuery()
 	{
 		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
+
 		foreach($unions as $query) {
 			$fromQuery->unionAll($query);
 		}
@@ -71,25 +101,29 @@ class SalesByDay extends AbstractSales
 			->orderBy('UnixDate DESC')
 		;
 
-		// filter dates
-		if($this->_filters->count('date_range')) {
+		// Filter dates
+		if($this->_filters->exists('date_range')) {
+
+			$defaultDate = 'date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND UNIX_TIMESTAMP(NOW())';
 
 			$dateFilter = $this->_filters->get('date_range');
 
 			if($date = $dateFilter->getStartDate()) {
 				$queryBuilder->where('date > ?d', [$date->format('U')]);
+				$defaultDate = NULL;
 			}
 
 			if($date = $dateFilter->getEndDate()) {
 				$queryBuilder->where('date < ?d', [$date->format('U')]);
+				$defaultDate = NULL;
 			}
 
-			if(!$dateFilter->getStartDate() && !$dateFilter->getEndDate()) {
-				$queryBuilder->where('date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND UNIX_TIMESTAMP(NOW())');
+			if($defaultDate) {
+				$queryBuilder->where($defaultDate);
 			}
 		}
 
-		// filter currency
+		// Filter currency
 		if($this->_filters->exists('currency')) {
 			$currency = $this->_filters->get('currency');
 			if($currency = $currency->getChoices()) {
@@ -100,7 +134,7 @@ class SalesByDay extends AbstractSales
 			}
 		}
 
-		// filter source
+		// Filter source
 		if($this->_filters->exists('source')) {
 			$source = $this->_filters->get('source');
 			if($source = $source->getChoices()) {
@@ -111,7 +145,7 @@ class SalesByDay extends AbstractSales
 			}
 		}
 
-		// filter type
+		// Filter type
 		if($this->_filters->exists('type')) {
 			$type = $this->_filters->get('type');
 			if($type = $type->getChoices()) {
@@ -122,35 +156,60 @@ class SalesByDay extends AbstractSales
 			}
 		}
 
+		//de($queryBuilder->getQueryString())->length(-1);
+
 		return $queryBuilder->getQuery();
 	}
 
-	private function _dataTransform($data)
+	/**
+	 * Takes the data and transforms it into a useable format.
+	 *
+	 * @param  $data    DB\Result  The data from the report query.
+	 * @param  $output  String     The type of output required.
+	 *
+	 * @return String|Array  Returns columns as string in JSON format or array.
+	 */
+	private function _dataTransform($data, $output)
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				[
-					'v' => (float) $row->UnixDate,
-					'f' => (string) $row->Date
-				],
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-			];
-		}
+		if ($output === "json") {
+			foreach ($data as $row) {
+				$result[] = [
+					[
+						'v' => (float) $row->UnixDate,
+						'f' => (string) $row->Date
+					],
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+				];
+			}
+			return json_encode($result);
 
-		return json_encode($result);
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					$row->UnixDate,
+					$row->Date,
+					$row->Currency,
+					$row->Net,
+					$row->Tax,
+					$row->Gross
+				];
+			}
+			return $result;
+		}
 	}
 }

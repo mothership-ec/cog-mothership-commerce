@@ -8,18 +8,31 @@ class PaymentsData
 {
 	private $_builderFactory;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 */
 	public function __construct(QueryBuilderFactory $builderFactory)
 	{
 		$this->_builderFactory = $builderFactory;
 	}
 
+	/**
+	 * Gets all PAYMENT data.
+	 *
+	 * All columns must match the other sub-queries used in TRANSACTIONS_REPORT.
+	 * This because all subqueries are UNIONED together.
+	 *
+	 * @return Query
+	 */
 	public function getQueryBuilder()
 	{
 		$data = $this->_builderFactory->getQueryBuilder();
 
 		$data
 			->select('payment.payment_id AS ID')
-			->select('payment.created_at')
+			->select('payment.created_at AS date')
 			->select('payment.created_by AS user_id')
 			->select('CONCAT(user.surname, ", ", user.forename) AS user')
 			->select('currency_id as currency')
@@ -30,7 +43,7 @@ class PaymentsData
 			->select('reference')
 			->from('payment')
 			->leftJoin('order_payment','payment.payment_id = order_payment.payment_id')
-			->join('user','user.user_id = payment.created_by')		;
+			->join('user','user.user_id = payment.created_by');
 
 		return $data;
 	}

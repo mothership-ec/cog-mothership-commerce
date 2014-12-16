@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
-use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
@@ -17,12 +16,26 @@ abstract class AbstractTransactions extends AbstractReport
 {
 	private $_eventDispatcher;
 
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 * @param UrlGenerator          $routingGenerator
+	 * @param DispatcherInterface   $eventDispatcher
+	 */
+	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
 		$this->_eventDispatcher = $eventDispatcher;
-		parent::__construct($builderFactory, $trans, $routingGenerator);
 	}
 
+	/**
+	 * Dispatch event.
+	 *
+	 * @param  FilterCollecion $filters  Any filters to be used in subqueries.
+	 *
+	 * @return ReportEvent
+	 */
 	protected function _dispatchEvent()
 	{
 		$event = new ReportEvent;

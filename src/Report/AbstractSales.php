@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
-use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
@@ -21,33 +20,58 @@ abstract class AbstractSales extends AbstractReport
 {
 	private $_eventDispatcher;
 
-	protected $_charts = [];
-
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 * @param UrlGenerator          $routingGenerator
+	 * @param DispatcherInterface   $eventDispatcher
+	 */
+	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
-		parent::__construct($builderFactory, $trans, $routingGenerator);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
 		$this->_eventDispatcher = $eventDispatcher;
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
-		$this->_filters->add(new Choices("currency", "Currency",[
+		// Params for Choices filter: unique filter name, label, choices, multi-choice
+		$this->_filters->add(new Choices(
+			"currency",
+			"Currency",
+			[
 				'GBP' => 'GBP',
-				'JPY' => 'JPY'
-			],false)
-		);
-		$this->_filters->add(new Choices("type", "Sale Type",[
-				'Order' => 'Sales',
+				'JPY' => 'JPY',
+			],
+			false
+		));
+		$this->_filters->add(new Choices(
+			"type",
+			"Sale Type",
+			[
+				'Order' => 'Order',
 				'Return' => 'Return',
 				'Exchange' => 'Exchange',
-				'shipping' => 'Shipping'
-			],true)
-		);
-		$this->_filters->add(new Choices("source", "Source",[
+				'shipping' => 'Shipping',
+			],
+			true
+		));
+		$this->_filters->add(new Choices(
+			"source",
+			"Source",
+			[
 				'web' => 'Web',
-				'epos' => 'EPOS'
-			],true)
-		);
+				'epos' => 'EPOS',
+			],
+			true
+		));
 	}
 
+	/**
+	 *
+	 * @param  FilterCollecion $filters  Any filters to be used in subqueries.
+	 *
+	 * @return ReportEvent
+	 *
+	 */
 	protected function _dispatchEvent(FilterCollecion $filters = null)
 	{
 		$event = new ReportEvent;

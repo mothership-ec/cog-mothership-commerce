@@ -285,6 +285,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Register reports.
+	 *
+	 * @param  ReportEvents\BuildReportCollectionEvent $event
+	 */
 	public function registerReports(ReportEvents\BuildReportCollectionEvent $event)
 	{
 		foreach ($this->get('commerce.reports') as $report) {
@@ -292,6 +297,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Builds the Sales reports.
+	 *
+	 * @param  ReportEvents\ReportEvent $event
+	 */
 	public function buildSalesReport(ReportEvents\ReportEvent $event)
 	{
 		foreach ($this->get('commerce.report.sales-data') as $query) {
@@ -299,6 +309,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Builds the Transaction report.
+	 *
+	 * @param  ReportEvents\ReportEvent $event
+	 */
 	public function buildTransactionReport(ReportEvents\ReportEvent $event)
 	{
 		foreach ($this->get('commerce.report.transaction-data') as $query) {

@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
-use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
@@ -14,16 +13,32 @@ use Message\Mothership\Report\Filter\DateForm;
 
 class StockSummary extends AbstractReport
 {
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator)
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 * @param UrlGenerator          $routingGenerator
+	 */
+	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator)
 	{
-		parent::__construct($builderFactory,$trans,$routingGenerator);
+		parent::__construct($builderFactory, $routingGenerator);
 		$this->name = 'stock_summary';
 		$this->displayName = 'Stock Summary';
 		$this->reportGroup = "Products";
+		$this->description =
+			"This report displays the stock levels per unit.
+			By default it displays the current stock. Snapshots of stock are made at the end of each day and
+			can be selected from the date filter.";
 		$this->_charts  = [new TableChart];
 		$this->_filters->add(new DateForm);
 	}
 
+	/**
+	 * Retrieves JSON representation of the data and columns.
+	 * Applies data to chart types set on report.
+	 *
+	 * @return Array  Returns all types of chart set on report with appropriate data.
+	 */
 	public function getCharts()
 	{
 		$data = $this->_dataTransform($this->_getQuery()->run());
@@ -37,6 +52,11 @@ class StockSummary extends AbstractReport
 		return $this->_charts;
 	}
 
+	/**
+	 * Set columns for use in reports.
+	 *
+	 * @return String  Returns columns in JSON format.
+	 */
 	public function getColumns()
 	{
 		$columns = [
@@ -49,12 +69,19 @@ class StockSummary extends AbstractReport
 		return json_encode($columns);
 	}
 
+	/**
+	 * Gets stock levels for all units.
+	 * Order by CATEGORY, PRODUCT, OPTIONS.
+	 *
+	 * @return Query
+	 */
 	private function _getQuery()
 	{
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 
 		$queryBuilder->from("product_unit_stock stock");
 
+		// Filter dates
 		if($this->_filters->get('date_form')->getDateChoice()) {
 
 			$dateFilter = $this->_filters->get('date_form');
@@ -107,24 +134,45 @@ class StockSummary extends AbstractReport
 		return $queryBuilder->getQuery();
 	}
 
-	private function _dataTransform($data)
+	/**
+	 * Takes the data and transforms it into a useable format.
+	 *
+	 * @param  $data    DB\Result  The data from the report query.
+	 * @param  $output  String     The type of output required.
+	 *
+	 * @return String|Array  Returns columns as string in JSON format or array.
+	 */
+	private function _dataTransform($data, $output)
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				$row->Category,
-				[
-					'v' => ucwords($row->Name),
-					'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'
-					.ucwords($row->Name).'</a>'
-				],
-				$row->Options,
-				$row->Stock,
-			];
-		}
+		if ($output === "json") {
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Category,
+					[
+						'v' => ucwords($row->Name),
+						'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'
+						.ucwords($row->Name).'</a>'
+					],
+					$row->Options,
+					$row->Stock,
+				];
+			}
+			return json_encode($result);
 
-		return json_encode($result);
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Name,
+					$row->ID,
+					$row->Options,
+					$row->Stock,
+				];
+			}
+			return $result;
+		}
 	}
 }
 

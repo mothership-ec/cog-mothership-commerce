@@ -4,7 +4,6 @@ namespace Message\Mothership\Commerce\Report;
 
 use Message\Cog\DB\QueryBuilderInterface;
 use Message\Cog\DB\QueryBuilderFactory;
-use Message\Cog\Localisation\Translator;
 use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
@@ -15,17 +14,30 @@ use Message\Mothership\Report\Filter\Choices;
 
 class SalesByLocation extends AbstractSales
 {
-	public function __construct(QueryBuilderFactory $builderFactory, Translator $trans, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 * @param UrlGenerator          $routingGenerator
+	 * @param DispatcherInterface   $eventDispatcher
+	 */
+	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
-		parent::__construct($builderFactory, $trans, $routingGenerator, $eventDispatcher);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
 		$this->name = 'sales_by_location';
 		$this->displayName = 'Sales by Location';
 		$this->description =
-			"This report groups total income by the country of the order delivery address.
-			By default it includes all data (orders, returns, shipping) from the last 12 months.";
+			"This report groups the total income by the country of the order delivery address.
+			By default it includes all data (orders, returns, shipping) from the last 12 months (by completed date).";
 		$this->reportGroup = "Sales";
 	}
 
+	/**
+	 * Retrieves JSON representation of the data and columns.
+	 * Applies data to chart types set on report.
+	 *
+	 * @return Array  Returns all types of chart set on report with appropriate data.
+	 */
 	public function getCharts()
 	{
 		foreach ($this->_charts as $chart) {
@@ -39,6 +51,11 @@ class SalesByLocation extends AbstractSales
 		return $this->_charts;
 	}
 
+	/**
+	 * Set columns for use in reports.
+	 *
+	 * @return String  Returns columns in JSON format.
+	 */
 	public function getColumns()
 	{
 		$columns = [
@@ -52,6 +69,15 @@ class SalesByLocation extends AbstractSales
 		return json_encode($columns);
 	}
 
+	/**
+	 * Dispatches event to get all sales, returns & shipping queries.
+	 *
+	 * Unions all sub queries & creates parent query.
+	 * Sum all totals and grouping by COUNTRY & CURRENCY.
+	 * Order by GROSS DESC.
+	 *
+	 * @return Query
+	 */
 	private function _getQuery()
 	{
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
@@ -74,26 +100,29 @@ class SalesByLocation extends AbstractSales
 			->orderBy('SUM(totals.gross) DESC')
 		;
 
-		// filter dates
-		if($this->_filters->count('date_range')) {
+		// Filter dates
+		if($this->_filters->exists('date_range')) {
+
+			$defaultDate = 'date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH)) AND UNIX_TIMESTAMP(NOW())';
 
 			$dateFilter = $this->_filters->get('date_range');
 
 			if($date = $dateFilter->getStartDate()) {
 				$queryBuilder->where('date > ?d', [$date->format('U')]);
+				$defaultDate = NULL;
 			}
 
 			if($date = $dateFilter->getEndDate()) {
 				$queryBuilder->where('date < ?d', [$date->format('U')]);
+				$defaultDate = NULL;
 			}
 
-			if(!$dateFilter->getStartDate() && !$dateFilter->getEndDate()) {
-				$queryBuilder->where('date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 3 MONTH)) AND UNIX_TIMESTAMP(NOW())');
+			if($defaultDate) {
+				$queryBuilder->where($defaultDate);
 			}
-
 		}
 
-		// filter currency
+		// Filter currency
 		if($this->_filters->exists('currency')) {
 			$currency = $this->_filters->get('currency');
 			if($currency = $currency->getChoices()) {
@@ -104,7 +133,7 @@ class SalesByLocation extends AbstractSales
 			}
 		}
 
-		// filter source
+		// Filter source
 		if($this->_filters->exists('source')) {
 			$source = $this->_filters->get('source');
 			if($source = $source->getChoices()) {
@@ -115,7 +144,7 @@ class SalesByLocation extends AbstractSales
 			}
 		}
 
-		// filter type
+		// Filter type
 		if($this->_filters->exists('type')) {
 			$type = $this->_filters->get('type');
 			if($type = $type->getChoices()) {
@@ -129,6 +158,14 @@ class SalesByLocation extends AbstractSales
 		return $queryBuilder->getQuery();
 	}
 
+	/**
+	 * Takes the data and transforms it into a useable format.
+	 *
+	 * @param  $data    DB\Result  The data from the report query.
+	 * @param  $output  String     The type of output required.
+	 *
+	 * @return String|Array  Returns columns as string in JSON format or array.
+	 */
 	private function _dataTransform($data, $chart)
 	{
 		$result = [];

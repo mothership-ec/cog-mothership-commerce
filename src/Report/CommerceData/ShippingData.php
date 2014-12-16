@@ -8,11 +8,28 @@ class ShippingData
 {
 	private $_builderFactory;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param QueryBuilderFactory   $builderFactory
+	 */
 	public function __construct(QueryBuilderFactory $builderFactory)
 	{
 		$this->_builderFactory = $builderFactory;
 	}
 
+	/**
+	 * Gets all SHIPPING data where:
+	 * Order status is not CANCELLED (-300) or PAYMENT_PENDING (-100).
+	 *
+	 * All columns must match the other sub-queries used in SALES_REPORT.
+	 * This because all subqueries are UNIONED together.
+	 *
+	 * @todo   Uncomment 'AND order_address.deleted_at IS NULL' when
+	 *         deletable address functionality is merged.
+	 *
+	 * @return Query
+	 */
 	public function getQueryBuilder()
 	{
 		$data = $this->_builderFactory->getQueryBuilder();
