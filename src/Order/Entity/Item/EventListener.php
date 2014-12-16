@@ -121,8 +121,9 @@ class EventListener implements SubscriberInterface
 				continue;
 			}
 
+			$includedTax = $item->getProduct()->getTaxStrategy()->getIncludedTaxRate();
 			// Remove the tax discount
-			$item->basePrice -= $this->_calculateInclusiveTax($item->actualPrice, $item->productTaxRate);
+			$item->basePrice -= $this->_calculateInclusiveTax($item->actualPrice, $includedTax);
 		}
 	}
 
@@ -178,6 +179,9 @@ class EventListener implements SubscriberInterface
 
 	protected function _calculateTaxForItem(Item $item)
 	{
+		// populate for taxStrategy
+		$item->populate($item->getUnit());
+
 		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
@@ -189,30 +193,34 @@ class EventListener implements SubscriberInterface
 			return;
 		}
 
-		// Set the tax rate to whatever the product's tax rate is, if not already set
-		if (!$item->taxRate) {
-			$item->taxRate = $item->productTaxRate;
-		}
+		// Set the tax rate to whatever the product's tax rate is
+		$item->taxRate = $item->productTaxRate;
 
-		// Set the gross to the list price minus the discount
-		$item->gross = round($item->actualPrice - $item->discount, 2);
-
-		// Calculate tax where the strategy is exclusive
+		// Get the adjusted gross based on tax rate differences.
+		// Takes off included tax and add actual tax.
 		if ('exclusive' === $item->taxStrategy) {
-			$item->tax    = round($item->gross * ($item->taxRate / 100), 2);
-			$item->gross += $item->tax;
+			// actual
+			$adjustedGross = $item->actualPrice;
+		} else {
+			// actual - included tax
+			$includedTax   = $this->_calculateInclusiveTax(
+				$item->actualPrice,
+				$item->getProduct()->getTaxStrategy()->getIncludedTaxRate()
+			);
+			
+			$adjustedGross = $item->actualPrice - $includedTax;
 		}
-		// Calculate tax where the strategy is inclusive
-		else {
-			$item->tax = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
-		}
+		// adjusted + tax
+		$adjustedGross += $adjustedGross * ($item->taxRate / 100);
 
-		// Set the net value to gross - tax
+		// Gross is the product gross - discount
+		$item->gross = round($adjustedGross - $item->discount, 2);
+		$item->tax   = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
 		$item->net = round($item->gross - $item->tax, 2);
 	}
 
 	protected function _calculateInclusiveTax($amount, $rate)
 	{
-		return round(($amount / (100 + $rate)) * $rate, 2);
+		return ($amount / (100 + $rate)) * $rate;
 	}
 }

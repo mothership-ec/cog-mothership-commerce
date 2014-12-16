@@ -319,9 +319,6 @@ class Edit extends Controller
 			$product = $this->_product;
 
 			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
-
-			$product->taxRate                    = $data['tax_rate'];
-			$product->taxStrategy                = $data['tax_strategy'];
 			$product->exportValue                = $data['export_value'];
 			//set prices on the product
 			foreach($data['prices']['currencies'] as $currency => $typePrices) {
@@ -617,11 +614,6 @@ class Edit extends Controller
 	{
 		return $this->createForm($this->get('product.form.prices'), null, [
 				'product'   => $this->_product,
-				'tax_strategies' => [
-					'inclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.inclusive'),
-					'exclusive' => $this->trans('ms.commerce.product.pricing.tax-strategy.choices.exclusive'),			
-				],
-				'tax_rates' => $this->get('product.tax.rates'),
 				'currency'  => $this->get('currency.company'),
 			]);
 	}

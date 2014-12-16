@@ -50,4 +50,26 @@ class Collection extends BaseCollection
 
 		return $return;
 	}
+
+	public function getTotalTax()
+	{
+		$tax = 0;
+
+		foreach ($this->all() as $item) {
+			$tax += $item->tax;
+		}
+
+		return $tax;
+	}
+
+	public function getTotalGrossPrice()
+	{
+		$gross = 0;
+
+		foreach ($this->all() as $item) {
+			$gross += $item->gross;
+		}
+
+		return $gross;
+	}
 }

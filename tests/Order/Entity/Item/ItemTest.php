@@ -3,104 +3,113 @@
 namespace Message\Mothership\Commerce\Test\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Entity\Item\Item;
+use Mockery as m;
+use Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection;
 
 class ItemTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_unit;
 	protected $_product;
+	protected $_taxRates;
 
 	public function setUp()
 	{
-		$this->_unit    = $this->getMockBuilder('\\Message\\Mothership\\Commerce\\Product\\Unit\\Unit')
-			->disableOriginalConstructor()
-			->getMock();
-		$this->_product = $this->getMockBuilder('\\Message\\Mothership\\Commerce\\Product\\Product')
-			->disableOriginalConstructor()
-			->getMock();
+		$strategy = m::mock('Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface')
+			->shouldReceive('getName')
+			->zeroOrMoreTimes()
+			->andReturn('inclusive')
+			->getMock()
+		;
+
+		$t1 = m::mock('Message\Mothership\Commerce\Product\Tax\Rate\TaxRate')
+			->shouldReceive('getRate')
+			->zeroOrMoreTimes()
+			->andReturn((float) 20)
+			->shouldReceive('getName')
+			->zeroOrMoreTimes()
+			->andReturn('t1')
+			->shouldReceive('getType')
+			->zeroOrMoreTimes()
+			->andReturn('VAT')
+			->getMock()
+		;
+
+		$t2 = m::mock('Message\Mothership\Commerce\Product\Tax\Rate\TaxRate')
+			->shouldReceive('getRate')
+			->zeroOrMoreTimes()
+			->andReturn((float) 10)
+			->shouldReceive('getName')
+			->zeroOrMoreTimes()
+			->andReturn('t2')
+			->shouldReceive('getType')
+			->zeroOrMoreTimes()
+			->andReturn('BAT')
+			->getMock()
+		;
+		
+		// not mocking because iterators suck
+		$this->_taxRates = new TaxRateCollection;
+		$this->_taxRates
+			->add($t1)
+			->add($t2)
+		;
+
+		$this->_product = m::mock('Message\Mothership\Commerce\Product\Product')
+			->shouldReceive('getTaxRates')
+			->zeroOrMoreTimes()
+			->andReturn($this->_taxRates)
+			->shouldReceive('getTaxStrategy')
+			->zeroOrMoreTimes()
+			->andReturn($strategy)
+			->getMock()
+		;
+		
+		$this->_unit    = m::mock('Message\Mothership\Commerce\Product\Unit\Unit')
+			->shouldReceive('getProduct')
+			->zeroOrMoreTimes()
+			->andReturn($this->_product)
+			->getMock()
+		;
 
 		$this->_unit->product = $this->_product;
 	}
 
-	public function testPopulateMatchingTaxRate()
+	public function testPopulateMatchingTaxRates()
 	{
-		$var = 1.4;
-		$this->_unit->product->taxRate = $var;
-
 		$item = new Item;
 		$item->populate($this->_unit);
 
-		$this->assertSame($var, $item->productTaxRate);
-	}
+		$expected = [];
 
-	public function testPopulateTaxRateIsFloatFromString()
-	{
-		$this->_unit->product->taxRate = '1';
+		foreach ($this->_taxRates as $rate) {
+			$expected[$rate->getType()] = $rate->getRate();
+		}
 
-		$item = new Item;
-		$item->populate($this->_unit);
-
-		$this->assertTrue(is_float($item->productTaxRate));
-		$this->assertFalse(is_string($item->productTaxRate));
-		$this->assertFalse(is_int($item->productTaxRate));
-	}
-
-	public function testPopulateTaxRateIsFloatFromInt()
-	{
-		$this->_unit->product->taxRate = (int) 1;
-
-		$item = new Item;
-		$item->populate($this->_unit);
-
-		$this->assertTrue(is_float($item->productTaxRate));
-		$this->assertFalse(is_string($item->productTaxRate));
-		$this->assertFalse(is_int($item->productTaxRate));
-	}
-
-	public function testPopulateTaxRateIsFloatFromNull()
-	{
-		$this->_unit->product->taxRate = NULL;
-
-		$item = new Item;
-		$item->populate($this->_unit);
-
-		$this->assertTrue(is_float($item->productTaxRate));
-		$this->assertFalse(is_string($item->productTaxRate));
-		$this->assertFalse(is_int($item->productTaxRate));
-	}
-
-	public function testPopulateTaxRateIsFloatFromWholeNumberFloat()
-	{
-		$this->_unit->product->taxRate = (float) 1.0;
-
-		$item = new Item;
-		$item->populate($this->_unit);
-
-		$this->assertTrue(is_float($item->productTaxRate));
-		$this->assertFalse(is_string($item->productTaxRate));
-		$this->assertFalse(is_int($item->productTaxRate));
-	}
-
-	public function testPopulateTaxRateIsFloatFromDecimalFloat()
-	{
-		$this->_unit->product->taxRate = (float) 1.4;
-
-		$item = new Item;
-		$item->populate($this->_unit);
-
-		$this->assertTrue(is_float($item->productTaxRate));
-		$this->assertFalse(is_string($item->productTaxRate));
-		$this->assertFalse(is_int($item->productTaxRate));
+		$this->assertEquals($expected, $item->getTaxRates());
 	}
 
 	public function testPopulateMatchingTaxStrategy()
 	{
-		$var = 'test';
-		$this->_unit->product->taxStrategy = $var;
-
 		$item = new Item;
 		$item->populate($this->_unit);
 
-		$this->assertSame($var, $item->taxStrategy);
+		$this->assertSame('inclusive', $item->taxStrategy);
+	}
+
+	public function testSerializeUnserializeWithTax()
+	{
+		$item = new Item;
+		$item->populate($this->_unit);
+
+		$expected = [];
+
+		foreach ($this->_taxRates as $rate) {
+			$expected[$rate->getType()] = $rate->getRate();
+		}
+
+		$this->assertEquals($expected, $item->getTaxRates());
+		$item = unserialize(serialize($item));
+		$this->assertEquals($expected, $item->getTaxRates());
 	}
 
 	public function testPopulateMatchingProductID()
@@ -254,5 +263,11 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue(is_int($item->weight));
 		$this->assertFalse(is_string($item->weight));
 		$this->assertFalse(is_float($item->weight));
+	}
+
+	public function testGetTax()
+	{
+		$item = new Item;
+		$item->populate($this->_unit);
 	}
 }

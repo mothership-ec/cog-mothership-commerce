@@ -17,7 +17,8 @@
 
 			if(warn) {
 				content.text(window.priceWarning);
-				$('.form-submit', modal).on('click', function() {
+				$('.form-submit').unbind('click.price-warn');
+				$('.form-submit', modal).on('click.price-warn', function() {
 					form.submit();
 				});
 			} else {
