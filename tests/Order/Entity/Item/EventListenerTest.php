@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Test\Order\Entity\Item;
 
 use Message\Mothership\Commerce\Order\Status\Status;
 use Message\Mothership\Commerce\Order\Entity\Item;
+use Mockery as m;
 
 class EventListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +14,8 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		$this->_defaultStatus = new Status(100, 'Something');
-		$this->_listener      = new Item\EventListener($this->_defaultStatus);
+		$edit = m::mock('Message\Mothership\Commerce\Order\Entity\Item\Edit');
+		$this->_listener      = new Item\EventListener($this->_defaultStatus, $edit);
 	}
 
 	public function testSetDefaultActualPriceWithEntityEvent()

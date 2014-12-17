@@ -10,6 +10,7 @@ class Routes implements RoutesInterface
 	{
 		$router['ms.product']->setParent('ms.cp')->setPrefix('/product');
 		$router['ms.order']->setParent('ms.cp')->setPrefix('/order');
+		$router['ms.commerce']->setPrefix('/ms-commerce');
 
 		$router['ms.product']->add('ms.commerce.product.search', 'search-results', 'Message:Mothership:Commerce::Controller:Product:Search#process')
 			->setMethod('GET');
@@ -127,5 +128,8 @@ class Routes implements RoutesInterface
 		$router['ms.order']->add('ms.commerce.order.item.cancel', 'view/{orderID}/item/{itemID}/cancel', 'Message:Mothership:Commerce::Controller:Order:Cancel:Cancel#cancelItem')
 			->setRequirement('orderID', '\d+')
 			->setRequirement('itemID', '\d+');
+
+		$router['ms.commerce']->add('ms.commerce.currency', 'currency', 'Message:Mothership:Commerce::Controller:Module:CurrencySelect#process')
+			->setMethod('POST');
 	}
 }

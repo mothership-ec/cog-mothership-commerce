@@ -6,6 +6,9 @@ use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
+use Message\Mothership\Commerce\Address\Address;
+use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
 
 /**
  * Order event listener for calculating the order totals.
@@ -14,6 +17,13 @@ use Message\Cog\Event\SubscriberInterface;
  */
 class TotalsListener implements SubscriberInterface
 {
+	private $_taxResolver;
+
+	public function __construct(TaxResolverInterface $resolver)
+	{
+		$this->_taxResolver = $resolver;
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -53,15 +63,28 @@ class TotalsListener implements SubscriberInterface
 			return false;
 		}
 
-		foreach ($order->items as $item) {
-			if ($item->taxRate > $order->shippingTaxRate) {
-				$order->shippingTaxRate = $item->taxRate;
-			}
-		}
+		$taxResolver = $this->_taxResolver;
 
-		$order->shippingGross = round($order->shippingListPrice - $order->shippingDiscount, 2);
-		$order->shippingTax   = round(($order->shippingGross / (100 + $order->shippingTaxRate)) * $order->shippingTaxRate, 2);
-		$order->shippingNet   = round($order->shippingGross - $order->shippingTax, 2);
+		// This should always work with a proper tax rate cfg setup.
+		try {
+			$taxRates    = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $order->getAddress(Address::DELIVERY));
+			$rates = [];
+			foreach ($taxRates as $rate) {
+				$rates[$rate->getType()] = $rate->getRate();
+			}
+			$order->setShippingTaxes($rates);
+		}
+		// If not then no shipping tax rates set in cfg.
+		// Revert to old logic.
+		catch (\LogicException $e) {
+			$rate = [];
+			foreach ($order->items as $item) {
+				if ($item->taxRate > $order->shippingTaxRate) {
+					$rate = ['VAT' => $item->taxRate];
+				}
+			}
+			$order->setShippingTaxes($rate);
+		}
 	}
 
 	/**
@@ -73,21 +96,6 @@ class TotalsListener implements SubscriberInterface
 	{
 		$order = $event->getOrder();
 
-		$order->productNet      = 0;
-		$order->productDiscount = 0;
-		$order->productTax      = 0;
-		$order->productGross    = 0;
-
-		foreach ($order->items as $item) {
-			$order->productNet      += $item->net;
-			$order->productDiscount += $item->discount;
-			$order->productTax      += $item->tax;
-			$order->productGross    += $item->gross;
-		}
-
-		$order->totalNet        = $order->productNet      + $order->shippingNet;
-		$order->totalDiscount   = $order->productDiscount + $order->shippingDiscount;
-		$order->totalTax        = $order->productTax      + $order->shippingTax;
-		$order->totalGross      = $order->productGross    + $order->shippingGross;
+		$order->updateTotals();
 	}
 }

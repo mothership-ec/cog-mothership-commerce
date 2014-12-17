@@ -51,8 +51,9 @@ class Item implements EntityInterface, RecordInterface
 
 	public $personalisation;
 
-	protected $_product;
-	protected $_unit;
+	private $_taxes;
+	private $_product;
+	private $_unit;
 
 	public function __construct()
 	{
@@ -73,6 +74,8 @@ class Item implements EntityInterface, RecordInterface
 			$keys[] = $key;
 		}
 
+		$keys[] = '_taxes';
+
 		return $keys;
 	}
 
@@ -85,22 +88,28 @@ class Item implements EntityInterface, RecordInterface
 	 */
 	public function populate(Unit $unit)
 	{
+		$product = $unit->getProduct();
+
 		if ($this->order instanceof Order) {
 			$this->listPrice = $unit->getPrice('retail', $this->order->currencyID);
 			$this->rrp       = $unit->getPrice('rrp', $this->order->currencyID);
 		}
 
-		$this->productTaxRate  = (float) $unit->product->taxRate;
-		$this->taxStrategy     = $unit->product->taxStrategy;
-		$this->productID       = $unit->product->id;
-		$this->productName     = $unit->product->name;
+		$this->productTaxRate  = (float) $product->getTaxRates()->getTotalTaxRate();
+		$this->taxStrategy     = $product->getTaxStrategy()->getName();
+		$this->productID       = $product->id;
+		$this->productName     = $product->name;
 		$this->unitID          = $unit->id;
 		$this->unitRevision    = $unit->revisionID;
 		$this->sku             = $unit->sku;
 		$this->barcode         = $unit->barcode;
 		$this->options         = implode($unit->options, ', ');
-		$this->brand           = $unit->product->brand;
+		$this->brand           = $product->brand;
 		$this->weight          = (int) $unit->weight;
+		$this->_taxes = [];
+		foreach ($product->getTaxRates() as $taxRate) {
+			$this->_taxes[$taxRate->getType()] = $taxRate->getRate();
+		}
 
 		return $this;
 	}
@@ -205,5 +214,33 @@ class Item implements EntityInterface, RecordInterface
 	public function getRecordID()
 	{
 		return $this->id;
+	}
+
+	/**
+	 * Retuns the tax rates applied to this item
+	 * 
+	 * @return array the rates
+	 */
+	public function getTaxRates()
+	{
+		return $this->_taxes;
+	}
+
+	/** 
+	 * Sets the tax rates as an array
+	 * 
+	 * @param array $rates the rates as an array
+	 * @return $this
+	 */
+	public function setTaxRates(array $rates)
+	{
+		$this->_taxes = $rates;
+
+		return $this;
+	}
+
+	public function getTax()
+	{
+		return $this->tax;
 	}
 }

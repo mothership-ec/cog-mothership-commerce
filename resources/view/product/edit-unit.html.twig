@@ -27,15 +27,18 @@
 				<tr>
 					<td>{{ form_widget(form[unit.id]['sku']) }}</td>
 					<td>
-						{{ form_widget(form[unit.id]['optionForm']) }}
+						{{ form_widget(form[unit.id]['options']) }}
 					</td>
 					<td>
 						<div class="multi-inline">
-						{% for name, value in unit.price %}
 							<div class="inline">
-								{{ form_row(form[unit.id]['price'][name]) }}
+									{% for currency, price in form[unit.id].prices.currencies %}
+									<div class="currency-units">
+										<h4>{{ currency }}</h4>
+									    {{ form_widget(price) }}
+									</div>
+									{% endfor %}
 							</div>
-						{% endfor %}
 						</div>
 					</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
@@ -45,6 +48,10 @@
 			{% endfor %}
 		</tbody>
 	</table>
+
+	<button type="submit" class="button small save" id="save-content" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
+		{{ 'ms.commerce.product.button.save'|trans }}
+	</button>
 	{{ form_end(form) }}
 
 <div class="group">
@@ -53,13 +60,33 @@
 		{{ form_start(addForm) }}
 			{{ form_row(addForm.sku) }}
 			{{ option.renderRepeatable(addForm.options) }}
+			{% for currency, price in addForm.prices.currencies %}
+				<div class="currency-units">
+				    <h4>{{ currency }}</h4>
+					{{ form_widget(price) }}
+				</div>
+			{% endfor %}
 			{{ form_rest(addForm) }}
-			<button type="submit" class="button small update">
+			<button type="submit" class="button small update" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
 				{{ 'ms.commerce.product.button.sku'|trans }}
 			</button>
 		{{ form_end(addForm) }}
 	</div>
 </div>
-</div>
+{% endblock %}
 
+{% block after %}
+	{% include 'Message:Mothership:Commerce::product:modals:pricing-warn' %}
+	<script>
+		window.priceWarning = '{{"ms.commerce.product.pricing.warning" | trans}}';
+	</script>
+
+	{% javascripts
+		'@Message:Mothership:Commerce::resources/assets/js/price-warn.js'
+
+		output='/assets/js/commerce/price-warn.js'
+		filter='?jsmin'
+	%}
+	<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
 {% endblock %}

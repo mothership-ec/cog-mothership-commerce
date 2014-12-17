@@ -177,6 +177,17 @@ class Loader extends Order\Entity\BaseLoader implements
 				$items[$key]->personalisation->{$name} = $value;
 			}
 
+
+			$taxResult = $this->_query->run(
+				"SELECT * FROM `order_item_tax` WHERE `item_id` = '$row->id'"
+			);
+
+			$taxes = [];
+			foreach ($taxResult as $taxRow) {
+				$taxes[$taxRow->tax_type] = (float) $taxRow->tax_rate;
+			}
+			$items[$key]->setTaxRates($taxes);
+
 			$return[$row->id] = $items[$key];
 		}
 
