@@ -54,7 +54,7 @@ class SalesByItem extends AbstractSales
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
@@ -87,6 +87,7 @@ class SalesByItem extends AbstractSales
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
+
 		foreach($unions as $query) {
 			$fromQuery->unionAll($query);
 		}
@@ -172,10 +173,10 @@ class SalesByItem extends AbstractSales
 	/**
 	 * Takes the data and transforms it into a useable format.
 	 *
-	 * @param  $data    DB\Result  The data from the report query.
-	 * @param  $output  String     The type of output required.
+	 * @param  $data    DB\Result    The data from the report query.
+	 * @param  $output  string|null  The type of output required.
 	 *
-	 * @return String|Array  Returns columns as string in JSON format or array.
+	 * @return string|array  Returns columns as string in JSON format or array.
 	 */
 	protected function _dataTransform($data, $output = null)
 	{
@@ -220,6 +221,7 @@ class SalesByItem extends AbstractSales
 				];
 			}
 			return json_encode($result);
+
 		} else {
 
 			foreach ($data as $row) {

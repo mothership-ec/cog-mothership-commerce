@@ -40,10 +40,10 @@ class SalesByLocation extends AbstractSales
 	 */
 	public function getCharts()
 	{
-		foreach ($this->_charts as $chart) {
-			$data = $this->_dataTransform($this->_getQuery()->run(), $chart);
-			$columns = $this->_parseColumns($this->getColumns());
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
+		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
 			$chart->setData($data);
 		}
@@ -54,19 +54,17 @@ class SalesByLocation extends AbstractSales
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'string', 'name' => "Country",  ],
-			['type' => 'string', 'name' => "Currency", ],
-			['type' => 'number', 'name' => "Net",      ],
-			['type' => 'number', 'name' => "Tax",      ],
-			['type' => 'number', 'name' => "Gross",    ],
+		return [
+			'Country'  => 'string',
+			'Currency' => 'string',
+			'Net'      => 'number',
+			'Tax'      => 'number',
+			'Gross'    => 'number',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -83,6 +81,7 @@ class SalesByLocation extends AbstractSales
 		$unions = $this->_dispatchEvent()->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
+
 		foreach($unions as $query) {
 			$fromQuery->unionAll($query);
 		}
@@ -161,34 +160,49 @@ class SalesByLocation extends AbstractSales
 	/**
 	 * Takes the data and transforms it into a useable format.
 	 *
-	 * @param  $data    DB\Result  The data from the report query.
-	 * @param  $output  String     The type of output required.
+	 * @param  $data    DB\Result    The data from the report query.
+	 * @param  $output  string|null  The type of output required.
 	 *
-	 * @return String|Array  Returns columns as string in JSON format or array.
+	 * @return string|array  Returns columns as string in JSON format or array.
 	 */
 	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				$row->Country,
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-			];
-		}
+		if ($output === "json") {
 
-		return json_encode($result);
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Country,
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+				];
+			}
+			return json_encode($result);
+
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Country,
+					$row->Currency,
+					$row->Net,
+					$row->Tax,
+					$row->Gross
+				];
+			}
+			return $result;
+		}
 	}
 }

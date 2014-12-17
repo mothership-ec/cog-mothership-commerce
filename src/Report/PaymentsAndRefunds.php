@@ -52,8 +52,8 @@ class PaymentsAndRefunds extends AbstractTransactions
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
-		$columns = $this->getColumns();
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -66,21 +66,19 @@ class PaymentsAndRefunds extends AbstractTransactions
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'string', 'name' => "Date",        ],
-			['type' => 'string', 'name' => "Created by",  ],
-			['type' => 'string', 'name' => "Currency",    ],
-			['type' => 'string', 'name' => "Method",      ],
-			['type' => 'number', 'name' => "Amount",      ],
-			['type' => 'string', 'name' => "Type",        ],
-			['type' => 'string', 'name' => "Order/Return",],
+		return [
+			'Date'         => 'string',
+			'Created by'   => 'string',
+			'Currency'     => 'string',
+			'Method'       => 'string',
+			'Amount'       => 'number',
+			'Type'         => 'string',
+			'Order/Return' => 'string',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -151,34 +149,51 @@ class PaymentsAndRefunds extends AbstractTransactions
 	{
 		$result = [];
 
-		foreach ($data as $row) {
+		if ($output === "json") {
 
-			if ($row->type == "Payment") {
-				$url = $this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->order_return_id]);
-			} else {
-				$url = $this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->order_return_id]);
-			}
+			foreach ($data as $row) {
 
-			$result[] = [
-				date('Y-m-d H:i', $row->date),
-				$row->user ?
+				if ($row->type == "Payment") {
+					$url = $this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->order_return_id]);
+				} else {
+					$url = $this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->order_return_id]);
+				}
+
+				$result[] = [
+					date('Y-m-d H:i', $row->date),
+					$row->user ?
+						[
+							'v' => utf8_encode($row->user),
+							'f' => 	(string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->user_id]).'">'.
+									ucwords(utf8_encode($row->user)).'</a>'
+						]
+						: $row->user,
+					$row->currency,
+					ucwords($row->method),
 					[
-						'v' => utf8_encode($row->user),
-						'f' => 	(string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->user_id]).'">'.
-								ucwords(utf8_encode($row->user)).'</a>'
-					]
-					: $row->user,
-				$row->currency,
-				ucwords($row->method),
-				[
-					'v' => (float) $row->amount,
-					'f' => (string) number_format($row->amount,2,'.',',')
-				],
-				$row->type,
-				'<a href ="'.$url.'">'.$row->order_return_id.'</a>',
-			];
-		}
+						'v' => (float) $row->amount,
+						'f' => (string) number_format($row->amount,2,'.',',')
+					],
+					$row->type,
+					'<a href ="'.$url.'">'.$row->order_return_id.'</a>',
+				];
+			}
+			return json_encode($result);
 
-		return json_encode($result);
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					date('Y-m-d H:i', $row->date),
+					$row->user,
+					$row->currency,
+					ucwords($row->method),
+					$row->amount,
+					$row->type,
+					$row->order_return_id
+				];
+			}
+			return $result;
+		}
 	}
 }

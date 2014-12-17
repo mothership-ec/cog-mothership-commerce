@@ -40,8 +40,8 @@ class SalesByUser extends AbstractSales
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
-		$columns = $this->getColumns();
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -54,20 +54,18 @@ class SalesByUser extends AbstractSales
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'string', 'name' => "User",     ],
-			['type' => 'string', 'name' => "Email",    ],
-			['type' => 'string', 'name' => "Currency", ],
-			['type' => 'number', 'name' => "Net",      ],
-			['type' => 'number', 'name' => "Tax",      ],
-			['type' => 'number', 'name' => "Gross",    ],
+		return [
+			'User'     => 'string',
+			'Email'    => 'string',
+			'Currency' => 'string',
+			'Net'      => 'number',
+			'Tax'      => 'number',
+			'Gross'    => 'number',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -164,32 +162,48 @@ class SalesByUser extends AbstractSales
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				$row->User ?
-					[
-						'v' => utf8_encode($row->User),
-						'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->ID]).'">'
-						.ucwords(utf8_encode($row->User)).'</a>'
-					]
-					: $row->User,
-				$row->Email,
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-			];
-		}
+		if ($output === "json") {
 
-		return json_encode($result);
+			foreach ($data as $row) {
+				$result[] = [
+					$row->User ?
+						[
+							'v' => utf8_encode($row->User),
+							'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->ID]).'">'
+							.ucwords(utf8_encode($row->User)).'</a>'
+						]
+						: $row->User,
+					$row->Email,
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+				];
+			}
+			return json_encode($result);
+
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					ucwords(utf8_encode($row->User)),
+					$row->Email,
+					$row->Currency,
+					$row->Net,
+					$row->Tax,
+					$row->Gross,
+				];
+			}
+			return $result;
+		}
 	}
 }

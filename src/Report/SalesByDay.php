@@ -160,16 +160,17 @@ class SalesByDay extends AbstractSales
 	/**
 	 * Takes the data and transforms it into a useable format.
 	 *
-	 * @param  $data    DB\Result  The data from the report query.
-	 * @param  $output  String     The type of output required.
+	 * @param  $data    DB\Result    The data from the report query.
+	 * @param  $output  string|null  The type of output required.
 	 *
-	 * @return String|Array  Returns columns as string in JSON format or array.
+	 * @return string|array  Returns columns as string in JSON format or array.
 	 */
 	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
 
 		if ($output === "json") {
+
 			foreach ($data as $row) {
 				$result[] = [
 					[

@@ -41,8 +41,8 @@ class StockSummary extends AbstractReport
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run(),"json");
-		$columns = $this->getColumns();
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -55,18 +55,16 @@ class StockSummary extends AbstractReport
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'string', 'name' => "Category", ],
-			['type' => 'string', 'name' => "Name",     ],
-			['type' => 'string', 'name' => "Options",  ],
-			['type' => 'number', 'name' => "Stock",    ],
+		return [
+			'Category' => 'string',
+			'Name'     => 'string',
+			'Options'  => 'string',
+			'Stock'    => 'number',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -147,6 +145,7 @@ class StockSummary extends AbstractReport
 		$result = [];
 
 		if ($output === "json") {
+
 			foreach ($data as $row) {
 				$result[] = [
 					$row->Category,
@@ -165,8 +164,8 @@ class StockSummary extends AbstractReport
 
 			foreach ($data as $row) {
 				$result[] = [
+					$row->Category,
 					$row->Name,
-					$row->ID,
 					$row->Options,
 					$row->Stock,
 				];

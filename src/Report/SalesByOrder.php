@@ -40,8 +40,8 @@ class SalesByOrder extends AbstractSales
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
-		$columns = $this->getColumns();
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -54,23 +54,21 @@ class SalesByOrder extends AbstractSales
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'string', 'name' => "Order",    ],
-			['type' => 'number', 'name' => "Date",     ],
-			['type' => 'string', 'name' => "User",     ],
-			['type' => 'string', 'name' => "Source",   ],
-			['type' => 'string', 'name' => "Currency", ],
-			['type' => 'number', 'name' => "Net",      ],
-			['type' => 'number', 'name' => "Tax",      ],
-			['type' => 'number', 'name' => "Gross",    ],
-			['type' => 'string', 'name' => "Country",  ],
+		return [
+			'Order'    => 'string',
+			'Date'     => 'number',
+			'User'     => 'string',
+			'Source'   => 'string',
+			'Currency' => 'string',
+			'Net'      => 'number',
+			'Tax'      => 'number',
+			'Gross'    => 'number',
+			'Country'  => 'string',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -179,35 +177,54 @@ class SalesByOrder extends AbstractSales
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
-				[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date],
-				$row->User ?
-					[
-						'v' => utf8_encode($row->User),
-						'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->UserID]).'">'
-						.ucwords(utf8_encode($row->User)).'</a>'
-					]
-					: $row->User,
-				ucwords($row->Source),
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-				$row->Country,
-			];
-		}
+		if ($output === "json") {
 
-		return json_encode($result);
+			foreach ($data as $row) {
+				$result[] = [
+					'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->Order]).'">'.$row->Order.'</a>',
+					[ 'v' => (float) $row->UnixDate, 'f' => (string) $row->Date],
+					$row->User ?
+						[
+							'v' => utf8_encode($row->User),
+							'f' => (string) '<a href ="'.$this->generateUrl('ms.cp.user.admin.detail.edit', ['userID' => $row->UserID]).'">'
+							.ucwords(utf8_encode($row->User)).'</a>'
+						]
+						: $row->User,
+					ucwords($row->Source),
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+					$row->Country,
+				];
+			}
+			return json_encode($result);
+
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					$row->Order,
+					$row->Date,
+					ucwords($row->User),
+					ucwords($row->Source),
+					$row->Currency,
+					$row->Net,
+					$row->Tax,
+					$row->Gross,
+					$row->Country
+				];
+			}
+			return $result;
+		}
 	}
 }

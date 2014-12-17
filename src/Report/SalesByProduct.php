@@ -40,8 +40,8 @@ class SalesByProduct extends AbstractSales
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run());
-		$columns = $this->getColumns();
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
 			$chart->setColumns($columns);
@@ -54,21 +54,19 @@ class SalesByProduct extends AbstractSales
 	/**
 	 * Set columns for use in reports.
 	 *
-	 * @return String  Returns columns in JSON format.
+	 * @return array  Returns array of columns as keys with format for Google Charts as the value.
 	 */
 	public function getColumns()
 	{
-		$columns = [
-			['type' => 'string', 'name' => "Product",     ],
-			['type' => 'string', 'name' => "Option",      ],
-			['type' => 'string', 'name' => "Currency",    ],
-			['type' => 'number', 'name' => "Net",         ],
-			['type' => 'number', 'name' => "Tax",         ],
-			['type' => 'number', 'name' => "Gross",       ],
-			['type' => 'number', 'name' => "Number Sold", ],
+		return [
+			'Product'     => 'string',
+			'Option'      => 'string',
+			'Currency'    => 'string',
+			'Net'         => 'number',
+			'Tax'         => 'number',
+			'Gross'       => 'number',
+			'Number Sold' => 'number',
 		];
-
-		return json_encode($columns);
 	}
 
 	/**
@@ -175,33 +173,50 @@ class SalesByProduct extends AbstractSales
 	{
 		$result = [];
 
-		foreach ($data as $row) {
-			$result[] = [
-				$row->ID ?
-					[
-						'v' => ucwords($row->Product),
-						'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'
-						.ucwords($row->Product).'</a>'
-					]
-					: $row->Product,
-				ucwords($row->Option),
-				$row->Currency,
-				[
-					'v' => (float) $row->Net,
-					'f' => (string) number_format($row->Net,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Tax,
-					'f' => (string) number_format($row->Tax,2,'.',',')
-				],
-				[
-					'v' => (float) $row->Gross,
-					'f' => (string) number_format($row->Gross,2,'.',',')
-				],
-				$row->NumberSold,
-			];
-		}
+		if ($output === "json") {
 
-		return json_encode($result);
+			foreach ($data as $row) {
+				$result[] = [
+					$row->ID ?
+						[
+							'v' => ucwords($row->Product),
+							'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'
+							.ucwords($row->Product).'</a>'
+						]
+						: $row->Product,
+					ucwords($row->Option),
+					$row->Currency,
+					[
+						'v' => (float) $row->Net,
+						'f' => (string) number_format($row->Net,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Tax,
+						'f' => (string) number_format($row->Tax,2,'.',',')
+					],
+					[
+						'v' => (float) $row->Gross,
+						'f' => (string) number_format($row->Gross,2,'.',',')
+					],
+					$row->NumberSold,
+				];
+			}
+			return json_encode($result);
+
+		} else {
+
+			foreach ($data as $row) {
+				$result[] = [
+					ucwords($row->Product),
+					ucwords($row->Option),
+					$row->Currency,
+					$row->Net,
+					$row->Tax,
+					$row->Gross,
+					$row->NumberSold
+				];
+			}
+			return $result;
+		}
 	}
 }
