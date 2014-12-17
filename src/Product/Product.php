@@ -203,14 +203,17 @@ class Product implements Price\PricedInterface
 		$basePrice = $this->getPrice($type, $currencyID);
 		foreach ($this->getVisibleUnits() as $unit) {
 			$valid = true;
-			foreach($options as $option => $val) {
-				if($unit->getOption($option) !== $val) {
-					$valid = false;
-					break;
+			if($options) {
+				foreach($options as $option => $val) {
+					d($unit->getOption($option));
+					if($unit->getOption($option) !== $val) {
+						$valid = false;
+						break;
+					}
 				}
 			}
 
-			if ($unit->getPrice($type, $currencyID) != $basePrice) {
+			if ($unit->getPrice($type, $currencyID) != $basePrice && $valid) {
 				return true;
 			}
 		}
