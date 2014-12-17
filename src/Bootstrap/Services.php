@@ -394,7 +394,7 @@ class Services implements ServicesInterface
 
 		// Product
 		$services['product'] = $services->factory(function($c) {
-			return new Commerce\Product\Product($c['locale'], $c['product.price.types'], $c['currency']);
+			return new Commerce\Product\Product($c['locale'], $c['product.price.types'], $c['currency'], $c['product.tax.resolver']);
 		});
 
 		$services['product.unit'] = $services->factory(function($c) {
