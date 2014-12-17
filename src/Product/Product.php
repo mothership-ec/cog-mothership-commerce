@@ -196,7 +196,7 @@ class Product implements Price\PricedInterface
 	 *
 	 * @return boolean                Result of checkPunit
 	 */
-	public function hasVariablePricing($type = 'retail', $currencyID = null, array $options = [])
+	public function hasVariablePricing($type = 'retail', $currencyID = null, array $options = null)
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
