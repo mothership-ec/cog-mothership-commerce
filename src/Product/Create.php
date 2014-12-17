@@ -63,7 +63,7 @@ class Create
 				$product->name,
 				$product->weight,
 				$product->taxRate,
-				$this->_defaultTaxStrategy,
+				$this->_defaultTaxStrategy->getName(),
 				$product->supplierRef,
 				$product->authorship->createdAt(),
 				$product->authorship->createdBy()->id
