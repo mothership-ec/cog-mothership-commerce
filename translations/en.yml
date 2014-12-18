@@ -118,6 +118,34 @@ ms.commerce:
         value:
           label: Option Value
           help: Select from one of the options available for this specific product. (Set on the 'Units' tab.)
+    units:
+      empty: No units have been added yet.
+      sku:
+        label: SKU
+        placeholder: SKU
+        help: The unique Stock Keeping Unit you assign internally to this specific product variant.
+      prices:
+        label: Prices
+        help: SKU prices can be set differently from the overall Product price. Edit these fields if you want this SKU to be priced seperately from the others.
+      visible:
+        label: Visible
+        help: Defines whether or not the SKU appears on the website.
+      delete:
+        label: Delete
+        help: Click this link to delete the SKU.
+      option:
+        label: Options
+        name:
+          label: Option Type
+          placeholder: Option Type
+          empty-value: Select Option
+          help: Select the type of Option you wish to add to this SKU.
+        value:
+          label: Option Value
+          placeholder: Option Value
+          help: Depending on the Option 'type' you have set above please enter the value for it here. (For example, an option type of 'Colour' could have a value of 'Red')
+        button:
+          create: Add unit
     upload:
       title: Upload a CSV
       form:
