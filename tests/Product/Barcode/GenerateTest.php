@@ -3,6 +3,7 @@
 namespace Message\Mothership\Commerce\Test\Product\Barcode;
 
 use Message\Mothership\Commerce\Product\Barcode\Generate;
+use Mockery as m;
 
 class GenerateTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,10 +27,10 @@ class GenerateTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_file  = $this->getMockBuilder('\\Message\\Cog\\Filesystem\\File')
-			->setMethods(['getPublicUrl'])
-			->disableOriginalConstructor()
-			->getMock();
+		$this->_file = m::mock('Message\Cog\Filesystem\File');
+		$this->_file->shouldReceive('getPublicUrl')
+			->zeroOrMoreTimes()
+			->andReturn('');
 
 		$this->_query = $this->getMockBuilder('\\Message\\Cog\\DB\\Query')
 			->setMethods(['run'])

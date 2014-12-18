@@ -50,5 +50,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$dispatcher->addSubscriber(new Commerce\Order\Basket\EventListener\AttachUserListener);
 
 		$dispatcher->addSubscriber(new Commerce\Product\Image\EventListener);
+
+		$dispatcher->addSubscriber(new Commerce\Order\EventListener\CurrencyChangeListener($this->_services['basket']));
 	}
 }
