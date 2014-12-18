@@ -52,14 +52,6 @@ class ProductBuilder
 	private $_defaultCurrency;
 
 	/**
-	 * Default tax rate
-	 * @todo make dynamic depending on locale
-	 *
-	 * @var int
-	 */
-	private $_defaultTaxRate = 20;
-
-	/**
 	 * Default country name
 	 * @todo make dynamic depending on locale
 	 *
@@ -180,7 +172,6 @@ class ProductBuilder
 
 	private function _addProductDefaults()
 	{
-		$this->_product->taxRate = $this->_defaultTaxRate;
 		$this->_product->exportManufactureCountryID = $this->_defaultManCountry;
 	}
 }

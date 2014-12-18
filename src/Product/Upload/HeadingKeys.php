@@ -22,7 +22,6 @@ class HeadingKeys
 	];
 
 	private $_floats = [
-		'taxRate',
 	];
 
 	private $_prices = [

@@ -57,7 +57,6 @@ class HeadingBuilder implements \Countable
 	 * @var array
 	 */
 	private $_suffixCols = [
-		'taxRate' => 'taxRate',
 		'stock' => 'stock',
 	];
 
