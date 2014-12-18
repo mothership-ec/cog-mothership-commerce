@@ -3,10 +3,12 @@
 namespace Message\Mothership\Commerce\Report\CommerceData;
 
 use Message\Cog\DB\QueryBuilderFactory;
+use Message\Mothership\Report\Filter;
 
 class PaymentsData
 {
 	private $_builderFactory;
+	private $_filters;
 
 	/**
 	 * Constructor.
@@ -16,6 +18,20 @@ class PaymentsData
 	public function __construct(QueryBuilderFactory $builderFactory)
 	{
 		$this->_builderFactory = $builderFactory;
+	}
+
+	/**
+	 * Sets the filters from the report.
+	 *
+	 * @param Filter\Collection $filters
+	 *
+	 * @return  $this  Return $this for chainability
+	 */
+	public function setFilters(Filter\Collection $filters)
+	{
+		$this->_filters = $filters;
+
+		return $this;
 	}
 
 	/**
@@ -44,6 +60,20 @@ class PaymentsData
 			->from('payment')
 			->leftJoin('order_payment','payment.payment_id = order_payment.payment_id')
 			->join('user','user.user_id = payment.created_by');
+
+		// Filter dates
+		if($this->_filters->exists('date_range')) {
+
+			$dateFilter = $this->_filters->get('date_range');
+
+			if($date = $dateFilter->getStartDate()) {
+				$data->where('payment.created_at > ?d', [$date->format('U')]);
+			}
+
+			if($date = $dateFilter->getEndDate()) {
+				$data->where('payment.created_at < ?d', [$date->format('U')]);
+			}
+		}
 
 		return $data;
 	}

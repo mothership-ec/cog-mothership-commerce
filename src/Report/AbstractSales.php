@@ -12,9 +12,9 @@ use Message\Mothership\Report\Event\ReportEvent;
 use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateRange;
 use Message\Mothership\Report\Filter\Choices;
+use Message\Mothership\Report\Filter\Collection as FilterCollecion;
 
 use Message\Mothership\Commerce\Events;
-use Message\Mothership\Report\Filter\Collection as FilterCollecion;
 
 abstract class AbstractSales extends AbstractReport
 {
@@ -66,11 +66,11 @@ abstract class AbstractSales extends AbstractReport
 	}
 
 	/**
+	 * Dispatch event.
 	 *
 	 * @param  FilterCollecion $filters  Any filters to be used in subqueries.
 	 *
 	 * @return ReportEvent
-	 *
 	 */
 	protected function _dispatchEvent(FilterCollecion $filters = null)
 	{

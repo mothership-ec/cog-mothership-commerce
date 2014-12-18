@@ -11,7 +11,6 @@ use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateRange;
 use Message\Mothership\Report\Filter\Choices;
 
-
 class SalesByOrder extends AbstractSales
 {
 	/**
@@ -30,6 +29,8 @@ class SalesByOrder extends AbstractSales
 			"This report displays all completed orders.
 			By default it includes all data (orders, returns, shipping) from the last month (by completed date).";
 		$this->reportGroup = "Sales";
+		$startDate = new \DateTime;
+		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
 	}
 
 	/**
@@ -82,7 +83,7 @@ class SalesByOrder extends AbstractSales
 	 */
 	protected function _getQuery()
 	{
-		$unions = $this->_dispatchEvent()->getQueryBuilders();
+		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
 		foreach($unions as $query) {
@@ -107,50 +108,6 @@ class SalesByOrder extends AbstractSales
 			->groupBy('order_id')
 		;
 
-		// Filter dates
-		if($this->_filters->exists('date_range')) {
-
-			$defaultDate = 'date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND UNIX_TIMESTAMP(NOW())';
-
-			$dateFilter = $this->_filters->get('date_range');
-
-			if($date = $dateFilter->getStartDate()) {
-				$queryBuilder->where('date > ?d', [$date->format('U')]);
-				$defaultDate = NULL;
-			}
-
-			if($date = $dateFilter->getEndDate()) {
-				$queryBuilder->where('date < ?d', [$date->format('U')]);
-				$defaultDate = NULL;
-			}
-
-			if($defaultDate) {
-				$queryBuilder->where($defaultDate);
-			}
-		}
-
-		// Filter currency
-		if($this->_filters->exists('currency')) {
-			$currency = $this->_filters->get('currency');
-			if($currency = $currency->getChoices()) {
-				is_array($currency) ?
-					$queryBuilder->where('Currency IN (?js)', [$currency]) :
-					$queryBuilder->where('Currency = (?s)', [$currency])
-				;
-			}
-		}
-
-		// Filter source
-		if($this->_filters->exists('source')) {
-			$source = $this->_filters->get('source');
-			if($source = $source->getChoices()) {
-				is_array($source) ?
-					$queryBuilder->where('Source IN (?js)', [$source]) :
-					$queryBuilder->where('Source = (?s)', [$source])
-				;
-			}
-		}
-
 		// Filter type
 		if($this->_filters->exists('type')) {
 			$type = $this->_filters->get('type');
@@ -171,7 +128,7 @@ class SalesByOrder extends AbstractSales
 	 * @param  $data    DB\Result  The data from the report query.
 	 * @param  $output  String     The type of output required.
 	 *
-	 * @return String|Array  Returns columns as string in JSON format or array.
+	 * @return string|array  Returns data as string in JSON format or array.
 	 */
 	protected function _dataTransform($data, $output = null)
 	{

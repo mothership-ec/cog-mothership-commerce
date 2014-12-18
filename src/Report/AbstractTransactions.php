@@ -9,6 +9,7 @@ use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Event\ReportEvent;
+use Message\Mothership\Report\Filter\Collection as FilterCollecion;
 
 use Message\Mothership\Commerce\Events;
 
@@ -36,9 +37,13 @@ abstract class AbstractTransactions extends AbstractReport
 	 *
 	 * @return ReportEvent
 	 */
-	protected function _dispatchEvent()
+	protected function _dispatchEvent(FilterCollecion $filters = null)
 	{
 		$event = new ReportEvent;
+
+		if ($filters) {
+			$event->setFilters($filters);
+		}
 
 		return $this->_eventDispatcher->dispatch(Events::TRANSACTIONS_REPORT, $event);
 	}

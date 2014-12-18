@@ -87,7 +87,6 @@ class StockSummary extends AbstractReport
 			$date = $dateFilter->getDateChoice();
 
 			if($date->format('YMd') < $today->format('YMd')) {
-
 				$queryBuilder->from("product_unit_stock_snapshot stock");
 				$queryBuilder->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?d), INTERVAL 3 HOUR)', [$date->format('U')]);
 				$queryBuilder->where('?d <= stock.created_at', [$date->format('U')]);
@@ -138,7 +137,7 @@ class StockSummary extends AbstractReport
 	 * @param  $data    DB\Result  The data from the report query.
 	 * @param  $output  String     The type of output required.
 	 *
-	 * @return String|Array  Returns columns as string in JSON format or array.
+	 * @return string|array  Returns data as string in JSON format or array.
 	 */
 	protected function _dataTransform($data, $output = null)
 	{

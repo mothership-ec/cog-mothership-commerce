@@ -11,7 +11,6 @@ use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateRange;
 use Message\Mothership\Report\Filter\Choices;
 
-
 class PaymentsAndRefunds extends AbstractTransactions
 {
 	/**
@@ -32,6 +31,8 @@ class PaymentsAndRefunds extends AbstractTransactions
 			By default it includes all data from the last month (by completed date).";
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
+		$startDate = new \DateTime;
+		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
 		// Params for Choices filter: unique filter name, label, choices, multi-choice
 		$this->_filters->add(new Choices(
 			"type",
@@ -91,7 +92,7 @@ class PaymentsAndRefunds extends AbstractTransactions
 	 */
 	protected function _getQuery()
 	{
-		$unions = $this->_dispatchEvent()->getQueryBuilders();
+		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
 
 		$fromQuery = $this->_builderFactory->getQueryBuilder();
 
@@ -106,24 +107,7 @@ class PaymentsAndRefunds extends AbstractTransactions
 			->orderBy('date DESC')
 		;
 
-		if($this->_filters->count('date_range')) {
-
-			$dateFilter = $this->_filters->get('date_range');
-
-			if($date = $dateFilter->getStartDate()) {
-				$queryBuilder->where('date > ?d', [$date->format('U')]);
-			}
-
-			if($date = $dateFilter->getEndDate()) {
-				$queryBuilder->where('date < ?d', [$date->format('U')]);
-			}
-
-			if(!$dateFilter->getStartDate() && !$dateFilter->getEndDate()) {
-				$queryBuilder->where('date BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MONTH)) AND UNIX_TIMESTAMP(NOW())');
-			}
-		}
-
-		// filter type
+		// Filter type
 		if($this->_filters->exists('type')) {
 			$type = $this->_filters->get('type');
 			if($type = $type->getChoices()) {

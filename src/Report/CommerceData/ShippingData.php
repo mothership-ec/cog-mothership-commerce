@@ -3,10 +3,12 @@
 namespace Message\Mothership\Commerce\Report\CommerceData;
 
 use Message\Cog\DB\QueryBuilderFactory;
+use Message\Mothership\Report\Filter;
 
 class ShippingData
 {
 	private $_builderFactory;
+	private $_filters;
 
 	/**
 	 * Constructor.
@@ -16,6 +18,20 @@ class ShippingData
 	public function __construct(QueryBuilderFactory $builderFactory)
 	{
 		$this->_builderFactory = $builderFactory;
+	}
+
+	/**
+	 * Sets the filters from the report.
+	 *
+	 * @param Filter\Collection $filters
+	 *
+	 * @return  $this  Return $this for chainability
+	 */
+	public function setFilters(Filter\Collection $filters)
+	{
+		$this->_filters = $filters;
+
+		return $this;
 	}
 
 	/**
@@ -59,6 +75,42 @@ class ShippingData
 			->leftJoin('user', 'order_summary.user_id = user.user_id')
 			->where('order_summary.status_code >= 0')
 		;
+
+		// Filter dates
+		if($this->_filters->exists('date_range')) {
+
+			$dateFilter = $this->_filters->get('date_range');
+
+			if($date = $dateFilter->getStartDate()) {
+				$data->where('order_summary.created_at > ?d', [$date->format('U')]);
+			}
+
+			if($date = $dateFilter->getEndDate()) {
+				$data->where('order_summary.created_at < ?d', [$date->format('U')]);
+			}
+		}
+
+		// Filter currency
+		if($this->_filters->exists('currency')) {
+			$currency = $this->_filters->get('currency');
+			if($currency = $currency->getChoices()) {
+				is_array($currency) ?
+					$data->where('order_summary.currency_id IN (?js)', [$currency]) :
+					$data->where('order_summary.currency_id = (?s)', [$currency])
+				;
+			}
+		}
+
+		// Filter source
+		if($this->_filters->exists('source')) {
+			$source = $this->_filters->get('source');
+			if($source = $source->getChoices()) {
+				is_array($source) ?
+					$data->where('order_summary.type IN (?js)', [$source]) :
+					$data->where('order_summary.type = (?s)', [$source])
+				;
+			}
+		}
 
 		return $data;
 	}
