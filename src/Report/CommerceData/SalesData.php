@@ -46,8 +46,6 @@ class SalesData
 	 * @todo   Uncomment 'AND order_address.deleted_at IS NULL' when
 	 *         deletable address functionality is merged.
 	 *
-	 * @todo   Get VOUCHER ID from config file.
-	 *
 	 * @return Query
 	 */
 	public function getQueryBuilder()
@@ -78,8 +76,9 @@ class SalesData
 			->leftJoin('order_address', 'order_summary.order_id = order_address.order_id AND order_address.type = "delivery"') //  AND order_address.deleted_at IS NULL
 			->leftJoin('return_item', 'return_item.exchange_item_id = item.item_id')
 			->leftJoin('user', 'order_summary.user_id = user.user_id')
+			->leftJoin('product', 'item.product_id = product.product_id')
+			->where('product.type != "voucher"')
 			->where('order_summary.status_code >= 0')
-			->where('item.product_id NOT IN (9)')
 			->where('return_item.exchange_item_id IS NULL')
 		;
 
