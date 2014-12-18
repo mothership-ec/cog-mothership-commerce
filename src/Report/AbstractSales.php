@@ -26,10 +26,16 @@ abstract class AbstractSales extends AbstractReport
 	 * @param QueryBuilderFactory   $builderFactory
 	 * @param UrlGenerator          $routingGenerator
 	 * @param DispatcherInterface   $eventDispatcher
+	 * @param array                 $currencies
 	 */
-	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	public function __construct(
+		QueryBuilderFactory $builderFactory,
+		UrlGenerator $routingGenerator,
+		DispatcherInterface $eventDispatcher,
+		array $currencies
+	)
 	{
-		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
 		$this->_eventDispatcher = $eventDispatcher;
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
@@ -37,10 +43,7 @@ abstract class AbstractSales extends AbstractReport
 		$this->_filters->add(new Choices(
 			"currency",
 			"Currency",
-			[
-				'GBP' => 'GBP',
-				'JPY' => 'JPY',
-			],
+			$currencies,
 			false
 		));
 		$this->_filters->add(new Choices(

@@ -20,9 +20,14 @@ class SalesByOrder extends AbstractSales
 	 * @param UrlGenerator          $routingGenerator
 	 * @param DispatcherInterface   $eventDispatcher
 	 */
-	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	public function __construct(
+		QueryBuilderFactory $builderFactory,
+		UrlGenerator $routingGenerator,
+		DispatcherInterface $eventDispatcher,
+		array $currencies
+	)
 	{
-		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
 		$this->name = 'sales_by_order';
 		$this->displayName = 'Sales by Order';
 		$this->description =

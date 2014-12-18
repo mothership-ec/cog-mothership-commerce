@@ -867,7 +867,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByMonth(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -875,7 +876,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByDay(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -883,7 +885,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByOrder(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -891,7 +894,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByItem(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -899,7 +903,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByProduct(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -907,7 +912,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByLocation(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -915,7 +921,8 @@ class Services implements ServicesInterface
 			return new Commerce\Report\SalesByUser(
 				$c['db.query.builder.factory'],
 				$c['routing.generator'],
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				$c['currency.supported']
 			);
 		});
 
@@ -947,6 +954,7 @@ class Services implements ServicesInterface
 				new Commerce\Report\CommerceData\PaymentsData($c['db.query.builder.factory']),
 			];
 		};
+	}
 
 	public function setupCurrencies($services)
 	{

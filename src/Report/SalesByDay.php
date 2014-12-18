@@ -20,10 +20,16 @@ class SalesByDay extends AbstractSales
 	 * @param QueryBuilderFactory   $builderFactory
 	 * @param UrlGenerator          $routingGenerator
 	 * @param DispatcherInterface   $eventDispatcher
+	 * @param array|string          $currencies
 	 */
-	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
+	public function __construct(
+		QueryBuilderFactory $builderFactory,
+		UrlGenerator $routingGenerator,
+		DispatcherInterface $eventDispatcher,
+		array $currencies
+	)
 	{
-		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
 		$this->name        = 'sales_by_day';
 		$this->displayName = 'Sales by Day';
 		$this->description =
