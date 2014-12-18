@@ -81,6 +81,26 @@ class Unit implements PricedInterface
 		$this->price[$type]->setPrice($currencyID, $price, $this->_locale);
 	}
 
+	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		$product = $this->getProduct();
+
+		return $product->getTaxStrategy()->getNetPrice(
+			$this->getPrice($type, $currencyID),
+			$product->getTaxRates()
+		);
+	}
+
+	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		$product = $this->getProduct();
+
+		return $product->getTaxStrategy()->getGrossPrice(
+			$this->getPrice($type, $currencyID),
+			$product->getTaxRates()
+		);
+	}
+
 	/**
 	 * Returns whether unit is out of stock in all locations
 	 *
@@ -114,5 +134,10 @@ class Unit implements PricedInterface
 	public function hasOption($type)
 	{
 		return isset($this->options[$type]);
+	}
+
+	public function getProduct()
+	{
+		return $this->product;
 	}
 }

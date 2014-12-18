@@ -68,7 +68,7 @@ class Create
 				'brand'       => $product->brand,
 				'weight'      => $product->weight,
 				'taxRate'     => $product->taxRate,
-				'taxStrategy' => $this->_defaultTaxStrategy,
+				'taxStrategy' => $this->_defaultTaxStrategy->getName(),
 				'supplier'    => $product->supplierRef,
 				'createdAt'   => $product->authorship->createdAt(),
 				'createdBy'   => $product->authorship->createdBy()->id

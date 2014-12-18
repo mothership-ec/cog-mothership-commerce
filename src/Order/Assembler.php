@@ -331,7 +331,7 @@ class Assembler
 		return $this->setQuantity($unit, $quantity);
 	}
 
-	/*
+	/**
 	 * Update the actual price of items for a given unit on the order being
 	 * assembled.
 	 *
