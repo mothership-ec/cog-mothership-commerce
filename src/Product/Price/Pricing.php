@@ -6,7 +6,7 @@ use  Message\Cog\Localisation\Locale;
 
 class Pricing
 {
-	public $pricing = array();
+	public $pricing = [];
 	protected $_locale;
 
 	public function __construct(Locale $locale)
@@ -18,6 +18,10 @@ class Pricing
 	{
 		if (is_null($locale)) {
 			$locale = $this->_locale;
+		}
+
+		if (!array_key_exists($locale->getID(), $this->pricing)) {
+			$this->pricing[$locale->getID()] = [];
 		}
 
 		$this->pricing[$locale->getID()][$currencyID] = $price;
@@ -42,10 +46,16 @@ class Pricing
 
 		$currrencies = [];
 
+		if (!array_key_exists($locale->getID(), $this->pricing)) {
+			throw new \LogicException(
+				'`' . $locale->getID() . '` does not exist on pricing object, only the following: `' . implode(array_keys($this->pricing), '`, `') . '` are available'
+			);
+		}
+
 		foreach ($this->pricing[$locale->getID()] as $key => $value) {
 			$currencies[] = $key;
 		}
 
-		return $currencies;
+		return $currrencies;
 	}
 }

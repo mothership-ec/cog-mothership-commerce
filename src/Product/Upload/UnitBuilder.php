@@ -37,14 +37,14 @@ class UnitBuilder
 		Locale $locale,
 		UserInterface $user,
 		array $currencies,
-		$defaultCurrency
+		Unit $unit
 	)
 	{
 		$this->_headingKeys = $headingKeys;
 		$this->_validator   = $validator;
 		$this->_locale      = $locale;
 		$this->_currencies  = $currencies;
-		$this->_unit        = new Unit($this->_locale, $this->_priceTypes, $defaultCurrency);
+		$this->_unit        = $unit;
 		$this->_user        = $user;
 	}
 
@@ -98,12 +98,12 @@ class UnitBuilder
 
 	private function _setPrices(array $row)
 	{
-		foreach ($this->_priceTypes as $type) {
+		foreach ($this->_unit->price as $type => $price) {
 			foreach ($this->_currencies as $currency) {
 				$key = $this->_headingKeys->getKey($type . '.' . $currency);
-				$price = $row[$key];
+				$priceVal = $row[$key];
 				if ($price && $price !== $this->_getProductPrice($type, $currency)) {
-					$this->_unit->setPrice($price, $type, $currency);
+					$this->_unit->setPrice($priceVal, $type, $currency);
 				}
 			}
 		}

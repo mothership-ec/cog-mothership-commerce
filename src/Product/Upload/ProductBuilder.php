@@ -139,19 +139,24 @@ class ProductBuilder
 
 	private function _setPrices(array $row)
 	{
+		$default = null;
 		foreach ($this->_priceTypes as $type) {
-			$price = $this->_getPriceObject($type, $row);
+			$price = $this->_getPriceObject($type, $row, $default);
+			if (null === $default && $type === 'retail') {
+				$default = $price;
+			}
 			$this->_product->getPrices()->add($price);
 		}
 	}
 
-	private function _getPriceObject($type, array $row)
+	private function _getPriceObject($type, array $row, $default = null)
 	{
 		$priceObject = new Product\Price\TypedPrice($type, $this->_locale);
 
 		foreach ($this->_currencies as $currency) {
 			$key = $this->_headingKeys->getKey($type . '.' . $currency);
-			$priceObject->setPrice($currency, $row[$key]);
+			$price = (!$row[$key] && $default instanceof Product\Price\TypedPrice) ? $default->getPrice($currency) : $row[$key];
+			$priceObject->setPrice($currency, $price);
 		}
 
 		return $priceObject;

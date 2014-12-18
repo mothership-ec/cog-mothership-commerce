@@ -78,6 +78,10 @@ class Unit implements PricedInterface
 
 	public function setPrice($price, $type = 'retail', $currencyID = 'GBP')
 	{
+		if (empty($this->price[$type])) {
+			$this->price[$type] = new Pricing($this->_locale);
+		}
+
 		$this->price[$type]->setPrice($currencyID, $price, $this->_locale);
 	}
 

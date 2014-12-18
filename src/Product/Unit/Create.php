@@ -102,9 +102,8 @@ class Create
 
 		foreach ($unit->price as $type => $price) {
 			$currencies = $price->getCurrencies();
+
 			foreach($currencies as $currency) {
-				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
-				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
 
 				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
 				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);

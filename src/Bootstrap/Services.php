@@ -579,7 +579,7 @@ class Services implements ServicesInterface
 				$c['locale'],
 				$c['user.current'],
 				$c['currency.supported'],
-				$c['currency']
+				$c['product.unit']
 			);
 		});
 
