@@ -25,11 +25,11 @@ class UnitBuilder
 	 */
 	private $_unit;
 
-	private $_priceTypes = [
-		'retail',
-		'rrp',
-		'cost',
-	];
+	private $_currencies;
+
+	private $_user;
+
+	private $_stockSetter;
 
 	public function __construct(
 		HeadingKeys $headingKeys,
@@ -37,7 +37,8 @@ class UnitBuilder
 		Locale $locale,
 		UserInterface $user,
 		array $currencies,
-		Unit $unit
+		Unit $unit,
+		UnitStockSetter $stockSetter
 	)
 	{
 		$this->_headingKeys = $headingKeys;
@@ -46,6 +47,7 @@ class UnitBuilder
 		$this->_currencies  = $currencies;
 		$this->_unit        = $unit;
 		$this->_user        = $user;
+		$this->_stockSetter = $stockSetter;
 	}
 
 	public function setBaseProduct(Product $product)
@@ -70,7 +72,10 @@ class UnitBuilder
 		$this->_setData($row);
 		$this->_addAuthorship();
 
+		$this->_unit->visible = true;
 		$this->_unit->stock = [];
+
+		$this->_stockSetter->setStockLevel($this->_unit, $row);
 
 		return $this->_unit;
 	}

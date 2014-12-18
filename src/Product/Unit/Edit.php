@@ -170,13 +170,8 @@ class Edit implements DB\TransactionalInterface
 
 	public function saveStock(Unit $unit)
 	{
-		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
-
 		foreach($unit->stock as $location => $stock) {
-			// just update it if the stock-level has actually changed
-			if(!array_key_exists($location, $unit->stock) || $stock != $unit->stock[$location]) {
-				$this->_saveStockLevel($unit->id, $location, $stock);
-			}
+			$this->_saveStockLevel($unit->id, $location, $stock);
 		}
 	}
 

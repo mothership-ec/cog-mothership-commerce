@@ -8,17 +8,20 @@ use Message\Cog\Event\Dispatcher;
 class UnitCreateDispatcher
 {
 	private $_unitCreate;
+	private $_unitEdit;
 	private $_dispatcher;
 
-	public function __construct(Product\Unit\Create $unitCreate, Dispatcher $dispatcher)
+	public function __construct(Product\Unit\Create $unitCreate, Product\Unit\Edit $unitEdit, Dispatcher $dispatcher)
 	{
 		$this->_unitCreate = $unitCreate;
+		$this->_unitEdit   = $unitEdit;
 		$this->_dispatcher = $dispatcher;
 	}
 
 	public function create(Product\Unit\Unit $unit, array $formData, array $row)
 	{
 		$unit = $this->_unitCreate->create($unit);
+		$this->_unitEdit->saveStock($unit);
 
 		return $this->_dispatchEvent($unit, $formData, $row);
 	}

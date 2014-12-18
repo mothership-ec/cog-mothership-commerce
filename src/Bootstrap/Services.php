@@ -579,7 +579,8 @@ class Services implements ServicesInterface
 				$c['locale'],
 				$c['user.current'],
 				$c['currency.supported'],
-				$c['product.unit']
+				$c['product.unit'],
+				$c['product.upload.unit_stock']
 			);
 		});
 
@@ -594,7 +595,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.upload.unit_create_dispatcher'] = $services->factory(function ($c) {
-			return new Commerce\Product\Upload\UnitCreateDispatcher($c['product.unit.create'], $c['event.dispatcher']);
+			return new Commerce\Product\Upload\UnitCreateDispatcher($c['product.unit.create'], $c['product.unit.edit'], $c['event.dispatcher']);
 		});
 
 		$services['product.upload.complete_dispatcher'] = $services->factory(function ($c) {
