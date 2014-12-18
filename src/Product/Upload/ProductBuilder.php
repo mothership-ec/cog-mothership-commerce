@@ -52,12 +52,9 @@ class ProductBuilder
 	private $_defaultCurrency;
 
 	/**
-	 * Default country name
-	 * @todo make dynamic depending on locale
-	 *
 	 * @var string
 	 */
-	private $_defaultManCountry = 'UK';
+	private $_defaultManCountry = 'GB';
 
 	private $_priceTypes = [
 		'retail',
@@ -74,18 +71,20 @@ class ProductBuilder
 		Product\Product $product,
 		Locale $locale,
 		array $currencies,
-		$defaultCurrency
+		$defaultCurrency,
+		$defaultManCountry
 	)
 	{
-		$this->_headingKeys     = $headingKeys;
-		$this->_validator       = $validator;
-		$this->_productTypes    = $productTypes;
-		$this->_fieldCrawler    = $fieldCrawler;
-		$this->_user            = $user;
-		$this->_product         = $product;
-		$this->_locale          = $locale;
-		$this->_currencies      = $currencies;
-		$this->_defaultCurrency = $defaultCurrency;
+		$this->_headingKeys       = $headingKeys;
+		$this->_validator         = $validator;
+		$this->_productTypes      = $productTypes;
+		$this->_fieldCrawler      = $fieldCrawler;
+		$this->_user              = $user;
+		$this->_product           = $product;
+		$this->_locale            = $locale;
+		$this->_currencies        = $currencies;
+		$this->_defaultCurrency   = $defaultCurrency;
+		$this->_defaultManCountry = $defaultManCountry ?: $this->_defaultManCountry;
 	}
 
 	public function build(array $data)

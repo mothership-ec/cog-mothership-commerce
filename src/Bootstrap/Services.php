@@ -567,7 +567,8 @@ class Services implements ServicesInterface
 				$c['product'],
 				$c['locale'],
 				$c['currency.supported'],
-				$c['currency']
+				$c['currency'],
+				$c['cfg']->merchant->address->countryId
 			);
 		});
 
