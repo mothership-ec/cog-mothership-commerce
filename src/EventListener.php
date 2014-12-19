@@ -137,7 +137,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function buildDashboardOrders(DashboardEvent $event)
 	{
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
-		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index');
+
+		$currencies = $this->get('currency.supported');
+		foreach ($currencies as $currency) {
+			$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index', ['currency' => $currency]);
+		}
 	}
 
 	/**
