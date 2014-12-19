@@ -405,7 +405,7 @@ class Services implements ServicesInterface
 			);
 		};
 
-		/**	
+		/**
 		 * @deprecated  use currency.supported
 		 */
 		$services['product.price.currency_IDs'] = function($c) {
@@ -463,7 +463,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.create'] = $services->factory(function($c) {
-			$create = new Commerce\Product\Create($c['db.query'], 
+			$create = new Commerce\Product\Create($c['db.query'],
 				$c['locale'],
 				$c['user.current'],
 				$c['product.price.types'],
@@ -474,7 +474,7 @@ class Services implements ServicesInterface
 
 			return $create;
 		});
-		
+
 		$services['product.edit'] = $services->factory(function($c) {
 			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		});
@@ -573,8 +573,8 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.tax.strategy'] = function($c) {
-			return $c['cfg']->tax->taxStrategy === 'inclusive' ? 
-				new Strategy\InclusiveTaxStrategy($c['product.tax.resolver'], $c['product.tax.company_address']) : 
+			return $c['cfg']->tax->taxStrategy === 'inclusive' ?
+				new Strategy\InclusiveTaxStrategy($c['product.tax.resolver'], $c['product.tax.company_address']) :
 				new Strategy\ExclusiveTaxStrategy;
 		};
 
@@ -825,7 +825,7 @@ class Services implements ServicesInterface
 			});
 
 			return $factory;
-		});		
+		});
 	}
 
 	public function registerProductPageMapper($services)
