@@ -1,0 +1,53 @@
+tax-strategy: inclusive
+rates:
+  US:
+  GB:
+    default:
+      product-tax:
+        - {name: VAT, rate: 20.000}
+      book-tax:
+  CA:
+    default:
+    Alberta:
+      product-tax:
+        - {name: GST, rate: 5.000}
+    Brittish Columbia:
+      product-tax:
+        - {name: GST, rate: 5.000}
+        - {name: PST/QST, rate: 7.000}
+    Manitoba:
+      product-tax:
+        - {name: GST, rate: 5.000}
+        - {name: PST/QST, rate: 5.000}
+    New Brunswick:
+      product-tax:
+        - {name: HST, rate: 13.000}
+    Newfoundland:
+      product-tax:
+        - {name: HST, rate: 13.000}
+    Northwest Territories:
+      product-tax:
+        - {name: GST, rate: 5.000}
+    Nova Scotia:
+      product-tax:
+        - {name: HST, rate: 15.000}
+    Nunavut:
+      product-tax:
+        - {name: GST, rate: 5.000}
+    Ontario:
+      product-tax:
+        - {name: HST, rate: 13.000}
+    Prince Edward Island:
+      product-tax:
+        - {name: HST, rate: 14.000}
+    Quebec:
+      product-tax:
+        - {name: GST, rate: 5.000}
+        - {name: PST/QST, rate: 9.975}
+    Saskatchewan:
+      product-tax:
+        - {name: GST, rate: 5.000}
+        - {name: PST/QST, rate: 5.000}
+    Yukon:
+      product-tax:
+        - {name: GST, rate: 5.000}
