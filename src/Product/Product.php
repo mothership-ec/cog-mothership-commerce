@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class Product implements Price\PricedInterface
 {
@@ -41,6 +42,9 @@ class Product implements Price\PricedInterface
 	protected $_units;
 	protected $_images;
 	protected $_locale;
+	protected $_taxes;
+
+	protected $_taxStrategy;
 
 	protected $_defaultCurrency;
 
@@ -48,20 +52,22 @@ class Product implements Price\PricedInterface
 	 * Initiate the object and set some basic properties up
 	 *
 	 * @param Locale $locale     	Current locale instance
-	 * @param array  $entities   	array of entities, this will proabbly only be units for now
 	 * @param array  $priceTypes 	array of price types
+	 * @param array  $taxStrategy   the tax strategy to use to resolve the correct price
 	 */
-	public function __construct(Locale $locale, array $priceTypes = array(), $defaultCurrency)
+	public function __construct(Locale $locale, array $priceTypes = array(), $defaultCurrency, TaxStrategyInterface $taxStrategy)
 	{
-		$this->authorship = new Authorship;
-		$this->priceTypes = $priceTypes;
-		$this->_locale    = $locale;
+		$this->authorship  = new Authorship;
+		$this->priceTypes  = $priceTypes;
+		$this->_locale     = $locale;
+		$this->_taxStrategy = $taxStrategy;
 		$this->_defaultCurrency = $defaultCurrency;
 
-		$this->_units   = new Unit\Collection;
-		$this->_images  = new Image\Collection;
-		$this->_details = new Type\DetailCollection;
-		$this->_prices  = new Price\PriceCollection($priceTypes);
+		$this->_units      = new Unit\Collection;
+		$this->_images     = new Image\Collection;
+		$this->_details    = new Type\DetailCollection;
+		$this->_prices     = new Price\PriceCollection($priceTypes);
+		$this->_taxes      = new Tax\Rate\TaxRateCollection;
 	}
 
 	/**
@@ -157,30 +163,40 @@ class Product implements Price\PricedInterface
 		return $prices ? array_shift($prices) : $basePrice;
 	}
 
+	/**
+	 * Get the net price
+	 */
 	public function getNetPrice($type = 'retail', $currencyID = null)
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		$price = $this->getPrice($type, $currencyID);
-
-		if ('exclusive' === $this->taxStrategy) {
-			return $price;
-		}
-
-		return $price / (1 + ($this->taxRate / 100));
+		return $this->_taxStrategy->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
+	/**
+	 * Get the lowest possible net price
+	 */
 	public function getNetPriceFrom($type = 'retail', $currencyID = null)
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		$price = $this->getPriceFrom($type, $currencyID);
+		return $this->_taxStrategy->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+	}
 
-		if ('exclusive' === $this->taxStrategy) {
-			return $price;
-		}
+	/**
+	 * Get the gross price
+	 */
+	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
+	{
+		return $this->_taxStrategy->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
+	}
 
-		return $price / (1 + ($this->taxRate / 100));
+	/**
+	 * Get the lowest possible gross price
+	 */
+	public function getGrossPriceFrom($type = 'retail', $currencyID = 'GBP')
+	{
+		return $this->_taxStrategy->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
@@ -345,6 +361,26 @@ class Product implements Price\PricedInterface
 		return $this->getImage($type, $options);
 	}
 
+	/**
+	 * Get the tax rates
+	 * 
+	 * @return TaxRateCollection The collection of tax rates
+	 */
+	public function getTaxRates()
+	{
+		return $this->_taxes;
+	}
+
+	/**
+	 * Get the object type
+	 * 
+	 * @return ProductType The product's type
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
+
 	public function hasTag($tag)
 	{
 		return in_array($tag, $this->tags);
@@ -359,4 +395,28 @@ class Product implements Price\PricedInterface
 	{
 		$this->_details = $details;
 	}
+
+    /**
+     * Sets the tax strategy.
+     *
+     * @param mixed $_taxStrategy the tax manager
+     *
+     * @return self
+     */
+    protected function setTaxStrategy($taxStrategy)
+    {
+        $this->_taxStrategy = $taxManager;
+
+        return $this;
+    }
+
+    /**
+     * Gets the tax strategy in use on this product
+     * 
+     * @return Tax\Strategy\TaxStrategyInterface The strategy in use
+     */
+    public function getTaxStrategy()
+    {
+        return $this->_taxStrategy;
+    }
 }

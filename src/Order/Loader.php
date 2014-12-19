@@ -379,6 +379,19 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 				$order->metadata->set($key, $value);
 			}
 
+			$shippingTaxes = $query->run(
+				"SELECT * FROM 
+					`order_shipping_tax` 
+				WHERE
+					`order_id` = '$order->id'"
+			);
+
+			$rates = [];
+			foreach ($shippingTaxes as $rate) {
+				$rates[$rate->tax_type] = $rate->tax_rate;
+			}
+			$order->setShippingTaxes($rates);
+
 			return $order;
 		});
 

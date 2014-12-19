@@ -21,16 +21,6 @@ class ProductPricing extends AbstractType
 			'priced_entity' => $product,
 		]);
 
-		$builder->add('tax_rate', 'choice', [
-			'choices' => $options['tax_rates'],
-			'data'    => $product->taxRate,
-		]);
-
-		$builder->add('tax_strategy', 'choice', [
-			'choices' => $options['tax_strategies'],
-			'data'    => $product->taxStrategy,
-		]);
-
 		$builder->add('export_value', 'money', [
 			'data'     => $product->exportValue,
 			'currency' => $options['currency'],
@@ -46,8 +36,6 @@ class ProductPricing extends AbstractType
 	{
 		$resolver->setRequired([
 			'product',
-			'tax_rates',
-			'tax_strategies',
 		]);
 
 		$resolver->setOptional([
