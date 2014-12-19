@@ -38,8 +38,8 @@ class PaymentsAndRefunds extends AbstractTransactions
 			"type",
 			"Type",
 			[
-				'payment' => 'Payment',
-				'refund' => 'Refund',
+				'Payment',
+				'Refund',
 			],
 			false
 		));

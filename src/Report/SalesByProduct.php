@@ -160,7 +160,7 @@ class SalesByProduct extends AbstractSales
 						'v' => (float) $row->Gross,
 						'f' => (string) number_format($row->Gross,2,'.',',')
 					],
-					$row->NumberSold,
+					(int) $row->NumberSold,
 				];
 			}
 			return json_encode($result);

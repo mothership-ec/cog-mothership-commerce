@@ -154,7 +154,7 @@ class StockSummary extends AbstractReport
 						.ucwords($row->Name).'</a>'
 					],
 					$row->Options,
-					$row->Stock,
+					(int) $row->Stock,
 				];
 			}
 			return json_encode($result);
