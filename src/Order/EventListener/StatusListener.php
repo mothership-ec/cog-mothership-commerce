@@ -70,12 +70,12 @@ class StatusListener extends BaseListener implements SubscriberInterface
 
 		// Skip if no status was set
 		if (is_null($orderStatus)) {
-			return false;
+			return;
 		}
 
 		// Skip if the status hasn't changed
 		if ($orderStatus === $order->status->code) {
-			return false;
+			return;
 		}
 
 		$edit = $this->get('order.edit');
