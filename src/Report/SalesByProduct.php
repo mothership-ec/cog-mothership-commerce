@@ -28,12 +28,13 @@ class SalesByProduct extends AbstractSales
 	)
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
-		$this->name = 'sales_by_product';
-		$this->displayName = 'Sales by Product';
-		$this->description =
-			"This report groups the total income by product.
-			By default it includes all data (orders, returns, shipping) from the last month (by completed date).";
-		$this->reportGroup = "Sales";
+		$this->_setName('sales_by_product');
+		$this->_setDisplayName('Sales by Product');
+		$this->_setReportGroup('Sales');
+		$this->_setDescription('
+			This report groups the total income by product.
+			By default it includes all data (orders, returns, shipping) from the last month (by completed date).
+		');
 		$startDate = new \DateTime;
 		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
 	}

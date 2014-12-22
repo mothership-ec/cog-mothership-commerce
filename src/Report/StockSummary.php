@@ -22,13 +22,14 @@ class StockSummary extends AbstractReport
 	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator)
 	{
 		parent::__construct($builderFactory, $routingGenerator);
-		$this->name = 'stock_summary';
-		$this->displayName = 'Stock Summary';
-		$this->reportGroup = "Products";
-		$this->description =
-			"This report displays the stock levels per unit.
+		$this->_setName('stock_summary');
+		$this->_setDisplayName('Stock Summary');
+		$this->_setReportGroup('Products');
+		$this->_setDescription('
+			This report displays the stock levels per unit.
 			By default it displays the current stock. Snapshots of stock are made at the end of each day and
-			can be selected from the date filter.";
+			can be selected from the date filter.
+		');
 		$this->_charts  = [new TableChart];
 		$this->_filters->add(new DateForm);
 	}
@@ -41,7 +42,7 @@ class StockSummary extends AbstractReport
 	 */
 	public function getCharts()
 	{
-		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$data    = $this->_dataTransform($this->_getQuery()->run(), "json");
 		$columns = $this->_parseColumns($this->getColumns());
 
 		foreach ($this->_charts as $chart) {
