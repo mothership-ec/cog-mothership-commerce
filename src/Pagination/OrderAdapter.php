@@ -22,6 +22,8 @@ class OrderAdapter implements AdapterInterface
 
 	public function getSlice($offset, $limit)
 	{
+		$offset = $offset * $limit;
+
 		if ($this->_statuses) {
 			return $this->_orderLoader->getByStatus($this->_statuses, $offset, $limit);
 		}
