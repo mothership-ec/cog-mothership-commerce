@@ -44,6 +44,36 @@
 			{% endfor %}
 		</tbody>
 	</table>
+
+	{% if pagination %}
+	<div class="pagination">
+		{% if pagination.hasPreviousPage() %}
+			<a href="?list-page={{ pagination.getPreviousPage() }}" class="newer">Previous</a>
+		{% else %}
+			<span href="#" class="newer disabled">Previous</span>
+		{% endif %}
+		<ol>
+			{% for i in range(1, pagination.getCountPages()) %}
+				{% if i == pagination.getCurrentPage() %}
+					{% set liClass = "active" %}
+				{% elseif i == 1 or i >= (pagination.adapter.count / 18) %}
+					{% set liClass = "end" %}
+				{% elseif (i > pagination.getCurrentPage() + 5) or (i < pagination.getCurrentPage() - 5) %}
+					{% set liClass = "out-of-range" %}
+				{% else %}
+					{% set liClass = "" %}
+				{% endif %}
+				<li class="{{ liClass }}" ><a href="?list-page={{ i }}">{{ i }}</a></li>
+			{% endfor %}
+		</ol>
+		{% if pagination.hasNextPage() %}
+			<a href="?list-page={{ pagination.getNextPage() }}" class="older">Next</a>
+		{% else %}
+			<span href="#" class="older disabled">Next</span>
+		{% endif %}
+	</div>	
+	{% endif %}
+
 {% else %}
 	<p>{{ 'ms.commerce.order.order.none'|trans }}</p>
 {% endif %}

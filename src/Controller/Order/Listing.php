@@ -16,40 +16,43 @@ use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 
 class Listing extends Controller
 {
+	const DEFAULT_PAGINATION_COUNT = 25;
+
 	protected $_orders;
+
+	private function getPaginator()
+	{
+		$page = (int) $this->get('request')->get('list-page');
+		return $this->get('pagination')
+			->setAdapter($this->get('order.pagination.adapter'))
+			->setMaxPerPage(self::DEFAULT_PAGINATION_COUNT)
+			->setCurrentPage($page)
+		;
+	}
 
 	public function all()
 	{
-		// TODO: Load actual orders!
-		$this->_orders = $this->get('order.loader')->getByStatus(array(
-			Statuses::CANCELLED,
-			Statuses::AWAITING_DISPATCH,
-			Statuses::PROCESSING,
-			Statuses::PARTIALLY_DISPATCHED,
-			Statuses::PARTIALLY_RECEIVED,
-			Statuses::DISPATCHED,
-			Statuses::RECEIVED,
-		), 50); // TEMP: limit to 50
+		$pagination = $this->getPaginator();
 
 		$heading = $this->trans('ms.commerce.order.order.all-orders-title');
 
 		return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
-			'orders' => $this->_orders,
+			'orders' => $pagination->getCurrentPageResults(),
+			'pagination' => $pagination,
 			'heading' => $heading,
 		));
 	}
 
 	public function shipped()
 	{
-		// TODO: Load actual shipped orders!
-		$this->_orders = $this->get('order.loader')->getByStatus(array(
-			Statuses::DISPATCHED,
-		), 50); // TEMP: limit to 50
+		$pagination = $this->getPaginator();
+		$pagination->getAdapter()->setStatuses([ Statuses::DISPATCHED ]);
 
 		$heading = $this->trans('ms.commerce.order.order.shipped-orders-title');
 
 		return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
-			'orders' => $this->_orders,
+			'orders' => $pagination->getCurrentPageResults(),
+			'pagination' => $pagination,
 			'heading' => $heading,
 		));
 	}

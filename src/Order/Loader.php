@@ -10,6 +10,8 @@ use Message\Cog\ValueObject\Authorship;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
 use Message\User\UserInterface;
+use Message\Cog\DB\QueryBuilderFactory;
+use Message\Cog\DB\QueryBuilder;
 
 /**
  * Decorator for loading orders.
@@ -27,13 +29,18 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 	protected $_orderBy;
 	protected $_includeDeleted = false;
 
+	private $_qbFactory;
+
 	public function __construct(
 		DB\Query $query,
 		User\Loader $userLoader,
 		Status\Collection $statuses,
 		Status\Collection $itemStatuses,
-		array $entities
+		array $entities,
+		QueryBuilderFactory $qbFactory
+
 	) {
+		$this->_qbFactory    = $qbFactory;
 		$this->_query        = $query;
 		$this->_userLoader   = $userLoader;
 		$this->_statuses     = $statuses;
@@ -51,6 +58,43 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		}
 
 		return $return;
+	}
+
+	public function count($statuses = null)
+	{
+		$qb = $this->_qbFactory->getQueryBuilder();
+
+		$qb->select("count(*)")
+			->from("order_summary")
+		;
+
+		if (is_array($statuses)) {
+			$qb->where('status_code IN (?ij)', $statuses);
+		} else if (is_numeric($statuses)) {
+			$status = (int) $statuses;
+			$qb->where('status_code = ?i', $status);
+		}
+
+		return $qb->getQuery()
+			->run()
+			->value()
+		;
+	}
+
+	public function getBySlice($offset, $limit)
+	{
+		$qb = $this->_qbFactory->getQueryBuilder();
+
+		$ids = $qb
+			->select('order_id')
+			->from('order_summary')
+			->limit($offset, $limit)
+			->getQuery()
+			->run()
+			->flatten()
+		;
+
+		return $this->_load($ids, true);
 	}
 
 	/**
@@ -153,8 +197,13 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 	 *
 	 * @throws \InvalidArgumentException If any status codes are not known
 	 */
-	public function getByStatus($statuses, $limit = 9999)
+	public function getByStatus($statuses, $limitFrom = 9999, $limitTo = null)
 	{
+		if ($limitTo === null) {
+			$limitTo = $limitFrom;
+			$limitFrom = null;
+		}
+
 		if (!is_array($statuses)) {
 			$statuses = (array) $statuses;
 		}
@@ -164,17 +213,23 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 				throw new \InvalidArgumentException(sprintf('Unknown order status code: `%s`', $code));
 			}
 		}
+	
+		$qb = $this->_qbFactory->getQueryBuilder();
 
-		$result = $this->_query->run('
-			SELECT
-				order_id
-			FROM
-				order_summary
-			WHERE
-				status_code IN (?ij)
-			ORDER BY created_at DESC
-			LIMIT ?i
-		', array($statuses, $limit));
+		$result = $qb
+			->select('order_id')
+			->from('order_summary')
+			->where('status_code IN (?ij)', [$statuses])
+			->orderBy('created_at DESC')
+		;
+
+		if ($limitFrom) {
+			$qb->limit($limitFrom, $limitTo);
+		} elseif ($limitTo) {
+			$qb->limit($limitTo);
+		}
+
+		$result = $qb->getQuery()->run();
 
 		$this->_orderBy = 'order_summary.created_at DESC';
 
@@ -299,7 +354,6 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 				order_summary.order_id
 			' . ($orderBy) . '
 		', array($ids));
-
 		if (0 === count($result)) {
 			return $returnArray ? array() : false;
 		}
