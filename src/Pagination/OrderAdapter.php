@@ -32,5 +32,7 @@ class OrderAdapter implements AdapterInterface
 	public function setStatuses(array $statuses)
 	{
 		$this->_statuses = $statuses;
+		
+		return $this;
 	}
 }

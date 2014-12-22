@@ -69,7 +69,7 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		;
 
 		if (is_array($statuses)) {
-			$qb->where('status_code IN (?ij)', $statuses);
+			$qb->where('status_code IN (?ij)', [$statuses]);
 		} else if (is_numeric($statuses)) {
 			$status = (int) $statuses;
 			$qb->where('status_code = ?i', $status);
