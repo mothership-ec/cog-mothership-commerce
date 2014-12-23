@@ -56,7 +56,7 @@
 			{% for i in range(1, pagination.getCountPages()) %}
 				{% if i == pagination.getCurrentPage() %}
 					{% set liClass = "active" %}
-				{% elseif i == 1 or i >= (pagination.adapter.count / 18) %}
+				{% elseif i == 1 or i >= (pagination.adapter.count / pagination.maxPerPage) %}
 					{% set liClass = "end" %}
 				{% elseif (i > pagination.getCurrentPage() + 5) or (i < pagination.getCurrentPage() - 5) %}
 					{% set liClass = "out-of-range" %}
