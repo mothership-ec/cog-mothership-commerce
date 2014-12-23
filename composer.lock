@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ab941043fda600cf5c9ce9567a582db4",
+    "hash": "2b41472eeca9bdfb558b7fe541c97176",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -650,16 +650,16 @@
         },
         {
             "name": "message/cog-mothership-cp",
-            "version": "1.7.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-cp.git",
-                "reference": "1.7.0"
+                "reference": "1.8.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.7.0",
-                "reference": "1.7.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.8.0",
+                "reference": "1.8.0",
                 "shasum": ""
             },
             "require": {
@@ -698,9 +698,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-cp/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.7.0"
+                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.8.0"
             },
-            "time": "2014-12-23 11:48:58"
+            "time": "2014-12-23 16:18:23"
         },
         {
             "name": "message/cog-mothership-file-manager",

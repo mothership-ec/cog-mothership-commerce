@@ -42,5 +42,6 @@
 	},
 
 	"suggest": {
+		"message/cog-mothership-reports" : "Module for displaying reports"
 	}
 }
