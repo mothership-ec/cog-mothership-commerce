@@ -129,7 +129,8 @@ class SalesByUser extends AbstractSales
 	 *
 	 * @return string|array  Returns data as string in JSON format or array.
 	 */
-	protected function _dataTransform($data, $output = null)	{
+	protected function _dataTransform($data, $output = null)
+	{
 		$result = [];
 
 		if ($output === "json") {

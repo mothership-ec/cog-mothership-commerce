@@ -990,16 +990,16 @@ class Services implements ServicesInterface
 		};
 
 		$services['commerce.report.sales-data'] = function($c) {
-			return [
-				new Commerce\Report\CommerceData\SalesData($c['db.query.builder.factory']),
-				new Commerce\Report\CommerceData\ShippingData($c['db.query.builder.factory']),
-			];
+			return new \Message\Mothership\Report\Report\AppendQuery\Collection([
+				new Commerce\Report\AppendQuery\Sales($c['db.query.builder.factory']),
+				new Commerce\Report\AppendQuery\Shipping($c['db.query.builder.factory']),
+			]);
 		};
 
 		$services['commerce.report.transaction-data'] = function($c) {
-			return [
-				new Commerce\Report\CommerceData\PaymentsData($c['db.query.builder.factory']),
-			];
+			return new \Message\Mothership\Report\Report\AppendQuery\Collection([
+				new Commerce\Report\AppendQuery\Payments($c['db.query.builder.factory']),
+			]);
 		};
 	}
 

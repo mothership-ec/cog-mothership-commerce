@@ -1,11 +1,12 @@
 <?php
 
-namespace Message\Mothership\Commerce\Report\CommerceData;
+namespace Message\Mothership\Commerce\Report\AppendQuery;
 
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Mothership\Report\Filter;
+use Message\Mothership\Report\Report\AppendQuery\FilterableInterface;
 
-class SalesData
+class Sales implements FilterableInterface
 {
 	private $_builderFactory;
 	private $_filters;

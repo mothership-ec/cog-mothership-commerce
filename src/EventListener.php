@@ -15,6 +15,7 @@ use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
 use Message\Mothership\Report\Event as ReportEvents;
+use Message\Mothership\Report\Report\AppendQuery\FilterableInterface;
 
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -305,7 +306,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function buildSalesReport(ReportEvents\ReportEvent $event)
 	{
 		foreach ($this->get('commerce.report.sales-data') as $query) {
-			$event->addQueryBuilder($query->setFilters($event->getFilters())->getQueryBuilder());
+			if ($query instanceof FilterableInterface) {
+				$query->setFilters($event->getFilters());
+			}
+			$event->addQueryBuilder($query->getQueryBuilder());
 		}
 	}
 
@@ -317,7 +321,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function buildTransactionReport(ReportEvents\ReportEvent $event)
 	{
 		foreach ($this->get('commerce.report.transaction-data') as $query) {
-			$event->addQueryBuilder($query->setFilters($event->getFilters())->getQueryBuilder());
+			if ($query instanceof FilterableInterface) {
+				$query->setFilters($event->getFilters());
+			}
+			$event->addQueryBuilder($query->getQueryBuilder());
 		}
 	}
 
