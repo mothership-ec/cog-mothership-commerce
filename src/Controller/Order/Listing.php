@@ -20,41 +20,31 @@ class Listing extends Controller
 
 	protected $_orders;
 
-	private function getPaginator()
-	{
-		$page = (int) $this->get('request')->get('list-page');
-		return $this->get('pagination')
-			->setAdapter($this->get('order.pagination.adapter'))
-			->setMaxPerPage(self::DEFAULT_PAGINATION_COUNT)
-			->setCurrentPage($page)
-		;
-	}
-
 	public function all()
 	{
-		$pagination = $this->getPaginator();
+		$pagination = $this->_getPaginator();
 
 		$heading = $this->trans('ms.commerce.order.order.all-orders-title');
 
-		return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
+		return $this->render('Message:Mothership:Commerce::order:listing:order-listing', [
 			'orders' => $pagination->getCurrentPageResults(),
 			'pagination' => $pagination,
 			'heading' => $heading,
-		));
+		]);
 	}
 
 	public function shipped()
 	{
-		$pagination = $this->getPaginator();
+		$pagination = $this->_getPaginator();
 		$pagination->getAdapter()->setStatuses([ Statuses::DISPATCHED ]);
 
 		$heading = $this->trans('ms.commerce.order.order.shipped-orders-title');
 
-		return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
+		return $this->render('Message:Mothership:Commerce::order:listing:order-listing', [
 			'orders' => $pagination->getCurrentPageResults(),
 			'pagination' => $pagination,
 			'heading' => $heading,
-		));
+		]);
 	}
 
 	public function searchAction()
@@ -141,4 +131,15 @@ class Listing extends Controller
 
 		return $form;
 	}
+
+	private function _getPaginator()
+	{
+		$page = (int) $this->get('request')->get('list-page');
+		return $this->get('pagination')
+			->setAdapter($this->get('order.pagination.adapter'))
+			->setMaxPerPage(self::DEFAULT_PAGINATION_COUNT)
+			->setCurrentPage($page)
+		;
+	}
 }
+
