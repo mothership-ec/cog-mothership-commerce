@@ -138,13 +138,6 @@ class PaymentsAndRefunds extends AbstractTransactions
 		if ($output === "json") {
 
 			foreach ($data as $row) {
-
-				if ($row->type == "Payment") {
-					$url = $this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->order_id]);
-				} else {
-					$url = $this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->return_id]);
-				}
-
 				$result[] = [
 					date('Y-m-d H:i', $row->date),
 					$row->user ?
