@@ -13,6 +13,7 @@ use Message\User\AnonymousUser;
 use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Mothership\Commerce\Product\Tax\TaxManager;
 use Message\Mothership\Commerce\Product\Tax\Strategy;
+use Message\Mothership\Commerce\Pagination\OrderAdapter;
 
 class Services implements ServicesInterface
 {
@@ -127,7 +128,8 @@ class Services implements ServicesInterface
 				$c['user.loader'],
 				$c['order.statuses'],
 				$c['order.item.statuses'],
-				$c['order.entities']
+				$c['order.entities'],
+				$c['db.query.builder.factory']
 			);
 		});
 
@@ -147,6 +149,10 @@ class Services implements ServicesInterface
 				)
 			);
 		});
+
+		$services['order.pagination.adapter'] = function($c) {
+			return new OrderAdapter($c['order.loader']);
+		};
 
 		$services['order.delete'] = $services->factory(function($c) {
 			return new Commerce\Order\Delete($c['db.transaction'], $c['event.dispatcher'], $c['user.current']);
