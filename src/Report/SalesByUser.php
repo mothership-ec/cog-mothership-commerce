@@ -19,6 +19,7 @@ class SalesByUser extends AbstractSales
 	 * @param QueryBuilderFactory   $builderFactory
 	 * @param UrlGenerator          $routingGenerator
 	 * @param DispatcherInterface   $eventDispatcher
+	 * @param array                 $currencies
 	 */
 	public function __construct(
 		QueryBuilderFactory $builderFactory,
@@ -33,10 +34,10 @@ class SalesByUser extends AbstractSales
 		$this->_setReportGroup('Sales');
 		$this->_setDescription('
 			This report groups the total income by each user.
-			By default it includes all data (orders, returns, shipping) from the last 12 months (by completed date).
+			By default it includes all data (orders, returns, shipping) from the last 3 months (by completed date).
 		');
 		$startDate = new \DateTime;
-		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
+		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -3 month")));
 	}
 
 	/**
