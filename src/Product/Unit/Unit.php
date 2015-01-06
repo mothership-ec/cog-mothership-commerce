@@ -226,9 +226,4 @@ class Unit implements PricedInterface
 
         return $this;
     }
-
-	public function getProduct()
-	{
-		return $this->product;
-	}
 }
