@@ -25,7 +25,7 @@ $(function() {
 
     // Hide and show columns when ajax slide happens
 	var showCol = 2;
-	$('#main-slide').on('show.cp-livePane-slide', function() {
+	$('#main-slide').on('show.cp-livePane-slide', function(e, data) {
 		$('.dataTables_length').hide();
 
 		for (var i = 0; i < dataTable.fnSettings().aoColumns.length; ++i) {
@@ -33,8 +33,7 @@ $(function() {
 				dataTable.fnSetColumnVis( i, false);
 			}
 		}
-
-		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "18%"});
+		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "18%"}, data.speed);
 
 		$('.dataTables_info').css({ paddingBottom: '50px'});
 
@@ -42,18 +41,15 @@ $(function() {
 		$('.create.product').css({ marginRight: '50px'});
 	});
 
-	$('#main-slide').on('hide.cp-livePane-slide', function() {
+	$('#main-slide').on('hide.cp-livePane-slide', function(e, data) {
 		$('.dataTables_length').show();
 		for (var i = 0; i < dataTable.fnSettings().aoColumns.length; ++i) {
 			if (i!==showCol) {
 				dataTable.fnSetColumnVis( i, true);
 			}
 		}
-		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "100%"});
+		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "100%"}, data.speed);
 
 		$('.dataTables_info').css({ paddingBottom: '20px'});
 	});
-
-
-
 });

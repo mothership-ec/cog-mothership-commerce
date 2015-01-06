@@ -48,10 +48,6 @@
 			{% endfor %}
 		</tbody>
 	</table>
-
-	<button type="submit" class="button small save" id="save-content" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
-		{{ 'ms.commerce.product.button.save'|trans }}
-	</button>
 	{{ form_end(form) }}
 
 <div class="group">
@@ -73,6 +69,16 @@
 		{{ form_end(addForm) }}
 	</div>
 </div>
+{% endblock %}
+
+{% block slide %}
+    {% set saveButton %}
+		<span type="submit" class="button small save" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal" for="product-edit-form">
+		{{ 'ms.commerce.product.button.save'|trans }}
+		</span>
+	{% endset %}
+
+	{{ parent() }}
 {% endblock %}
 
 {% block after %}
