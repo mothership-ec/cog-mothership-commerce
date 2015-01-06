@@ -10,6 +10,7 @@ use Message\Mothership\Commerce\Product\Price\TypedPrice;
 use Message\Mothership\Commerce\Product\Unit\Unit;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
 use Message\Mothership\Commerce\Product\Type\Collection as ProductTypeCollection;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class ProductTransform implements DataTransformerInterface
 {
@@ -17,17 +18,24 @@ class ProductTransform implements DataTransformerInterface
 	private $_priceTypes;
 	private $_defaultLocation;
 	private $_productTypes;
+	private $_defaultCurrency;
+	private $_taxStrategy;
 
 	public function __construct(
 		Locale $locale, 
 		Location $defaultLocation, 
 		array $priceTypes = array(), 
-		ProductTypeCollection $productTypes)
+		ProductTypeCollection $productTypes,
+		$defaultCurrency,
+		TaxStrategyInterface $taxStrategy
+	)
 	{
 		$this->_locale          = $locale;
 		$this->_priceTypes      = $priceTypes;
 		$this->_defaultLocation = $defaultLocation;
 		$this->_productTypes    = $productTypes;
+		$this->_defaultCurrency = $defaultCurrency;
+		$this->_taxStrategy     = $taxStrategy;
 	}
 
 	/**
@@ -74,7 +82,7 @@ class ProductTransform implements DataTransformerInterface
 	 */
 	public function reverseTransform($data)
 	{
-		$product = new Product($this->_locale);
+		$product = new Product($this->_locale, $this->_priceTypes, $this->_defaultCurrency, $this->_taxStrategy);
 
 		$product->setName($data['name'])
 			->setDisplayName($data['name'])
