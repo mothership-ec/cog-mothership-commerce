@@ -61,18 +61,18 @@ class Create
 				product.brand           = :brand?s,
 				product.category        = :category?s
 				',
-			array(
+			[
 				'type'       => $product->type->getName(),
 				'name'       => $product->name,
 				'weight'     => $product->weight,
 				'tax_rate'   => $product->taxRate,
-				'tax_strat'  => $this->_defaultTaxStrategy,
+				'tax_strat'  => $this->_defaultTaxStrategy->getName(),
 				'supplier'   => $product->supplierRef,
 				'created_at' => $product->authorship->createdAt(),
 				'created_by' => $product->authorship->createdBy()->id,
 				'brand'      => $product->getBrand(),
 				'category'   => $product->getCategory(),
-			)
+			]
 		);
 
 		$productID = $result->id();

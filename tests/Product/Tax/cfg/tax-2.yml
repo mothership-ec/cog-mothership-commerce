@@ -1,0 +1,18 @@
+rates:
+  GB: &GB
+    default:
+      product-tax:
+        - {name: "TAX1", rate: 20.000}
+        - {name: "TAX2", rate: 30}
+        - {name: "TAX3", rate: 1}
+        - {name: "TAX4", rate: 2}
+      alcohol-tax:
+        - {name: "TAX1", rate: 20.000}
+        - {name: "TAX2", rate: 30}
+  UK:
+    <<: *GB
+  CA:
+    default:
+      product-tax:
+        - {name: "TAX1", rate: 20.000}
+        - {name: "TAX1", rate: 20.000}

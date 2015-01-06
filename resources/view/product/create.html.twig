@@ -1,9 +1,15 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/cp' %}
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
 
-{% block content %}
+{% block slideAttr 'data-slide-loaded' %}
+
+{% block slide %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
+	<button type="submit" class="button small save create" form="create-form">
+		{{ 'ms.commerce.product.button.create'|trans }}
+	</button>
 </hgroup>
+
 <div class="container-content create-product">
 	{{ form_start(form, {action: url('ms.commerce.product.create.action'), 'attr': {'id': 'ms-create-form'}}) }}
 		<section class="group">

@@ -102,17 +102,27 @@ class Create
 		$inserts = array();
 
 		foreach ($unit->price as $type => $price) {
+			$currencies = $price->getCurrencies();
+			foreach($currencies as $currency) {
+				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
 
-			if ($unit->price[$type]->getPrice('GBP', $this->_locale) === 0) {
-				continue;
+				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
+
+				// If the unit price is equal to the product price then we don't
+				// need to add a row, and same if the price is zero
+				if ($unitPrice === 0 || $unitPrice == $productPrice ) {
+					continue;
+				}
+
+				$options[] = $unit->id;
+				$options[] = $type;
+				$options[] = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$options[] = $currency;
+				$options[] = $this->_locale->getID();
+				$inserts[] = '(?i,?s,?s,?s,?s)';
 			}
-
-			$options[] = $unit->id;
-			$options[] = $type;
-			$options[] = $unit->price[$type]->getPrice('GBP', $this->_locale);
-			$options[] = 'GBP';
-			$options[] = $this->_locale->getID();
-			$inserts[] = '(?i,?s,?s,?s,?s)';
 		}
 		if ($options) {
 			$result = $this->_query->run(

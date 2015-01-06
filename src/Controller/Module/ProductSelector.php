@@ -13,6 +13,7 @@ use Message\Mothership\Commerce\Field\ProductUnitInStockOnlyChoiceType;
 use Message\Mothership\CMS\Page\Content;
 
 use Message\Cog\Controller\Controller;
+use Message\Mothership\Commerce\Event\CurrencyChangeEvent;
 
 class ProductSelector extends Controller
 {
@@ -70,6 +71,8 @@ class ProductSelector extends Controller
 
 			if ($basket->addItem($item)) {
 				$this->addFlash('success', 'The item has been added to your basket');
+			} else {
+				$this->addFlash('error', 'The item could not be added to your basket');
 			}
 		}
 

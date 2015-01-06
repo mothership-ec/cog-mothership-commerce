@@ -40,4 +40,5 @@ class StockAdjustmentListener extends BaseListener implements SubscriberInterfac
 		foreach($order->getItems() as $item) {
 			$stockManager->decrement($item->getUnit(), $item->stockLocation);
 		}
-	}}
+	}
+}
