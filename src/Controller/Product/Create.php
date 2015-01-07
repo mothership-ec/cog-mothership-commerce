@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Controller\Product;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\HTTP\Response;
 
 class Create extends Controller
 {
@@ -57,8 +58,9 @@ class Create extends Controller
 
 		}
 
+		$response = new Response();
 		return $this->render('Message:Mothership:Commerce::product:create', [
 			'form'  => $form,
-		]);
+		], $response->setStatusCode(400));
 	}
 }

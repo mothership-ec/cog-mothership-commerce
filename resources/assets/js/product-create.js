@@ -154,11 +154,11 @@ $(function(){
 	});
 
 	$('body').on('click.modal', '[data-modal-open]', function() {
-		$('.save.button').fadeOut(100);
+		$('.save.button').attr('disabled', 'disabled');
 	});
 
 	$('body').on('click.modal', '[data-modal-close]', function() {
-		$('.save.button').fadeIn(100);
+		$('.save.button').removeAttr('disabled');
 
 		$('#product_create_name').val('');
 		$('[id*=product_create_units_]').val('');

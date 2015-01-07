@@ -5,12 +5,12 @@
 {% block slide %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
-	<button type="submit" class="button small save create" form="create-form">
+	<button type="submit" class="button small save create" form="ms-create-form" data-modal-open>
 		{{ 'ms.commerce.product.button.create'|trans }}
 	</button>
 </hgroup>
 
-<div class="container-content create-product">
+<div class="container-content create-product short">
 	{{ form_start(form, {action: url('ms.commerce.product.create.action'), 'attr': {'id': 'ms-create-form'}}) }}
 		<section class="group">
 			<h1 class="title">Information</h1>
@@ -32,11 +32,6 @@
 				{{ form_row(form.description) }}
 			</div>
 		</section>
-		<div class="save-content">
-			<button type="submit" class="button small save" data-modal-open>
-				{{ 'ms.commerce.product.button.create'|trans }}
-			</button>
-		</div>
 	{{ form_end(form) }}
 </div>
 
