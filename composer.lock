@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "be2685aa15b31d1139f777b95a912e13",
+    "hash": "2b41472eeca9bdfb558b7fe541c97176",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -506,16 +506,16 @@
         },
         {
             "name": "message/cog",
-            "version": "3.6.0",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog.git",
-                "reference": "3.6.0"
+                "reference": "3.9.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog/zipball/3.6.0",
-                "reference": "3.6.0",
+                "url": "https://api.github.com/repos/messagedigital/cog/zipball/3.9.0",
+                "reference": "3.9.0",
                 "shasum": ""
             },
             "require": {
@@ -592,9 +592,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog/issues",
-                "source": "https://github.com/messagedigital/cog/tree/3.6.0"
+                "source": "https://github.com/messagedigital/cog/tree/3.9.0"
             },
-            "time": "2014-12-08 12:44:15"
+            "time": "2014-12-23 11:46:05"
         },
         {
             "name": "message/cog-imageresize",
@@ -650,16 +650,16 @@
         },
         {
             "name": "message/cog-mothership-cp",
-            "version": "1.6.0",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-cp.git",
-                "reference": "1.6.0"
+                "reference": "1.8.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.6.0",
-                "reference": "1.6.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.8.0",
+                "reference": "1.8.0",
                 "shasum": ""
             },
             "require": {
@@ -698,9 +698,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-cp/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.6.0"
+                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.8.0"
             },
-            "time": "2014-12-16 14:14:15"
+            "time": "2014-12-23 16:18:23"
         },
         {
             "name": "message/cog-mothership-file-manager",
@@ -2402,12 +2402,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "4055c0e8577dfbc841fd384797487ff3fc75afff"
+                "reference": "686f85fa5b3b079cc0157d7cd3e9adb97f0b41e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/4055c0e8577dfbc841fd384797487ff3fc75afff",
-                "reference": "4055c0e8577dfbc841fd384797487ff3fc75afff",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/686f85fa5b3b079cc0157d7cd3e9adb97f0b41e1",
+                "reference": "686f85fa5b3b079cc0157d7cd3e9adb97f0b41e1",
                 "shasum": ""
             },
             "require": {
@@ -2460,7 +2460,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2014-11-18 13:37:25"
+            "time": "2014-12-22 10:06:19"
         }
     ],
     "aliases": [],
@@ -2469,6 +2469,7 @@
         "mockery/mockery": 20
     },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.4.0"
     },

@@ -216,9 +216,32 @@ class Product implements Price\PricedInterface
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		$basePrice = $this->getPrice($type, $currencyID);
-		foreach ($this->getVisibleUnits() as $unit) {
-			if ($unit->getPrice($type, $currencyID) != $basePrice) {
+		$units = $this->getVisibleUnits();
+		if (sizeof($units) <= 1) {
+			return false;
+		}
+
+		$basePrice = null;
+		foreach ($units as $unit) {
+			$valid = true;
+			if($options) {
+				// validate for option constraints
+				foreach($options as $option => $val) {
+					if($unit->getOption($option) !== $val) {
+						$valid = false;
+						break;
+					}
+				}
+				// skip unit if not valid
+				if(!$valid) {
+					continue;
+				}
+			}
+
+			$unitPrice = $unit->getPrice($type, $currencyID);
+			if($basePrice === null) {
+				$basePrice = $unitPrice;
+			}else if ($unit->getPrice($type, $currencyID) !== $basePrice) {
 				return true;
 			}
 		}
