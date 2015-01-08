@@ -351,7 +351,7 @@ class Loader
 		foreach ($result as $key => $data) {
 
 			// needs to set the product type if inclusive to get the base tax
-			if ($products[$key]->getTaxStrategy() == 'inclusive') {
+			if ($products[$key]->getTaxStrategy()->getName() === 'inclusive') {
 				$products[$key]->getTaxStrategy()->setProductType($data->type);
 			}
 
