@@ -11,8 +11,10 @@ use Message\Cog\DB\Entity\EntityLoaderCollection;
 use Message\User\AnonymousUser;
 
 use Message\Cog\Bootstrap\ServicesInterface;
+use Message\Mothership\Report\Report\Collection as ReportCollection;
 use Message\Mothership\Commerce\Product\Tax\TaxManager;
 use Message\Mothership\Commerce\Product\Tax\Strategy;
+use Message\Mothership\Commerce\Pagination\OrderAdapter;
 
 class Services implements ServicesInterface
 {
@@ -21,6 +23,7 @@ class Services implements ServicesInterface
 		$this->registerEmails($services);
 		$this->registerProductPageMapper($services);
 		$this->registerStatisticsDatasets($services);
+		$this->registerReports($services);
 		$this->setupCurrencies($services);
 
 		$services['order'] = $services->factory(function($c) {
@@ -127,7 +130,8 @@ class Services implements ServicesInterface
 				$c['user.loader'],
 				$c['order.statuses'],
 				$c['order.item.statuses'],
-				$c['order.entities']
+				$c['order.entities'],
+				$c['db.query.builder.factory']
 			);
 		});
 
@@ -147,6 +151,10 @@ class Services implements ServicesInterface
 				)
 			);
 		});
+
+		$services['order.pagination.adapter'] = function($c) {
+			return new OrderAdapter($c['order.loader']);
+		};
 
 		$services['order.delete'] = $services->factory(function($c) {
 			return new Commerce\Order\Delete($c['db.transaction'], $c['event.dispatcher'], $c['user.current']);
@@ -908,6 +916,116 @@ class Services implements ServicesInterface
 
 			return $statistics;
 		});
+	}
+
+	public function registerReports($services)
+	{
+		$services['commerce.stock_summary'] = $services->factory(function($c) {
+			return new Commerce\Report\StockSummary(
+				$c['db.query.builder.factory'],
+				$c['routing.generator']
+			);
+		});
+
+		$services['commerce.payments_refunds'] = $services->factory(function($c) {
+			return new Commerce\Report\PaymentsAndRefunds(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher']
+			);
+		});
+
+		$services['commerce.sales_by_month'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByMonth(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.sales_by_day'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByDay(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.sales_by_order'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByOrder(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.sales_by_item'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByItem(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.sales_by_product'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByProduct(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.sales_by_location'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByLocation(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.sales_by_user'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByUser(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
+		$services['commerce.reports'] = function($c) {
+			$reports = new ReportCollection;
+			$reports
+				->add($c['commerce.stock_summary'])
+				->add($c['commerce.payments_refunds'])
+				->add($c['commerce.sales_by_month'])
+				->add($c['commerce.sales_by_day'])
+				->add($c['commerce.sales_by_order'])
+				->add($c['commerce.sales_by_item'])
+				->add($c['commerce.sales_by_product'])
+				->add($c['commerce.sales_by_location'])
+				->add($c['commerce.sales_by_user'])
+			;
+			return $reports;
+		};
+
+		$services['commerce.report.sales-data'] = function($c) {
+			return new \Message\Mothership\Report\Report\AppendQuery\Collection([
+				new Commerce\Report\AppendQuery\Sales($c['db.query.builder.factory']),
+				new Commerce\Report\AppendQuery\Shipping($c['db.query.builder.factory']),
+			]);
+		};
+
+		$services['commerce.report.transaction-data'] = function($c) {
+			return new \Message\Mothership\Report\Report\AppendQuery\Collection([
+				new Commerce\Report\AppendQuery\Payments($c['db.query.builder.factory']),
+			]);
+		};
 	}
 
 	public function setupCurrencies($services)

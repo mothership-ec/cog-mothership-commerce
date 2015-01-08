@@ -16,9 +16,9 @@ class TotalSales extends Controller
 	 *
 	 * @return Message\Cog\HTTP\Response
 	 */
-	public function index()
+	public function index($currency)
 	{
-		$days = $this->get('db.query')->run("
+		$days = $this->get('db.query')->run('
 			SELECT
 				created_at AS date,
 				SUM(product_gross) AS gross
@@ -26,20 +26,29 @@ class TotalSales extends Controller
 				order_summary
 			WHERE
 				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
+			AND
+				currency_id = :id?s
 			GROUP BY
 				DAY(FROM_UNIXTIME(created_at))
+
 			ORDER BY
 				created_at ASC
-			");
+			', [
+				'id' => $currency
+		]);
 
-		$total = $this->get('db.query')->run("
+		$total = $this->get('db.query')->run('
 			SELECT
 				SUM(product_gross) AS gross
 			FROM
 				order_summary
 			WHERE
 				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
-			")->flatten();
+			AND
+				currency_id = :id?s
+			', [
+				'id' => $currency
+		])->flatten();
 
 		$rows = [];
 
@@ -68,7 +77,7 @@ class TotalSales extends Controller
 		}
 
 		return $this->render('Message:Mothership:ControlPanel::module:dashboard:area-graph', [
-			'label'   => 'Total sales this week (excl shipping) ',
+			'label'   => 'Total sales this week (excl shipping) - ' . $currency,
 			'keys' => [
 				'label' => 'Day',
 				'value' => 'Amount',
@@ -80,7 +89,7 @@ class TotalSales extends Controller
 					'value'   => $total['0'],
 				]
 			],
-			'currency' => $this->get('currency.company'),
+			'currency' => $currency,
 		]);
 	}
 }
