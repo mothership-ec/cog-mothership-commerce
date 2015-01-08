@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "794e206636885b794b71b88eafb0003a",
+    "hash": "5fb6dbbf609a17a168173952f5b3e109",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -650,16 +650,16 @@
         },
         {
             "name": "message/cog-mothership-cp",
-            "version": "1.9.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-cp.git",
-                "reference": "1.9.0"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/1.9.0",
-                "reference": "1.9.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/2.0.0",
+                "reference": "2.0.0",
                 "shasum": ""
             },
             "require": {
@@ -698,28 +698,28 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-cp/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/1.9.0"
+                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/2.0.0"
             },
-            "time": "2015-01-08 14:01:02"
+            "time": "2015-01-08 14:56:32"
         },
         {
             "name": "message/cog-mothership-file-manager",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-file-manager.git",
-                "reference": "2.0.1"
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-file-manager/zipball/2.0.1",
-                "reference": "2.0.1",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-file-manager/zipball/2.0.2",
+                "reference": "2.0.2",
                 "shasum": ""
             },
             "require": {
                 "message/cog": "~3.4",
                 "message/cog-imageresize": "~1.0",
-                "message/cog-mothership-cp": "~1.1",
+                "message/cog-mothership-cp": "~1.1 | ~2.0",
                 "php": ">=5.4.0"
             },
             "type": "library",
@@ -755,9 +755,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-file-manager/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-file-manager/tree/2.0.1"
+                "source": "https://github.com/messagedigital/cog-mothership-file-manager/tree/2.0.2"
             },
-            "time": "2014-09-23 12:11:32"
+            "time": "2015-01-08 15:08:18"
         },
         {
             "name": "message/cog-user",
