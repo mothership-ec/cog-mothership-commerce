@@ -14,6 +14,7 @@ use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Mothership\Report\Report\Collection as ReportCollection;
 use Message\Mothership\Commerce\Product\Tax\TaxManager;
 use Message\Mothership\Commerce\Product\Tax\Strategy;
+use Message\Mothership\Commerce\Pagination\OrderAdapter;
 
 class Services implements ServicesInterface
 {
@@ -129,7 +130,8 @@ class Services implements ServicesInterface
 				$c['user.loader'],
 				$c['order.statuses'],
 				$c['order.item.statuses'],
-				$c['order.entities']
+				$c['order.entities'],
+				$c['db.query.builder.factory']
 			);
 		});
 
@@ -149,6 +151,10 @@ class Services implements ServicesInterface
 				)
 			);
 		});
+
+		$services['order.pagination.adapter'] = function($c) {
+			return new OrderAdapter($c['order.loader']);
+		};
 
 		$services['order.delete'] = $services->factory(function($c) {
 			return new Commerce\Order\Delete($c['db.transaction'], $c['event.dispatcher'], $c['user.current']);
@@ -990,16 +996,16 @@ class Services implements ServicesInterface
 		};
 
 		$services['commerce.report.sales-data'] = function($c) {
-			return [
-				new Commerce\Report\CommerceData\SalesData($c['db.query.builder.factory']),
-				new Commerce\Report\CommerceData\ShippingData($c['db.query.builder.factory']),
-			];
+			return new \Message\Mothership\Report\Report\AppendQuery\Collection([
+				new Commerce\Report\AppendQuery\Sales($c['db.query.builder.factory']),
+				new Commerce\Report\AppendQuery\Shipping($c['db.query.builder.factory']),
+			]);
 		};
 
 		$services['commerce.report.transaction-data'] = function($c) {
-			return [
-				new Commerce\Report\CommerceData\PaymentsData($c['db.query.builder.factory']),
-			];
+			return new \Message\Mothership\Report\Report\AppendQuery\Collection([
+				new Commerce\Report\AppendQuery\Payments($c['db.query.builder.factory']),
+			]);
 		};
 	}
 

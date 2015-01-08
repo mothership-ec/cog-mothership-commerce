@@ -19,6 +19,7 @@ class SalesByUser extends AbstractSales
 	 * @param QueryBuilderFactory   $builderFactory
 	 * @param UrlGenerator          $routingGenerator
 	 * @param DispatcherInterface   $eventDispatcher
+	 * @param array                 $currencies
 	 */
 	public function __construct(
 		QueryBuilderFactory $builderFactory,
@@ -28,14 +29,15 @@ class SalesByUser extends AbstractSales
 	)
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
-		$this->name = 'sales_by_user';
-		$this->displayName = 'Sales by User';
-		$this->description =
-			"This report groups the total income by each user.
-			By default it includes all data (orders, returns, shipping) from the last 12 months (by completed date).";
-		$this->reportGroup = 'Sales';
+		$this->_setName('sales_by_user');
+		$this->_setDisplayName('Sales by User');
+		$this->_setReportGroup('Sales');
+		$this->_setDescription('
+			This report groups the total income by each user.
+			By default it includes all data (orders, returns, shipping) from the last 3 months (by completed date).
+		');
 		$startDate = new \DateTime;
-		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
+		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -3 month")));
 	}
 
 	/**
@@ -128,7 +130,8 @@ class SalesByUser extends AbstractSales
 	 *
 	 * @return string|array  Returns data as string in JSON format or array.
 	 */
-	protected function _dataTransform($data, $output = null)	{
+	protected function _dataTransform($data, $output = null)
+	{
 		$result = [];
 
 		if ($output === "json") {

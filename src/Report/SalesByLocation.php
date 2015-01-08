@@ -28,12 +28,13 @@ class SalesByLocation extends AbstractSales
 	)
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
-		$this->name = 'sales_by_location';
-		$this->displayName = 'Sales by Location';
-		$this->description =
-			"This report groups the total income by the country of the order delivery address.
-			By default it includes all data (orders, returns, shipping) from the last 12 months (by completed date).";
-		$this->reportGroup = "Sales";
+		$this->_setName('sales_by_location');
+		$this->_setDisplayName('Sales by Location');
+		$this->_setReportGroup('Sales');
+		$this->_setDescription('
+			This report groups the total income by the country of the order delivery address.
+			By default it includes all data (orders, returns, shipping) from the last 12 months (by completed date).
+		');
 		$startDate = new \DateTime;
 		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 year")));
 	}

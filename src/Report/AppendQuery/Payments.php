@@ -1,11 +1,12 @@
 <?php
 
-namespace Message\Mothership\Commerce\Report\CommerceData;
+namespace Message\Mothership\Commerce\Report\AppendQuery;
 
 use Message\Cog\DB\QueryBuilderFactory;
 use Message\Mothership\Report\Filter;
+use Message\Mothership\Report\Report\AppendQuery\FilterableInterface;
 
-class PaymentsData
+class Payments implements FilterableInterface
 {
 	private $_builderFactory;
 	private $_filters;
@@ -55,7 +56,8 @@ class PaymentsData
 			->select('method')
 			->select('amount')
 			->select('"Payment" AS type')
-			->select('order_id AS order_return_id')
+			->select('order_id AS order_id')
+			->select('"" AS return_id')
 			->select('reference')
 			->from('payment')
 			->leftJoin('order_payment','payment.payment_id = order_payment.payment_id')

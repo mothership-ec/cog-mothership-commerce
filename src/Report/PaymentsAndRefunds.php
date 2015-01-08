@@ -23,12 +23,13 @@ class PaymentsAndRefunds extends AbstractTransactions
 	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, DispatcherInterface $eventDispatcher)
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
-		$this->name        = 'payments_refunds';
-		$this->displayName = 'Payments & Refunds';
-		$this->reportGroup = 'Transactions';
-		$this->description =
-			"This report displays all payments & refunds.
-			By default it includes all data from the last month (by completed date).";
+		$this->_setName('payments_refunds');
+		$this->_setDisplayName('Payments & Refunds');
+		$this->_setReportGroup('Transactions');
+		$this->_setDescription('
+			This report displays all payments & refunds.
+			By default it includes all data from the last month (by completed date).
+		');
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
 		$startDate = new \DateTime;
@@ -38,8 +39,8 @@ class PaymentsAndRefunds extends AbstractTransactions
 			"type",
 			"Type",
 			[
-				'payment' => 'Payment',
-				'refund' => 'Refund',
+				'Payment',
+				'Refund',
 			],
 			false
 		));
@@ -78,7 +79,8 @@ class PaymentsAndRefunds extends AbstractTransactions
 			'Method'       => 'string',
 			'Amount'       => 'number',
 			'Type'         => 'string',
-			'Order/Return' => 'string',
+			'Order'        => 'string',
+			'Return'       => 'string',
 		];
 	}
 
@@ -136,13 +138,6 @@ class PaymentsAndRefunds extends AbstractTransactions
 		if ($output === "json") {
 
 			foreach ($data as $row) {
-
-				if ($row->type == "Payment") {
-					$url = $this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->order_return_id]);
-				} else {
-					$url = $this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->order_return_id]);
-				}
-
 				$result[] = [
 					date('Y-m-d H:i', $row->date),
 					$row->user ?
@@ -159,7 +154,12 @@ class PaymentsAndRefunds extends AbstractTransactions
 						'f' => (string) number_format($row->amount,2,'.',',')
 					],
 					$row->type,
-					'<a href ="'.$url.'">'.$row->order_return_id.'</a>',
+					$row->order_id ?
+						'<a href ="'.$this->generateUrl('ms.commerce.order.detail.view', ['orderID' => (int) $row->order_id]).'">'.$row->order_id.'</a>'
+						: $row->order_id,
+					$row->return_id ?
+						'<a href ="'.$this->generateUrl('ms.commerce.return.view', ['returnID' => (int) $row->return_id]).'">'.$row->return_id.'</a>'
+						: $row->return_id
 				];
 			}
 			return json_encode($result);
@@ -174,7 +174,8 @@ class PaymentsAndRefunds extends AbstractTransactions
 					ucwords($row->method),
 					$row->amount,
 					$row->type,
-					$row->order_return_id
+					$row->order_id,
+					$row->return_id
 				];
 			}
 			return $result;

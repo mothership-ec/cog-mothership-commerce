@@ -30,12 +30,13 @@ class SalesByDay extends AbstractSales
 	)
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
-		$this->name        = 'sales_by_day';
-		$this->displayName = 'Sales by Day';
-		$this->description =
-			"This report groups the total income by the day the order/return was completed.
-			By default it includes all data (orders, returns, shipping) from the last month (by completed date).";
-		$this->reportGroup = "Sales";
+		$this->_setName('sales_by_day');
+		$this->_setDisplayName('Sales by Day');
+		$this->_setReportGroup('Sales');
+		$this->_setDescription('
+			This report groups the total income by the day the order/return was completed.
+			By default it includes all data (orders, returns, shipping) from the last month (by completed date).
+		');
 		$startDate = new \DateTime;
 		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
 	}

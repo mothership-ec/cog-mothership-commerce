@@ -50,10 +50,10 @@ abstract class AbstractSales extends AbstractReport
 			"type",
 			"Sale Type",
 			[
-				'Order' => 'Order',
-				'Return' => 'Return',
-				'Exchange' => 'Exchange',
-				'shipping' => 'Shipping',
+				'Order',
+				'Return',
+				'Exchange',
+				'Shipping',
 			],
 			true
 		));
@@ -61,8 +61,8 @@ abstract class AbstractSales extends AbstractReport
 			"source",
 			"Source",
 			[
-				'web' => 'Web',
-				'epos' => 'EPOS',
+				'Web',
+				'EPOS',
 			],
 			true
 		));

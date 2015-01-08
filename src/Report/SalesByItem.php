@@ -28,12 +28,13 @@ class SalesByItem extends AbstractSales
 	)
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
-		$this->name = 'sales_by_item';
-		$this->displayName = 'Sales by Item';
-		$this->description =
-			"This report displays all individual items which save been sold/returned.
-			By default it includes all data (orders, returns, shipping) from the last week (by completed date).";
-		$this->reportGroup = "Sales";
+		$this->_setName('sales_by_item');
+		$this->_setDisplayName('Sales by Item');
+		$this->_setReportGroup('Sales');
+		$this->_setDescription('
+			This report displays all individual items which save been sold/returned.
+			By default it includes all data (orders, returns, shipping) from the last week (by completed date).
+		');
 		$startDate = new \DateTime;
 		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 week")));
 	}
