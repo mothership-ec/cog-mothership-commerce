@@ -33,9 +33,9 @@ class TotalSales extends Controller
 
 			ORDER BY
 				created_at ASC
-			', array(
-				"id" => $currency
-		));
+			', [
+				'id' => $currency
+		]);
 
 		$total = $this->get('db.query')->run('
 			SELECT
@@ -46,9 +46,9 @@ class TotalSales extends Controller
 				FROM_UNIXTIME(created_at) BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND NOW()
 			AND
 				currency_id = :id?s
-			', array(
-				"id" => $currency
-		))->flatten();
+			', [
+				'id' => $currency
+		])->flatten();
 
 		$rows = [];
 
