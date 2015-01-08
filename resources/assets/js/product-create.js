@@ -155,11 +155,16 @@ $(function(){
 
 	$('body').on('click.modal', '[data-modal-open]', function() {
 		$('.save.button').attr('disabled', 'disabled');
+
+		$(document).bind('ajaxComplete.createProduct', function() {
+			$('.save.button').removeAttr('disabled');
+			$(document).unbind('ajaxComplete.createProduct');
+		});
 	});
 
-	$('body').on('click.modal', '[data-modal-close]', function() {
-		$('.save.button').removeAttr('disabled');
 
+
+	$('body').on('click.modal', '[data-modal-close]', function() {
 		$('#product_create_name').val('');
 		$('[id*=product_create_units_]').val('');
 	});

@@ -59,8 +59,13 @@ class Create extends Controller
 		}
 
 		$response = new Response();
+		$response
+			->setStatusCode(400)
+			->headers->set('Content-Type', 'text/html')
+		;
+
 		return $this->render('Message:Mothership:Commerce::product:create', [
 			'form'  => $form,
-		], $response->setStatusCode(400));
+		], $response);
 	}
 }
