@@ -13,24 +13,27 @@
 <div class="container-content create-product short">
 	{{ form_start(form, {action: url('ms.commerce.product.create.action'), 'attr': {'id': 'ms-create-form'}}) }}
 		<section class="group">
-			<h1 class="title">Information</h1>
-			<div class="content">
-				{{ form_row(form.name) }}
-				{{ form_row(form.brand) }}
-				{{ form_row(form.category) }}
-
-				<h2>Variants</h2>
-				<div class="variants">
-					<div class="variant-options"><a class="button small add add-variant">{{ 'ms.commerce.product.button.variant' | trans }}</a>	</div>
-					<div class="options">
-						{{ form_widget(form.units) }}
-					</div>
-				
+			{{ form_row(form.name) }}
+			{{ form_row(form.brand) }}
+			{{ form_row(form.category) }}
+		
+			<h2>Variants</h2>
+			<div class="variants">
+				<div class="variant-options"><a class="button small add add-variant">{{ 'ms.commerce.product.button.variant' | trans }}</a>	</div>
+				<div class="options">
+					{{ form_widget(form.units) }}
 				</div>
-				{{ form_row(form.prices) }}
-				{{ form_row(form.type) }}
-				{{ form_row(form.description) }}
 			</div>
+
+			{% for name, currency in form.prices.currencies %}
+				<div class="currency-units">
+					<h4>{{ name }}</h4>
+					{{ form_widget(currency) }}
+				</div>
+			{% endfor %}
+
+			{{ form_row(form.type) }}
+			{{ form_row(form.description) }}
 		</section>
 	{{ form_end(form) }}
 </div>
