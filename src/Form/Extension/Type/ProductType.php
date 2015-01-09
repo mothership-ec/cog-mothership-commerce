@@ -23,15 +23,9 @@ class ProductType extends Form\AbstractType
 	 */
 	protected $_productTypes;
 
-	/**
-	 * @var array
-	 */
-	protected $_prices;
-
-	public function __construct(Translator $trans, array $prices, ProductTypeCollection $productTypes)
+	public function __construct(Translator $trans, ProductTypeCollection $productTypes)
 	{
 		$this->_trans  = $trans;
-		$this->_prices = $prices;
 		$this->_productTypes = $productTypes;
 	}
 
@@ -69,15 +63,7 @@ class ProductType extends Form\AbstractType
 				'label' => false,
 			]);
 
-			$prices = $builder->create('prices', 'form');
-			foreach ($this->_prices as $price) {
-				$prices->add($price, 'money', [
-					'label' => $this->_trans->trans('ms.commerce.product.pricing.'.$price.'.label'),
-					'data'  => 0.00,
-					'currency' => 'GBP',
-					'constraints' => [ new Constraints\NotBlank, ],
-				]);
-			}
+			$prices = $builder->create('prices', 'price_form');
 
 			$builder
 				->add($prices)

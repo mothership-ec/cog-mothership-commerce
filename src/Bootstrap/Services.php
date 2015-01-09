@@ -495,7 +495,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.form.create'] = $services->factory(function($c){
-			return new Commerce\Product\Form\Create($c['translator'], $c['product.price.types'], $c['product.types'], $c['product.form.data_transform']);
+			return new Commerce\Product\Form\Create($c['translator'], $c['product.types'], $c['product.form.data_transform']);
 		});
 
 		$services['product.edit'] = $services->factory(function($c) {

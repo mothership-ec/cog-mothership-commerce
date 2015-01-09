@@ -6,6 +6,7 @@ use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
 use Message\Mothership\Commerce\Product\Type\ProductTypeInterface as ProductType;
 use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
+use Message\Mothership\Commerce\Product\Price\TypedPrice;
 
 class Product implements Price\PricedInterface
 {
@@ -67,8 +68,8 @@ class Product implements Price\PricedInterface
 		$this->_units      = new Unit\Collection;
 		$this->_images     = new Image\Collection;
 		$this->_details    = new Type\DetailCollection;
-		$this->_prices     = new Price\PriceCollection($priceTypes);
 		$this->_taxes      = new Tax\Rate\TaxRateCollection;
+		$this->_prices     = new Price\PriceCollection;
 	}
 
 	/**
@@ -192,17 +193,38 @@ class Product implements Price\PricedInterface
 	/**
 	 * Get the gross price
 	 */
-	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
+	public function getGrossPrice($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->_taxStrategy->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
 	 * Get the lowest possible gross price
 	 */
-	public function getGrossPriceFrom($type = 'retail', $currencyID = 'GBP')
+	public function getGrossPriceFrom($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->_taxStrategy->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * Sets a price on the product
+	 * @param string $type       the type of the price, eg retail
+	 * @param string $currencyID the currency id, eg GBP
+	 * @param float  $price      the price
+	 */
+	public function setPrice($type, $currencyID, $price)
+	{
+		$prices = $this->getPrices();
+
+		if(!$prices->exists($type)) {
+			$prices->add(new TypedPrice($type, $this->_locale));
+		}
+
+		$prices[$type]->setPrice($currencyID, $price, $this->_locale);
 	}
 
 	/**

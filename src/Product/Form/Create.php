@@ -16,9 +16,9 @@ class Create extends ProductType
 	 */
 	protected $_transformer;
 
-	public function __construct(Translator $trans, array $prices, ProductTypeCollection $productTypes, ProductTransform $transformer)
+	public function __construct(Translator $trans, ProductTypeCollection $productTypes, ProductTransform $transformer)
 	{
-		parent::__construct($trans, $prices, $productTypes);
+		parent::__construct($trans, $productTypes);
 
 		$this->_transformer = $transformer;
 	}

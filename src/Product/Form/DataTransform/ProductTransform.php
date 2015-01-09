@@ -93,12 +93,10 @@ class ProductTransform implements DataTransformerInterface
 		;
 
 		// setting prices
-		$prices = $product->getPrices();
-
-		foreach ($this->_priceTypes as $type) {
-			$price = new TypedPrice($type, $this->_locale);
-			$price->setPrice('GBP', (isset($data['prices'][$type])?$data['prices'][$type]:0), $this->_locale);
-			$prices->add($price);
+		foreach($data['prices']['currencies'] as $currency => $typePrices) {
+			foreach ($typePrices as $type => $price) {
+				$product->setPrice($type, $currency, $price);
+			}
 		}
 
 		// create the unit

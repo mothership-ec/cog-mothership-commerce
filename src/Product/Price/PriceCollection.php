@@ -6,10 +6,8 @@ use Message\Cog\ValueObject\Collection as BaseCollecion;
 
 class PriceCollection extends BaseCollecion
 {
-	public function __construct($priceTypes)
+	protected function _configure()
 	{
-		parent::__construct();
-
 		// ensure we add only TypedPrice with allowed types
 		$this->setType('Message\\Mothership\\Commerce\\Product\\Price\\TypedPrice');
 
