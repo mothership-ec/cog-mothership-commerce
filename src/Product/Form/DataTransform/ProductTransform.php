@@ -22,9 +22,9 @@ class ProductTransform implements DataTransformerInterface
 	private $_taxStrategy;
 
 	public function __construct(
-		Locale $locale, 
-		Location $defaultLocation, 
-		array $priceTypes = array(), 
+		Locale $locale,
+		Location $defaultLocation,
+		array $priceTypes = array(),
 		ProductTypeCollection $productTypes,
 		$defaultCurrency,
 		TaxStrategyInterface $taxStrategy
@@ -104,7 +104,7 @@ class ProductTransform implements DataTransformerInterface
 		// create the unit
 		if (!empty($data['units'])){
 			foreach($data['units'] as $unitData) {
-				$unit = new Unit($this->_locale, $this->_priceTypes);
+				$unit = new Unit($this->_locale, $this->_priceTypes, $this->_defaultCurrency);
 				$unit->setProduct($product);
 				$unit->setSKU($unitData['sku']);
 				$unit->setStockForLocation($unitData['stock'], $this->_defaultLocation);
