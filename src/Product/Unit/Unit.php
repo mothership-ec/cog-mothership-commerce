@@ -71,7 +71,7 @@ class Unit implements PricedInterface
 
 	public function getPrice($type = 'retail', $currencyID = null)
 	{
-		$currencyID = $currencyID?:$this->_defaultCurrency;
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}

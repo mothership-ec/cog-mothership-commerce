@@ -29,14 +29,17 @@ class PriceForm extends AbstractType
 		foreach ($options['currencies'] as $currency) {
 			if ($entity) {	
 				foreach($entity->getPrices() as $type => $price) {
-					$priceData[$type] = $price?$price->getPrice($currency, $options['locale']):null;
+					$priceData[$type] = ($price && $price->hasPrice($currency, $options['locale'])) 
+						? $price->getPrice($currency, $options['locale']) 
+						: $options['default']
+					;
 				}
 			}
 
 			$currencyCollection->add($currency, 'price_group', [
 				'currency' => $currency,
 				'label'    => $currency,
-				'pricing'  => $entity?$priceData:null,
+				'pricing'  => $entity ? $priceData : null,
 			]);
 		}
 
@@ -62,6 +65,7 @@ class PriceForm extends AbstractType
 			'currencies' => $this->_currencies,
 			'locale'     => null,
 			'priced_entity' => null,
+			'default'    => null,
 		]);
 	}
 

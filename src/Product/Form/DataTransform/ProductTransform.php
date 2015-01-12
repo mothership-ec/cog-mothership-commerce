@@ -106,7 +106,7 @@ class ProductTransform implements DataTransformerInterface
 				$unit->setProduct($product);
 				$unit->setSKU($unitData['sku']);
 				$unit->setStockForLocation($unitData['stock'], $this->_defaultLocation);
-				$price = $unitData['price']?:0.00;
+				$price = $unitData['price'];
 
 				foreach($unit->price as $type => $uPrice) {
 					$unit->setPrice($price, $type);
