@@ -24,4 +24,12 @@ interface PricedInterface
 	 * @return int                the price
 	 */
 	public function getPrice($type, $currencyID);
+
+	/**
+	 * Returns true if price set on this object
+	 * @param  string  $type       the type e.g. retail
+	 * @param  string  $currencyID the currency the price is in
+	 * @return boolean             wheather the price is set
+	 */
+	public function hasPrice($type, $currencyID);
 }

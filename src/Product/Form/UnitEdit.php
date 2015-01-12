@@ -57,7 +57,7 @@ class UnitEdit extends AbstractType
 			$unitForm->add($optionsForm);
 
 			$unitForm->add('prices', 'price_form', [
-				'priced_entity' => $unit,
+				'priced_entity' => $unit
 			]);
 
 			$unitForm->add('weight', 'text', [

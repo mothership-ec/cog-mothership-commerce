@@ -29,7 +29,7 @@ class PriceForm extends AbstractType
 		foreach ($options['currencies'] as $currency) {
 			if ($entity) {	
 				foreach($entity->getPrices() as $type => $price) {
-					$priceData[$type] = ($price && $price->hasPrice($currency, $options['locale'])) 
+					$priceData[$type] = ($price && $entity->hasPrice($type, $currency)) 
 						? $price->getPrice($currency, $options['locale']) 
 						: $options['default']
 					;

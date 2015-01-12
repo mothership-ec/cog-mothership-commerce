@@ -211,6 +211,14 @@ class Product implements Price\PricedInterface
 	}
 
 	/**
+	 * {@inheritDocs}
+	 */
+	public function hasPrice($type, $currencyID)
+	{
+		return $this->getPrices()->get($type)->hasPrice($type, $currencyID, $this->_locale);
+	}
+
+	/**
 	 * Sets a price on the product
 	 * @param string $type       the type of the price, eg retail
 	 * @param string $currencyID the currency id, eg GBP

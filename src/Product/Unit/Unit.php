@@ -86,6 +86,18 @@ class Unit implements PricedInterface
 		);
 	}
 
+	/**
+	 * {@inheritDocs}
+	 */
+	public function hasPrice($type, $currencyID)
+	{
+		// Due to how the loader works, the closest way to tell wheather or not this entity has a price
+		// is to compare it to the product. This isn't 100% as if this has a price set identical to the product
+		// price then it will return false, however for most cases this false result is OK.
+		return $this->price[$type]->hasPrice($currencyID) 
+				&& $this->getPrice($type, $currencyID) !== $this->getProduct()->getPrice($type, $currencyID);
+	}
+
 	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		$product = $this->getProduct();
@@ -131,15 +143,14 @@ class Unit implements PricedInterface
 		return $this->options[$type];
 	}
 
-    /**
-     * Gets the value of product.
-     *
-     * @return mixed
-     */
-    public function getProduct()
-    {
-        return $this->product;
-    }
+	/**
+	 * Gets the unit's product
+	 * @return Message\Mothership\Commerce\Product\Product The unit's
+	 */
+	public function getProduct()
+	{
+		return $this->product;
+	}
     
     /**
      * Sets the value of product.
