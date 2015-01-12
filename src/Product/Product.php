@@ -215,7 +215,7 @@ class Product implements Price\PricedInterface
 	 */
 	public function hasPrice($type, $currencyID)
 	{
-		return $this->getPrices()->get($type)->hasPrice($type, $currencyID, $this->_locale);
+		return $this->getPrices()->get($type)->hasPrice($currencyID, $this->_locale);
 	}
 
 	/**
