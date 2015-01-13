@@ -59,7 +59,6 @@ class ProductSelector extends Controller
 			$basket   = $this->get('basket');
 			$unit     = $product->getUnit($data['unit_id']);
 			$item     = new Order\Entity\Item\Item;
-
 			$item->order         = $basket->getOrder();
 			$item->stockLocation = $this->get('stock.locations')->get('web');
 			$item->populate($unit);
@@ -114,6 +113,8 @@ class ProductSelector extends Controller
 				'show_pricing' => $showVariablePricing && $product->hasVariablePricing(),
 			]);
 		}
+
+		$form->add('quantity', 'hidden', null, ['data' => 1]);
 
 		$form = $this->get('event.dispatcher')->dispatch(
 			Events::PRODUCT_SELECTOR_BUILD,

@@ -7,6 +7,9 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
+/**
+ * @deprecated Use unit_choice Message\Mothership\Commerce\Form\Type\UnitChoice
+ */
 class ProductUnitInStockOnlyChoiceType extends AbstractType
 {
 	protected $_container;
