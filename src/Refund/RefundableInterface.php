@@ -10,6 +10,5 @@ namespace Message\Mothership\Commerce\Refund;
  */
 interface RefundableInterface
 {
-	public function setTax($tax);
 	public function getTax();
 }
