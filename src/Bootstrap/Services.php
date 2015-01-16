@@ -689,6 +689,14 @@ class Services implements ServicesInterface
 			return $c['user.address.edit'];
 		});
 
+		$services['commerce.order.user_address.loader'] = function($c) {
+			return new Commerce\Order\Entity\Address\UserAddressLoader(
+				$c['db.query'],
+				$c['country.list'],
+				$c['state.list']
+			);
+		};
+
 		$services['user.address.loader'] = $services->extend('user.address.loader', function($loader, $c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
