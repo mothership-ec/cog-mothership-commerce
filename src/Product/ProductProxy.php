@@ -114,6 +114,4 @@ class ProductProxy extends Product
 
 		$this->_loaded[] = $entityName;
 	}
-}is->_loaded[] = $entityName;
-	}
 }
