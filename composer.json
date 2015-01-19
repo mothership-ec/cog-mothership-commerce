@@ -29,11 +29,11 @@
 	"require": {
 		"php": ">=5.4.0",
 
-		"message/cog"                        : "~3.4",
+		"message/cog"                        : "~3.9",
 		"message/cog-user"                   : "~1.0",
 		"message/cog-imageresize"            : "~1.0",
 		"message/cog-mothership-file-manager": "~2.0",
-		"message/cog-mothership-cp"          : "~1.6",
+		"message/cog-mothership-cp"          : "~2.0",
 
 		"domisys/image_barcode2"             : "3.0.0"
 	},
@@ -42,5 +42,6 @@
 	},
 
 	"suggest": {
+		"message/cog-mothership-reports" : "Module for displaying reports"
 	}
 }

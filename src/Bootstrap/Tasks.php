@@ -41,6 +41,8 @@ class Tasks implements TasksInterface
 
 		$tasks->add(new Product\Stock\StockSnapshot('commerce:stock:snapshot'), 'Creates a snapshot of current stock levels');
 
+		$tasks->add(new Task\Order\FlushOrders('commerce:flush_orders'), 'Completes orders that are stuck in fulfillment');
+
 		$tasks->add(new Product\Barcode\GenerateTask('commerce:barcode:generate'), 'Creates barcode images for all units in the database');
 
 	}

@@ -8,7 +8,7 @@
 	<div class="dashboard">
 		<div class="modules">
 			{% for reference in dashboardReferences %}
-				{{ render(controller(reference)) }}
+				{{ render(controller(reference.reference)) }}
 			{% else %}
 				<div class="container-content">
 					<p>I don't have any flashy graphs and numbers to show you :(</p>

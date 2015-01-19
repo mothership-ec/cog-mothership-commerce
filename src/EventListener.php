@@ -14,6 +14,9 @@ use Message\Mothership\ControlPanel\Event\Dashboard\Activity;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
+use Message\Mothership\Report\Event as ReportEvents;
+use Message\Mothership\Report\Report\AppendQuery\FilterableInterface;
+
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -67,6 +70,15 @@ class EventListener extends BaseListener implements SubscriberInterface
 			ActivitySummaryEvent::DASHBOARD_ACTIVITY_SUMMARY => array(
 				'buildDashboardBlockUserSummary',
 			),
+			ReportEvents\Events::REGISTER_REPORTS => [
+				'registerReports'
+			],
+			Events::SALES_REPORT => [
+				'buildSalesReport'
+			],
+			Events::TRANSACTIONS_REPORT => [
+				'buildTransactionReport'
+			],
 		);
 	}
 
@@ -126,7 +138,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function buildDashboardOrders(DashboardEvent $event)
 	{
 		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:OrdersActivity#index');
-		$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index');
+
+		$currencies = $this->get('currency.supported');
+		foreach ($currencies as $currency) {
+			$event->addReference('Message:Mothership:Commerce::Controller:Module:Dashboard:TotalSales#index', ['currency' => $currency]);
+		}
 	}
 
 	/**
@@ -273,4 +289,47 @@ class EventListener extends BaseListener implements SubscriberInterface
 			$dataset->counter->decrement($unitID, count($items));
 		}
 	}
+
+	/**
+	 * Register reports.
+	 *
+	 * @param  ReportEvents\BuildReportCollectionEvent $event
+	 */
+	public function registerReports(ReportEvents\BuildReportCollectionEvent $event)
+	{
+		foreach ($this->get('commerce.reports') as $report) {
+			$event->registerReport($report);
+		}
+	}
+
+	/**
+	 * Builds the Sales reports.
+	 *
+	 * @param  ReportEvents\ReportEvent $event
+	 */
+	public function buildSalesReport(ReportEvents\ReportEvent $event)
+	{
+		foreach ($this->get('commerce.report.sales-data') as $query) {
+			if ($query instanceof FilterableInterface) {
+				$query->setFilters($event->getFilters());
+			}
+			$event->addQueryBuilder($query->getQueryBuilder());
+		}
+	}
+
+	/**
+	 * Builds the Transaction report.
+	 *
+	 * @param  ReportEvents\ReportEvent $event
+	 */
+	public function buildTransactionReport(ReportEvents\ReportEvent $event)
+	{
+		foreach ($this->get('commerce.report.transaction-data') as $query) {
+			if ($query instanceof FilterableInterface) {
+				$query->setFilters($event->getFilters());
+			}
+			$event->addQueryBuilder($query->getQueryBuilder());
+		}
+	}
+
 }
