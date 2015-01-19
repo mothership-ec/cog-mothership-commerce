@@ -14,6 +14,7 @@ class CsvPort extends Controller
 	const VALID_ROWS_SESSION = 'product.csv.valid_rows';
 
 	const NUM_DISPLAY_PRODUCTS = 6;
+	const MAX_CELL_LENGTH = 50; // number of characters to display per cell in product table
 
 	public function index()
 	{
@@ -105,11 +106,12 @@ class CsvPort extends Controller
 		$form = $this->createForm($this->get('product.form.upload_confirm'));
 
 		return $this->render('Message:Mothership:Commerce::product:csv:preview', [
-			'heading'     => $this->get('product.upload.csv_heading'),
-			'productData' => $productData,
-			'invalid'     => $invalidRows,
-			'form'        => $form,
-			'numProducts' => self::NUM_DISPLAY_PRODUCTS,
+			'heading'       => $this->get('product.upload.csv_heading'),
+			'productData'   => $productData,
+			'invalid'       => $invalidRows,
+			'maxCellLength' => self::MAX_CELL_LENGTH,
+			'form'          => $form,
+			'numProducts'   => self::NUM_DISPLAY_PRODUCTS,
 		]);
 	}
 }

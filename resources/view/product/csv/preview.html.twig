@@ -43,7 +43,7 @@
 				{% for unit in product %}
 					<tr class="{{ (key is odd) ? "odd" : "even" }} {{ (key > numProducts) ? "hide" : "" }}">
 						{% for column in unit %}
-							<td>{{ column }}</td>
+							<td>{{ column | length < maxCellLength ? column : column | slice(0,maxCellLength) ~ '...' }}</td>
 						{% endfor %}
 					</tr>
 				{% endfor %}
@@ -53,27 +53,30 @@
 	</table>
 	<a class="csv-show valid button small">Show all rows</a>
 
-	<h3>Invalid rows</h3>
-	<table class="invalid">
-		{{ _self.getHeading(heading) }}
-		<tbody>
-		{% for iKey, invalidRow in invalid %}
-			<tr class="{{ ((iKey + 1) > numProducts) ? "hide" : "" }}">
-				{% for invalidColumn in invalidRow %}
-					<td>{{ invalidColumn }}</td>
-				{% endfor %}
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
+	{% if invalid | length > 0 %}
+		<h3>Invalid rows</h3>
+		<table class="invalid">
+			{{ _self.getHeading(heading) }}
+			<tbody>
+			{% for iKey, invalidRow in invalid %}
+				<tr class="{{ ((iKey + 1) > numProducts) ? "hide" : "" }}">
+					{% for invalidColumn in invalidRow %}
+						<td>{{ invalidColumn | length < maxCellLength ? invalidColumn : invalidColumn | slice(0,maxCellLength) }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
 
-	<a class="csv-show invalid button small">Show all rows</a>
+		<a class="csv-show invalid button small">Show all rows</a>
+	{% endif %}
+
 		{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
 		<span data-modal-open data-modal="#upload_warning" id="save-content" class="button save small">Save</span>
 	<div class="module">
 		<div class="wrap">
 			{{ form_end(form) }}
 		</div>
-	</div>		
+	</div>
 	</section>
 {% endblock %}
