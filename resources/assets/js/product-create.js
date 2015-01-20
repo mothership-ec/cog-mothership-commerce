@@ -118,14 +118,9 @@ function updateUnits() {
 	}
 }
 
+var currentKey = 0;
 function addVariantField() {
-	var field = $(
-			'<div class="field required variant-field">'+
-				'<input type="text" class="variant-type" placeholder="e.g. \'Colour\'">' +
-				'<input type="hidden" class="value" style="width: 90%;" tabindex="-1" placeholder="e.g. \'Black, Blue\'" class="select2-offscreen">' +
-				'<a href="#" class="button remove button-cancel"></a>' +
-			'</div>'
-			);
+	var field = $($('#variant-field-container').data('prototype').replace(/__key__/g, ++currentKey));
 
 	var value = $(".value", field).select2({
 		tags: [],
