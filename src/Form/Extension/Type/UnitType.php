@@ -39,12 +39,6 @@ class UnitType extends Form\AbstractType
 					'placeholder' => $this->_trans->trans('ms.commerce.product.stock.set.placeholder'),
 				],
 			])
-			->add('price', 'number', [
-				'label' => 'ms.commerce.product.create.price.label',
-				'attr'  => [
-					'placeholder' => $this->_trans->trans('ms.commerce.product.create.price.placeholder'),
-				],
-			])
 		;
 
 		$builder->add('variants', 'collection', [
