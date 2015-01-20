@@ -121,14 +121,17 @@ function updateUnits() {
 function addVariantField() {
 	var field = $(
 			'<div class="field required variant-field">'+
-				'<input type="text" class="variant-type" placeholder="Variant">' +
-				'<input type="hidden" class="value" style="width: 90%;" tabindex="-1" placeholder="Value" data-main class="select2-offscreen">' +
+				'<input type="text" class="variant-type" placeholder="e.g. \'Colour\'">' +
+				'<input type="hidden" class="value" style="width: 90%;" tabindex="-1" placeholder="e.g. \'Black, Blue\'" class="select2-offscreen">' +
 				'<a href="#" class="button remove button-cancel"></a>' +
 			'</div>'
 			);
 
 	var value = $(".value", field).select2({
-		tags: [""], 
+		tags: [],
+		formatNoMatches: function () {
+			return 'Add variant value';
+		},
 		tokenSeparators: window.tokenSeparators
 	});
 
