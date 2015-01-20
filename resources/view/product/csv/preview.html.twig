@@ -51,7 +51,10 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<a class="csv-show valid button small">Show all rows</a>
+
+	{% if key > numProducts %}
+		<a class="csv-show valid button small">Show all rows</a>
+	{% endif %}
 
 	{% if invalid | length > 0 %}
 		<h3>Invalid rows</h3>
@@ -67,8 +70,9 @@
 			{% endfor %}
 			</tbody>
 		</table>
-
-		<a class="csv-show invalid button small">Show all rows</a>
+		{% if iKey > numProducts %}
+			<a class="csv-show invalid button small">Show all rows</a>
+		{% endif %}
 	{% endif %}
 
 		{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
