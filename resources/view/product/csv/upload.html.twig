@@ -8,6 +8,7 @@
 
 	<hgroup class="title">
 		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
+		<a class="button download small" href="{{ url('ms.commerce.product.upload.csv') }}">Download CSV Template</a>
 	</hgroup>
 	<div class="container-content csv-upload">
 		<div class="module landscape">
@@ -16,7 +17,6 @@
 				{{ form_row(form['file']) }}
 				<button class="button upload">Upload CSV</button>
 				{{ form_end(form) }}
-				<a class="button download" href="{{ url('ms.commerce.product.upload.csv') }}">Download CSV Template</a>
 			</div>
 		</div>
 	</div>
