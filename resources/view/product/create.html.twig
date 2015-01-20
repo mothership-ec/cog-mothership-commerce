@@ -18,20 +18,22 @@
 			{{ form_row(form.category) }}
 		
 			<h2>Variants</h2>
+
+			{# Prototype the variant fields and the corresponding text #}
 			<div class="variants" id="variant-field-container" data-prototype="
 				{% filter escape('html') %}
 				<div class="field required variant-field">
 				<input type="text" class="variant-type" placeholder="e.g. 'Colour'">
 				{% 
 					include 'Message:Mothership:ControlPanel::module:component:help' with {
-						contextual_help : 'ms.cms.content.home.confirm',
+						contextual_help : 'ms.commerce.product.units.option.name.help',
 						id              : 'variant_type_help_key___key__',
 					} only
 				%}
 				<input type="hidden" class="value" style="width: 90%;" tabindex="-1" placeholder="e.g. 'Black, Blue'" class="select2-offscreen">
 				{% 
 					include 'Message:Mothership:ControlPanel::module:component:help' with {
-						contextual_help : 'ms.cms.content.home.confirm',
+						contextual_help : 'ms.commerce.product.units.option.value.help',
 						id              : 'variant_value_help_key___key__',
 					} only
 				%}

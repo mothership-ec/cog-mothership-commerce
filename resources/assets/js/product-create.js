@@ -1,5 +1,5 @@
 window.variantKeys = ["Colour", "Size"];
-window.tokenSeparators = [","];
+window.tokenSeparators = [",", "	"];
 window.units = [];
 
 
@@ -142,11 +142,12 @@ function addVariantField() {
 
 
 $(function(){
+	// seems that slect2 is funny about tabbing
 	$('.variants').on('keydown', '.variant-type', function(e) {
 		var keyCode = e.keyCode || e.which;
 
-		if (e.keyCode === 9) {
-			$(this).next().find('.select2-input').focus();
+		if (e.keyCode === 9 && !e.shiftKey) {
+			$(this).nextAll('.select2-container').find('.select2-input').focus();
 			e.preventDefault();
 		}
 	});
@@ -159,8 +160,6 @@ $(function(){
 			$(document).unbind('ajaxComplete.createProduct');
 		});
 	});
-
-
 
 	$('body').on('click.modal', '[data-modal-close]', function() {
 		$('#product_create_name').val('');

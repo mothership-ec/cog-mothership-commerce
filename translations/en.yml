@@ -157,7 +157,7 @@ ms.commerce:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
-          help: Select the type of Option you wish to add to this SKU.
+          help: Select the type of Option you wish to add to this SKU. (For example 'Colour')
         value:
           label: Option Value
           placeholder: Option Value
