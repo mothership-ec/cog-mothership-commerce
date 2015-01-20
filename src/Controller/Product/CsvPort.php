@@ -51,6 +51,9 @@ class CsvPort extends Controller
 
 		$form->handleRequest();
 
+		$productCount = 0;
+		$unitCount    = 0;
+
 		if ($form->isValid()) {
 			$data = $form->getData();
 
@@ -65,29 +68,58 @@ class CsvPort extends Controller
 					$product    = $this->get('product.upload.product_builder')->build($productRow);
 
 					$this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
+					$productCount++;
 
 					foreach ($productRows as $row) {
 						$unit = $this->get('product.upload.unit_builder')->setBaseProduct($product)->build($row);
 						$unit = $this->get('product.upload.unit_create_dispatcher')->create($unit, $data, $row);
 						$this->get('product.upload.unit_stock')->setStockLevel($unit, $row);
+						$unitCount++;
 					}
 				}
 				catch (UploadFrontEndException $e) {
 					$this->addFlash('error', $e->getMessage());
 				}
 			}
-		}
 
-		$completeEvent = $this->get('product.upload.complete_dispatcher')->dispatch();
+			$completeEvent = $this->get('product.upload.complete_dispatcher')->dispatch();
 
-		if ($completeEvent->getRoute()) {
-			return $this->redirectToRoute(
-				$completeEvent->getRoute(),
-				$completeEvent->getParams()
-			);
+			$this->_addSuccessFlash($productCount, $unitCount);
+
+			if ($completeEvent->getRoute()) {
+				return $this->redirectToRoute(
+					$completeEvent->getRoute(),
+					$completeEvent->getParams()
+				);
+			}
 		}
 
 		return $this->redirectToReferer();
+	}
+
+	private function _addSuccessFlash($productCount, $unitCount)
+	{
+		$productCount = (int) $productCount;
+		$unitCount    = (int) $unitCount;
+
+		if ($productCount === 1 && $unitCount !== 1) {
+			$transChoice = 1;
+		} elseif ($productCount !== 1 && $unitCount === 1) {
+			$transChoice = 2;
+		} elseif ($productCount === 1 && $unitCount === 1) {
+			$transChoice = 3;
+		} else {
+			$transChoice = 0;
+		}
+
+		$this->addFlash('success', $this->get('translator')->transChoice(
+			'ms.commerce.product.upload.success',
+			$transChoice,
+			[
+				'%productCount%' => $productCount,
+				'%unitCount%'    => $unitCount,
+			]
+		));
 	}
 
 	private function _renderPreview(array $data)

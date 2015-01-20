@@ -150,6 +150,7 @@ ms.commerce:
       title: Upload a CSV
       form:
         upload_field: Upload
+      success: '{0}%productCount% products created and %unitCount% units created|{1}%productCount% product created and %unitCount% units created|{2}%productCount% products created and %unitCount% unit created|{3}%productCount% product created and %unitCount% unit created'
       csv:
         # these names need to match
         name:
