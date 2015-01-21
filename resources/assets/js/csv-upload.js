@@ -22,11 +22,7 @@ $(function() {
 	});
 
 	$('#ms_csv_upload_confirm_create_pages').change(function() {
-	  	if ($(this).is(':checked')) {
-	    	$('.csv-preview .field-wrap').slideToggle();
-	  	} else {
-	    	$('.csv-preview .field-wrap').slideToggle();
-	  	}
+	    $('.csv-preview .field-wrap').fadeToggle();
 	});
 
 });
