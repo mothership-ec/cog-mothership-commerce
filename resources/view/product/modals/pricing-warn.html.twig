@@ -4,7 +4,9 @@
 {% block id 'warning-modal' %}
 {% block attr 'style="display:none;"' %}
 {% block content %}
-	<p id="warning-content"></p>
+	<p id="warning-content">
+		{{ 'ms.commerce.product.pricing.warning'|trans }}
+	</p>
 	<button class="button small cancel left" data-modal-close>{{'ms.commerce.product.button.back'|trans}}</button>
 	<button class="button small save form-submit right">{{'ms.commerce.product.button.continue'|trans}}</button>
 {% endblock %}

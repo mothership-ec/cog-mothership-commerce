@@ -5,7 +5,7 @@
 {% block slide %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
-	<span type="submit" class="button small save create" form="ms-create-form" data-modal-open>
+	<span type="submit" class="button small save create" form="ms-create-form" data-modal-open data-price-warn="Warn" data-modal="#warning-modal">
 		{{ 'ms.commerce.product.button.create'|trans }}
 	</span>
 </hgroup>
@@ -60,8 +60,10 @@
 	{{ form_end(form) }}
 </div>
 
+{% include 'Message:Mothership:Commerce::product:modals:pricing-warn' %}
 
 {% javascripts
+	'@Message:Mothership:Commerce::resources/assets/js/price-warn.js'
 	'@Message:Mothership:Commerce::resources/assets/js/product-create.js'
 
 	output='/assets/js/ms_product_create.js'
