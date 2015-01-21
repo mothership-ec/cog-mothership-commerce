@@ -1,5 +1,5 @@
 window.variantKeys = ["Colour", "Size"];
-window.tokenSeparators = [",", "	"];
+window.tokenSeparators = [","];
 window.units = [];
 
 
