@@ -2,7 +2,7 @@
 {% import 'Message:Mothership:Commerce::options' as option %}
 
 {% block edit %}
-	{{ form_start(form) }}
+	{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 	<table>
 		<colgroup>
 			<col width="125">
@@ -48,9 +48,6 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<button type="submit" class="button small save" id="save-content" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
-		{{ 'ms.commerce.product.button.save'|trans }}
-	</button>
 	{{ form_end(form) }}
 
 <div class="group">
@@ -63,7 +60,7 @@
 				<div class="currency-units">
 				    <h4>{{ currency }}</h4>
 					{{ form_widget(price) }}
-				</div>	
+				</div>
 			{% endfor %}
 			{{ form_rest(addForm) }}
 			<button type="submit" class="button small update" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
@@ -74,13 +71,23 @@
 </div>
 {% endblock %}
 
+{% block slide %}
+    {% set saveButton %}
+		<span type="submit" class="button small save" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal" for="product-edit-form">
+		{{ 'ms.commerce.product.button.save'|trans }}
+		</span>
+	{% endset %}
+
+	{{ parent() }}
+{% endblock %}
+
 {% block after %}
 	{% include 'Message:Mothership:Commerce::product:modals:pricing-warn' %}
 	<script>
 		window.priceWarning = '{{"ms.commerce.product.pricing.warning" | trans}}';
 	</script>
 
-	{% javascripts 
+	{% javascripts
 		'@Message:Mothership:Commerce::resources/assets/js/price-warn.js'
 
 		output='/assets/js/commerce/price-warn.js'

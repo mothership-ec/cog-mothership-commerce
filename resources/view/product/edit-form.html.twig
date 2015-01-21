@@ -1,9 +1,6 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 {% block edit %}
-	{{ form_start(form) }}
+	{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 		{{ form_rest(form) }}
-		<button type="submit" class="button small save" id="save-content">
-			{{ 'ms.commerce.product.button.save'|trans }}
-		</button>
 	{{ form_end(form) }}
 {% endblock %}

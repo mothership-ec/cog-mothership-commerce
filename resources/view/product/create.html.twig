@@ -1,19 +1,19 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-{% block main %}
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
+
+{% block slideAttr 'data-slide-loaded' %}
+
+{% block slide %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
+	<button type="submit" class="button small save create" form="create-form">
+		{{ 'ms.commerce.product.button.create'|trans }}
+	</button>
 </hgroup>
-<div class="container-content create-product">
-	{{ form_start(form) }}
+<div class="container-content short create-product">
+	{{ form_start(form, {attr: {id: 'create-form'}}) }}
 		{{ form_row(form.name) }}
 		{{ form_row(form.display_name) }}
 		{{ form_row(form.short_description) }}
-		<button type="submit" class="button small save" id="save-content">
-			{{ 'ms.commerce.product.button.create'|trans }}
-		</button>
 	{{ form_end(form) }}
 </div>
 {% endblock %}
