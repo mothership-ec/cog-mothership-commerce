@@ -37,8 +37,6 @@ $(function() {
 
 		$('.dataTables_info').css({ paddingBottom: '50px'});
 
-		// Position Add Product button when slide is opened
-		$('.create.product').css({ marginRight: '50px'});
 	});
 
 	$('#main-slide').on('hide.cp-livePane-slide', function(e, data) {
