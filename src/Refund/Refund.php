@@ -24,6 +24,11 @@ class Refund implements RecordInterface
 	public $reference;
 
 	/**
+	 * @var float
+	 */
+	private $_tax;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct()
@@ -48,5 +53,21 @@ class Refund implements RecordInterface
 	public function getRecordID()
 	{
 		return $this->id;
+	}
+
+	/**
+	 * @param $taxAmount
+	 */
+	public function setTax($taxAmount)
+	{
+		$this->_tax = (float) $taxAmount;
+	}
+
+	/**
+	 * @return float | null
+	 */
+	public function getTax()
+	{
+		return $this->_tax;
 	}
 }

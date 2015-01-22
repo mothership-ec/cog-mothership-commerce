@@ -1,10 +1,8 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
+{% block slideAttr 'data-slide-loaded' %}
 
-{% block main %}
+{% block slide %}
 
 	<hgroup class="title">
 		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>

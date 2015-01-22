@@ -1,4 +1,6 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
+
+{% block slideAttr 'data-slide-loaded' %}
 
 {% macro getHeading(heading) %}
 	<thead>
@@ -23,11 +25,7 @@
 	{% endjavascripts %}
 {% endblock %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-
-{% block main %}
+{% block slide %}
 	{% include '@Message:Mothership:Commerce::product:csv:warning_modal' %}
 	<hgroup class="title">
 		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>

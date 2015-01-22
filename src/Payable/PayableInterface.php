@@ -2,6 +2,8 @@
 
 namespace Message\Mothership\Commerce\Payable;
 
+use Message\Cog\ValueObject\Collection;
+
 /**
  * Interface for objects that represent something for which a payment can be
  * made. This includes purchases made by customers, refunds and arbitrary
