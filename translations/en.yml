@@ -18,6 +18,8 @@ ms.commerce:
       description:
         label: Description
         placeholder: Enter a description...
+      variants:
+        label: Variants
 
     selector:
       unit:
