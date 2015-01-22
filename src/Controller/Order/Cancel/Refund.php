@@ -8,6 +8,7 @@ use Message\Mothership\Commerce\Order\Entity\Refund\Refund as OrderRefund;
 use Message\Mothership\Commerce\Payment\MethodInterface;
 use Message\Mothership\Ecommerce\Controller\Gateway\CompleteControllerInterface;
 use Message\Mothership\Commerce\Payable\PayableInterface;
+use Message\Mothership\Commerce\Refund\RefundableInterface;
 
 use Message\Cog\Controller\Controller;
 
@@ -87,6 +88,10 @@ class Refund extends Controller implements CompleteControllerInterface
 		$refund->reference = $reference;
 		$refund->reason    = $this->_reason;
 		$refund->payment   = ($this->get('order.payment.loader')->getByMethodAndReference($method, $reference) ?: null);
+
+		if ($payable instanceof RefundableInterface) {
+			$refund->setTax($payable->getTax());
+		}
 
 		$order = $payable->getOrder();
 		$order->refunds->append($refund);
