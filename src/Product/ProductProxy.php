@@ -65,7 +65,7 @@ class ProductProxy extends Product
 	public function getUnit($unitID)
 	{
 		if (!in_array('units', $this->_loaded)) {
-			return $this->_loaders->get('units')->getByID($unitID);
+			$this->_load('units');
 		}
 
 		return parent::getUnit($unitID);

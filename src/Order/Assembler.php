@@ -138,6 +138,7 @@ class Assembler
 	 */
 	public function addEntity($name, Entity\EntityInterface $entity)
 	{
+		$dispatchEvents = $this->_dispatchEvents;
 		$this->_dispatchEvents = false;
 
 		$this->_prepareEntity($name, $entity);
@@ -145,7 +146,9 @@ class Assembler
 		$this->removeEntity($name, $entity);
 		$this->_order->{$name}->append($entity);
 
-		$this->_dispatchEvents = true;
+		if ($dispatchEvents) {
+			$this->_dispatchEvents = true;
+		}
 
 		return $this->dispatchEvent();
 	}
