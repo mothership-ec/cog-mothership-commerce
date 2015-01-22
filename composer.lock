@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5fb6dbbf609a17a168173952f5b3e109",
+    "hash": "a35ca6b4da3f1d3eca1597a9fa6e12bd",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -287,16 +287,16 @@
         },
         {
             "name": "jeremeamia/SuperClosure",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jeremeamia/super_closure.git",
-                "reference": "d05400085f7d4ae6f20ba30d36550836c0d061e8"
+                "reference": "4d89ca74994feab128ea46d5b3add92e6cb84554"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jeremeamia/super_closure/zipball/d05400085f7d4ae6f20ba30d36550836c0d061e8",
-                "reference": "d05400085f7d4ae6f20ba30d36550836c0d061e8",
+                "url": "https://api.github.com/repos/jeremeamia/super_closure/zipball/4d89ca74994feab128ea46d5b3add92e6cb84554",
+                "reference": "4d89ca74994feab128ea46d5b3add92e6cb84554",
                 "shasum": ""
             },
             "require": {
@@ -331,7 +331,7 @@
                 "serialize",
                 "tokenizer"
             ],
-            "time": "2013-10-09 04:20:00"
+            "time": "2015-01-10 01:09:28"
         },
         {
             "name": "knplabs/knp-snappy",
@@ -506,16 +506,16 @@
         },
         {
             "name": "message/cog",
-            "version": "3.9.0",
+            "version": "3.10.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog.git",
-                "reference": "3.9.0"
+                "reference": "3.10.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog/zipball/3.9.0",
-                "reference": "3.9.0",
+                "url": "https://api.github.com/repos/messagedigital/cog/zipball/3.10.0",
+                "reference": "3.10.0",
                 "shasum": ""
             },
             "require": {
@@ -525,6 +525,7 @@
                 "ext-intl": "*",
                 "ext-json": "*",
                 "ext-mysqli": "*",
+                "ext-mysqlnd": "*",
                 "ext-simplexml": "*",
                 "filp/whoops": "1.0.*",
                 "itbz/fpdf": "1.7.*",
@@ -564,6 +565,7 @@
             },
             "suggest": {
                 "ext-apc": "The preferred caching system in Cog",
+                "ext-oauth": "Extension for managing OAuth requests",
                 "message/cog-raven": "A Cog module that logs errors, exceptions and messages to Sentry"
             },
             "bin": [
@@ -592,9 +594,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog/issues",
-                "source": "https://github.com/messagedigital/cog/tree/3.9.0"
+                "source": "https://github.com/messagedigital/cog/tree/3.10.0"
             },
-            "time": "2014-12-23 11:46:05"
+            "time": "2015-01-21 14:30:49"
         },
         {
             "name": "message/cog-imageresize",
@@ -650,16 +652,16 @@
         },
         {
             "name": "message/cog-mothership-cp",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-mothership-cp.git",
-                "reference": "2.0.0"
+                "reference": "2.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/2.0.0",
-                "reference": "2.0.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-mothership-cp/zipball/2.1.0",
+                "reference": "2.1.0",
                 "shasum": ""
             },
             "require": {
@@ -698,9 +700,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-mothership-cp/issues",
-                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/2.0.0"
+                "source": "https://github.com/messagedigital/cog-mothership-cp/tree/2.1.0"
             },
-            "time": "2015-01-08 14:56:32"
+            "time": "2015-01-22 17:27:51"
         },
         {
             "name": "message/cog-mothership-file-manager",
@@ -929,20 +931,23 @@
         },
         {
             "name": "mtdowling/cron-expression",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mtdowling/cron-expression.git",
-                "reference": "a47ac8d5ec15049013792401af5a4d13e3dbe7f6"
+                "reference": "fd92e883195e5dfa77720b1868cf084b08be4412"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mtdowling/cron-expression/zipball/a47ac8d5ec15049013792401af5a4d13e3dbe7f6",
-                "reference": "a47ac8d5ec15049013792401af5a4d13e3dbe7f6",
+                "url": "https://api.github.com/repos/mtdowling/cron-expression/zipball/fd92e883195e5dfa77720b1868cf084b08be4412",
+                "reference": "fd92e883195e5dfa77720b1868cf084b08be4412",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*"
             },
             "type": "library",
             "autoload": {
@@ -966,7 +971,7 @@
                 "cron",
                 "schedule"
             ],
-            "time": "2013-11-23 19:48:39"
+            "time": "2015-01-11 23:07:46"
         },
         {
             "name": "natxet/CssMin",
@@ -2408,12 +2413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "ee277735d9dea95553ee667bee3292cdd6947574"
+                "reference": "cce38ee95d444190e8aac2d46c6d5e7b94ea44ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/ee277735d9dea95553ee667bee3292cdd6947574",
-                "reference": "ee277735d9dea95553ee667bee3292cdd6947574",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/cce38ee95d444190e8aac2d46c6d5e7b94ea44ef",
+                "reference": "cce38ee95d444190e8aac2d46c6d5e7b94ea44ef",
                 "shasum": ""
             },
             "require": {
@@ -2452,7 +2457,7 @@
                     "homepage": "http://davedevelopment.co.uk"
                 }
             ],
-            "description": "Mockery is a simple yet flexible PHP mock object framework for use in unit testing with PHPUnit, PHPSpec or any other testing framework. Its core goal is to offer a test double framework with a succint API capable of clearly defining all possible object operations and interactions using a human readable Domain Specific Language (DSL). Designed as a drop in alternative to PHPUnit's phpunit-mock-objects library, Mockery is easy to integrate with PHPUnit and can operate alongside phpunit-mock-objects without the World ending.",
+            "description": "Mockery is a simple yet flexible PHP mock object framework for use in unit testing with PHPUnit, PHPSpec or any other testing framework. Its core goal is to offer a test double framework with a succinct API capable of clearly defining all possible object operations and interactions using a human readable Domain Specific Language (DSL). Designed as a drop in alternative to PHPUnit's phpunit-mock-objects library, Mockery is easy to integrate with PHPUnit and can operate alongside phpunit-mock-objects without the World ending.",
             "homepage": "http://github.com/padraic/mockery",
             "keywords": [
                 "BDD",
@@ -2466,7 +2471,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2014-12-31 11:42:06"
+            "time": "2015-01-18 20:11:41"
         }
     ],
     "aliases": [],
