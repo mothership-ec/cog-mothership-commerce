@@ -172,7 +172,6 @@ $(function(){
 
 	$('body').on('click.modal', '[data-modal-close]', function() {
 		$('#product_create_name').val('');
-		$('[id*=product_create_units_]').val('');
 	});
 
 	addVariantField();
