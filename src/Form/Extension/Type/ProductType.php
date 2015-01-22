@@ -61,9 +61,12 @@ class ProductType extends Form\AbstractType
 				'allow_add' => true,
 				'prototype_name' => '__unit__',
 				'label' => false,
+				'constraints' => [ new Constraints\NotBlank, ],
 			]);
 
-			$prices = $builder->create('prices', 'price_form');
+			$prices = $builder->create('prices', 'price_form', [
+				'constraints' => [ new Constraints\NotBlank, ],
+			]);
 
 			$builder
 				->add($prices)

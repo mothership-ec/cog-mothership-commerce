@@ -36,11 +36,17 @@ class PriceForm extends AbstractType
 				}
 			}
 
-			$currencyCollection->add($currency, 'price_group', [
+			$currCollOptions = [
 				'currency' => $currency,
 				'label'    => $currency,
 				'pricing'  => $entity ? $priceData : null,
-			]);
+			];
+
+			if (isset($options['constraints'])) {
+				$currCollOptions['constraints'] = $options['constraints'];
+			}
+
+			$currencyCollection->add($currency, 'price_group', $currCollOptions);
 		}
 
 		$builder->add($currencyCollection);

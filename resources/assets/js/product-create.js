@@ -152,6 +152,15 @@ $(function(){
 		}
 	});
 
+	$('.price-field').on('change', function() {
+		_this = $(this);
+		_this.closest('.add-on').find('.price-field').each(function(){
+			if($(this).val() == '') {
+				$(this).val(_this.val());
+			}
+		});
+	});
+
 	$('body').on('click.modal', '[data-modal-open]', function() {
 		$('.save.button').attr('disabled', 'disabled');
 

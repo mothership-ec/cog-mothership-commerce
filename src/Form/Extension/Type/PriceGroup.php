@@ -21,14 +21,21 @@ class PriceGroup extends Form\AbstractType
 		$currency   = $options['currency'];
 		foreach ($priceTypes as $type => $value) {
 			$value = $value ?: 0;
-			$builder->add($type, 'money', [
+
+			$fieldOpts = [
 				'currency' => $currency,
 				'label'    => "ms.commerce.product.pricing.$type.label",
 				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : $options['default'],
 				'attr'     => [
 					'class' => 'price-field',
 				]
-			]);
+			];
+
+			if(isset($options['constraints'])) {
+				$fieldOpts['constraints'] = $options['constraints'];
+			}
+
+			$builder->add($type, 'money', $fieldOpts);
 		}
 	}
 
