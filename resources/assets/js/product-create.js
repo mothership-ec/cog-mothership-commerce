@@ -153,9 +153,9 @@ $(function(){
 	});
 
 	$('.price-field').on('change', function() {
-		_this = $(this);
-		_this.closest('.add-on').find('.price-field').each(function(){
-			if($(this).val() == '') {
+		var _this = $(this);
+		_this.closest('.currency-units').find('.price-field').each(function() {
+			if ($(this).val() == '') {
 				$(this).val(_this.val());
 			}
 		});
