@@ -1,14 +1,17 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
+{% block slideAttr 'data-slide-loaded' %}
 
-{% block main %}
+{% block slide %}
+	{{ parent() }}
 	<hgroup class="title">
 		<h1>{{ title is defined ? title : product.name }}<span>{{ product.type.getDisplayName() }}</span></h1>
 	</hgroup>
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {'productID':product.id}))}}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Tabs#index', {
+			'productID':product.id, 
+			'saveButton': (saveButton ?: null)
+		}))
+	}}
 	<section class="container-content short">
 		{% block edit %} {% endblock %}
 	</section>

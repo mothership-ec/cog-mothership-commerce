@@ -34,7 +34,7 @@ class Services implements ServicesInterface
 		});
 
 		$services->extend('form.factory.builder', function($factory, $c) {
-			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['currency.supported'], $c['product.price.types']));
+			$factory->addExtension(new Commerce\Form\Extension\CommerceExtension($c['currency.supported'], $c['translator'], $c['product.price.types'], $c['product.types']));
 
 			return $factory;
 		});
@@ -483,6 +483,21 @@ class Services implements ServicesInterface
 			return $create;
 		});
 
+		$services['product.form.data_transform'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\DataTransform\ProductTransform(
+				$c['locale'],
+				$c['stock.default.location'],
+				$c['product.price.types'],
+				$c['product.types'],
+				$c['currency.default'],
+				$c['product.tax.strategy']
+			);
+		});
+
+		$services['product.form.create'] = $services->factory(function($c){
+			return new Commerce\Product\Form\Create($c['translator'], $c['product.types'], $c['product.form.data_transform']);
+		});
+
 		$services['product.edit'] = $services->factory(function($c) {
 			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
 		});
@@ -701,6 +716,10 @@ class Services implements ServicesInterface
 
 		$services['stock.locations'] = function() {
 			return new Commerce\Product\Stock\Location\Collection;
+		};
+
+		$services['stock.default.location'] = function($c) {
+			return $c['stock.locations']->get('web');
 		};
 
 		$services['stock.movement.loader'] = $services->factory(function($c) {

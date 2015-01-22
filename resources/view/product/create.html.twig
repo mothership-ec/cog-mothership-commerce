@@ -1,19 +1,72 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
-{% endblock %}
-{% block main %}
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
+
+{% block slideAttr 'data-slide-loaded' %}
+
+{% block slide %}
 <hgroup class="title">
 	<h1>Add a new product</h1>
+	<button type="submit" class="button small save create" form="ms-create-form" data-modal-open>
+		{{ 'ms.commerce.product.button.create'|trans }}
+	</button>
 </hgroup>
-<div class="container-content create-product">
-	{{ form_start(form) }}
-		{{ form_row(form.name) }}
-		{{ form_row(form.display_name) }}
-		{{ form_row(form.short_description) }}
-		<button type="submit" class="button small save" id="save-content">
-			{{ 'ms.commerce.product.button.create'|trans }}
-		</button>
+
+<div class="container-content create-product short">
+	{{ form_start(form, {action: url('ms.commerce.product.create.action'), 'attr': {'id': 'ms-create-form'}}) }}
+		<section class="content">
+			{{ form_row(form.name) }}
+			{{ form_row(form.brand) }}
+			{{ form_row(form.category) }}
+
+			<h2>{{ 'ms.commerce.product.create.variants.label' | trans }}</h2>
+
+			{# Prototype the variant fields and the corresponding text #}
+			<div class="variants" id="variant-field-container" data-prototype="
+				{% filter escape('html') %}
+				<div class="field required variant-field">
+				<input type="text" class="variant-type" placeholder="e.g. 'Colour' *">
+				{%
+					include 'Message:Mothership:ControlPanel::module:component:help' with {
+						contextual_help : 'ms.commerce.product.units.option.name.help',
+						id              : 'variant_type_help_key___key__',
+					} only
+				%}
+				<input type="hidden" class="value" style="width: 90%;" tabindex="-1" placeholder="e.g. 'Red, Blue' *" class="select2-offscreen">
+				{%
+					include 'Message:Mothership:ControlPanel::module:component:help' with {
+						contextual_help : 'ms.commerce.product.units.option.value.help',
+						id              : 'variant_value_help_key___key__',
+					} only
+				%}
+				<a href="#" class="button remove button-cancel"></a>
+				</div>
+				{% endfilter %}
+				">
+				<div class="variant-options"><a class="button small add add-variant">{{ 'ms.commerce.product.button.variant' | trans }}</a>	</div>
+				<div class="options">
+					{{ form_widget(form.units) }}
+				</div>
+			</div>
+
+			{% for name, currency in form.prices.currencies %}
+				<div class="currency-units">
+					<h4>{{ name }}</h4>
+					{{ form_widget(currency) }}
+				</div>
+			{% endfor %}
+
+			{{ form_row(form.type) }}
+			{{ form_row(form.description) }}
+		</section>
 	{{ form_end(form) }}
 </div>
+
+
+{% javascripts
+	'@Message:Mothership:Commerce::resources/assets/js/product-create.js'
+
+	output='/assets/js/ms_product_create.js'
+	filter='?jsmin'
+%}
+<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
 {% endblock %}

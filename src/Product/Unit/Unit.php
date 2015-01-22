@@ -71,7 +71,7 @@ class Unit implements PricedInterface
 
 	public function getPrice($type = 'retail', $currencyID = null)
 	{
-		$currencyID = $currencyID?:$this->_defaultCurrency;
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
@@ -84,6 +84,18 @@ class Unit implements PricedInterface
 			$this->getPrice($type, $currencyID), 
 			$product->getTaxRates()
 		);
+	}
+
+	/**
+	 * {@inheritDocs}
+	 */
+	public function hasPrice($type, $currencyID)
+	{
+		// Due to how the loader works, the closest way to tell wheather or not this entity has a price
+		// is to compare it to the product. This isn't 100% as if this has a price set identical to the product
+		// price then it will return false, however for most cases this false result is OK.
+		return $this->price[$type]->hasPrice($currencyID) 
+				&& $this->getPrice($type, $currencyID) !== $this->getProduct()->getPrice($type, $currencyID);
 	}
 
 	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
@@ -117,6 +129,11 @@ class Unit implements PricedInterface
 		return $this;
 	}
 
+	public function getStockArray()
+	{
+		return $this->stock;
+	}
+
 	public function getOption($type)
 	{
 		if (!isset($this->options[$type])) {
@@ -126,8 +143,98 @@ class Unit implements PricedInterface
 		return $this->options[$type];
 	}
 
+	/**
+	 * Gets the unit's product
+	 * @return Message\Mothership\Commerce\Product\Product The unit's
+	 */
 	public function getProduct()
 	{
 		return $this->product;
 	}
+    
+    /**
+     * Sets the value of product.
+     *
+     * @param mixed $product the product 
+     *
+     * @return self
+     */
+    public function setProduct($product)
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of sku.
+     *
+     * @return mixed
+     */
+    public function getSKU()
+    {
+        return $this->sku;
+    }
+    
+    /**
+     * Sets the value of sku.
+     *
+     * @param mixed $sku the sku 
+     *
+     * @return self
+     */
+    public function setSKU($sku)
+    {
+        $this->sku = $sku;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of price.
+     *
+     * @param mixed $price the price 
+     *
+     * @return self
+     */
+    public function setPrice($price, $type = 'retail', $currencyID = 'GBP')
+    {
+        $this->price[$type]->setPrice($currencyID, (float) $price, $this->_locale);
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of options.
+     *
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * Gets the value of visible.
+     *
+     * @return mixed
+     */
+    public function isVisible()
+    {
+        return $this->visible;
+    }
+    
+    /**
+     * Sets the value of visible.
+     *
+     * @param boolean $visible true if visible 
+     *
+     * @return self
+     */
+    public function setVisible($visible)
+    {
+        $this->visible = $visible;
+
+        return $this;
+    }
 }

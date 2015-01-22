@@ -41,7 +41,7 @@ class PriceLoader implements ProductEntityLoaderInterface
 				$price    = new TypedPrice($priceRaw->type, $this->_locale);
 				$prices[$priceRaw->type] = $price;
 			}
-			
+
 			$price = $prices[$priceRaw->type];
 			$price->setPrice($priceRaw->currencyID, (float) $priceRaw->price, $this->_locale);
 		}

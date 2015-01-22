@@ -32,6 +32,7 @@ class ProductAttributes extends Handler
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
 		))
 			->val()
+			->optional()
 			->maxLength(255);
 		$this->add('sort_name', 'text', $this->_trans('ms.commerce.product.attributes.sort-name.label'), array(
 			'data' => $product->sortName,

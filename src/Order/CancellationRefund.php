@@ -2,9 +2,8 @@
 
 namespace Message\Mothership\Commerce\Order;
 
-use Message\Cog\Service\Container;
-use Message\Cog\ValueObject\Authorship;
 use Message\Mothership\Commerce\Payable\PayableInterface;
+use Message\Mothership\Commerce\Refund\RefundableInterface;
 
 /**
  * Cancellation Refund class, representing a Payable for the cancellation of
@@ -12,11 +11,13 @@ use Message\Mothership\Commerce\Payable\PayableInterface;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class CancellationRefund implements PayableInterface
+class CancellationRefund implements PayableInterface, RefundableInterface
 {
 	protected $_amount;
 	protected $_order;
 	protected $_payableTransactionID;
+
+	private $_tax;
 
 	public function __construct(Order $order)
 	{
@@ -99,5 +100,15 @@ class CancellationRefund implements PayableInterface
 		}
 
 		return $this->_payableTransactionID;
+	}
+
+	public function setTax($tax)
+	{
+		$this->_tax = (float) $tax;
+	}
+
+	public function getTax()
+	{
+		return $this->_tax;
 	}
 }

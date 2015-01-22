@@ -1,7 +1,7 @@
 (function($) {
 	$('[data-price-warn]').each(function() {
 		var btn  = $(this),
-			form = btn.closest('form'),
+			form = btn.attr('form') ? $('#' + btn.attr('form')) : btn.closest('form'),
 			content = $(btn.data('price-warn')),
 			modal   = $(btn.data('modal'))
 		;

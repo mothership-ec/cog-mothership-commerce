@@ -19,17 +19,23 @@ class PriceGroup extends Form\AbstractType
 	{
 		$priceTypes = $options['price_types'];
 		$currency   = $options['currency'];
-
 		foreach ($priceTypes as $type => $value) {
-			$value = $value?:0;
-			$builder->add($type, 'money', [
+			$value = $value ?: 0;
+
+			$fieldOpts = [
 				'currency' => $currency,
 				'label'    => "ms.commerce.product.pricing.$type.label",
-				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : 0,
+				'data'     => isset($options['pricing'][$type]) ? $options['pricing'][$type] : $options['default'],
 				'attr'     => [
 					'class' => 'price-field',
 				]
-			]);
+			];
+
+			if(isset($options['constraints'])) {
+				$fieldOpts['constraints'] = $options['constraints'];
+			}
+
+			$builder->add($type, 'money', $fieldOpts);
 		}
 	}
 
@@ -48,6 +54,7 @@ class PriceGroup extends Form\AbstractType
 
 		$resolver->setDefaults([
 			'price_types' => array_combine($this->_priceTypes, $this->_priceTypes),
+			'default'     => null,
 		]);
 	}
 

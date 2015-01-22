@@ -4,7 +4,7 @@
 	{% if units is empty %}
 		{{ 'ms.commerce.product.stock.units-empty'|trans }}
 	{% else %}
-	{{ form_start(form) }}
+	{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 		<div class="group">
 			<h2 class="title">Adjust Stock</h2>
 			<div class="content">
@@ -42,10 +42,7 @@
 			</table>
 			<h2>Adjustment Information</h2>
 			{{ form_row(form['reason']) }}
-			{{ form_row(form['note']) }}
-			<button type="submit" class="button small save" id="save-content">
-				{{ 'Update Stock' }}
-			</button>
+			{{ form_row(form['note'], {attr: {id: 'product-edit-form'}}) }}
 		</div>
 	</div>
 	{{ form_end(form) }}
