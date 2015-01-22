@@ -29,6 +29,7 @@
 	{% include '@Message:Mothership:Commerce::product:csv:warning_modal' %}
 	<hgroup class="title">
 		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
+		<button data-modal-open data-modal="#upload_warning" class="button save create small">Save</button>
 	</hgroup>
 	<section class="container-content tall csv-preview">
 	{% set key = 1 %}
@@ -74,7 +75,7 @@
 	{% endif %}
 
 		{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
-		<span data-modal-open data-modal="#upload_warning" id="save-content" class="button save small">Save</span>
+		
 	<div class="module">
 		<div class="wrap">
 			{{ form_end(form) }}
