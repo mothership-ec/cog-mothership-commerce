@@ -157,11 +157,11 @@ ms.commerce:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
-          help: Select the type of Option you wish to add to this SKU. (For example 'Colour')
+          help: Enter the type of option to add to this unit. (i.e.: 'Colour')
         value:
           label: Option Value
           placeholder: Option Value
-          help: Depending on the Option 'type' you have set above please enter the value for it here. (For example, an option type of 'Colour' could have a value of 'Red')
+          help: Depending on the option type set above, enter the value. (i.e.: an option type of 'Colour' could have a value of 'Red')
         button:
           create: Add unit
     stock:
