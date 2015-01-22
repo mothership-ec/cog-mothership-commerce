@@ -4,73 +4,68 @@ namespace Message\Mothership\Commerce\Controller\Product;
 
 use Message\Cog\Controller\Controller;
 use Message\Cog\ValueObject\DateTimeImmutable;
+use Message\Cog\HTTP\Response;
 
 class Create extends Controller
 {
 	public function index()
 	{
-		return $this->render('::product:create', array(
-			'form'  => $this->_getForm(),
-		));
+		return $this->render('Message:Mothership:Commerce::product:create', [
+			'form'  => $this->createForm($this->get('product.form.create')),
+		]);
 	}
 
 	public function process()
 	{
-		$form = $this->_getForm();
+		$form = $this->createForm($this->get('product.form.create'));
 
-		if ($form->isValid() && $data = $form->getFilteredData()) {
-			$product					= $this->get('product');
-			$product->name				= $data['name'];
-			$product->displayName		= $data['display_name'];
-			$product->shortDescription 	= $data['short_description'];
-			$product->type				= array_key_exists('type', $data) ?
-				$this->get('product.types')->get($data['type']) : $this->get('product.types')->getDefault();
+		$form->handleRequest();
+		if ($form->isValid()) {
+			$productCreator = $this->get('product.create');
+			$unitCreator    = $this->get('product.unit.create');
+			$stockLocations = $this->get('stock.locations');
+			$stockManager   = $this->get('stock.manager');
+
+			$product = $form->getData();
 			$product->authorship->create(new DateTimeImmutable, $this->get('user.current'));
+			// save overwrite product with saved product to get new id
+			$product = $productCreator->create($product);
+			// save prices
+			$product = $this->get('product.edit')->savePrices($product);
 
-			$product = $this->get('product.create')->create($product);
+			$stockManager->setReason($this->get('stock.movement.reasons')->get('new_order'));
 
-			if ($product->id) {
-				return $this->redirectToRoute('ms.commerce.product.edit.attributes', array('productID' => $product->id));
+			foreach ($product->getAllUnits() as $unit) {
+				$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
+				$unit = $unitCreator->create($unit);
+				foreach($unit->getStockArray() as $location => $stock) {
+					$stockManager->set(
+						$unit,
+						$stockLocations->get($location),
+						$stock
+					);
+				}
+
 			}
+
+			if (!$stockManager->commit()) {
+				$this->addFlash('error', 'Could not update stock');
+			} else {
+				return $this->render('Message:Mothership:Commerce::product:create-complete-modal', [
+					'productID'  => $product->id,
+				]);
+			}
+
 		}
 
-		return $this->render('::product:create', array(
+		$response = new Response();
+		$response
+			->setStatusCode(400)
+			->headers->set('Content-Type', 'text/html')
+		;
+
+		return $this->render('Message:Mothership:Commerce::product:create', [
 			'form'  => $form,
-		));
-	}
-
-	protected function _getForm()
-	{
-		$form = $this->get('form')
-			->setName('product-create')
-			->setAction($this->generateUrl('ms.commerce.product.create.action'))
-			->setMethod('post');
-
-		if (count($this->get('product.types')) > 1) {
-			$form->add('type', 'choice', $this->trans('ms.commerce.product.attributes.type.label'), array(
-				'attr'	=> array(
-					'data-help-key'	=> 'ms.commerce.product.attributes.type.help'
-				),
-				'expanded'	=> false,
-				'multiple'	=> false,
-				'choices'	=> $this->get('product.types')->getList(),
-			));
-		}
-
-		$form->add('name', 'text', $this->trans('ms.commerce.product.attributes.name.label'), array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.attributes.name.help'
-		)))
-			->val()->maxLength(255);
-
-		$form->add('display_name', 'text', $this->trans('ms.commerce.product.attributes.display-name.label'), array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.attributes.display-name.help'
-		)))
-			->val()->maxLength(255);
-
-		$form->add('short_description', 'textarea', $this->trans('ms.commerce.product.attributes.short-description.label'), array('attr' => array(
-			'data-help-key' => 'ms.commerce.product.attributes.short-description.help'
-		)));
-
-		return $form;
+		], $response);
 	}
 }

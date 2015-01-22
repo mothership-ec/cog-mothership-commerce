@@ -63,7 +63,7 @@
 				</div>
 			{% endfor %}
 			{{ form_rest(addForm) }}
-			<button type="submit" class="button small update" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
+			<button type="submit" class="button small update">
 				{{ 'ms.commerce.product.button.sku'|trans }}
 			</button>
 		{{ form_end(addForm) }}
@@ -73,26 +73,10 @@
 
 {% block slide %}
     {% set saveButton %}
-		<span type="submit" class="button small save" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal" for="product-edit-form">
+		<button type="submit" class="button small save" form="product-edit-form">
 		{{ 'ms.commerce.product.button.save'|trans }}
-		</span>
+		</button>
 	{% endset %}
 
 	{{ parent() }}
-{% endblock %}
-
-{% block after %}
-	{% include 'Message:Mothership:Commerce::product:modals:pricing-warn' %}
-	<script>
-		window.priceWarning = '{{"ms.commerce.product.pricing.warning" | trans}}';
-	</script>
-
-	{% javascripts
-		'@Message:Mothership:Commerce::resources/assets/js/price-warn.js'
-
-		output='/assets/js/commerce/price-warn.js'
-		filter='?jsmin'
-	%}
-	<script src="{{asset_url}}"></script>
-	{% endjavascripts %}
 {% endblock %}
