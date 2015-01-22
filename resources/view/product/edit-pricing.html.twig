@@ -13,11 +13,17 @@
 		
 		<h4>Export Value</h4>
 		{{ form_widget(form.export_value) }}
+	{{ form_end(form) }}
+{% endblock %}
 
-		<span type="submit" class="button small save" id="save-content" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal">
+{% block slide %}
+    {% set saveButton %}
+		<span type="submit" class="button small save" data-price-warn="#warning-content" data-modal-open data-modal="#warning-modal" for="price-form">
 			{{ 'ms.commerce.product.button.save'|trans }}
 		</span>
-	{{ form_end(form) }}
+	{% endset %}
+
+	{{ parent() }}
 {% endblock %}
 
 {% block after %}

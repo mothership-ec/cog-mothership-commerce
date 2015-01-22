@@ -1,19 +1,17 @@
-{% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
+{% extends 'Message:Mothership:ControlPanel::_templates/full_slideout' %}
+{% block javascripts %}
+	{{ parent() }}
+	{% javascripts
+		'@Message:Mothership:Commerce::resources/assets/js/setup.js'
+		
+		output='/assets/js/ms_commerce.js'
+		filter='?jsmin'
 
-{% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Sidebar#index', {'productID':product.id}))}}
+	%}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}
 
 {% block main %}
-	<div class="dashboard">
-		<div class="modules">
-			{% for reference in dashboardReferences %}
-				{{ render(controller(reference.reference)) }}
-			{% else %}
-				<div class="container-content">
-					<p>I don't have any flashy graphs and numbers to show you :(</p>
-				</div>
-			{% endfor %}
-		</div>
-	</div>
+	{{ render(controller('Message:Mothership:Commerce::Controller:Product:Dashboard#productTable')) }}
 {% endblock %}
