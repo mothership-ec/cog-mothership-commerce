@@ -156,15 +156,15 @@ class Loader implements ProductEntityLoaderInterface
 		// Bind the results to the Unit Object
 		$units = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
-			array(
+			[
 				$this->_locale,
 				$this->_prices,
 				$this->_defaultCurrency
-			)
+			]
 		);
 
 		if (0 === count($result)) {
-			return $alwaysReturnArray ? array() : false;
+			return $alwaysReturnArray ? [] : false;
 		}
 
 		foreach ($result as $key => $data) {

@@ -59,6 +59,7 @@ class Create
 		]);
 
 		$unitID = $result->id();
+		$unit->sku = $unit->sku ?: $unitID;
 
 		$this->_query->run(
 			'INSERT INTO
@@ -110,7 +111,7 @@ class Create
 
 				// If the unit price is equal to the product price then we don't
 				// need to add a row, and same if the price is zero
-				if ($unitPrice === 0 || $unitPrice == $productPrice ) {
+				if ($unitPrice === 0 || $unitPrice === null || $unitPrice == $productPrice ) {
 					continue;
 				}
 

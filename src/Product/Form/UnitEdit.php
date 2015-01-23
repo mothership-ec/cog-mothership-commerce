@@ -15,12 +15,12 @@ class UnitEdit extends AbstractType
 	public function __construct(array $currencies, OptionLoader $optionLoader)
 	{
 		$this->_currencies    = $currencies;
-		$this->_optionLoader = $optionLoader; 
+		$this->_optionLoader = $optionLoader;
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
-		$units   = $options['units']; 
+		$units   = $options['units'];
 		// Options Headings
 		$headings = [];
 
@@ -57,7 +57,7 @@ class UnitEdit extends AbstractType
 			$unitForm->add($optionsForm);
 
 			$unitForm->add('prices', 'price_form', [
-				'priced_entity' => $unit,
+				'priced_entity' => $unit
 			]);
 
 			$unitForm->add('weight', 'text', [

@@ -50,28 +50,29 @@ class Create
 			'INSERT INTO
 				product
 			SET
-				`type`			= :type?s,
-				`name`			= :name?s,
-				category        = :category?sn,
-				brand           = :brand?sn,
-				weight_grams	= :weight?i,
-				tax_rate		= :taxRate?f,
-				tax_strategy	= :taxStrategy?s,
-				supplier_ref    = :supplier?s,
-				created_at		= :createdAt?d,
-				created_by		= :createdBy?i
-		',
+
+				product.type			= :type?s,
+				product.name			= :name?s,
+				product.weight_grams	= :weight?i,
+				product.tax_rate		= :tax_rate?f,
+				product.tax_strategy	= :tax_strat?s,
+				product.supplier_ref    = :supplier?s,
+				product.created_at		= :created_at?d,
+				product.created_by		= :created_by?i,
+				product.brand           = :brand?s,
+				product.category        = :category?s
+				',
 			[
-				'type'        => $product->type->getName(),
-				'name'        => $product->name,
-				'category'    => $product->category,
-				'brand'       => $product->brand,
-				'weight'      => $product->weight,
-				'taxRate'     => $product->taxRate,
-				'taxStrategy' => $this->_defaultTaxStrategy->getName(),
-				'supplier'    => $product->supplierRef,
-				'createdAt'   => $product->authorship->createdAt(),
-				'createdBy'   => $product->authorship->createdBy()->id
+				'type'       => $product->type->getName(),
+				'name'       => $product->name,
+				'weight'     => $product->weight,
+				'tax_rate'   => $product->taxRate,
+				'tax_strat'  => $this->_defaultTaxStrategy->getName(),
+				'supplier'   => $product->supplierRef,
+				'created_at' => $product->authorship->createdAt(),
+				'created_by' => $product->authorship->createdBy()->id,
+				'brand'      => $product->getBrand(),
+				'category'   => $product->getCategory(),
 			]
 		);
 

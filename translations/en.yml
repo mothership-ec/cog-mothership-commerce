@@ -1,7 +1,30 @@
 ms.commerce:
+  currency:
+    USD: $
+    CAD: $
+    GBP: £
   general:
     warning: Warning
   product:
+    create:
+      name:
+        label: Name
+        placeholder: The name of the product
+      brand:
+        label: Brand
+        placeholder: The products brand
+      category:
+        label: Category
+        placeholder: The products category
+      price:
+        label: Price
+        placeholder: Price
+      description:
+        label: Description
+        placeholder: Enter a description...
+      variants:
+        label: Variants
+
     selector:
       unit:
         label: Please select an option...
@@ -11,6 +34,7 @@ ms.commerce:
       create: Create product
       sku: Add SKU
       barcodes: Print barcodes
+      variant: Add Variant
       back: Back
       continue: Continue
     attributes:
@@ -139,11 +163,11 @@ ms.commerce:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
-          help: Select the type of Option you wish to add to this SKU.
+          help: Enter the type of option to add to this unit. (i.e.: 'Colour')
         value:
           label: Option Value
           placeholder: Option Value
-          help: Depending on the Option 'type' you have set above please enter the value for it here. (For example, an option type of 'Colour' could have a value of 'Red')
+          help: Depending on the option type set above, enter the value. (i.e.: an option type of 'Colour' could have a value of 'Red')
         button:
           create: Add unit
     upload:
@@ -234,6 +258,9 @@ ms.commerce:
         button:
           create: Add unit
     stock:
+      set:
+        label: Stock
+        placeholder: Set stock
       empty: No stock has been moved yet.
       units-empty: To control stock, you first have to add units.
       page-title: Stock Movements

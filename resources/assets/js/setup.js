@@ -35,6 +35,8 @@ $(function() {
 		}
 		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "18%"}, data.speed);
 
+		$('.dataTables_filter').hide();
+
 		$('.dataTables_info').css({ paddingBottom: '50px'});
 
 	});
@@ -47,6 +49,8 @@ $(function() {
 			}
 		}
 		$('table.products, .dataTables_paginate, .dataTables_info').animate({width: "100%"}, data.speed);
+
+		$('.dataTables_filter').show();
 
 		$('.dataTables_info').css({ paddingBottom: '20px'});
 	});

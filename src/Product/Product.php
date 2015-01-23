@@ -4,7 +4,9 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
+use Message\Mothership\Commerce\Product\Type\ProductTypeInterface as ProductType;
 use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
+use Message\Mothership\Commerce\Product\Price\TypedPrice;
 
 class Product implements Price\PricedInterface
 {
@@ -67,8 +69,8 @@ class Product implements Price\PricedInterface
 		$this->_units      = new Unit\Collection;
 		$this->_images     = new Image\Collection;
 		$this->_details    = new Type\DetailCollection;
-		$this->_prices     = new Price\PriceCollection($priceTypes);
 		$this->_taxes      = new Tax\Rate\TaxRateCollection;
+		$this->_prices     = new Price\PriceCollection;
 	}
 
 
@@ -147,6 +149,11 @@ class Product implements Price\PricedInterface
 	public function getVisibleUnits()
 	{
 		return $this->getUnits(true, false);
+	}
+
+	public function getUnitCollection()
+	{
+		return $this->_units;
 	}
 
 	/**
@@ -236,17 +243,46 @@ class Product implements Price\PricedInterface
 	/**
 	 * Get the gross price
 	 */
-	public function getGrossPrice($type = 'retail', $currencyID = 'GBP')
+	public function getGrossPrice($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->_taxStrategy->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
 	/**
 	 * Get the lowest possible gross price
 	 */
-	public function getGrossPriceFrom($type = 'retail', $currencyID = 'GBP')
+	public function getGrossPriceFrom($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->_taxStrategy->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * {@inheritDocs}
+	 */
+	public function hasPrice($type, $currencyID)
+	{
+		return $this->getPrices()->get($type)->hasPrice($currencyID, $this->_locale);
+	}
+
+	/**
+	 * Sets a price on the product
+	 * @param string $type       the type of the price, eg retail
+	 * @param string $currencyID the currency id, eg GBP
+	 * @param float  $price      the price
+	 */
+	public function setPrice($type, $currencyID, $price)
+	{
+		$prices = $this->getPrices();
+
+		if(!$prices->exists($type)) {
+			$prices->add(new TypedPrice($type, $this->_locale));
+		}
+
+		$prices[$type]->setPrice($currencyID, $price, $this->_locale);
 	}
 
 	/**
@@ -446,27 +482,196 @@ class Product implements Price\PricedInterface
 		$this->_details = $details;
 	}
 
-    /**
-     * Sets the tax strategy.
-     *
-     * @param mixed $_taxStrategy the tax manager
-     *
-     * @return self
-     */
-    protected function setTaxStrategy($taxStrategy)
-    {
-        $this->_taxStrategy = $taxManager;
+	/**
+	 * Gets the value of name.
+	 *
+	 * @return mixed
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+	
+	/**
+	 * Sets the value of name.
+	 *
+	 * @param mixed $name the name 
+	 *
+	 * @return self
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
+	/**
+	 * Sets the tax strategy.
+	 *
+	 * @param mixed $_taxStrategy the tax manager
+	 *
+	 * @return self
+	 */
+	protected function setTaxStrategy($taxStrategy)
+	{
+		$this->_taxStrategy = $taxManager;
 
-    /**
-     * Gets the tax strategy in use on this product
-     * 
-     * @return Tax\Strategy\TaxStrategyInterface The strategy in use
-     */
-    public function getTaxStrategy()
-    {
-        return $this->_taxStrategy;
-    }
+		return $this;
+	}
+
+	/**
+	 * Sets the value of name.
+	 *
+	 * @param mixed $name the name 
+	 *
+	 * @return self
+	 */
+	public function setDisplayName($name)
+	{
+		$this->displayName = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of brand.
+	 *
+	 * @return mixed
+	 */
+	public function getBrand()
+	{
+		return $this->brand;
+	}
+	
+	/**
+	 * Sets the value of brand.
+	 *
+	 * @param mixed $brand the brand 
+	 *
+	 * @return self
+	 */
+	public function setBrand($brand)
+	{
+		$this->brand = $brand;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of category.
+	 *
+	 * @return mixed
+	 */
+	public function getCategory()
+	{
+		return $this->category;
+	}
+	
+	/**
+	 * Sets the value of category.
+	 *
+	 * @param mixed $category the category 
+	 *
+	 * @return self
+	 */
+	public function setCategory($category)
+	{
+		$this->category = $category;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of shortDescription.
+	 *
+	 * @return mixed
+	 */
+	public function getShortDescription()
+	{
+		return $this->shortDescription;
+	}
+	
+	/**
+	 * Sets the value of shortDescription.
+	 *
+	 * @param mixed $shortDescription the short description 
+	 *
+	 * @return self
+	 */
+	public function setShortDescription($shortDescription)
+	{
+		$this->shortDescription = $shortDescription;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of description.
+	 *
+	 * @return mixed
+	 */
+	public function getDescription()
+	{
+		return $this->description;
+	}
+	
+	/**
+	 * Sets the value of description.
+	 *
+	 * @param mixed $description the description 
+	 *
+	 * @return self
+	 */
+	public function setDescription($description)
+	{
+		$this->description = $description;
+
+		return $this;
+	}
+
+	/**
+	 * Adds a unit to the Unit Collection
+	 * 
+	 * @param Unit\Unit $unit Unit to add
+	 */
+	public function addUnit(Unit\Unit $unit)
+	{
+		$this->_units->add($unit);
+
+		return $this;
+	}
+	
+	/**
+	 * Sets the value of type.
+	 *
+	 * @param mixed $type the type 
+	 *
+	 * @return self
+	 */
+	public function setType(ProductType $type)
+	{
+		$this->type = $type;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of displayName.
+	 *
+	 * @return mixed
+	 */
+	public function getDisplayName()
+	{
+		return $this->displayName;
+	}
+
+	/**
+	 * Gets the tax strategy in use on this product
+	 * 
+	 * @return Tax\Strategy\TaxStrategyInterface The strategy in use
+	 */
+	public function getTaxStrategy()
+	{
+		return $this->_taxStrategy;
+	}
 }

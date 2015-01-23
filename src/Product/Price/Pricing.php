@@ -12,6 +12,7 @@ class Pricing
 	public function __construct(Locale $locale)
 	{
 		$this->_locale = $locale;
+		$this->pricing[$locale->getID()] = [];
 	}
 
 	public function setPrice($currencyID, $price, Locale $locale = null)
@@ -38,13 +39,22 @@ class Pricing
 		return isset($this->pricing[$locale->getID()][$currencyID]) ? $this->pricing[$locale->getID()][$currencyID] : 0;
 	}
 
+	public function hasPrice($currencyID, Locale $locale = null)
+	{
+		if ($locale === null) {
+			$locale = $this->_locale;
+		}
+
+		return $this->pricing[$locale->getID()][$currencyID];
+	}
+
 	public function getCurrencies(Locale $locale = null)
 	{
 		if ($locale === null) {
 			$locale = $this->_locale;
 		}
 
-		$currrencies = [];
+		$currencies = [];
 
 		if (!array_key_exists($locale->getID(), $this->pricing)) {
 			throw new \LogicException(
