@@ -1,8 +1,4 @@
 ms.commerce:
-  currency:
-    USD: $
-    CAD: $
-    GBP: £
   general:
     warning: Warning
   product:
