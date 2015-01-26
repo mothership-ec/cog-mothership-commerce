@@ -66,6 +66,6 @@ class Pricing
 			$currencies[] = $key;
 		}
 
-		return $currrencies;
+		return $currencies;
 	}
 }
