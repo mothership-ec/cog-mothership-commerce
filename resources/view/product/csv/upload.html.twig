@@ -1,0 +1,21 @@
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
+
+{% block slideAttr 'data-slide-loaded' %}
+
+{% block slide %}
+
+	<hgroup class="title">
+		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
+		<a class="button download small" href="{{ url('ms.commerce.product.upload.csv') }}">Download CSV Template</a>
+	</hgroup>
+	<div class="container-content csv-upload">
+		<div class="module landscape">
+			<div class="wrap">
+				{{ form_start(form) }}
+				{{ form_row(form['file']) }}
+				<button class="button upload">Upload CSV</button>
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+{% endblock %}

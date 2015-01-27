@@ -305,10 +305,10 @@ class Loader implements ProductEntityLoaderInterface
 			JOIN
 				product_unit ON (product_price.product_id = product_unit.product_id)
 			LEFT JOIN
-				product_unit_price 
+				product_unit_price
 			ON (
-				product_unit.unit_id = product_unit_price.unit_id 
-			AND 
+				product_unit.unit_id = product_unit_price.unit_id
+			AND
 				product_price.type = product_unit_price.type
 			AND
 				product_price.currency_id = product_unit_price.currency_id
@@ -354,7 +354,6 @@ class Loader implements ProductEntityLoaderInterface
 	 */
 	protected function _loadUnits($unitIDs, $revisionID = null)
 	{
-
 		$getRevision = '
 			SELECT
 				IFNULL(MAX(revision_id),1)
@@ -367,6 +366,7 @@ class Loader implements ProductEntityLoaderInterface
 		if ($revisionID) {
 			$getRevision = $revisionID;
 		}
+
 
 		return $this->_query->run(
 			'SELECT
