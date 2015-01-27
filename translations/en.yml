@@ -253,7 +253,7 @@ ms.commerce:
       line: "Line number"
       postcode: Postcode
       town: Town
-      state: State
+      state: State / Province
       country: Country
       telephone: Telephone
 
