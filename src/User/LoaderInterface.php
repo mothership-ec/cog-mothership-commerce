@@ -12,5 +12,5 @@ use Message\User\UserInterface;
 interface LoaderInterface
 {
 
-	public function getbyUser(UserInterface $user);
+	public function getByUser(UserInterface $user);
 }

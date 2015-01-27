@@ -683,7 +683,36 @@ class Services implements ServicesInterface
 			);
 		};
 
+		/**
+		 * @deprecated User 'user.address.loader' instead
+		 */
 		$services['commerce.user.address.loader'] = $services->factory(function($c) {
+			return $c['user.address.loader'];
+		});
+
+		/**
+		 * @deprecated Use 'user.address.create' instead
+		 */
+		$services['commerce.user.address.create'] = $services->factory(function($c) {
+			return $c['user.address.create'];
+		});
+
+		/**
+		 * @deprecated User 'user.address.edit' instead
+		 */
+		$services['commerce.user.address.edit'] = $services->factory(function($c) {
+			return $c['user.address.edit'];
+		});
+
+		$services['commerce.order.user_address.loader'] = function($c) {
+			return new Commerce\Order\Entity\Address\UserAddressLoader(
+				$c['db.query'],
+				$c['country.list'],
+				$c['state.list']
+			);
+		};
+
+		$services['user.address.loader'] = $services->extend('user.address.loader', function($loader, $c) {
 			return new Commerce\User\Address\Loader(
 				$c['db.query'],
 				$c['country.list'],
@@ -691,12 +720,17 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$services['commerce.user.address.create'] = $services->factory(function($c) {
-			return new Commerce\User\Address\Create($c['db.query'], $c['commerce.user.address.loader'], $c['user.current']);
+		$services['user.address.types'] = $services->extend('user.address.types', function($types, $c) {
+			$types[] = 'billing';
+			$types[] = 'delivery';
+
+			return $types;
 		});
 
-		$services['commerce.user.address.edit'] = $services->factory(function($c) {
-			return new Commerce\User\Address\Edit($c['db.query'], $c['user.current']);
+		$services['user.tabs'] = $services->extend('user.tabs', function ($tabs, $c) {
+			$tabs['ms.cp.user.admin.orderhistory'] = 'Order history';
+
+			return $tabs;
 		});
 
 		$services['stock.manager'] = $services->factory(function($c) {
