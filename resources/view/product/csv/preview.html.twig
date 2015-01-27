@@ -1,0 +1,88 @@
+{% extends 'Message:Mothership:Commerce::product/dashboard' %}
+
+{% block slideAttr 'data-slide-loaded' %}
+
+{% macro getHeading(heading) %}
+	<thead>
+		<tr>
+			{% for title in heading %}
+				<th>{{ title }}</th>
+			{% endfor %}
+		</tr>
+	</thead>
+{% endmacro %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{% javascripts
+		'@Message:Mothership:Commerce::resources/assets/js/product-upload-warning.js'
+		'@Message:Mothership:Commerce::resources/assets/js/csv-upload.js'
+
+		output="/assets/js/ms_upload-*.js"
+		filter="?jsmin"
+	%}
+	<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
+{% block slide %}
+	{% include '@Message:Mothership:Commerce::product:csv:warning_modal' %}
+	<hgroup class="title">
+		<h1>{{ 'ms.commerce.product.upload.title' | trans }}</h1>
+		<button data-modal-open data-modal="#upload_warning" class="button save create small">Save</button>
+	</hgroup>
+	<section class="container-content tall csv-preview">
+	{% set key = 1 %}
+
+	<h3>Valid rows</h3>
+	<table class="valid">
+		{{ _self.getHeading(heading) }}
+		<tbody>
+			{% for product in productData %}
+				{% for unit in product %}
+					<tr class="{{ (key is odd) ? "odd" : "even" }} {{ (key > numProducts) ? "hide" : "" }}">
+						{% for column in unit %}
+							<td>{{ column | length < maxCellLength ? column : column | slice(0,maxCellLength) ~ '...' }}</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+				{% set key = key + 1 %}
+			{% endfor %}
+		</tbody>
+	</table>
+
+	{% if key > numProducts %}
+		<a class="csv-show valid button small">Show all rows</a>
+	{% endif %}
+
+	{% if invalid | length > 0 %}
+		<h3>Invalid rows</h3>
+		<table class="invalid">
+			{{ _self.getHeading(heading) }}
+			<tbody>
+			{% for iKey, invalidRow in invalid %}
+				<tr class="{{ ((iKey + 1) > numProducts) ? "hide" : "" }}">
+					{% for invalidColumn in invalidRow %}
+						<td>{{ invalidColumn | length < maxCellLength ? invalidColumn : invalidColumn | slice(0,maxCellLength) }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		{% if iKey > numProducts %}
+			<a class="csv-show invalid button small">Show all rows</a>
+		{% endif %}
+	{% endif %}
+
+		{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
+		
+	<div class="module">
+		<div class="wrap">
+			{{ form_rest(form) }}
+		</div>
+	</div>
+
+		{{ form_end(form) }}
+
+	</section>
+{% endblock %}

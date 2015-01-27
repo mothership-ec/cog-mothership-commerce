@@ -35,12 +35,6 @@ class Unit implements PricedInterface
 	protected $_locale;
 	protected $_defaultCurrency;
 
-	public function __clone() {
-		foreach ($this->price as $name => $pricing) {
-			$this->price[$name] = clone $pricing;
-		}
-	}
-
 	public function __construct(Locale $locale, array $priceTypes, $defaultCurrency)
 	{
 		$this->_defaultCurrency = $defaultCurrency;
@@ -51,6 +45,12 @@ class Unit implements PricedInterface
 		}
 
 	}
+
+	public function __clone() {
+		foreach ($this->price as $name => $pricing) {
+			$this->price[$name] = clone $pricing;
+		}
+    }
 
 	public function setOption($type, $value)
 	{
@@ -76,12 +76,21 @@ class Unit implements PricedInterface
 		return $this->price[$type]->getPrice($currencyID, $this->_locale);
 	}
 
+	public function setPrice($price, $type = 'retail', $currencyID = 'GBP')
+	{
+		if (empty($this->price[$type])) {
+			$this->price[$type] = new Pricing($this->_locale);
+		}
+
+		$this->price[$type]->setPrice($currencyID, (float) $price, $this->_locale);
+	}
+
 	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
 	{
 		$product = $this->getProduct();
 
 		return $product->getTaxStrategy()->getNetPrice(
-			$this->getPrice($type, $currencyID), 
+			$this->getPrice($type, $currencyID),
 			$product->getTaxRates()
 		);
 	}
@@ -94,7 +103,7 @@ class Unit implements PricedInterface
 		// Due to how the loader works, the closest way to tell wheather or not this entity has a price
 		// is to compare it to the product. This isn't 100% as if this has a price set identical to the product
 		// price then it will return false, however for most cases this false result is OK.
-		return $this->price[$type]->hasPrice($currencyID) 
+		return $this->price[$type]->hasPrice($currencyID)
 				&& $this->getPrice($type, $currencyID) !== $this->getProduct()->getPrice($type, $currencyID);
 	}
 
@@ -103,15 +112,15 @@ class Unit implements PricedInterface
 		$product = $this->getProduct();
 
 		return $product->getTaxStrategy()->getGrossPrice(
-			$this->getPrice($type, $currencyID), 
+			$this->getPrice($type, $currencyID),
 			$product->getTaxRates()
 		);
 	}
 
 	/**
 	 * Returns whether unit is out of stock in all locations
-	 * 
-	 * @return boolean 
+	 *
+	 * @return boolean
 	 */
 	public function isOutOfStock()
 	{
@@ -143,19 +152,25 @@ class Unit implements PricedInterface
 		return $this->options[$type];
 	}
 
+	public function hasOption($type)
+	{
+		return isset($this->options[$type]);
+	}
+
 	/**
 	 * Gets the unit's product
 	 * @return Message\Mothership\Commerce\Product\Product The unit's
 	 */
+
 	public function getProduct()
 	{
 		return $this->product;
 	}
-    
+
     /**
      * Sets the value of product.
      *
-     * @param mixed $product the product 
+     * @param mixed $product the product
      *
      * @return self
      */
@@ -175,31 +190,17 @@ class Unit implements PricedInterface
     {
         return $this->sku;
     }
-    
+
     /**
      * Sets the value of sku.
      *
-     * @param mixed $sku the sku 
+     * @param mixed $sku the sku
      *
      * @return self
      */
     public function setSKU($sku)
     {
         $this->sku = $sku;
-
-        return $this;
-    }
-
-    /**
-     * Sets the value of price.
-     *
-     * @param mixed $price the price 
-     *
-     * @return self
-     */
-    public function setPrice($price, $type = 'retail', $currencyID = 'GBP')
-    {
-        $this->price[$type]->setPrice($currencyID, (float) $price, $this->_locale);
 
         return $this;
     }
@@ -223,11 +224,11 @@ class Unit implements PricedInterface
     {
         return $this->visible;
     }
-    
+
     /**
      * Sets the value of visible.
      *
-     * @param boolean $visible true if visible 
+     * @param boolean $visible true if visible
      *
      * @return self
      */

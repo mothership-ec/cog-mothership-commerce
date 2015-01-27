@@ -48,6 +48,7 @@ class Product implements Price\PricedInterface
 
 	protected $_taxStrategy;
 
+	protected $_entities = [];
 	protected $_defaultCurrency;
 
 	/**
@@ -70,6 +71,55 @@ class Product implements Price\PricedInterface
 		$this->_details    = new Type\DetailCollection;
 		$this->_taxes      = new Tax\Rate\TaxRateCollection;
 		$this->_prices     = new Price\PriceCollection;
+	}
+
+
+	/**
+	 * Magic getter. This maps to defined order entities.
+	 *
+	 * @param  string $var       Entity name
+	 *
+	 * @return Entity\Collection The entity collection instance
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
+	 */
+	public function __get($var)
+	{
+		if (array_key_exists($var, $this->_entities)) {
+			return $this->_entities[$var];
+		}
+
+		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+
+	}
+
+	/**
+	 * Magic isset. This maps to defined order entities.
+	 *
+	 * @param  string  $var Entity name
+	 *
+	 * @return boolean      True if the entity exist
+	 */
+	public function __isset($var)
+	{
+		return array_key_exists($var, $this->_entities);
+	}
+
+	/**
+	 * Add an entity to this product.
+	 *
+	 * @param string                 $name   Entity name
+	 * @param Entity\LoaderInterface $loader Entity loader
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name already exists
+	 */
+	public function addEntity($name, Unit\LoaderInterface $loader)
+	{
+		if (array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
+		}
+
+		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
 	/**

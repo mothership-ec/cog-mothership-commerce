@@ -21,10 +21,10 @@ class Create
 
 	protected $_defaultTaxStrategy = 'inclusive';
 
-	public function __construct(Query $query, 
-		Locale $locale, 
-		UserInterface $user, 
-		array $priceTypes, 
+	public function __construct(Query $query,
+		Locale $locale,
+		UserInterface $user,
+		array $priceTypes,
 		array $currencyIDs)
 	{
 		$this->_query        = $query;
@@ -50,6 +50,7 @@ class Create
 			'INSERT INTO
 				product
 			SET
+
 				product.type			= :type?s,
 				product.name			= :name?s,
 				product.weight_grams	= :weight?i,
@@ -81,26 +82,32 @@ class Create
 			'INSERT INTO
 				product_info
 			SET
-				product_info.product_id = ?i,
-				product_info.locale = ?s,
-				product_info.display_name = ?s,
-				product_info.description   = ?s',
-			array(
-				$productID,
-				$this->_locale->getID(),
-				$product->displayName,
-				$product->getDescription(),
-			)
+				product_id        = :id?i,
+				locale            = :locale?s,
+				display_name      = :displayName?s,
+				sort_name         = :sortName?s,
+				description       = :description?s,
+				short_description = :shortDesc?s',
+			[
+				'id'          => $productID,
+				'locale'      => $this->_locale->getID(),
+				'displayName' => $product->displayName,
+				'sortName'    => $product->sortName,
+				'description' => $product->description,
+				'shortDesc'   => $product->shortDescription,
+			]
 		);
 
 		$queryAppend = [];
 		$queryVars   = [];
 		foreach($this->_priceTypes as $type) {
 			foreach($this->_currencyIDs as $currency) {
-				$queryAppend[] = "(?i, ?s, 0, ?s, ?s)";
+				$price = $product->getPrices()->exists($type) ? $product->getPrice($type, $currency) : 0;
+				$queryAppend[] = "(?i, ?s, ?f, ?s, ?s)";
 				$vars          = [
 					$productID,
 					$type,
+					$price,
 					$currency,
 					$this->_locale->getId(),
 				];
@@ -110,13 +117,13 @@ class Create
 		}
 
 		$defaultPrices = $this->_query->run(
-			'INSERT INTO 
+			'INSERT INTO
 				product_price (product_id, type, price, currency_id, locale)
 			VALUES
 				' . implode(', ', $queryAppend),
 			$queryVars
 			);
-	
+
 		$product->id = $productID;
 
 		return $product;

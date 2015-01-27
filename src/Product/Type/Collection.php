@@ -56,6 +56,8 @@ class Collection implements \IteratorAggregate, \Countable
 			throw new \LogicException('No product types registered!');
 		}
 
-		return array_shift($this->_productTypes);
+		foreach ($this->_productTypes as $type) {
+			return $type;
+		}
 	}
 }

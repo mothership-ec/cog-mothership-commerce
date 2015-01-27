@@ -65,12 +65,12 @@ class Create
 			'INSERT INTO
 				product_unit_info
 			SET
-				unit_id     = ?i,
+				unit_id     = :unitID?i,
 				revision_id = 1,
-				sku         = ?s',
+				sku         = :sku?s',
 			array(
-				$unitID,
-				$unit->sku,
+				'unitID' => $unitID,
+				'sku'    => $unit->sku ?: $unitID,
 		));
 
 		foreach ($unit->options as $name => $value) {
@@ -90,9 +90,10 @@ class Create
 		}
 
 		$unit->id = $unitID;
+
 		$this->_savePrices($unit);
 
-		return $unit ? $unit : false;
+		return $unit;
 	}
 
 	protected function _savePrices(Unit $unit)
@@ -102,9 +103,8 @@ class Create
 
 		foreach ($unit->price as $type => $price) {
 			$currencies = $price->getCurrencies();
+
 			foreach($currencies as $currency) {
-				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
-				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
 
 				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
 				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);

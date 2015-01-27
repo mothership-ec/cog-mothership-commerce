@@ -540,6 +540,100 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Unit\Delete($c['db.query'], $c['user.current']);
 		});
 
+		// CSV upload
+		$services['product.field_crawler'] = function($c) {
+			return new Commerce\Product\Type\FieldCrawler($c['product.types']);
+		};
+
+		$services['product.upload.csv_heading'] = function($c) {
+			return new \Message\Cog\FileDownload\Csv\Row($c['product.upload.heading_builder']->getColumns());
+		};
+
+		$services['product.upload.heading_builder'] = function($c) {
+			return new Commerce\Product\Upload\HeadingBuilder(
+				$c['product.field_crawler'], $c['translator'], $c['currency.supported'], $c['currency']);
+		};
+
+		$services['product.upload.heading_keys'] = function($c) {
+			return new Commerce\Product\Upload\HeadingKeys($c['product.upload.heading_builder']->getColumns(), $c['currency.supported']);
+		};
+
+		$services['product.upload.csv_template'] = function($c) {
+			return new \Message\Cog\FileDownload\Csv\Table([
+				$c['product.upload.csv_heading'],
+			]);
+		};
+
+		$services['product.upload.csv_download'] = function($c) {
+			return new \Message\Cog\FileDownload\Csv\Download($c['product.upload.csv_template']);
+		};
+
+		$services['product.upload.validator'] = function($c) {
+			return new Commerce\Product\Upload\Validate($c['product.upload.heading_keys'], $c['product.field_crawler']);
+		};
+
+		$services['product.upload.filter'] = function($c) {
+			return new Commerce\Product\Upload\Filter($c['product.upload.heading_keys']);
+		};
+
+		$services['product.upload.csv_converter'] = function($c) {
+			return new Commerce\Product\Upload\Csv\CsvToArrayConverter;
+		};
+
+		$services['product.upload.product_builder'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\ProductBuilder(
+				$c['product.upload.heading_keys'],
+				$c['product.upload.validator'],
+				$c['product.types'],
+				$c['product.field_crawler'],
+				$c['user.current'],
+				$c['product'],
+				$c['locale'],
+				$c['currency.supported'],
+				$c['currency'],
+				$c['cfg']->merchant->address->countryID
+			);
+		});
+
+		$services['product.upload.unit_builder'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\UnitBuilder(
+				$c['product.upload.heading_keys'],
+				$c['product.upload.validator'],
+				$c['locale'],
+				$c['user.current'],
+				$c['currency.supported'],
+				$c['product.unit'],
+				$c['product.upload.unit_stock']
+			);
+		});
+
+		$services['product.upload.unique_sorter'] = function($c) {
+			return new Commerce\Product\Upload\UniqueProductSorter($c['product.upload.heading_keys']);
+		};
+
+		$services['product.upload.create_dispatcher'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\ProductCreateDispatcher(
+				$c['product.create'], $c['product.detail.edit'], $c['event.dispatcher']
+			);
+		});
+
+		$services['product.upload.unit_create_dispatcher'] = $services->factory(function ($c) {
+			return new Commerce\Product\Upload\UnitCreateDispatcher($c['product.unit.create'], $c['product.unit.edit'], $c['event.dispatcher']);
+		});
+
+		$services['product.upload.complete_dispatcher'] = $services->factory(function ($c) {
+			return new Commerce\Product\Upload\UploadCompleteDispatcher($c['event.dispatcher']);
+		});
+
+		$services['product.upload.unit_stock'] = $services->factory(function($c) {
+			return new Commerce\Product\Upload\UnitStockSetter(
+				$c['stock.manager'],
+				$c['stock.movement.reasons']->get(Reason\Reasons::NEW_ORDER),
+				$c['stock.locations'],
+				$c['product.upload.heading_keys']
+			);
+		});
+
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Productoption($c['product.option.loader']));
@@ -633,6 +727,14 @@ class Services implements ServicesInterface
 
 		$services['product.form.barcode'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\Barcode($c['stock.locations']);
+		});
+
+		$services['product.form.csv_upload'] = $services->factory(function($c) {
+			return new Commerce\Form\Product\CsvUpload;
+		});
+
+		$services['product.form.upload_confirm'] = $services->factory(function($c) {
+			return new \Message\Mothership\Commerce\Form\Product\CsvUploadConfirm($c['routing.generator']);
 		});
 
 		$services['product.form.prices'] = $services->factory(function($c) {
