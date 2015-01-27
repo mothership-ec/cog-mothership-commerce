@@ -484,6 +484,7 @@ class Assembler
 	{
 		foreach ($this->getOrder()->getItems() as $item) {
 			$unit = $item->getUnit();
+			$item->actualPrice = 0; // need to set to 0 as eventListener won't refresh prices otherwise
 			$item->populate($unit);
 		}
 

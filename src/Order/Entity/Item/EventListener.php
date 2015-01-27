@@ -216,7 +216,7 @@ class EventListener implements SubscriberInterface
 		// Gross is the product gross - discount
 		$item->gross = round($adjustedGross - $item->discount, 2);
 		$item->tax   = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
-		$item->net = round($item->gross - $item->tax, 2);
+		$item->net   = round($item->gross - $item->tax, 2);
 	}
 
 	protected function _calculateInclusiveTax($amount, $rate)
