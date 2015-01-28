@@ -867,16 +867,16 @@
         },
         {
             "name": "message/cog-user",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-user.git",
-                "reference": "1.4.0"
+                "reference": "1.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-user/zipball/1.4.0",
-                "reference": "1.4.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-user/zipball/1.4.1",
+                "reference": "1.4.1",
                 "shasum": ""
             },
             "require": {
@@ -911,9 +911,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-user/issues",
-                "source": "https://github.com/messagedigital/cog-user/tree/1.4.0"
+                "source": "https://github.com/messagedigital/cog-user/tree/1.4.1"
             },
-            "time": "2015-01-27 15:45:33"
+            "time": "2015-01-27 17:04:04"
         },
         {
             "name": "message/wkhtmltopdf",
