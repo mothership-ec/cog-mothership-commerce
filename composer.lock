@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0372deb1e2ee9353a3ebb5c188f2c578",
+    "hash": "b55b00f2cd6efe2bb389e509b160bbe9",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -557,16 +557,16 @@
         },
         {
             "name": "message/cog",
-            "version": "3.10.1",
+            "version": "3.12.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog.git",
-                "reference": "3.10.1"
+                "reference": "3.12.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog/zipball/3.10.1",
-                "reference": "3.10.1",
+                "url": "https://api.github.com/repos/messagedigital/cog/zipball/3.12.0",
+                "reference": "3.12.0",
                 "shasum": ""
             },
             "require": {
@@ -645,9 +645,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog/issues",
-                "source": "https://github.com/messagedigital/cog/tree/3.10.1"
+                "source": "https://github.com/messagedigital/cog/tree/3.12.0"
             },
-            "time": "2015-01-23 16:20:54"
+            "time": "2015-01-28 17:44:18"
         },
         {
             "name": "message/cog-imageresize",
@@ -867,16 +867,16 @@
         },
         {
             "name": "message/cog-user",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:messagedigital/cog-user.git",
-                "reference": "1.4.0"
+                "reference": "1.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/cog-user/zipball/1.4.0",
-                "reference": "1.4.0",
+                "url": "https://api.github.com/repos/messagedigital/cog-user/zipball/1.4.1",
+                "reference": "1.4.1",
                 "shasum": ""
             },
             "require": {
@@ -911,9 +911,9 @@
             "support": {
                 "wiki": "http://server.local/wiki/projects/cog",
                 "issues": "http://github.com/messagedigital/cog-user/issues",
-                "source": "https://github.com/messagedigital/cog-user/tree/1.4.0"
+                "source": "https://github.com/messagedigital/cog-user/tree/1.4.1"
             },
-            "time": "2015-01-27 15:45:33"
+            "time": "2015-01-27 17:04:04"
         },
         {
             "name": "message/wkhtmltopdf",
