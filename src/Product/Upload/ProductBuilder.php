@@ -119,6 +119,7 @@ class ProductBuilder
 					return;
 				}
 			}
+
 		}
 
 		$this->_product->type = $this->_productTypes->getDefault();
@@ -134,7 +135,7 @@ class ProductBuilder
 			$details->$name	= $field;
 		}
 
-		$this->_product->details = $details;
+		$this->_product->setDetails($details);
 	}
 
 	private function _setPrices(array $row)
