@@ -143,7 +143,6 @@ class CsvPort extends Controller
 			'invalid'       => $invalidRows,
 			'maxCellLength' => self::MAX_CELL_LENGTH,
 			'form'          => $form,
-			'numProducts'   => self::NUM_DISPLAY_PRODUCTS,
 		]);
 	}
 }
