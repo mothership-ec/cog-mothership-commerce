@@ -33,6 +33,9 @@ class FieldCrawler extends Field\Factory
 	 */
 	private $_fieldNames = [];
 
+	/**
+	 * @var array
+	 */
 	private $_fieldsPersist = [];
 
 	/**
@@ -183,6 +186,14 @@ class FieldCrawler extends Field\Factory
 		}
 	}
 
+	/**
+	 * Adds fields on product type to the $_fields parameter, but then namespaces these with the type and adds them to the $_fieldsPersist
+	 * property. This is essentially a workaround for the fact that we don't have direct access to the fields from the product type
+	 * but multiple product types may have conflicting names
+	 *
+	 * @param ProductTypeInterface $type
+	 * @throws \LogicException
+	 */
 	private function _savePersistentFields(Type\ProductTypeInterface $type)
 	{
 		$type->setFields($this);
