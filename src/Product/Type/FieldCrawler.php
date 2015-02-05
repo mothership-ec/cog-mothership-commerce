@@ -213,7 +213,7 @@ class FieldCrawler extends Field\Factory
 	/**
 	 * Get the iterator object to use for iterating over this class.
 	 *
-	 * @return \ArrayIterator An \ArrayIterator instance for the `_fields`
+	 * @return \ArrayIterator An \ArrayIterator instance for the `_fieldPersist`
 	 *                        property
 	 */
 	public function getIterator()
