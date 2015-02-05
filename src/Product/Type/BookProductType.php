@@ -53,7 +53,6 @@ class BookProductType implements ProductTypeInterface
 			'choices'	  => $this->_getAuthors(),
 		]));
 		$factory->add($factory->getField('text', 'title', 'Title'));
-		$factory->add($factory->getField('date', 'releaseDate', 'Release date'));
 	}
 
 	private function _getAuthors()
