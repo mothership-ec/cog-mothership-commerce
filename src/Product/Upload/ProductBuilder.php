@@ -131,8 +131,14 @@ class ProductBuilder
 		$details = new Product\Type\DetailCollection;
 
 		foreach ($this->_fieldCrawler as $name => $field) {
-			$field->setValue($data[$this->_headingKeys->getKey($name)]);
-			$details->$name	= $field;
+
+			$value = $data[$this->_headingKeys->getKey($name)];
+
+			if ('' !== (string) $value) {
+				$field->setValue($data[$this->_headingKeys->getKey($name)]);
+
+				$details->$name	= $field;
+			}
 		}
 
 		$this->_product->setDetails($details);
