@@ -40,7 +40,7 @@
 		<tbody>
 			{% for product in productData %}
 				{% for unit in product %}
-					<tr class="{{ (key is odd) ? "odd" : "even" }} {{ (key > numProducts) ? "hide" : "" }}">
+					<tr class="{{ (key is odd) ? "odd" : "even" }}">
 						{% for column in unit %}
 							<td>{{ column | length < maxCellLength ? column : column | slice(0,maxCellLength) ~ '...' }}</td>
 						{% endfor %}
@@ -51,17 +51,15 @@
 		</tbody>
 	</table>
 
-	{% if key > numProducts %}
-		<a class="csv-show valid button small">Show all rows</a>
-	{% endif %}
-
 	{% if invalid | length > 0 %}
 		<h3>Invalid rows</h3>
 		<table class="invalid">
 			{{ _self.getHeading(heading) }}
+			{% set numInvalid = 0 %}
 			<tbody>
 			{% for iKey, invalidRow in invalid %}
-				<tr class="{{ ((iKey + 1) > numProducts) ? "hide" : "" }}">
+				{% set numInvalid = numInvalid + 1 %}
+				<tr class="">
 					{% for invalidColumn in invalidRow %}
 						<td>{{ invalidColumn | length < maxCellLength ? invalidColumn : invalidColumn | slice(0,maxCellLength) }}</td>
 					{% endfor %}
@@ -69,13 +67,10 @@
 			{% endfor %}
 			</tbody>
 		</table>
-		{% if iKey > numProducts %}
-			<a class="csv-show invalid button small">Show all rows</a>
-		{% endif %}
 	{% endif %}
 
 		{{ form_start(form, {'attr': {'id': 'ms_product_upload_confirm'} }) }}
-		
+
 	<div class="module">
 		<div class="wrap">
 			{{ form_rest(form) }}
