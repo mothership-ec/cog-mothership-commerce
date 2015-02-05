@@ -130,11 +130,11 @@ class FieldCrawler extends Field\Factory
 	 */
 	private function _setProductTypeFields(Type\ProductTypeInterface $type)
 	{
-		$existingFields = array_values($this->_fields);
+		$existingFields = $this->_mapFieldNames();
 
 		$type->setFields($this);
-		$diff = array_diff($this->_fields, $existingFields);
-		$this->_productTypeFields[$type->getName()] = $this->_mapFieldNames($diff);
+		$diff = array_diff($this->_mapFieldNames(), $existingFields);
+		$this->_productTypeFields[$type->getName()] = $diff;
 	}
 
 	/**

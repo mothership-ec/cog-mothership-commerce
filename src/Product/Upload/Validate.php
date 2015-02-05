@@ -26,10 +26,7 @@ class Validate
 	public function validateRow(array $row)
 	{
 		foreach ($row as $key => $column) {
-			if (
-				(in_array($key, $this->_required) && empty($column)) ||
-				!$this->_validateWithConstraints($key, $column)
-			) {
+			if (in_array($key, $this->_required) && empty($column)) {
 				$this->_invalidRows[] = $row;
 
 				return false;
@@ -74,16 +71,5 @@ class Validate
 	{
 		$this->_validRows   = [];
 		$this->_invalidRows = [];
-	}
-
-	private function _validateWithConstraints($key, $column)
-	{
-		$key         = $this->_headingKeys->getKey($key);
-		$constraints = $this->_fieldCrawler->getConstraints($key);
-
-		$validator  = Validation::createValidator();
-		$violations = $validator->validateValue($column, $constraints);
-
-		return $violations->count() <= 0;
 	}
 }
