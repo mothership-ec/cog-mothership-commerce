@@ -36,6 +36,11 @@ class FieldCrawler extends Field\Factory
 	/**
 	 * @var array
 	 */
+	private $_fieldsPersist = [];
+
+	/**
+	 * @var array
+	 */
 	private $_fieldDescriptions = [];
 
 	private $_productTypeFields = [];
@@ -132,7 +137,8 @@ class FieldCrawler extends Field\Factory
 	{
 		$existingFields = $this->_mapFieldNames();
 
-		$type->setFields($this);
+		$this->_savePersistentFields($type);
+
 		$diff = array_diff($this->_mapFieldNames(), $existingFields);
 		$this->_productTypeFields[$type->getName()] = $diff;
 	}
@@ -142,10 +148,12 @@ class FieldCrawler extends Field\Factory
 	 */
 	private function _mapFieldNames(array $fields = null)
 	{
-		$fieldNames = $fields ?: $this->_fields;
+		$fieldNames = $fields ?: $this->_fieldsPersist;
 
-		array_walk($fieldNames, function (&$field) {
-			$field = $field->getLabel() ?: ucfirst($field->getName());
+		array_walk($fieldNames, function (&$field, $key) {
+			$key = explode('.', $key);
+			$key = array_shift($key);
+			$field = ($field->getLabel() ?: ucfirst($field->getName())) . ' (' . ucfirst($key) . ')';
 		});
 
 		return $fieldNames;
@@ -153,7 +161,7 @@ class FieldCrawler extends Field\Factory
 
 	private function _mapFieldDescriptions()
 	{
-		$descriptions = $this->_fields;
+		$descriptions = $this->_fieldsPersist;
 
 		array_walk($descriptions, function (&$field) {
 			$field = $field->getDescription();
@@ -162,7 +170,7 @@ class FieldCrawler extends Field\Factory
 
 	private function _setConstraints()
 	{
-		foreach ($this->_fields as $field) {
+		foreach ($this->_fieldsPersist as $field) {
 			$this->_validateField($field);
 			$options = $field->getFieldOptions();
 			$this->_constraints[$field->getName()] = array_key_exists('constraints', $options) ? $options['constraints'] : [];
@@ -176,5 +184,40 @@ class FieldCrawler extends Field\Factory
 		if (!$field instanceof Field\BaseField) {
 			throw new \LogicException('Field must be an instance of `Message\Cog\Field\BaseField`, ' . gettype($field) . ' given');
 		}
+	}
+
+	/**
+	 * Adds fields on product type to the $_fields parameter, but then namespaces these with the type and adds them to the $_fieldsPersist
+	 * property. This is essentially a workaround for the fact that we don't have direct access to the fields from the product type
+	 * but multiple product types may have conflicting names
+	 *
+	 * @param ProductTypeInterface $type
+	 * @throws \LogicException
+	 */
+	private function _savePersistentFields(Type\ProductTypeInterface $type)
+	{
+		$type->setFields($this);
+
+		foreach ($this->_fields as $field) {
+			$key = $type->getName() . '.' . $field->getName();
+			if (array_key_exists($key, $this->_fieldsPersist)) {
+				throw new \LogicException('Field with key of `' . $key . '` already exists!');
+			}
+
+			$this->_fieldsPersist[$key] = $field;
+		}
+
+		$this->clear();
+	}
+
+	/**
+	 * Get the iterator object to use for iterating over this class.
+	 *
+	 * @return \ArrayIterator An \ArrayIterator instance for the `_fieldPersist`
+	 *                        property
+	 */
+	public function getIterator()
+	{
+		return new \ArrayIterator($this->_fieldsPersist);
 	}
 }
