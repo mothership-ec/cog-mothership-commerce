@@ -656,7 +656,7 @@ class Services implements ServicesInterface
 		 * Get the tax address
 		 */
 		$services['product.tax.default_address'] = function($c) {
-			if ($addresses = $c['commerce.user.address.loader']->getByUser($c['user.current'])) {
+			if ($c['user.current'] instanceof Message\User\AnonymousUser && $addresses = $c['commerce.user.address.loader']->getByUser($c['user.current'])) {
 				foreach ($addresses as $address) {
 					if($address->type === 'delivery') {
 						return $address;
