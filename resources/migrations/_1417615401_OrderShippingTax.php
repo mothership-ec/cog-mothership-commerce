@@ -17,13 +17,13 @@ class _1417615401_OrderShippingTax extends Migration
 		");
 
 		$this->run(
-			"INSERT INTO order_item_tax (item_id, tax_type, tax_rate, tax_amount)
-			SELECT 
-				item_id, 
+			"INSERT INTO order_shipping_tax (order_id, tax_type, tax_rate, tax_amount)
+			SELECT
+				order_id,
 				'VAT',
 				tax_rate,
 				tax
-			FROM order_item WHERE tax > 0;
+			FROM order_shipping WHERE tax > 0;
 		");
 	}
 
