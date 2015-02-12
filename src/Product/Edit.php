@@ -17,9 +17,24 @@ use Message\Cog\DB\Result;
  */
 class Edit implements TransactionalInterface
 {
+	/**
+	 * @var \Message\Cog\DB\Transaction
+	 */
 	protected $_trans;
+
+	/**
+	 * @var \Message\User\UserInterface
+	 */
 	protected $_user;
+
+	/**
+	 * @var \Message\Cog\Localisation\Locale
+	 */
 	protected $_locale;
+
+	/**
+	 * @var Product
+	 */
 	protected $_product;
 
 	protected $_transOverridden = false;
@@ -53,6 +68,9 @@ class Edit implements TransactionalInterface
 		return $product;
 	}
 
+	/**
+	 * @param Transaction $trans
+	 */
 	public function setTransaction(Transaction $trans)
 	{
 		$this->_transOverridden = true;
@@ -183,7 +201,7 @@ class Edit implements TransactionalInterface
 				category     = :category?sn
 			WHERE
 				product_id = :productID?i
-			", array(
+			", [
 				'productID'         => $this->_product->id,
 				'updatedAt'         => $this->_product->authorship->updatedAt(),
 				'updatedBy'         => $this->_product->authorship->updatedBy()->id,
@@ -194,7 +212,7 @@ class Edit implements TransactionalInterface
 				'supplierRef'       => $this->_product->supplierRef,
 				'weightGrams'       => $this->_product->weight,
 				'category'          => $this->_product->category,
-		));
+		]);
 
 		return $this;
 	}
@@ -240,7 +258,7 @@ class Edit implements TransactionalInterface
 				description			= :description?sn,
 				short_description	= :shortDescription?sn,
 				notes				= :notes?sn
-		", array(
+		", [
 			'product_id'        => $this->_product->id,
 			'locale'            => $this->_locale->getID(),
 			'displayName'       => $this->_product->displayName,
@@ -248,7 +266,7 @@ class Edit implements TransactionalInterface
 			'description'       => $this->_product->description,
 			'shortDescription'  => $this->_product->shortDescription,
 			'notes'             => $this->_product->notes,
-		));
+		]);
 
 		return $this;
 	}
@@ -274,7 +292,8 @@ class Edit implements TransactionalInterface
 					locale,
 					export_value,
 					export_description,
-					export_manufacture_country_id
+					export_manufacture_country_id,
+					export_code
 				)
 			VALUES
 				(
@@ -282,19 +301,22 @@ class Edit implements TransactionalInterface
 					:locale?sn,
 					:exportValue?fn,
 					:exportDescription?sn,
-					:exportCountryID?s
+					:exportCountryID?s,
+					:exportCode?sn
 				)
 			ON DUPLICATE KEY UPDATE
 				export_value					= :exportValue?fn,
 				export_description				= :exportDescription?sn,
-				export_manufacture_country_id	= :exportCountryID?s
-		", array(
+				export_manufacture_country_id	= :exportCountryID?s,
+				export_code                     = :exportCode?sn
+		", [
 			'productID'         => $this->_product->id,
 			'locale'            => $this->_locale->getID(),
 			'exportValue'		=> $this->_product->exportValue,
 			'exportDescription'	=> $this->_product->exportDescription,
 			'exportCountryID'	=> $this->_product->exportManufactureCountryID,
-		));
+			'exportCode'        => $this->_product->getExportCode()
+		]);
 
 		return $this;
 	}

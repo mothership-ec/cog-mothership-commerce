@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Controller\Product;
 
+use Message\Mothership\Commerce\Product\Product;
 use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
@@ -17,6 +18,9 @@ class Edit extends Controller
 {
 	const HIDDEN_SUFFIX = '_hidden';
 
+	/**
+	 * @var Product
+	 */
 	protected $_product;
 	protected $_units = array();
 
@@ -249,6 +253,7 @@ class Edit extends Controller
 			$product->notes                       = $data['notes'];
 			$product->weight                      = $data['weight_grams'];
 			$product->exportManufactureCountryID  = $data['export_manufacture_country_id'];
+			$product->setExportCode($data['export_code']);
 
 			$product = $productEdit->save($product);
 			$product = $productEdit->saveTags($product);
