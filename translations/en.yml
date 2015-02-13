@@ -105,7 +105,10 @@ ms.commerce:
         help:
       export-manufacture-country:
         label: Manufacture Country Name
-        help: -
+        help: The country of manufacture, for the benefit of courier services
+      export-code:
+        label: Export Code
+        help: Export code required by some courier services
       tags:
         label: Tags
         help: Tags are words or phrases separated by commas which can be used to group items together in ad-hoc ways, depending on the set-up of your site.

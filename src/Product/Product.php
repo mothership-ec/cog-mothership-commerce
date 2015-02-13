@@ -36,6 +36,7 @@ class Product implements Price\PricedInterface
 	public $exportDescription;
 	public $exportValue;
 	public $exportManufactureCountryID;
+	protected $_exportCode;
 
 	public $priceTypes;
 
@@ -449,7 +450,7 @@ class Product implements Price\PricedInterface
 
 	/**
 	 * Get the tax rates
-	 * 
+	 *
 	 * @return TaxRateCollection The collection of tax rates
 	 */
 	public function getTaxRates()
@@ -459,7 +460,7 @@ class Product implements Price\PricedInterface
 
 	/**
 	 * Get the object type
-	 * 
+	 *
 	 * @return ProductType The product's type
 	 */
 	public function getType()
@@ -491,11 +492,11 @@ class Product implements Price\PricedInterface
 	{
 		return $this->name;
 	}
-	
+
 	/**
 	 * Sets the value of name.
 	 *
-	 * @param mixed $name the name 
+	 * @param mixed $name the name
 	 *
 	 * @return self
 	 */
@@ -514,7 +515,7 @@ class Product implements Price\PricedInterface
 	 */
 	protected function setTaxStrategy($taxStrategy)
 	{
-		$this->_taxStrategy = $taxManager;
+		$this->_taxStrategy = $taxStrategy;
 
 		return $this;
 	}
@@ -522,7 +523,7 @@ class Product implements Price\PricedInterface
 	/**
 	 * Sets the value of name.
 	 *
-	 * @param mixed $name the name 
+	 * @param mixed $name the name
 	 *
 	 * @return self
 	 */
@@ -542,11 +543,11 @@ class Product implements Price\PricedInterface
 	{
 		return $this->brand;
 	}
-	
+
 	/**
 	 * Sets the value of brand.
 	 *
-	 * @param mixed $brand the brand 
+	 * @param mixed $brand the brand
 	 *
 	 * @return self
 	 */
@@ -566,11 +567,11 @@ class Product implements Price\PricedInterface
 	{
 		return $this->category;
 	}
-	
+
 	/**
 	 * Sets the value of category.
 	 *
-	 * @param mixed $category the category 
+	 * @param mixed $category the category
 	 *
 	 * @return self
 	 */
@@ -590,11 +591,11 @@ class Product implements Price\PricedInterface
 	{
 		return $this->shortDescription;
 	}
-	
+
 	/**
 	 * Sets the value of shortDescription.
 	 *
-	 * @param mixed $shortDescription the short description 
+	 * @param mixed $shortDescription the short description
 	 *
 	 * @return self
 	 */
@@ -614,11 +615,11 @@ class Product implements Price\PricedInterface
 	{
 		return $this->description;
 	}
-	
+
 	/**
 	 * Sets the value of description.
 	 *
-	 * @param mixed $description the description 
+	 * @param mixed $description the description
 	 *
 	 * @return self
 	 */
@@ -631,8 +632,10 @@ class Product implements Price\PricedInterface
 
 	/**
 	 * Adds a unit to the Unit Collection
-	 * 
+	 *
 	 * @param Unit\Unit $unit Unit to add
+	 *
+	 * @return Product
 	 */
 	public function addUnit(Unit\Unit $unit)
 	{
@@ -640,11 +643,11 @@ class Product implements Price\PricedInterface
 
 		return $this;
 	}
-	
+
 	/**
 	 * Sets the value of type.
 	 *
-	 * @param mixed $type the type 
+	 * @param mixed $type the type
 	 *
 	 * @return self
 	 */
@@ -667,11 +670,31 @@ class Product implements Price\PricedInterface
 
 	/**
 	 * Gets the tax strategy in use on this product
-	 * 
+	 *
 	 * @return Tax\Strategy\TaxStrategyInterface The strategy in use
 	 */
 	public function getTaxStrategy()
 	{
 		return $this->_taxStrategy;
+	}
+
+	/**
+	 * @param $exportCode
+	 */
+	public function setExportCode($exportCode)
+	{
+		$exportCode = (string) $exportCode;
+
+		if ('' !== $exportCode) {
+			$this->_exportCode = $exportCode;
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getExportCode()
+	{
+		return $this->_exportCode;
 	}
 }
