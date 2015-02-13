@@ -58,7 +58,7 @@ class ProductProxy extends Product
 
 			$this->_load('units');
 		}
-		
+
 		return parent::getUnitCollection();
 	}
 
@@ -94,7 +94,7 @@ class ProductProxy extends Product
 	public function getDetails()
 	{
 		$this->_load('details');
-		
+
 		return parent::getDetails();
 	}
 
@@ -108,12 +108,12 @@ class ProductProxy extends Product
 	public function addUnit(Unit\Unit $unit)
 	{
 		if (!in_array('units', $this->_loaded)) {
-			return $this->_loaders->get('units')->getByID($unitID);
+			return $this->_loaders->get('units')->getByID($unit->id);
 		}
 
 		return parent::addUnit($unit);
 	}
-	
+
 	public function getTaxRates()
 	{
 		$this->_load('taxes');

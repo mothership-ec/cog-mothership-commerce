@@ -315,7 +315,8 @@ class Loader
 
 				product_export.export_description            AS exportDescription,
 				product_export.export_value                  AS exportValue,
-				product_export.export_manufacture_country_id AS exportManufactureCountryID
+				product_export.export_manufacture_country_id AS exportManufactureCountryID,
+				product_export.export_code                   AS exportCode
 			FROM
 				product
 			LEFT JOIN
