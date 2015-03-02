@@ -17,7 +17,9 @@ class CurrencySelect extends Controller
 			'expanded' => true,
 		]);
 
-		return $this->render('Message:Mothership:Commerce::currency_form', ['form' => $form]);
+		return $this->render('Message:Mothership:Commerce::currency_form', [
+			'form' => $form, 'currency' => $this->get('currency'),
+		]);
 	}
 
 	public function process()
