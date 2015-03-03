@@ -1,18 +1,14 @@
 <?php
 
-namespace Message\Mothership\Commerce\Field;
+namespace Message\Mothership\Commerce\Form\Extension\Type;
 
-use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
-/**
- * @deprecated Use unit_choice Message\Mothership\Commerce\Form\Type\UnitChoice
- */
-class ProductUnitInStockOnlyChoiceType extends AbstractType
+class UnitChoice extends Form\AbstractType
 {
-	protected $_container;
 
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
@@ -42,9 +38,11 @@ class ProductUnitInStockOnlyChoiceType extends AbstractType
 		return 'choice';
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getName()
 	{
-		return 'ms_product_unit_in_stock';
+		return 'unit_choice';
 	}
 }
-
