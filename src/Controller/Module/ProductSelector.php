@@ -115,7 +115,7 @@ class ProductSelector extends Controller
 			]);
 		// Otherwise, add a select box to select the unit
 		} else {
-			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), [
+			$form->add('unit_id', 'unit_choice', $this->trans('ms.commerce.product.selector.unit.label'), [
 				'choices'      => $choices,
 				'units'        => $units,
 				'oos'          => array_keys($oosUnits),
