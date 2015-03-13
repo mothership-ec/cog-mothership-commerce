@@ -146,6 +146,31 @@ class Edit extends Controller
 		));
 	}
 
+	public function deleteImage($imageID)
+	{
+		$form = $this->createForm($this->get('product.image.form.delete'));
+		$form->handleRequest();
+
+		if ($form->isValid()) {
+			$this->get('product.image.delete')->delete($this->get('product.image.loader')->getByID($imageID));
+
+			$this->addFlash('success', 'Image deleted successfully');
+		}
+
+		return $this->redirectToReferer();
+	}
+
+	public function deleteImageForm($imageID)
+	{
+		$form = $this->createForm($this->get('product.image.form.delete'), null, [
+			'action' => $this->get('routing.generator')
+				->generate('ms.commerce.product.delete.images', ['imageID' => $imageID,]),
+			'method' => 'delete',
+		]);
+
+		return $this->render('Message:Mothership:Commerce::product:image:delete-form', ['form' => $form]);
+	}
+
 	/**
 	 * Process the updating of the units data
 	 *

@@ -524,6 +524,10 @@ class Services implements ServicesInterface
 			return $c['product.loader']->getEntityLoader('images');
 		});
 
+		$services['product.image.form.delete'] = $services->factory(function($c) {
+			return new Commerce\Form\Product\Image\Delete;
+		});
+
 		$services['product.unit.loader'] = $services->factory(function($c) {
 			return $c['product.loader']->getEntityLoader('units');
 		});

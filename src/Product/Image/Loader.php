@@ -127,7 +127,6 @@ class Loader implements ProductEntityLoaderInterface
 		// bind as image
 		$images = $dataSet->bindTo('Message\\Mothership\\Commerce\\Product\\Image\\Image');
 
-
 		// Images are keyed by id for BC
 		$keyedImages = [];
 
@@ -144,7 +143,9 @@ class Loader implements ProductEntityLoaderInterface
 			}
 
 			// add options
-			$keyedImages[$data->id]->options[$data->optionName] = $data->optionValue;
+			if(!empty($data->optionName)) {
+				$keyedImages[$data->id]->options[$data->optionName] = $data->optionValue;
+			}
 		}
 
 		return $keyedImages;
