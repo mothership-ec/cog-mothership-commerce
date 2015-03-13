@@ -1,4 +1,15 @@
-{{ form_start(form) }}
-{{ form_rest(form) }}
-<button class="button">Go</button>
-{{ form_end(form) }}
+<div class="currency-selector">
+	<div class="set-currency {{ currency }}">{{ currency }}</div>
+	<label>Currency</label>
+	<div class="currency-options">
+		{{ form_start(form) }}
+		{% for c in form.currency %}
+		    <div class="field inline">
+			{{ form_label(c, c.vars.value, { 'label_attr': {'class': c.vars.value}}) }}
+			{{ form_widget(c) }}
+		    </div>
+		{% endfor %}
+			<button class="button">Go</button>
+		{{ form_end(form) }}
+	</div>
+</div>
