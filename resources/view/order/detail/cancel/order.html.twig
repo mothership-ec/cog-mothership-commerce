@@ -9,7 +9,7 @@
 	{% if refundable %}
 	<div class="refund">
 		{{ form_row(form.refund) }}
-		<span><strong>{{ refundAmount|price }}</strong></span>
+		<span><strong>{{ refundAmount|price(currency) }}</strong></span>
 	</div>
 	{% endif %}
 

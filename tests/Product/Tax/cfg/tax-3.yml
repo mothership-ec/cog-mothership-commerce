@@ -1,0 +1,6 @@
+tax-strategy: inclusive
+rates:
+  default:
+    default:
+      product-tax:
+        - {name:"TAX", rate: 20.000}

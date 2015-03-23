@@ -6,7 +6,7 @@ use Message\Cog\Controller\Controller;
 
 class Tabs extends Controller
 {
-	public function index($productID)
+	public function index($productID, $saveButton = null)
 	{
 		$product	= $this->get('product.loader')->getByID($productID);
 
@@ -29,6 +29,7 @@ class Tabs extends Controller
 			'tabs'    	  => $tabs,
 			'current' 	  => $current,
 			'productID'   => $productID,
+			'saveButton'  => $saveButton
 		));
 	}
 }

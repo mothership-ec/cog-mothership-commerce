@@ -1,0 +1,14 @@
+{% extends 'Message:Mothership:ControlPanel::modal:dangerous' %}
+
+{% block title 'Are you sure you want to create these products' %}
+{% block id 'upload_warning' %}
+{% block attr 'style="display:none;"' %}
+
+{% block content %}
+	<p>
+		You are about to port {{ productData | length }} product{{ productData | length > 1 ? 's' : '' }}. This cannot be undone. Please confirm that the data you have submitted is accurate.
+	</p>
+	<p>This may take a long time, please do not navigate away from this screen or close your browser.</p>
+	<span class="button cancel small" data-modal-close>Cancel</span>
+	<span class="button save small" id="upload_submit" data-modal-close>Save</span>
+{% endblock %}

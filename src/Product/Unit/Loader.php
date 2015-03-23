@@ -34,6 +34,7 @@ class Loader implements ProductEntityLoaderInterface
 	protected $_loadOutOfStock = false;
 
 	protected $_prices;
+	protected $_defaultCurrency;
 
 	protected $_returnArray = false;
 
@@ -44,8 +45,9 @@ class Loader implements ProductEntityLoaderInterface
 	 * @param Locale $locale Locale Object
 	 * @param array $prices
 	 */
-	public function __construct(Query $query, Locale $locale, array $prices)
+	public function __construct(Query $query, Locale $locale, array $prices, $defaultCurrency)
 	{
+		$this->_defaultCurrency = $defaultCurrency;
 		$this->_query   = $query;
 		$this->_locale  = $locale;
 		$this->_prices  = $prices;
@@ -154,14 +156,15 @@ class Loader implements ProductEntityLoaderInterface
 		// Bind the results to the Unit Object
 		$units = $result->bindTo(
 			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
-			array(
+			[
 				$this->_locale,
-				$this->_prices
-			)
+				$this->_prices,
+				$this->_defaultCurrency
+			]
 		);
 
 		if (0 === count($result)) {
-			return $alwaysReturnArray ? array() : false;
+			return $alwaysReturnArray ? [] : false;
 		}
 
 		foreach ($result as $key => $data) {
@@ -302,7 +305,14 @@ class Loader implements ProductEntityLoaderInterface
 			JOIN
 				product_unit ON (product_price.product_id = product_unit.product_id)
 			LEFT JOIN
-				product_unit_price ON (product_unit.unit_id = product_unit_price.unit_id AND product_price.type = product_unit_price.type)
+				product_unit_price
+			ON (
+				product_unit.unit_id = product_unit_price.unit_id
+			AND
+				product_price.type = product_unit_price.type
+			AND
+				product_price.currency_id = product_unit_price.currency_id
+			)
 			WHERE
 				product_unit.unit_id IN (?ij)
 		', 	array(
@@ -344,7 +354,6 @@ class Loader implements ProductEntityLoaderInterface
 	 */
 	protected function _loadUnits($unitIDs, $revisionID = null)
 	{
-
 		$getRevision = '
 			SELECT
 				IFNULL(MAX(revision_id),1)
@@ -357,6 +366,7 @@ class Loader implements ProductEntityLoaderInterface
 		if ($revisionID) {
 			$getRevision = $revisionID;
 		}
+
 
 		return $this->_query->run(
 			'SELECT

@@ -16,17 +16,18 @@ class Collection extends BaseCollection
 	protected function _configure()
 	{
 		$this->setType('Message\\Mothership\\Commerce\\Product\\Unit\\Unit');
-		$this->setKey('id');
+		$this->setKey(function($unit) {
+			return isset($unit->id) ? $unit->id : uniqid();
+		});
 
 	}
 
 	public function getByCriteria($includeOutOfStock = true, $includeInvisible = false)
 	{
 		$return = [];
-
 		foreach ($this->all() as $id => $unit) {
 			$outOfStockCriteria = !$unit->isOutOfStock() || $includeOutOfStock;
-			$invisibleCriteria  = $unit->visible || $includeInvisible;
+			$invisibleCriteria  = $unit->isVisible() || $includeInvisible;
 
 			if ($outOfStockCriteria && $invisibleCriteria) {
 				$return[$id] = $unit;

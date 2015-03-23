@@ -1,5 +1,26 @@
 ms.commerce:
+  general:
+    warning: Warning
   product:
+    create:
+      name:
+        label: Name
+        placeholder: The name of the product
+      brand:
+        label: Brand
+        placeholder: The products brand
+      category:
+        label: Category
+        placeholder: The products category
+      price:
+        label: Price
+        placeholder: Price
+      description:
+        label: Description
+        placeholder: Enter a description...
+      variants:
+        label: Variants
+
     selector:
       unit:
         label: Please select an option...
@@ -9,6 +30,9 @@ ms.commerce:
       create: Create product
       sku: Add SKU
       barcodes: Print barcodes
+      variant: Add Variant
+      back: Back
+      continue: Continue
     attributes:
       name:
         label: Name
@@ -44,19 +68,20 @@ ms.commerce:
         label: Export Description
         help: This description of the product is for export purposes and will display on export documentation.
     pricing:
+      warning: Some prices are set to 0. Are you sure you would like to continue?
       tax-rate:
         label: Tax Rate
         help: Select a tax rate applicable to your region and product type.
       retail:
-        label: Retail Price
+        label: Retail price
         label-sans: Retail
         help: The price customers will pay on your website.
       cost:
-        label: Cost Price
+        label: Cost price
         label-sans: Cost
         help: The nominal cost of manufacture of the product.
       rrp:
-        label: RRP Price
+        label: RRP price
         label-sans: RRP
         help: The recommended retail price, which can from the Retail Price.
       tax-strategy:
@@ -80,7 +105,10 @@ ms.commerce:
         help:
       export-manufacture-country:
         label: Manufacture Country Name
-        help: -
+        help: The country of manufacture, for the benefit of courier services
+      export-code:
+        label: Export Code
+        help: Export code required by some courier services
       tags:
         label: Tags
         help: Tags are words or phrases separated by commas which can be used to group items together in ad-hoc ways, depending on the set-up of your site.
@@ -134,6 +162,94 @@ ms.commerce:
           label: Option Type
           placeholder: Option Type
           empty-value: Select Option
+          help: Enter the type of option to add to this unit. (i.e.: 'Colour')
+        value:
+          label: Option Value
+          placeholder: Option Value
+          help: Depending on the option type set above, enter the value. (i.e.: an option type of 'Colour' could have a value of 'Red')
+        button:
+          create: Add unit
+    upload:
+      title: Upload a CSV
+      form:
+        upload_field: Upload
+      success: '{0}%productCount% products created and %unitCount% units created|{1}%productCount% product created and %unitCount% units created|{2}%productCount% products created and %unitCount% unit created|{3}%productCount% product created and %unitCount% unit created'
+      description: The upload CSV function will create products based on the data that has been uploaded. Please ensure that this data is correct. It will check which columns have been filled and attempt to work out the product type based on that information.
+      csv:
+        # these names need to match
+        name:
+          name: Product name
+        sortName:
+          name: Alphabetical sort name
+          help:
+        category:
+          name: Category
+          help:
+        brand:
+          name: Brand
+          help:
+        description:
+          name: Description
+          help:
+        shortDescription:
+          name: Short description
+          help:
+        exportDescription:
+          name: Export description
+          help:
+        supplierRef:
+          name: Supplier reference
+          help:
+        weight:
+          name: Weight (grams)
+          help:
+        notes:
+          name: Notes
+          help:
+        exportManufactureCountryID:
+          name: Country of manufacture
+          help:
+        retail:
+          name: Selling price
+          help:
+        rrp:
+          name: RRP
+          help:
+        cost:
+          name: Cost price
+          help:
+        taxRate:
+          name: Tax rate (%)
+          help:
+        stock:
+          name: Stock
+          help:
+        var_name:
+          name: Variant name
+          help:
+        var_val:
+          name: Variant value
+          help:
+      empty: No units have been added yet.
+      sku:
+        label: SKU
+        placeholder: SKU
+        help: The unique Stock Keeping Unit you assign internally to this specific product variant.
+      prices:
+        label: Prices
+        help: SKU prices can be set differently from the overall Product price. Edit these fields if you want this SKU to be priced seperately from the others.
+      visible:
+        label: Visible
+        help: Defines whether or not the SKU appears on the website.
+      delete:
+        label: Delete
+        help: Click this link to delete the SKU.
+      option:
+        label: Options
+        name:
+          label: Option Type
+          placeholder: Option Type
+          empty-value: Select Option
           help: Select the type of Option you wish to add to this SKU.
         value:
           label: Option Value
@@ -142,6 +258,9 @@ ms.commerce:
         button:
           create: Add unit
     stock:
+      set:
+        label: Stock
+        placeholder: Set stock
       empty: No stock has been moved yet.
       units-empty: To control stock, you first have to add units.
       page-title: Stock Movements
@@ -225,7 +344,7 @@ ms.commerce:
       line: "Line number"
       postcode: Postcode
       town: Town
-      state: State
+      state: State / Province
       country: Country
       telephone: Telephone
 

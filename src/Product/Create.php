@@ -21,10 +21,10 @@ class Create
 
 	protected $_defaultTaxStrategy = 'inclusive';
 
-	public function __construct(Query $query, 
-		Locale $locale, 
-		UserInterface $user, 
-		array $priceTypes, 
+	public function __construct(Query $query,
+		Locale $locale,
+		UserInterface $user,
+		array $priceTypes,
 		array $currencyIDs)
 	{
 		$this->_query        = $query;
@@ -50,24 +50,30 @@ class Create
 			'INSERT INTO
 				product
 			SET
-				product.type			= ?s,
-				product.name			= ?s,
-				product.weight_grams	= ?i,
-				product.tax_rate		= ?f,
-				product.tax_strategy	= ?s,
-				product.supplier_ref    = ?s,
-				product.created_at		= ?d,
-				product.created_by		= ?i',
-			array(
-				$product->type->getName(),
-				$product->name,
-				$product->weight,
-				$product->taxRate,
-				$this->_defaultTaxStrategy,
-				$product->supplierRef,
-				$product->authorship->createdAt(),
-				$product->authorship->createdBy()->id
-			)
+
+				product.type			= :type?s,
+				product.name			= :name?s,
+				product.weight_grams	= :weight?i,
+				product.tax_rate		= :tax_rate?f,
+				product.tax_strategy	= :tax_strat?s,
+				product.supplier_ref    = :supplier?s,
+				product.created_at		= :created_at?d,
+				product.created_by		= :created_by?i,
+				product.brand           = :brand?s,
+				product.category        = :category?s
+				',
+			[
+				'type'       => $product->type->getName(),
+				'name'       => $product->name,
+				'weight'     => $product->weight,
+				'tax_rate'   => $product->taxRate,
+				'tax_strat'  => $this->_defaultTaxStrategy->getName(),
+				'supplier'   => $product->supplierRef,
+				'created_at' => $product->authorship->createdAt(),
+				'created_by' => $product->authorship->createdBy()->id,
+				'brand'      => $product->getBrand(),
+				'category'   => $product->getCategory(),
+			]
 		);
 
 		$productID = $result->id();
@@ -76,26 +82,32 @@ class Create
 			'INSERT INTO
 				product_info
 			SET
-				product_info.product_id = ?i,
-				product_info.locale = ?s,
-				product_info.display_name = ?s,
-				product_info.short_description   = ?s',
-			array(
-				$productID,
-				$this->_locale->getID(),
-				$product->displayName,
-				$product->shortDescription,
-			)
+				product_id        = :id?i,
+				locale            = :locale?s,
+				display_name      = :displayName?s,
+				sort_name         = :sortName?s,
+				description       = :description?s,
+				short_description = :shortDesc?s',
+			[
+				'id'          => $productID,
+				'locale'      => $this->_locale->getID(),
+				'displayName' => $product->displayName,
+				'sortName'    => $product->sortName,
+				'description' => $product->description,
+				'shortDesc'   => $product->shortDescription,
+			]
 		);
 
 		$queryAppend = [];
 		$queryVars   = [];
 		foreach($this->_priceTypes as $type) {
 			foreach($this->_currencyIDs as $currency) {
-				$queryAppend[] = "(?i, ?s, 0, ?s, ?s)";
+				$price = $product->getPrices()->exists($type) ? $product->getPrice($type, $currency) : 0;
+				$queryAppend[] = "(?i, ?s, ?f, ?s, ?s)";
 				$vars          = [
 					$productID,
 					$type,
+					$price,
 					$currency,
 					$this->_locale->getId(),
 				];
@@ -105,13 +117,13 @@ class Create
 		}
 
 		$defaultPrices = $this->_query->run(
-			'INSERT INTO 
+			'INSERT INTO
 				product_price (product_id, type, price, currency_id, locale)
 			VALUES
 				' . implode(', ', $queryAppend),
 			$queryVars
 			);
-	
+
 		$product->id = $productID;
 
 		return $product;

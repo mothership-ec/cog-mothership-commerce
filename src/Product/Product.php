@@ -4,8 +4,11 @@ namespace Message\Mothership\Commerce\Product;
 
 use Message\Cog\ValueObject\Authorship;
 use Message\Cog\Localisation\Locale;
+use Message\Mothership\Commerce\Product\Type\ProductTypeInterface as ProductType;
+use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
+use Message\Mothership\Commerce\Product\Price\TypedPrice;
 
-class Product
+class Product implements Price\PricedInterface
 {
 	public $id;
 	public $catalogueID;
@@ -33,6 +36,7 @@ class Product
 	public $exportDescription;
 	public $exportValue;
 	public $exportManufactureCountryID;
+	protected $_exportCode;
 
 	public $priceTypes;
 
@@ -41,24 +45,82 @@ class Product
 	protected $_units;
 	protected $_images;
 	protected $_locale;
+	protected $_taxes;
+
+	protected $_taxStrategy;
+
+	protected $_entities = [];
+	protected $_defaultCurrency;
 
 	/**
 	 * Initiate the object and set some basic properties up
 	 *
 	 * @param Locale $locale     	Current locale instance
-	 * @param array  $entities   	array of entities, this will proabbly only be units for now
 	 * @param array  $priceTypes 	array of price types
+	 * @param array  $taxStrategy   the tax strategy to use to resolve the correct price
 	 */
-	public function __construct(Locale $locale, array $priceTypes = array())
+	public function __construct(Locale $locale, array $priceTypes = array(), $defaultCurrency, TaxStrategyInterface $taxStrategy)
 	{
-		$this->authorship = new Authorship;
-		$this->priceTypes = $priceTypes;
-		$this->_locale    = $locale;
+		$this->authorship  = new Authorship;
+		$this->priceTypes  = $priceTypes;
+		$this->_locale     = $locale;
+		$this->_taxStrategy = $taxStrategy;
+		$this->_defaultCurrency = $defaultCurrency;
 
-		$this->_units   = new Unit\Collection;
-		$this->_images  = new Image\Collection;
-		$this->_details = new Type\DetailCollection;
-		$this->_prices  = new Price\PriceCollection($priceTypes);
+		$this->_units      = new Unit\Collection;
+		$this->_images     = new Image\Collection;
+		$this->_details    = new Type\DetailCollection;
+		$this->_taxes      = new Tax\Rate\TaxRateCollection;
+		$this->_prices     = new Price\PriceCollection;
+	}
+
+
+	/**
+	 * Magic getter. This maps to defined order entities.
+	 *
+	 * @param  string $var       Entity name
+	 *
+	 * @return Entity\Collection The entity collection instance
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name doesn't exist
+	 */
+	public function __get($var)
+	{
+		if (array_key_exists($var, $this->_entities)) {
+			return $this->_entities[$var];
+		}
+
+		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+
+	}
+
+	/**
+	 * Magic isset. This maps to defined order entities.
+	 *
+	 * @param  string  $var Entity name
+	 *
+	 * @return boolean      True if the entity exist
+	 */
+	public function __isset($var)
+	{
+		return array_key_exists($var, $this->_entities);
+	}
+
+	/**
+	 * Add an entity to this product.
+	 *
+	 * @param string                 $name   Entity name
+	 * @param Entity\LoaderInterface $loader Entity loader
+	 *
+	 * @throws \InvalidArgumentException If an entity with the given name already exists
+	 */
+	public function addEntity($name, Unit\LoaderInterface $loader)
+	{
+		if (array_key_exists($name, $this->_entities)) {
+			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
+		}
+
+		$this->_entities[$name] = new Unit\Collection($this, $loader);
 	}
 
 	/**
@@ -88,6 +150,11 @@ class Product
 	public function getVisibleUnits()
 	{
 		return $this->getUnits(true, false);
+	}
+
+	public function getUnitCollection()
+	{
+		return $this->_units;
 	}
 
 	/**
@@ -120,8 +187,10 @@ class Product
 	 *
 	 * @return string             Loaded price
 	 */
-	public function getPrice($type = 'retail', $currencyID = 'GBP')
+	public function getPrice($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		return $this->getPrices()[$type]->getPrice($currencyID, $this->_locale);
 	}
 
@@ -134,8 +203,10 @@ class Product
 	 *
 	 * @return string|false       Lowest price or false if $prices is empty
 	 */
-	public function getPriceFrom($type = 'retail', $currencyID = 'GBP')
+	public function getPriceFrom($type = 'retail', $currencyID = null)
 	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
 		$basePrice = $this->getPrice($type, $currencyID);
 		$prices    = array();
 
@@ -150,26 +221,69 @@ class Product
 		return $prices ? array_shift($prices) : $basePrice;
 	}
 
-	public function getNetPrice($type = 'retail', $currencyID = 'GBP')
+	/**
+	 * Get the net price
+	 */
+	public function getNetPrice($type = 'retail', $currencyID = null)
 	{
-		$price = $this->getPrice($type, $currencyID);
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		if ('exclusive' === $this->taxStrategy) {
-			return $price;
-		}
-
-		return $price / (1 + ($this->taxRate / 100));
+		return $this->_taxStrategy->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
 	}
 
-	public function getNetPriceFrom($type = 'retail', $currencyID = 'GBP')
+	/**
+	 * Get the lowest possible net price
+	 */
+	public function getNetPriceFrom($type = 'retail', $currencyID = null)
 	{
-		$price = $this->getPriceFrom($type, $currencyID);
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		if ('exclusive' === $this->taxStrategy) {
-			return $price;
+		return $this->_taxStrategy->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * Get the gross price
+	 */
+	public function getGrossPrice($type = 'retail', $currencyID = null)
+	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		return $this->_taxStrategy->getGrossPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * Get the lowest possible gross price
+	 */
+	public function getGrossPriceFrom($type = 'retail', $currencyID = null)
+	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		return $this->_taxStrategy->getGrossPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+	}
+
+	/**
+	 * {@inheritDocs}
+	 */
+	public function hasPrice($type, $currencyID)
+	{
+		return $this->getPrices()->get($type)->hasPrice($currencyID, $this->_locale);
+	}
+
+	/**
+	 * Sets a price on the product
+	 * @param string $type       the type of the price, eg retail
+	 * @param string $currencyID the currency id, eg GBP
+	 * @param float  $price      the price
+	 */
+	public function setPrice($type, $currencyID, $price)
+	{
+		$prices = $this->getPrices();
+
+		if(!$prices->exists($type)) {
+			$prices->add(new TypedPrice($type, $this->_locale));
 		}
 
-		return $price / (1 + ($this->taxRate / 100));
+		$prices[$type]->setPrice($currencyID, $price, $this->_locale);
 	}
 
 	/**
@@ -185,11 +299,36 @@ class Product
 	 *
 	 * @return boolean                Result of checkPunit
 	 */
-	public function hasVariablePricing($type = 'retail', $currencyID = 'GBP', array $options = null)
+	public function hasVariablePricing($type = 'retail', $currencyID = null, array $options = null)
 	{
-		$basePrice = $this->getPrice($type, $currencyID);
-		foreach ($this->getVisibleUnits() as $unit) {
-			if ($unit->getPrice($type, $currencyID) != $basePrice) {
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		$units = $this->getVisibleUnits();
+		if (sizeof($units) <= 1) {
+			return false;
+		}
+
+		$basePrice = null;
+		foreach ($units as $unit) {
+			$valid = true;
+			if($options) {
+				// validate for option constraints
+				foreach($options as $option => $val) {
+					if($unit->getOption($option) !== $val) {
+						$valid = false;
+						break;
+					}
+				}
+				// skip unit if not valid
+				if(!$valid) {
+					continue;
+				}
+			}
+
+			$unitPrice = $unit->getPrice($type, $currencyID);
+			if($basePrice === null) {
+				$basePrice = $unitPrice;
+			}else if ($unit->getPrice($type, $currencyID) !== $basePrice) {
 				return true;
 			}
 		}
@@ -309,6 +448,26 @@ class Product
 		return $this->getImage($type, $options);
 	}
 
+	/**
+	 * Get the tax rates
+	 *
+	 * @return TaxRateCollection The collection of tax rates
+	 */
+	public function getTaxRates()
+	{
+		return $this->_taxes;
+	}
+
+	/**
+	 * Get the object type
+	 *
+	 * @return ProductType The product's type
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
+
 	public function hasTag($tag)
 	{
 		return in_array($tag, $this->tags);
@@ -322,5 +481,220 @@ class Product
 	public function setDetails(Type\DetailCollection $details)
 	{
 		$this->_details = $details;
+	}
+
+	/**
+	 * Gets the value of name.
+	 *
+	 * @return mixed
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Sets the value of name.
+	 *
+	 * @param mixed $name the name
+	 *
+	 * @return self
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+
+		return $this;
+	}
+	/**
+	 * Sets the tax strategy.
+	 *
+	 * @param mixed $_taxStrategy the tax manager
+	 *
+	 * @return self
+	 */
+	protected function setTaxStrategy($taxStrategy)
+	{
+		$this->_taxStrategy = $taxStrategy;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the value of name.
+	 *
+	 * @param mixed $name the name
+	 *
+	 * @return self
+	 */
+	public function setDisplayName($name)
+	{
+		$this->displayName = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of brand.
+	 *
+	 * @return mixed
+	 */
+	public function getBrand()
+	{
+		return $this->brand;
+	}
+
+	/**
+	 * Sets the value of brand.
+	 *
+	 * @param mixed $brand the brand
+	 *
+	 * @return self
+	 */
+	public function setBrand($brand)
+	{
+		$this->brand = $brand;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of category.
+	 *
+	 * @return mixed
+	 */
+	public function getCategory()
+	{
+		return $this->category;
+	}
+
+	/**
+	 * Sets the value of category.
+	 *
+	 * @param mixed $category the category
+	 *
+	 * @return self
+	 */
+	public function setCategory($category)
+	{
+		$this->category = $category;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of shortDescription.
+	 *
+	 * @return mixed
+	 */
+	public function getShortDescription()
+	{
+		return $this->shortDescription;
+	}
+
+	/**
+	 * Sets the value of shortDescription.
+	 *
+	 * @param mixed $shortDescription the short description
+	 *
+	 * @return self
+	 */
+	public function setShortDescription($shortDescription)
+	{
+		$this->shortDescription = $shortDescription;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of description.
+	 *
+	 * @return mixed
+	 */
+	public function getDescription()
+	{
+		return $this->description;
+	}
+
+	/**
+	 * Sets the value of description.
+	 *
+	 * @param mixed $description the description
+	 *
+	 * @return self
+	 */
+	public function setDescription($description)
+	{
+		$this->description = $description;
+
+		return $this;
+	}
+
+	/**
+	 * Adds a unit to the Unit Collection
+	 *
+	 * @param Unit\Unit $unit Unit to add
+	 *
+	 * @return Product
+	 */
+	public function addUnit(Unit\Unit $unit)
+	{
+		$this->_units->add($unit);
+
+		return $this;
+	}
+
+	/**
+	 * Sets the value of type.
+	 *
+	 * @param mixed $type the type
+	 *
+	 * @return self
+	 */
+	public function setType(ProductType $type)
+	{
+		$this->type = $type;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the value of displayName.
+	 *
+	 * @return mixed
+	 */
+	public function getDisplayName()
+	{
+		return $this->displayName;
+	}
+
+	/**
+	 * Gets the tax strategy in use on this product
+	 *
+	 * @return Tax\Strategy\TaxStrategyInterface The strategy in use
+	 */
+	public function getTaxStrategy()
+	{
+		return $this->_taxStrategy;
+	}
+
+	/**
+	 * @param $exportCode
+	 */
+	public function setExportCode($exportCode)
+	{
+		$exportCode = (string) $exportCode;
+
+		if ('' !== $exportCode) {
+			$this->_exportCode = $exportCode;
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getExportCode()
+	{
+		return $this->_exportCode;
 	}
 }

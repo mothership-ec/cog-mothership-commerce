@@ -32,7 +32,7 @@ class ApparelProductType implements ProductTypeInterface
 		return 'A wearable item e.g. clothing';
 	}
 
-	public function setFields(Factory $factory)
+	public function setFields(Factory $factory, Product $product = null)
 	{
 		$factory->add($factory->getField('text', 'year', 'Year'));
 
@@ -51,7 +51,7 @@ class ApparelProductType implements ProductTypeInterface
 
 	public function getProductDisplayName(Product $product)
 	{
-		return $product->getDetails()->brand . ' - ' . $product->name;
+		return $product->brand . ' - ' . $product->name;
 	}
 
 	protected function _getSeasons()

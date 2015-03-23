@@ -33,22 +33,19 @@ class MusicProductType implements ProductTypeInterface
 
 	public function getProductDisplayName(Product $product)
 	{
-		return $product->getDetails()->artist . ' - ' . $product->getDetails()->title;
+		if ($product->getDetails()->artist && $product->getDetails()->title) {
+			return $product->getDetails()->artist . ' - ' . $product->getDetails()->title;
+		} else {
+			return $product->displayName ?: $product->name;
+		}
 	}
 
 	public function setFields(Factory $factory, Product $product = null)
 	{
 		$factory->add($factory->getField('datalist', 'artist', 'Artist')->setFieldOptions([
-			'choices'	  => $this->_getArtists(),
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
+			'choices'	  => $this->_getArtists()
 		]));
-		$factory->add($factory->getField('text', 'title', 'Title')->setFieldOptions([
-			'constraints' => [
-				new Constraints\NotBlank,
-			],
-		]));
+		$factory->add($factory->getField('text', 'title', 'Title'));
 		$factory->add($factory->getField('datalist', 'label', 'Label')->setFieldOptions([
 			'choices'	=> $this->_getLabels(),
 		]));

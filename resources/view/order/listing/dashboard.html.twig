@@ -4,7 +4,7 @@
 	<div class="dashboard">
 		<div class="modules">
 			{% for reference in dashboardReferences %}
-				{{ render(controller(reference)) }}
+				{{ render(controller(reference.reference, reference.params)) }}
 			{% endfor %}
 		</div>
 	</div>

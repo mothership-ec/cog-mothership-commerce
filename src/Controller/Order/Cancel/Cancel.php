@@ -106,6 +106,7 @@ class Cancel extends Controller
 					$payable = new Order\CancellationRefund($this->_order);
 
 					$payable->setPayableAmount($refundAmount);
+					$payable->setTax($this->_order->totalTax);
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
@@ -131,6 +132,7 @@ class Cancel extends Controller
 			'order'         => $this->_order,
 			'form'          => $form,
 			'refundAmount'  => $refundAmount,
+			'currency'      => $this->_order->currencyID,
 			'title'         => 'Cancel Order',
 			'refundable'    => $refundable,
 		]);
@@ -204,6 +206,7 @@ class Cancel extends Controller
 				if ($refundable && true === $form->get('refund')->getData()) {
 					$payable = new Order\CancellationRefund($this->_order);
 					$payable->setPayableAmount($item->gross);
+					$payable->setTax($item->getTax());
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
@@ -230,6 +233,7 @@ class Cancel extends Controller
 			'item'                => $item,
 			'form'                => $form,
 			'refundAmount'        => $item->gross,
+			'currency'            => $this->_order->currencyID,
 			'title'               => 'Cancel Item',
 			'lastUncancelledItem' => $lastUncancelledItem,
 			'refundable'          => $refundable,

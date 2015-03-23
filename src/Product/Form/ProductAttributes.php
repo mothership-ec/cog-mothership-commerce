@@ -3,18 +3,12 @@
 namespace Message\Mothership\Commerce\Product\Form;
 
 use Message\Cog\Form\Handler;
-use Message\Mothership\Commerce\Product\Product;
+use Message\Mothership\Commerce\Product;
 
 class ProductAttributes extends Handler
 {
-	public function build(Product $product)
+	public function build(Product\Product $product)
 	{
-		/**
-		 * So I copied the fields for this form from somewhere else and foudn that category wasn't autoloading and
-		 * that confused the hell out of me. Well, it turns out that you can add a default value using 'data'!
-		 *
-		 * The More You Know!
-		 */
 		$this->setName('product-details-edit')
 			->setAction($this->_container['routing.generator']
 				->generate('ms.commerce.product.edit.attributes.action', array('productID' => $product->id))
@@ -32,6 +26,7 @@ class ProductAttributes extends Handler
 			'attr' => array('data-help-key' => 'ms.commerce.product.attributes.display-name.help')
 		))
 			->val()
+			->optional()
 			->maxLength(255);
 		$this->add('sort_name', 'text', $this->_trans('ms.commerce.product.attributes.sort-name.label'), array(
 			'data' => $product->sortName,
@@ -70,6 +65,18 @@ class ProductAttributes extends Handler
 		))
 			->val()
 			->optional();
+		$this->add(
+			'export_code',
+			'text',
+			$this->_container['translator']->trans('ms.commerce.product.details.export-code.label'),
+			[
+				'data' => $product->getExportCode(),
+				'attr' => ['data-help-key' => 'ms.commerce.product.details.export-code.help']
+			]
+		)
+			->val()
+			->optional()
+		;
 		$this->add('supplier_ref', 'text', $this->_trans('ms.commerce.product.details.supplier-ref.label'), array(
 			'data' => $product->supplierRef,
 			'attr' => array('data-help-key' => 'ms.commerce.product.details.supplier-ref.help')
@@ -126,13 +133,12 @@ class ProductAttributes extends Handler
 
 	protected function _getBrands()
 	{
-		$result	= $this->_container['db.query']->run("
-			SELECT DISTINCT
-				brand
-			FROM
-				product
-		");
-
-		return $result->flatten();
+		return $this->_container['db.query.builder.factory']
+			->getQueryBuilder()
+			->select('brand', true)
+			->from('product')
+			->getQuery()
+			->run()
+			->flatten();
 	}
 }

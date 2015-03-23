@@ -59,17 +59,18 @@ class Create
 		]);
 
 		$unitID = $result->id();
+		$unit->sku = $unit->sku ?: $unitID;
 
 		$this->_query->run(
 			'INSERT INTO
 				product_unit_info
 			SET
-				unit_id     = ?i,
+				unit_id     = :unitID?i,
 				revision_id = 1,
-				sku         = ?s',
+				sku         = :sku?s',
 			array(
-				$unitID,
-				$unit->sku,
+				'unitID' => $unitID,
+				'sku'    => $unit->sku ?: $unitID,
 		));
 
 		foreach ($unit->options as $name => $value) {
@@ -90,9 +91,9 @@ class Create
 
 		$unit->id = $unitID;
 
-		$unit = $this->_savePrices($unit);
+		$this->_savePrices($unit);
 
-		return $unit ? $unit : false;
+		return $unit;
 	}
 
 	protected function _savePrices(Unit $unit)
@@ -101,17 +102,26 @@ class Create
 		$inserts = array();
 
 		foreach ($unit->price as $type => $price) {
+			$currencies = $price->getCurrencies();
 
-			if ($unit->price[$type]->getPrice('GBP', $this->_locale) === 0) {
-				continue;
+			foreach($currencies as $currency) {
+
+				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
+
+				// If the unit price is equal to the product price then we don't
+				// need to add a row, and same if the price is zero
+				if ($unitPrice === 0 || $unitPrice === null || $unitPrice == $productPrice ) {
+					continue;
+				}
+
+				$options[] = $unit->id;
+				$options[] = $type;
+				$options[] = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$options[] = $currency;
+				$options[] = $this->_locale->getID();
+				$inserts[] = '(?i,?s,?s,?s,?s)';
 			}
-
-			$options[] = $unit->id;
-			$options[] = $type;
-			$options[] = $unit->price[$type]->getPrice('GBP', $this->_locale);
-			$options[] = 'GBP';
-			$options[] = $this->_locale->getID();
-			$inserts[] = '(?i,?s,?s,?s,?s)';
 		}
 		if ($options) {
 			$result = $this->_query->run(

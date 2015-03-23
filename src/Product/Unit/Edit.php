@@ -122,26 +122,34 @@ class Edit implements DB\TransactionalInterface
 
 		$options = array();
 		$inserts = array();
+
 		foreach ($unit->price as $type => $price) {
-			$unitPrice    = $unit->price[$type]->getPrice('GBP', $this->_locale);
-			$productPrice = $unit->product->getPrices()[$type]->getPrice('GBP', $this->_locale);
+			$currencies = $price->getCurrencies();
+			foreach($currencies as $currency) {
+				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
 
-			// If the unit price is equal to the product price then we don't
-			// need to add a row, and same if the price is zero
-			if ($unitPrice === 0 || $unitPrice == $productPrice ) {
-				continue;
+				$unitPrice    = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$productPrice = $unit->product->getPrices()[$type]->getPrice($currency, $this->_locale);
+
+				// If the unit price is equal to the product price then we don't
+				// need to add a row, and same if the price is zero
+				if ($unitPrice === 0 || $unitPrice === null || $unitPrice == $productPrice ) {
+					continue;
+				}
+
+				$options[] = $unit->id;
+				$options[] = $type;
+				$options[] = $unit->price[$type]->getPrice($currency, $this->_locale);
+				$options[] = $currency;
+				$options[] = $this->_locale->getID();
+				$inserts[] = '(?i,?s,?s,?s,?s)';
 			}
-
-			$options[] = $unit->id;
-			$options[] = $type;
-			$options[] = $unit->price[$type]->getPrice('GBP', $this->_locale);
-			$options[] = 'GBP';
-			$options[] = $this->_locale->getID();
-			$inserts[] = '(?i,?s,?s,?s,?s)';
 		}
 
 		if ($options) {
 			$result = $this->_query->run(
+				// replace into won't work
 				'REPLACE INTO
 					product_unit_price
 					(
@@ -162,13 +170,8 @@ class Edit implements DB\TransactionalInterface
 
 	public function saveStock(Unit $unit)
 	{
-		$currentUnit = $this->_loader->includeInvisible(true)->includeOutOfStock(true)->getByID($unit->id, $unit->product);
-
 		foreach($unit->stock as $location => $stock) {
-			// just update it if the stock-level has actually changed
-			if(!array_key_exists($location, $unit->stock) || $stock != $unit->stock[$location]) {
-				$this->_saveStockLevel($unit->id, $location, $stock);
-			}
+			$this->_saveStockLevel($unit->id, $location, $stock);
 		}
 	}
 
