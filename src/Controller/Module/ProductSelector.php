@@ -30,7 +30,7 @@ class ProductSelector extends Controller
 	 *                                      
 	 * @return Message\Cog\HTTP\Response    Response object
 	 */
-	public function index(Product $product, array $options = [], $showVariablePricing = false)
+	public function index(Product $product, array $options = [], $showVariablePricing = false, $showQuantitySelector = false)
 	{
 		$options  = array_filter($options);
 		$units    = $this->_getAvailableUnits($product, $options);
@@ -46,7 +46,7 @@ class ProductSelector extends Controller
 		return $this->render('Message:Mothership:Commerce::product:product-selector', array(
 			'product'     => $product,
 			'units'       => $units,
-			'form'        => $this->_getForm($product, $options, $showVariablePricing),
+			'form'        => $this->_getForm($product, $options, $showVariablePricing, $showQuantitySelector),
 		));
 	}
 
@@ -58,28 +58,37 @@ class ProductSelector extends Controller
 		if ($form->isValid() && $data = $form->getFilteredData()) {
 			$basket   = $this->get('basket');
 			$unit     = $product->getUnit($data['unit_id']);
-			$item     = new Order\Entity\Item\Item;
 
-			$item->order         = $basket->getOrder();
-			$item->stockLocation = $this->get('stock.locations')->get('web');
-			$item->populate($unit);
+			$fail = false;
+			for($i = 0; $i < $data['quantity']; ++$i) {
+				$item     = new Order\Entity\Item\Item;
+				$item->order         = $basket->getOrder();
+				$item->stockLocation = $this->get('stock.locations')->get('web');
+				$item->populate($unit);
 
-			$item = $this->get('event.dispatcher')->dispatch(
-				Events::PRODUCT_SELECTOR_PROCESS,
-				new Event\ProductSelectorProcessEvent($form, $product, $item)
-			)->getItem();
+				$item = $this->get('event.dispatcher')->dispatch(
+					Events::PRODUCT_SELECTOR_PROCESS,
+					new Event\ProductSelectorProcessEvent($form, $product, $item)
+				)->getItem();
 
-			if ($basket->addItem($item)) {
-				$this->addFlash('success', 'The item has been added to your basket');
-			} else {
-				$this->addFlash('error', 'The item could not be added to your basket');
+				if (!$basket->addItem($item)) {
+					$this->addFlash('error', 'An item could not be added to your basket');
+					$fail = true;
+					break;
+				}
+
 			}
+
+			if (!$fail) {
+				$this->addFlash('success', 'Item added to basket');
+			}
+
 		}
 
 		return $this->redirectToReferer();
 	}
 
-	protected function _getForm(Product $product, array $options = [], $showVariablePricing = false)
+	protected function _getForm(Product $product, array $options = [], $showVariablePricing = false, $showQuantitySelector = false)
 	{
 		$form = $this->get('form')
 			->setName('select_product')
@@ -106,13 +115,22 @@ class ProductSelector extends Controller
 			]);
 		// Otherwise, add a select box to select the unit
 		} else {
-			$form->add('unit_id', new ProductUnitInStockOnlyChoiceType, $this->trans('ms.commerce.product.selector.unit.label'), [
+			$form->add('unit_id', 'unit_choice', $this->trans('ms.commerce.product.selector.unit.label'), [
 				'choices'      => $choices,
 				'units'        => $units,
 				'oos'          => array_keys($oosUnits),
 				'empty_value'  => $this->trans('ms.commerce.product.selector.unit.label'),
 				'show_pricing' => $showVariablePricing && $product->hasVariablePricing(),
 			]);
+		}
+
+		if ($showQuantitySelector) {
+			$form->add('quantity', 'choice', null, [
+				'data'    => 1,
+				'choices' => array_combine(range(1, 10), range(1, 10)),
+			]);
+		} else {
+			$form->add('quantity', 'hidden', null, ['data' => 1]);
 		}
 
 		$form = $this->get('event.dispatcher')->dispatch(
