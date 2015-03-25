@@ -40,5 +40,12 @@
 	</div>
 		{{ form_end(form) }}
 
+{% javascripts
+	'@Message:Mothership:Commerce::resources:assets:js:product-image-edit.js'
 
+	output='/assets/js/ms_commerce_product_images-*.js'
+	filter='?jsmin'
+%}
+	<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
 {% endblock %}
