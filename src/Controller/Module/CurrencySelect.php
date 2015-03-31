@@ -37,7 +37,7 @@ class CurrencySelect extends Controller
 
 			$this->get('http.cookies')
 				->add(new Cookie(
-						$this->get('cfg')->currency->cookieName, 
+						$this->get('currency.cookie.name'), 
 						$currency, 
 						date(time() + 9999999))); // dont expire anytime soon
 		}

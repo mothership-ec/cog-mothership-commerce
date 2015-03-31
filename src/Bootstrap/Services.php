@@ -1167,6 +1167,7 @@ class Services implements ServicesInterface
 	public function setupCurrencies($services)
 	{
 		$services['currency'] = function($c) {
+			de($c['currency.resolver']->getCurrency());
 			return $c['currency.resolver']->getCurrency();
 		};
 
@@ -1193,7 +1194,7 @@ class Services implements ServicesInterface
 			$sessionNamespace = $c['cfg']->app->sessionNamespace;
 
 			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->cookieName)) || $default === $c['cfg']->currency->cookieName) {
-				return $sessionNamespace . '.' . $default;
+				return $sessionNamespace . '_' . $default;
 			}
 
 			return $c['cfg']->currency->cookieName;
