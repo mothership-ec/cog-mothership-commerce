@@ -1167,7 +1167,6 @@ class Services implements ServicesInterface
 	public function setupCurrencies($services)
 	{
 		$services['currency'] = function($c) {
-			de($c['currency.resolver']->getCurrency());
 			return $c['currency.resolver']->getCurrency();
 		};
 
