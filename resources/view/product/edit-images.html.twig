@@ -17,7 +17,7 @@
 						<dd>{{ image.type }}</dd>
 						{% if image.options %}
 						{% for key, value in image.options %}
-							<dt>{{ key }}</dt>
+							<dt>{{ key | capitalize }}</dt>
 							<dd>{{ value }}</dd>
 						{% endfor %}
 						{% endif %}
