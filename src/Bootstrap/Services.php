@@ -524,6 +524,10 @@ class Services implements ServicesInterface
 			return $c['product.loader']->getEntityLoader('images');
 		});
 
+		$services['product.image.form.delete'] = $services->factory(function($c) {
+			return new Commerce\Form\Product\Image\Delete;
+		});
+
 		$services['product.unit.loader'] = $services->factory(function($c) {
 			return $c['product.loader']->getEntityLoader('units');
 		});
@@ -1189,8 +1193,11 @@ class Services implements ServicesInterface
 		});
 
 		$services['currency.cookie.name'] = function($c) {
-			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->cookieName))) {
-				return 'ms.commerce.currency';
+			$default = 'ms-commerce-currency';
+			$sessionNamespace = $c['cfg']->app->sessionNamespace;
+
+			if(!(isset($c['cfg']->currency) && isset($c['cfg']->currency->cookieName)) || $default === $c['cfg']->currency->cookieName) {
+				return $sessionNamespace . '_' . $default;
 			}
 
 			return $c['cfg']->currency->cookieName;

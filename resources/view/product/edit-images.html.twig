@@ -6,9 +6,22 @@
 			<h2>{{ type }}</h2>
 			{% for image in imgs %}
 			<div class="product-image">
+				<div class="close">
+					{{ render(controller('Message:Mothership:Commerce::Controller:Product:Edit#deleteImageForm', {imageID: image.id})) }}
+				</div>
 				{{ getResizedImage(image, 200, 200) }}
 				<div class="file-overlay">
 					{{ image.file.name }}
+					<dl>
+						<dt>Image Type</dt>
+						<dd>{{ image.type }}</dd>
+						{% if image.options %}
+						{% for key, value in image.options %}
+							<dt>{{ key | capitalize }}</dt>
+							<dd>{{ value }}</dd>
+						{% endfor %}
+						{% endif %}
+					</dl>
 				</div>
 			</div>
 		{% endfor %}
@@ -26,6 +39,4 @@
 
 	</div>
 		{{ form_end(form) }}
-
-
 {% endblock %}

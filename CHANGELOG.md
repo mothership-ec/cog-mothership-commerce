@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.2.0
+
+- Added functionality to see which product options are assigned to an image
+- Added functionality to delete an image from a product
+- Currency cookies are namespaced if set to `ms-commerce-currency` in the config file
+- Fixed issue where the Payment screen in the order overview would break if there was a payment against a return
+
 ## 5.1.0
 
 - Quantity selector available on product selector

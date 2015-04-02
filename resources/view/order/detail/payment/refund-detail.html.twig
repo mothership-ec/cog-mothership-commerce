@@ -19,7 +19,7 @@
 			<dt>{{ 'ms.commerce.order.refund.payment'|trans }}</dt>
 				<dd>
 					{% if refund.refund.payment %}
-						#{{ refund.refund.payment }}
+						#{{ refund.refund.payment.id }}
 					{% else %}
 						<em>Unknown</em>
 					{% endif %}
