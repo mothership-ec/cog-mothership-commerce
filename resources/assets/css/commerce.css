@@ -1,0 +1,317 @@
+/* Products
+------------------------------------------------------------ */
+
+
+
+.container-content.products {
+	float: left;
+	padding-right: 0;
+	width: 100%;
+}
+
+
+
+/* Create product */
+
+
+
+.create-product button {
+	position: fixed;
+	top: 80px;
+	right: 14px;
+	z-index: 11;
+}
+
+.create-product .currency-units {
+	display: block;
+	margin-top: 20px;
+}
+
+.positive {
+	color: #3fa262;
+}
+
+.negative {
+	color: #d84939;
+}
+
+.stock-total {
+	font-weight: bold;
+}
+
+.unit-count {
+	margin-right: 10px;
+}
+
+.variants  {
+	position: relative;
+	overflow: hidden;
+	clear: both;
+}
+
+.variant-field {
+	position: relative;
+	float: left;
+	clear: left;
+	margin-right: 20px;
+	background: #fff;
+	border-radius: 2px;
+	padding: 10px 30px 10px 10px;
+	margin: 0 0 20px 0;
+	width: 90%;
+}
+
+.variant-field input {
+	width: 80%;
+	max-width: 80%;
+}
+
+.variant-field div {
+	margin: 0;
+}
+
+.variant-field .button-cancel {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	padding: 5px;
+}
+
+.variant-field .button-cancel:before {
+	margin-right: 0px;
+}
+
+.variant-options {
+	float: left;
+	position: relative;
+	padding-bottom: 50px;
+}
+
+.variant-options .select2-container,
+.variant-options input {
+	float: left;
+}
+
+.variant-options .help {
+	width: 10px;
+	margin: 10px;
+}
+
+.variant-options .help .description {
+	min-width: 400px;
+}
+
+
+.add-variant {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+
+.variants .options {
+	float: right;
+	background: #FAFAFA;
+	border: 1px solid #CCC;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 20px;
+	margin-bottom: 20px;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+
+}
+
+.variants .options .field-wrap {
+	position: relative;
+}
+
+.variants .options .field {
+	width: 45%;
+}
+
+.variants .options ul {
+	border-bottom: 1px solid #CCC;
+	float: left;
+	width: 100%;
+}
+
+.variants .options li {
+	float: left;
+	height: 60px;
+	width: 100%;
+	border: 1px solid #CCC;
+	border-bottom: none;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 10px;
+	background: #FFF;
+	position: relative;
+	line-height: 40px;
+}
+
+.variants .options li label,
+.variants .options li input {
+	width: auto;
+	float: none;
+	display: inline-block;
+	position: relative;
+	right: 0;
+}
+
+.variants .options li input {
+	width: 100px;
+}
+
+.variants .options fieldset {
+	border: none;
+	float: right;
+	margin-right: 40px;
+}
+
+.variants .options .remove {
+	position: absolute;
+	top: 40px;
+	right: 8px;
+	text-decoration: none;
+	background: none;
+	text-shadow: none;
+	color: #900;
+	font-size: 26px;
+	border: none;
+	box-shadow: none;
+	opacity: .6;
+}
+
+.variants .options .remove:before {
+	content: '\f00d';
+}
+
+.variants .options .remove:hover {
+	color: #900 !important;
+	opacity: 1;
+}
+
+.variants {
+	display: table;
+	width: 100%;
+}
+
+.variant-options,
+.variants .options {
+	display: table-cell;
+	width: 50%;
+}
+
+.complete-product {
+	position: absolute;
+	z-index: 150;
+	display: table;
+	height: 100%;
+	width: 100%;
+	background: #F1F1F1;
+}
+
+.complete-product .wrap {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.complete-product h1 {
+	text-align: center;
+	border: none;
+	font-size: 40px;
+}
+
+.complete-product .button {
+	clear: both;
+	display: block;
+	margin-bottom: 10px;
+	max-width: 200px;
+	margin: 0 auto 10px;
+}
+
+.hidden {
+	display: none;
+}
+
+.tick {
+	display: block;
+	clear: both;
+	font-size: 72px;
+	background-color: #3fa262;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#3fa262), to(#196d2e));
+	background-image: -webkit-linear-gradient(top, #3fa262, #196d2e);
+	background-image: -moz-linear-gradient(top, #3fa262, #196d2e);
+	background-image: -o-linear-gradient(top, #3fa262, #196d2e);
+	background-image: -ms-linear-gradient(top, #3fa262, #196d2e);
+	background-image: linear-gradient(top, #3fa262, #196d2e);
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-moz-text-fill-color: transparent;
+	text-fill-color: transparent;
+}
+
+.tick:before {
+	font-family: 'FontAwesome';
+	content: "\f00c";
+}
+
+table.products form:after {
+	content: '';
+	margin: 0;
+}
+
+
+
+/* Product images */
+
+
+
+.product-image dl {
+	display: block;
+	clear: both;
+	font-size: 14px;
+}
+
+.product-image dt {
+	font-weight: bold;
+
+}
+
+.product-image dd {
+	margin-bottom: 10px;
+}
+
+.options .group {
+	padding: 20px 0 0 20px;
+}
+
+.listing h2 {
+	width: 100%;
+	clear: both;
+	float: none;
+}
+
+
+
+/* Stock */
+
+
+
+.stock-reason {
+	float: left;
+	margin-bottom: 10px;
+	list-style: none;
+}
+
+.stock-reason li {
+	margin-bottom: 10px;
+}
+
