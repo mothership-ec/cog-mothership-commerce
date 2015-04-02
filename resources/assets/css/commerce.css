@@ -1,14 +1,11 @@
 /* Products
 ------------------------------------------------------------ */
 
-
-
 .container-content.products {
 	float: left;
 	padding-right: 0;
 	width: 100%;
 }
-
 
 
 /* Create product */
@@ -314,4 +311,252 @@ table.products form:after {
 .stock-reason li {
 	margin-bottom: 10px;
 }
+
+/* Orders
+------------------------------------------------------------ */
+
+
+
+/* Sidebar */
+
+
+
+.order-overview {
+	float: left;
+	font-size: 16px;
+}
+
+.order-overview h2 {
+	color: #FFF;
+}
+
+.order-overview ul {
+	float: left;
+	padding-top: 20px;
+	list-style: none;
+}
+
+.order-overview li {
+	float: left;
+	margin-bottom: 20px;
+	margin-left: 25px;
+	width: 200px;
+}
+
+.order-overview span {
+	display: block;
+	margin-bottom: 5px;
+	width: 100%;
+	color: #AAA;
+	white-space: nowrap;
+	font-family:'Proxima N W15 Reg It', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+
+
+/* Fulfillment */
+
+
+
+.fulfillment ul {
+	float: left;
+	margin: 0px 0px 10px 0px;
+	width: 100%;
+}
+
+.fulfillment li {
+	float: left;
+	margin-bottom: 10px;
+	width: 100%;
+	list-style-type: none;
+	font-size: 15px;
+}
+
+.fulfillment form {
+	width: 100%;
+}
+
+.fulfillment .repeatable-group {
+	margin-top: 10px;
+	width: 30%;
+}
+
+.fulfillment .address p {
+ 	padding: 0px 20px;
+}
+
+.fulfillment .address a.amend {
+	display: block;
+	float: left;
+	margin: 20px;
+}
+
+.fulfillment .button {
+	margin-bottom: 30px;
+}
+
+.pick-list {
+	margin: 0 0 20px 0;
+}
+
+.pick-list input {
+	margin: 0px;
+
+}
+
+.pick-list .image img {
+	position: absolute;
+	float: left;
+}
+
+.pick-list .image h3 {
+	margin: 0 0 5px 120px;
+	min-height: 100px;
+	width: auto;
+	border-bottom: none;
+	vertical-align: middle;
+}
+
+.pick-list h3 {
+	margin-bottom: 0;
+	border-bottom: none;
+}
+
+.pick-item {
+	text-align: center;
+}
+
+
+.fulfillment .field {
+	margin-bottom: 10px;
+}
+
+.adr-line {
+	margin-bottom: 0;
+}
+
+.adr-line span {
+	display: block;
+	clear: both;
+	margin-bottom: 10px;
+}
+
+td.complete {
+	background: #c9e5c9 !important;
+}
+
+td.partial {
+	background: #fed779 !important;
+}
+
+
+
+/* Orders */
+
+
+
+.summary {
+	display: inline-block;
+	width: 100%;
+}
+
+.order-listing-overview {
+	text-align: center;
+}
+
+.order-listing-overview td {
+	z-index: 0;
+	padding-right: 20px;
+	text-align: right;
+}
+
+.order-listing-overview .left {
+	text-align: left;
+}
+
+.order-listing-overview .center {
+	text-align: center;
+}
+
+.order-details {
+	float: left;
+	margin: 0 0 20px 0;
+	width: 100%;
+	list-style: none;
+}
+
+.order-details li {
+	margin-bottom: 10px;
+	padding-left: 150px;
+	min-height: 20px;
+	font-size: 15px;
+}
+
+.order-details li em {
+	font-size: smaller;
+}
+
+.order-details span {
+	display: block;
+	float: left;
+	margin-left: -150px;
+	width: 150px;
+	font-weight: normal;
+	font-family:'Proxima N W15 Smbd', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+}
+
+ol.order-details li {
+	list-style-type: decimal;
+}
+
+.order-summary h2 {
+	position: relative;
+	z-index: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0 0 20px 0;
+	padding: 20px 20px 12px 20px;
+	width: 100%;
+	border-top: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+	background: none;
+	background-color: #f9f9f9;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#f1f1f1));
+	background-image: -webkit-linear-gradient(top, #f9f9f9, #f1f1f1);
+	background-image: -moz-linear-gradient(top, #f9f9f9, #f1f1f1);
+	background-image: -o-linear-gradient(top, #f9f9f9, #f1f1f1);
+	background-image: -ms-linear-gradient(top, #f9f9f9, #f1f1f1);
+	background-image: linear-gradient(top, #f9f9f9, #f1f1f1);
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	font-size: 1em;
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#f9f9f9', EndColorStr='#f1f1f1');
+}
+
+.progress tr:first-child {
+	font-weight: bold;
+}
+
+.total-summary th {
+	padding: 12px 15px 10px;
+	border-top: 1px solid #CCC;
+	border-left: 1px solid #CCC;
+	background: #FFF;
+	-webkit-box-shadow: inset 1px 1px 0 #FFF;
+	-moz-box-shadow: inset 1px 1px 0 #FFF;
+	box-shadow: inset 1px 1px 0 #FFF;
+	vertical-align: middle;
+	text-align: right;
+	text-align: right;
+	font-weight: normal;
+	font-family: 'Proxima N W15 Reg', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.total-summary td {
+	background: #FFF !important;
+}
+
 
