@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.1
+
+- Updated CP requirement to 3.2
+
 ## 5.2.0
 
 - Added functionality to see which product options are assigned to an image
