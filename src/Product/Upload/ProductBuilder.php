@@ -89,16 +89,27 @@ class ProductBuilder
 
 	public function build(array $data)
 	{
-		if (!$this->_validator->validateRow($data)) {
-			throw new Exception\UploadException('Row is not valid!');
+		try {
+			if (!$this->_validator->validateRow($data)) {
+				throw new Exception\UploadException('Row is not valid!');
+			}
+
+			$this->_addProductType($data);
+			$this->_addAuthorship();
+			$this->_addData($data);
+			$this->_setPrices($data);
+
+			return $this->_product;
+		} catch (\Exception $e) {
+			$this->_validator->invalidateRow($data);
+
+			$key = $this->_headingKeys->getKey('name');
+			if (array_key_exists($key, $data)) {
+				throw new Exception\UploadFrontEndException('Could not create product `' . $data[$key] . '`');
+			}
+
+			throw new Exception\UploadException('Could not create product from given data');
 		}
-
-		$this->_addProductType($data);
-		$this->_addAuthorship();
-		$this->_addData($data);
-		$this->_setPrices($data);
-
-		return $this->_product;
 	}
 
 	private function _addAuthorship()

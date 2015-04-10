@@ -67,6 +67,17 @@ class Validate
 		return $this->_invalidRows;
 	}
 
+	public function invalidateRow(array $row)
+	{
+		$key = array_search($row, $this->_validRows);
+
+		if ($key) {
+			unset($this->_validRows[$key]);
+		}
+
+		$this->_invalidRows[] = $row;
+	}
+
 	private function _clear()
 	{
 		$this->_validRows   = [];
