@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.2
+
+- Fix issue where all products in dashboard are loaded on AJAX requests
+
 ## 5.2.1
 
 - Updated CP requirement to 3.2
