@@ -108,7 +108,7 @@ class ProductBuilder
 				throw new Exception\UploadFrontEndException('Could not create product `' . $data[$key] . '`');
 			}
 
-			throw new Exception\UploadException('Could not create product from given data');
+			throw $e;
 		}
 	}
 
