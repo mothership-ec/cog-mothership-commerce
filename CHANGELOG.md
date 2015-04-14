@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.2.3
+
+- Exceptions are caught more gracefully when creating a product via the CSV if a value cannot be set against a field on the product
+- Added `invalidateRow()` method to `Product\Upload\Validate` for redeclaring a valid row of a CSV as invalid
+
 ## 5.2.2
 
 - Fix issue where all products in dashboard are loaded on AJAX requests
