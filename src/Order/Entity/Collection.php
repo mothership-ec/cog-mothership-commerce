@@ -77,9 +77,10 @@ class Collection implements CollectionInterface
 	 */
 	public function remove($entity)
 	{
+		$entity = ($entity instanceof EntityInterface) ? (int) $entity->id : (int) $entity;
+
 		foreach ($this->_items as $key => $item) {
-			if (($entity instanceof EntityInterface && $entity === $item)
-			 || $item->id == $entity) {
+			if ((int) $item->id === $entity) {
 				unset($this->_items[$key]);
 
 				return true;
