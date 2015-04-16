@@ -148,8 +148,4 @@ class CsvPort extends Controller
 		));
 	}
 
-	private function _renderPreview(array $data)
-	{
-
-	}
 }
