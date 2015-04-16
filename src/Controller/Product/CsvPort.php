@@ -39,12 +39,12 @@ class CsvPort extends Controller
 			$this->get('product.upload.validator')->validate($data);
 			$validRows = $this->get('product.upload.validator')->getValidRows();
 
-			if (empty($validRows)) {
+			$invalidRows = $this->get('product.upload.validator')->getInvalidRows();
+
+			if (empty($validRows) && empty($invalidRows)) {
 				$this->addFlash('error', $this->trans('ms.commerce.product.upload.no-valid-rows'));
 				return $this->redirectToReferer();
 			}
-
-			$invalidRows = $this->get('product.upload.validator')->getInvalidRows();
 
 			$productData = $this->get('product.upload.unique_sorter')->sort($validRows);
 

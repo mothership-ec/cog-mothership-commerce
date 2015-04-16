@@ -175,7 +175,7 @@ ms.commerce:
         upload_field: Upload
       success: '{0}%productCount% products created and %unitCount% units created|{1}%productCount% product created and %unitCount% units created|{2}%productCount% products created and %unitCount% unit created|{3}%productCount% product created and %unitCount% unit created'
       description: The upload CSV function will create products based on the data that has been uploaded. Please ensure that this data is correct. It will check which columns have been filled and attempt to work out the product type based on that information.
-      no-valid-rows: Could not detect any valid rows. Note that when exporting the CSV via your spreadsheet software, you must select UTF-8 as the character encoding format. Unfortunately, this is not currently supported by the OS X version of Microsoft Excel.
+      no-valid-rows: Could not detect any rows. Note that when exporting the CSV via your spreadsheet software, you must select UTF-8 as the character encoding format. Unfortunately, this is not currently supported by the OS X version of Microsoft Excel.
       csv:
         # these names need to match
         name:
