@@ -67,6 +67,24 @@ abstract class AbstractSales extends AbstractReport
 			true
 		));
 	}
+	/**
+	 * Retrieves JSON representation of the data and columns.
+	 * Applies data to chart types set on report.
+	 *
+	 * @return Array  Returns all types of chart set on report with appropriate data.
+	 */
+	public function getCharts()
+	{
+		$data = $this->_dataTransform($this->_getQuery()->run(), "json");
+		$columns = $this->_parseColumns($this->getColumns());
+
+		foreach ($this->_charts as $chart) {
+			$chart->setColumns($columns);
+			$chart->setData($data);
+		}
+
+		return $this->_charts;
+	}
 
 	/**
 	 * Get the filtered bas query
