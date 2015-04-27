@@ -2,14 +2,14 @@
 
 namespace Message\Mothership\Commerce\Order\EventListener;
 
-use Message\Cog\HTTP\RedirectResponse;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
+use Message\Mothership\Commerce\Order\Exception as OrderException;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
-use Message\Mothership\Commerce\Product\Tax\Exception;
+use Message\Mothership\Commerce\Product\Tax\Exception as ProductException;
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
 
@@ -73,7 +73,7 @@ class TotalsListener extends BaseListener implements SubscriberInterface
 			$address = $order->getAddress(Address::DELIVERY);
 
 			if (!$address) {
-				throw new \LogicException('Could not load delivery address for order');
+				throw new OrderException\UpdateFailedException('Could not load delivery address for order');
 			}
 
 			$taxRates = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $address);
@@ -82,7 +82,7 @@ class TotalsListener extends BaseListener implements SubscriberInterface
 				$rates[$rate->getType()] = $rate->getRate();
 			}
 			$order->setShippingTaxes($rates);
-		} catch (Exception\TaxRateNotFoundException $e) {
+		} catch (ProductException\TaxRateNotFoundException $e) {
 			// If not then no shipping tax rates set in cfg.
 			// Revert to old logic.
 			$rate = [];
@@ -92,7 +92,7 @@ class TotalsListener extends BaseListener implements SubscriberInterface
 				}
 			}
 			$order->setShippingTaxes($rate);
-		} catch (\LogicException $e) {
+		} catch (OrderException\UpdateFailedException $e) {
 			$this->get('event.dispatcher')->dispatch(
 				OrderEvents::UPDATE_FAILED,
 				new Event\UpdateFailedEvent($order)
