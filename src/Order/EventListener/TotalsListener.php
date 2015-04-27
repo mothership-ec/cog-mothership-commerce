@@ -7,6 +7,7 @@ use Message\Mothership\Commerce\Order\Event;
 
 use Message\Cog\Event\SubscriberInterface;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
+use Message\Mothership\Commerce\Product\Tax\Exception;
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
 
@@ -35,7 +36,7 @@ class TotalsListener implements SubscriberInterface
 				array('setTotals', -900),
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
-				array('calculateShippingTax'),
+				array('calculateShippingTax', -800),
 				array('setTotals', -900),
 			),
 		);
@@ -54,6 +55,7 @@ class TotalsListener implements SubscriberInterface
 	public function calculateShippingTax(Event\Event $event)
 	{
 		$order = $event->getOrder();
+		$address = $order->getAddress(Address::DELIVERY);
 
 		if (!$order->shippingListPrice) {
 			$order->shippingGross = 0;
@@ -67,7 +69,7 @@ class TotalsListener implements SubscriberInterface
 
 		// This should always work with a proper tax rate cfg setup.
 		try {
-			$taxRates    = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $order->getAddress(Address::DELIVERY));
+			$taxRates = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $address);
 			$rates = [];
 			foreach ($taxRates as $rate) {
 				$rates[$rate->getType()] = $rate->getRate();
@@ -76,7 +78,7 @@ class TotalsListener implements SubscriberInterface
 		}
 		// If not then no shipping tax rates set in cfg.
 		// Revert to old logic.
-		catch (\LogicException $e) {
+		catch (Exception\TaxRateNotFoundException $e) {
 			$rate = [];
 			foreach ($order->items as $item) {
 				if ($item->taxRate > $order->shippingTaxRate) {
