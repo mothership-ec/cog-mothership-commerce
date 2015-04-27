@@ -89,12 +89,7 @@ class SalesByOrder extends AbstractSales
 	 */
 	protected function _getQuery()
 	{
-		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
-
-		$fromQuery = $this->_builderFactory->getQueryBuilder();
-		foreach($unions as $query) {
-			$fromQuery->unionAll($query);
-		}
+		$fromQuery = $this->_getFilteredQuery();
 
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$queryBuilder

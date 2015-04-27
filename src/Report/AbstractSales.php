@@ -69,6 +69,23 @@ abstract class AbstractSales extends AbstractReport
 	}
 
 	/**
+	 * Get the filtered bas query
+	 * @return \Message\Cog\DB\QueryBuilder The base QueryBuilder
+	 */
+	protected function _getFilteredQuery()
+	{
+		$unions = $this->_dispatchEvent($this->getFilters())->getQueryBuilders();
+
+		$fromQuery = $this->_builderFactory->getQueryBuilder();
+
+		foreach($unions as $query) {
+			$fromQuery->unionAll($query);
+		}
+
+		return $fromQuery;
+	}
+
+	/**
 	 * Dispatch event.
 	 *
 	 * @param  FilterCollecion $filters  Any filters to be used in subqueries.
