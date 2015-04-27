@@ -1,5 +1,18 @@
 # Changelog
 
+## 5.3.0
+
+- Fix issue on `Order\Entity\Collection::remove()` method where entity would sometimes be cast as an integer and break
+- Undeprecated `getItems()` method on `Order` class
+- Refactor sales reports to share methods
+- Fix issue where filters did nothing on `Sales by Location` reports
+- Added `TaxRateNotFoundException` to `Product\Tax\Exception` namespace
+- Added `UpdateFailedException` to `Order\Exception` namespace
+- Added `UpdatedFailedEvent` to `Order\Event` namespace
+- The `TaxResolver` class throws a `TaxRateNotFoundException` instead of `LogicException` if tax rate is not set in config
+- The `TotalsListener` catches `TaxRateNotFoundException` instead of `LogicException` to revert to old method of tax calculation (VAT assumption)
+- The `TotalsListener` catches `UpdateFailedException` and dispatches an `UpdateFailedEvent`
+
 ## 5.2.3
 
 - Exceptions are caught more gracefully when creating a product via the CSV if a value cannot be set against a field on the product
