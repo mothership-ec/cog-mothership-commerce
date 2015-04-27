@@ -2,11 +2,14 @@
 
 namespace Message\Mothership\Commerce\Order\EventListener;
 
-use Message\Mothership\Commerce\Order\Events as OrderEvents;
-use Message\Mothership\Commerce\Order\Event;
-
+use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
+
+use Message\Mothership\Commerce\Order\Events as OrderEvents;
+use Message\Mothership\Commerce\Order\Exception as OrderException;
+use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolver as Resolver;
+use Message\Mothership\Commerce\Product\Tax\Exception as ProductException;
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
 
@@ -15,7 +18,7 @@ use Message\Mothership\Commerce\Product\Tax\Resolver\TaxResolverInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class TotalsListener implements SubscriberInterface
+class TotalsListener extends BaseListener implements SubscriberInterface
 {
 	private $_taxResolver;
 
@@ -57,8 +60,8 @@ class TotalsListener implements SubscriberInterface
 
 		if (!$order->shippingListPrice) {
 			$order->shippingGross = 0;
-			$order->shippingTax   = 0;
-			$order->shippingNet   = 0;
+			$order->shippingTax = 0;
+			$order->shippingNet = 0;
 
 			return false;
 		}
@@ -67,16 +70,21 @@ class TotalsListener implements SubscriberInterface
 
 		// This should always work with a proper tax rate cfg setup.
 		try {
-			$taxRates    = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $order->getAddress(Address::DELIVERY));
+			$address = $order->getAddress(Address::DELIVERY);
+
+			if (!$address) {
+				throw new OrderException\UpdateFailedException('Could not load delivery address for order');
+			}
+
+			$taxRates = $taxResolver->getTaxRates(Resolver::DEFAULT_SHIPPING_TAX, $address);
 			$rates = [];
 			foreach ($taxRates as $rate) {
 				$rates[$rate->getType()] = $rate->getRate();
 			}
 			$order->setShippingTaxes($rates);
-		}
-		// If not then no shipping tax rates set in cfg.
-		// Revert to old logic.
-		catch (\LogicException $e) {
+		} catch (ProductException\TaxRateNotFoundException $e) {
+			// If not then no shipping tax rates set in cfg.
+			// Revert to old logic.
 			$rate = [];
 			foreach ($order->items as $item) {
 				if ($item->taxRate > $order->shippingTaxRate) {
@@ -84,6 +92,11 @@ class TotalsListener implements SubscriberInterface
 				}
 			}
 			$order->setShippingTaxes($rate);
+		} catch (OrderException\UpdateFailedException $e) {
+			$this->get('event.dispatcher')->dispatch(
+				OrderEvents::UPDATE_FAILED,
+				new Event\UpdateFailedEvent($order)
+			);
 		}
 	}
 

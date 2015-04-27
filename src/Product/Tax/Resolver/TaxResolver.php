@@ -6,6 +6,7 @@ use Message\Mothership\Commerce\Product\Type\ProductTypeInterface;
 use Message\Mothership\Commerce\Address\Address;
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRateCollection;
 use Message\Mothership\Commerce\Product\Tax\Rate\TaxRate;
+use Message\Mothership\Commerce\Product\Tax\Exception;
 
 /**
  * {@inheritDoc}
@@ -45,7 +46,7 @@ class TaxResolver implements TaxResolverInterface
 		// validation
 		if (!isset($data->{$country})) {
 			if (!isset($data->{self::DEFAULT_COUNTRY})){
-				throw new \LogicException("Could not find given country tax configuration for country `$country` and no default set, make sure these are set in taxes config file");
+				throw new Exception\TaxRateNotFoundException("Could not find given country tax configuration for country `$country` and no default set, make sure these are set in taxes config file");
 			}
 
 			$country = self::DEFAULT_COUNTRY;
@@ -53,7 +54,7 @@ class TaxResolver implements TaxResolverInterface
 
 		if (!property_exists($data->{$country}, $region)) {
 			if (!property_exists($data->{$country}, self::DEFAULT_REGION)) {
-				throw new \LogicException("Could not find given region tax configuration for region `$address->stateID`, no default set. Make sure these are set in taxes config file");
+				throw new Exception\TaxRateNotFoundException("Could not find given region tax configuration for region `$address->stateID`, no default set. Make sure these are set in taxes config file");
 			}
 
 			$region = self::DEFAULT_REGION;
