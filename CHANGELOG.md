@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.3.1
+
+- Revert change to `Order\Entity\Collection::remove()` as it was removing items from baskets
+
 ## 5.3.0
 
 - Fix issue on `Order\Entity\Collection::remove()` method where entity would sometimes be cast as an integer and break
