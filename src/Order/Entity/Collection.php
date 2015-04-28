@@ -80,7 +80,7 @@ class Collection implements CollectionInterface
 		$entity = ($entity instanceof EntityInterface) ? (int) $entity->id : (int) $entity;
 
 		foreach ($this->_items as $key => $item) {
-			if ((int) $item->id === $entity) {
+			if (null !== $item->id && (int) $item->id === $entity) {
 				unset($this->_items[$key]);
 
 				return true;
