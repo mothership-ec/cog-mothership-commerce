@@ -208,17 +208,78 @@ class Product implements Price\PricedInterface
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$basePrice = $this->getPrice($type, $currencyID);
-		$prices    = array();
+		$prices    = [];
 
 		foreach ($this->getVisibleUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) < $basePrice) {
-				$prices[$unit->getPrice($type, $currencyID)] = $unit->getPrice($type, $currencyID);
+				$prices[] = $unit->getPrice($type, $currencyID);
 			}
 		}
+
 		// Sort the array with lowest value at the top
-		ksort($prices);
+		sort($prices);
+
 		// get the lowest value
 		return $prices ? array_shift($prices) : $basePrice;
+	}
+
+	/**
+	 * Get the highest or lowest price for a specific option
+	 *
+	 * @param array $options             The options to return the price for
+	 * @param string $type               The type of price, defaults to 'retail'
+	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
+	 * @param bool $returnHighest        Set as true to return the highest price, and false to return the lowest price
+	 *
+	 * @return string
+	 */
+	public function getOptionPrice(array $options, $type = 'retail', $currencyID = null, $returnHighest = true)
+	{
+		$prices = $this->getOptionPrices($options, $type, $currencyID);
+		sort($prices);
+
+		return ($returnHighest) ? array_pop($prices) : array_shift($prices);
+	}
+
+	/**
+	 * Get the lowest price for a specific option, acts as a shorthand alias for `getOptionPrice()` with $returnHighest
+	 * set to false
+	 *
+	 * @param array $options             The options to return the price for
+	 * @param string $type               The type of price, defaults to 'retail'
+	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
+	 *
+	 * @return string
+	 */
+	public function getOptionPriceFrom(array $options, $type = 'retail', $currencyID = null)
+	{
+		return $this->getOptionPrice($options, $type, $currencyID, false);
+	}
+
+	/**
+	 * Get an array of all unique prices for a specific option
+	 *
+	 * @param array $options             The options to return the price for
+	 * @param string $type               The type of price, defaults to 'retail'
+	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
+	 *
+	 * @return string
+	 */
+	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
+	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		$prices = [$this->getPrice($type, $currencyID)];
+
+		foreach ($this->getVisibleUnits() as $unit) {
+			foreach ($options as $name => $value) {
+				if ($unit->getOption($name) === $value) {
+					$prices[] = $unit->getPrice($type, $currencyID);
+				}
+			}
+		}
+
+		return array_unique($prices);
 	}
 
 	/**
