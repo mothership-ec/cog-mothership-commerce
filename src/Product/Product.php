@@ -281,7 +281,7 @@ class Product implements Price\PricedInterface
 	}
 
 	/**
-	 * Get an array of all unique prices for a specific option
+	 * Get an array of all unique prices for a specific set of options
 	 *
 	 * @param array $options             The options to return the price for
 	 * @param string $type               The type of price, defaults to 'retail'
@@ -296,10 +296,20 @@ class Product implements Price\PricedInterface
 		$prices = [$this->getPrice($type, $currencyID)];
 
 		foreach ($this->getVisibleUnits() as $unit) {
+			$hasAllOptions = true;
+			$unitPrices = [];
+
 			foreach ($options as $name => $value) {
-				if ($unit->getOption($name) === $value) {
-					$prices[] = $unit->getPrice($type, $currencyID);
+				if (!$unit->hasOption($name)) {
+					$hasAllOptions = false;
+					break;
 				}
+				if ($unit->getOptions($name) === $value) {
+					$unitPrices[] = $unit->getPrice($type, $currencyID);
+				}
+			}
+			if ($hasAllOptions) {
+				$prices = $prices + $unitPrices;
 			}
 		}
 
