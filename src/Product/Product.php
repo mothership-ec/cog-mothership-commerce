@@ -233,7 +233,7 @@ class Product implements Price\PricedInterface
 	 *                                              lowest price
 	 * @throws Exception\PriceNotFoundException     Throws exception if no price can be found
 	 *
-	 * @return string
+	 * @return float
 	 */
 	public function getOptionPrice(array $options, $type = 'retail', $currencyID = null, $returnHighest = true)
 	{
@@ -258,7 +258,7 @@ class Product implements Price\PricedInterface
 	 * @param string $type               The type of price, defaults to 'retail'
 	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
 	 *
-	 * @return string
+	 * @return float
 	 */
 	public function getOptionPriceFrom(array $options, $type = 'retail', $currencyID = null)
 	{
@@ -273,7 +273,7 @@ class Product implements Price\PricedInterface
 	 * @param string $type                  The type of price, defaults to 'retail'
 	 * @param null | string $currencyID     The currency ID, will be the default currency if set to null
 	 *
-	 * @return string
+	 * @return float
 	 */
 	public function getOptionPriceTo(array $options, $type = 'retail', $currencyID = null)
 	{
@@ -304,12 +304,12 @@ class Product implements Price\PricedInterface
 					$hasAllOptions = false;
 					break;
 				}
-				if ($unit->getOptions($name) === $value) {
+				if ($unit->getOption($name) === $value) {
 					$unitPrices[] = $unit->getPrice($type, $currencyID);
 				}
 			}
 			if ($hasAllOptions) {
-				$prices = $prices + $unitPrices;
+				$prices = array_merge($prices, $unitPrices);
 			}
 		}
 
