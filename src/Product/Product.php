@@ -226,10 +226,12 @@ class Product implements Price\PricedInterface
 	/**
 	 * Get the highest or lowest price for a specific option
 	 *
-	 * @param array $options             The options to return the price for
-	 * @param string $type               The type of price, defaults to 'retail'
-	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
-	 * @param bool $returnHighest        Set as true to return the highest price, and false to return the lowest price
+	 * @param array $options                        The options to return the price for
+	 * @param string $type                          The type of price, defaults to 'retail'
+	 * @param null|string $currencyID               The currency ID, will be the default currency if set to null
+	 * @param bool $returnHighest                   Set as true to return the highest price, and false to return the
+	 *                                              lowest price
+	 * @throws Exception\PriceNotFoundException     Throws exception if no price can be found
 	 *
 	 * @return string
 	 */
@@ -238,7 +240,14 @@ class Product implements Price\PricedInterface
 		$prices = $this->getOptionPrices($options, $type, $currencyID);
 		sort($prices);
 
-		return ($returnHighest) ? array_pop($prices) : array_shift($prices);
+		$price = ($returnHighest) ? array_pop($prices) : array_shift($prices);
+
+		if (false === $price) {
+			$optionsString = implode(', ', $options);
+			throw new Exception\PriceNotFoundException('Could not find price for product ' . $this->id . ', with options ' . $optionsString . ' and a currency ID of ' . $currencyID);
+		}
+
+		return $price;
 	}
 
 	/**
@@ -257,13 +266,28 @@ class Product implements Price\PricedInterface
 	}
 
 	/**
+	 * Get the highest price for a specific option, acts as a shorthand alias for `getOptionPrice()` with $returnHighest
+	 * set to true
+	 *
+	 * @param array $options                The options to return the price for
+	 * @param string $type                  The type of price, defaults to 'retail'
+	 * @param null | string $currencyID     The currency ID, will be the default currency if set to null
+	 *
+	 * @return string
+	 */
+	public function getOptionPriceTo(array $options, $type = 'retail', $currencyID = null)
+	{
+		return $this->getOptionPrice($options, $type, $currencyID, true);
+	}
+
+	/**
 	 * Get an array of all unique prices for a specific option
 	 *
 	 * @param array $options             The options to return the price for
 	 * @param string $type               The type of price, defaults to 'retail'
 	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
 	 *
-	 * @return string
+	 * @return array
 	 */
 	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
 	{
