@@ -293,19 +293,18 @@ class Product implements Price\PricedInterface
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		$prices = [$this->getPrice($type, $currencyID)];
+		$prices = [];
 
 		foreach ($this->getVisibleUnits() as $unit) {
 			$hasAllOptions = true;
 			$unitPrices = [];
 
 			foreach ($options as $name => $value) {
-				if (!$unit->hasOption($name)) {
+				if ($unit->hasOption($name) && $unit->getOption($name) === $value) {
+					$unitPrices[] = $unit->getPrice($type, $currencyID);
+				} else {
 					$hasAllOptions = false;
 					break;
-				}
-				if ($unit->getOption($name) === $value) {
-					$unitPrices[] = $unit->getPrice($type, $currencyID);
 				}
 			}
 			if ($hasAllOptions) {
