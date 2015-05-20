@@ -4,8 +4,8 @@
 
 - Added `getOptionPrice()` to `Product`. This method can return either the highest or lowest product unit price based on variant options defaulting to the lowest price.
 - Added `getOptionPrices()` to `Product`. This method returns an array of prices for the product units with the given variant options.
-- Added `getOptionPriceTo` to `Product`. This method returns the highest product unit price based on variant options.
-- Added `getOptionPriceTo` to `Product`. This method returns the lowest product unit price based on variant options.
+- Added `getOptionPriceTo()` to `Product`. This method returns the highest product unit price based on variant options.
+- Added `getOptionPriceTo()` to `Product`. This method returns the lowest product unit price based on variant options.
 - Added `PriceNotFoundException` exception to `Product\Exception` namespace. 
 
 ## 5.3.1
