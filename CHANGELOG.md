@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.3.2
+
+- `getOptionPrice`, `getOptionPrices`, `getOptionPriceTo`, `getOptionPriceFrom` methods added to `Product` to get prices based on variant options.
+
 ## 5.3.1
 
 - Revert change to `Order\Entity\Collection::remove()` as it was removing items from baskets
