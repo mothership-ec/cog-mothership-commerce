@@ -208,17 +208,111 @@ class Product implements Price\PricedInterface
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$basePrice = $this->getPrice($type, $currencyID);
-		$prices    = array();
+		$prices    = [];
 
 		foreach ($this->getVisibleUnits() as $unit) {
 			if ($unit->getPrice($type, $currencyID) < $basePrice) {
-				$prices[$unit->getPrice($type, $currencyID)] = $unit->getPrice($type, $currencyID);
+				$prices[] = $unit->getPrice($type, $currencyID);
 			}
 		}
+
 		// Sort the array with lowest value at the top
-		ksort($prices);
+		sort($prices);
+
 		// get the lowest value
 		return $prices ? array_shift($prices) : $basePrice;
+	}
+
+	/**
+	 * Get the highest or lowest price for a specific option
+	 *
+	 * @param array $options                        The options to return the price for
+	 * @param string $type                          The type of price, defaults to 'retail'
+	 * @param null|string $currencyID               The currency ID, will be the default currency if set to null
+	 * @param bool $returnHighest                   Set as true to return the highest price, and false to return the
+	 *                                              lowest price
+	 * @throws Exception\PriceNotFoundException     Throws exception if no price can be found
+	 *
+	 * @return float
+	 */
+	public function getOptionPrice(array $options, $type = 'retail', $currencyID = null, $returnHighest = true)
+	{
+		$prices = $this->getOptionPrices($options, $type, $currencyID);
+		sort($prices);
+
+		$price = ($returnHighest) ? array_pop($prices) : array_shift($prices);
+
+		if (false === $price) {
+			$optionsString = implode(', ', $options);
+			throw new Exception\PriceNotFoundException('Could not find price for product ' . $this->id . ', with options ' . $optionsString . ' and a currency ID of ' . $currencyID);
+		}
+
+		return $price;
+	}
+
+	/**
+	 * Get the lowest price for a specific option, acts as a shorthand alias for `getOptionPrice()` with $returnHighest
+	 * set to false
+	 *
+	 * @param array $options             The options to return the price for
+	 * @param string $type               The type of price, defaults to 'retail'
+	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
+	 *
+	 * @return float
+	 */
+	public function getOptionPriceFrom(array $options, $type = 'retail', $currencyID = null)
+	{
+		return $this->getOptionPrice($options, $type, $currencyID, false);
+	}
+
+	/**
+	 * Get the highest price for a specific option, acts as a shorthand alias for `getOptionPrice()` with $returnHighest
+	 * set to true
+	 *
+	 * @param array $options                The options to return the price for
+	 * @param string $type                  The type of price, defaults to 'retail'
+	 * @param null | string $currencyID     The currency ID, will be the default currency if set to null
+	 *
+	 * @return float
+	 */
+	public function getOptionPriceTo(array $options, $type = 'retail', $currencyID = null)
+	{
+		return $this->getOptionPrice($options, $type, $currencyID, true);
+	}
+
+	/**
+	 * Get an array of all unique prices for a specific set of options
+	 *
+	 * @param array $options             The options to return the price for
+	 * @param string $type               The type of price, defaults to 'retail'
+	 * @param null|string $currencyID    The currency ID, will be the default currency if set to null
+	 *
+	 * @return array
+	 */
+	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
+	{
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		$prices = [];
+
+		foreach ($this->getVisibleUnits() as $unit) {
+			$hasAllOptions = true;
+			$unitPrices = [];
+
+			foreach ($options as $name => $value) {
+				if ($unit->hasOption($name) && $unit->getOption($name) === $value) {
+					$unitPrices[] = $unit->getPrice($type, $currencyID);
+				} else {
+					$hasAllOptions = false;
+					break;
+				}
+			}
+			if ($hasAllOptions) {
+				$prices = array_merge($prices, $unitPrices);
+			}
+		}
+
+		return array_unique($prices);
 	}
 
 	/**
