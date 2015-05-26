@@ -14,16 +14,55 @@ use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
 class Loader
 {
+	/**
+	 * @var Query
+	 */
 	protected $_query;
+
+	/**
+	 * @var Locale
+	 */
 	protected $_locale;
+
+	/**
+	 * @var bool
+	 */
 	protected $_includeDeleted = false;
 
+	/**
+	 * @var bool
+	 */
 	protected $_returnArray;
+
+	/**
+	 * @var Type\Collection
+	 */
 	protected $_productTypes;
+
+	/**
+	 * @var Type\DetailLoader
+	 */
 	protected $_detailLoader;
+
+	/**
+	 * @var EntityLoaderCollection
+	 */
 	protected $_entityLoaders;
+
+	/**
+	 * @var TaxStrategyInterface
+	 */
 	protected $_taxStrategy;
+
+	/**
+	 * @var array
+	 */
 	protected $_priceTypes;
+
+	/**
+	 * @var Collection
+	 */
+	private $_productCache;
 
 	public function __construct(
 		Query $query,
@@ -34,17 +73,19 @@ class Loader
 		EntityLoaderCollection $entityLoaders,
 		$priceTypes = array(),
 		$defaultCurrency,
-		TaxStrategyInterface $taxStrategy
+		TaxStrategyInterface $taxStrategy,
+		Collection $productCache
 	) {
-		$this->_query         = $query;
-		$this->_locale        = $locale;
-		$this->_productTypes  = $productTypes;
-		$this->_detailLoader  = $detailLoader;
-		$this->_priceTypes    = $priceTypes;
-		$this->_fileLoader    = $fileLoader;
-		$this->_entityLoaders = $entityLoaders;
+		$this->_query           = $query;
+		$this->_locale          = $locale;
+		$this->_productTypes    = $productTypes;
+		$this->_detailLoader    = $detailLoader;
+		$this->_priceTypes      = $priceTypes;
+		$this->_fileLoader      = $fileLoader;
+		$this->_entityLoaders   = $entityLoaders;
 		$this->_defaultCurrency = $defaultCurrency;
-		$this->_taxStrategy    = $taxStrategy;
+		$this->_taxStrategy     = $taxStrategy;
+		$this->_productCache    = $productCache;
 	}
 
 	public function getEntityLoader($entityName)
@@ -278,15 +319,33 @@ class Loader
 			$productIDs = (array) $productIDs;
 		}
 
-		if (!$productIDs) {
-			return $this->_returnArray ? array() : false;
-		}
-
 		if (0 === $this->_entityLoaders->count()) {
 			throw new \LogicException('Cannot load products when entity loaders are not set.');
 		}
 
-		$this->_checkLimit($limit);
+		$cachedProducts = [];
+
+		// Load products from cache if limit is not set. If limit is set this complicates the following query so
+		// this step is skipped.
+		if (null === $limit) {
+			foreach ($productIDs as $key => $id) {
+				if ($this->_productCache->exists($id)) {
+					$cachedProduct = $this->_productCache->get($id);
+					// Only load deleted products from the cache if `_includeDeleted` is set to true
+					if ($this->_includeDeleted || !$cachedProduct->authorship->isDeleted()) {
+						$cachedProducts[] = $cachedProduct;
+						unset($productIDs[$key]);
+					}
+				}
+			}
+		} else {
+			$this->_checkLimit($limit);
+		}
+
+		// If there are no uncached products remaining, return the cached product/s
+		if (count($productIDs) <= 0) {
+			return $this->_returnArray ? $cachedProducts : array_shift($cachedProducts);
+		}
 
 		$result = $this->_query->run(
 			'SELECT
@@ -376,7 +435,13 @@ class Loader
 			}
 
 			$this->_loadType($products[$key], $data->type);
+
+			// Add product to cache
+			$this->_productCache->add($products[$key]);
 		}
+
+		// Merge cached products and main products array
+		$products = array_merge($products, $cachedProducts);
 
 		return count($products) == 1 && !$this->_returnArray ? array_shift($products) : $products;
 	}

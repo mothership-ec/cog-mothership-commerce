@@ -448,6 +448,8 @@ class Services implements ServicesInterface
 			]);
 		});
 
+		// Product loader should not be a singleton as 'includeDeleted' needs to be reset to false on every
+		// instanciation
 		$services['product.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\Loader(
 				$c['db.query'],
@@ -458,9 +460,14 @@ class Services implements ServicesInterface
 				$c['product.entity_loaders'],
 				$c['product.price.types'],
 				$c['currency'],
-				$c['product.tax.strategy']
+				$c['product.tax.strategy'],
+				$c['product.cache']
 			);
 		});
+
+		$services['product.cache'] = function($c) {
+			return new Commerce\Product\Collection;
+		};
 
 		$services['product.searcher'] = $services->factory(function($c) {
 			return new Commerce\Product\Searcher(
@@ -499,7 +506,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.edit'] = $services->factory(function($c) {
-			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
+			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current'], $c['event.dispatcher']);
 		});
 
 		$services['product.delete'] = $services->factory(function($c) {

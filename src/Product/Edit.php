@@ -2,15 +2,12 @@
 
 namespace Message\Mothership\Commerce\Product;
 
-use Message\Mothership\Commerce\Product\Product;
-use Message\Cog\ValueObject\DateTimeImmutable;
-use Message\Cog\Localisation\Locale;
-
 use Message\User\UserInterface;
 
+use Message\Cog\Localisation\Locale;
+use Message\Cog\Event\Dispatcher;
 use Message\Cog\DB\Transaction;
 use Message\Cog\DB\TransactionalInterface;
-use Message\Cog\DB\Result;
 
 /**
  * Class for updating the attributes of a given Product object to the DB
@@ -37,13 +34,23 @@ class Edit implements TransactionalInterface
 	 */
 	protected $_product;
 
+	/**
+	 * @var bool
+	 */
 	protected $_transOverridden = false;
 
-	public function __construct(Transaction $trans, Locale $locale, UserInterface $user)
+	/**
+	 * @var Dispatcher
+	 */
+	private $_dispatcher;
+
+
+	public function __construct(Transaction $trans, Locale $locale, UserInterface $user, Dispatcher $dispatcher)
 	{
-		$this->_trans  = $trans;
-		$this->_user   = $user;
-		$this->_locale = $locale;
+		$this->_trans      = $trans;
+		$this->_user       = $user;
+		$this->_locale     = $locale;
+		$this->_dispatcher = $dispatcher;
 	}
 
 	/**
@@ -64,6 +71,11 @@ class Edit implements TransactionalInterface
 		if (!$this->_transOverridden) {
 			$this->_trans->commit();
 		}
+
+		$this->_dispatcher->dispatch(
+			Events::PRODUCT_EDIT,
+			new Event($product)
+		);
 
 		return $product;
 	}
