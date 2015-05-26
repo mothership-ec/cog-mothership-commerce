@@ -1,5 +1,16 @@
 # Changelog
 
+## 5.5.0
+
+- Implemented product caching
+- Added `product.cache` service, an instance of `Product\Collection`
+- `product.cache` service given to `Product\Loader` constructor
+- `Product\Loader` caches products upon initial load. If product exists in cache it will not be loaded from the database, but taken from the cache instead.
+- Added `Product\Event` for events relating to changes to products
+- Added `Message\Cog\Event\Dispatcher` instance to `Product\Edit` constructor to allow dispatching of events upon product save. Dispatched event triggers removal of the product from the cache.
+- Added note informing users that spreadsheets for product upload must be encoded using UTF8
+- Added error message to product upload if non-UTF8 spreadsheet is uploaded
+
 ## 5.4.0
 
 - Added `getOptionPrice()` to `Product`. This method can return either the highest or lowest product unit price based on variant options defaulting to the lowest price.
