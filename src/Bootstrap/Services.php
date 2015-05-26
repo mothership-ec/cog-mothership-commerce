@@ -477,7 +477,7 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$services['product.create'] = function($c) {
+		$services['product.create'] = $services->factory(function($c) {
 			$create = new Commerce\Product\Create($c['db.query'],
 				$c['locale'],
 				$c['user.current'],
@@ -488,7 +488,7 @@ class Services implements ServicesInterface
 			$create->setDefaultTaxStrategy($c['product.tax.strategy']);
 
 			return $create;
-		};
+		});
 
 		$services['product.form.data_transform'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\DataTransform\ProductTransform(
