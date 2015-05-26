@@ -325,6 +325,8 @@ class Loader
 
 		$cachedProducts = [];
 
+		// Load products from cache if limit is not set. If limit is set this complicates the following query so
+		// this step is skipped.
 		if (null === $limit) {
 			foreach ($productIDs as $key => $id) {
 				if ($this->_productCache->exists($id)) {
@@ -339,6 +341,7 @@ class Loader
 			$this->_checkLimit($limit);
 		}
 
+		// If there are no uncached products remaining, return the cached product/s
 		if (count($productIDs) <= 0) {
 			return $this->_returnArray ? $cachedProducts : array_shift($cachedProducts);
 		}
@@ -432,9 +435,11 @@ class Loader
 
 			$this->_loadType($products[$key], $data->type);
 
+			// Add product to cache
 			$this->_productCache->add($products[$key]);
 		}
 
+		// Merge cached products and main products array
 		$products = array_merge($products, $cachedProducts);
 
 		return count($products) == 1 && !$this->_returnArray ? array_shift($products) : $products;
