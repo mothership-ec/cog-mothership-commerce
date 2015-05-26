@@ -52,6 +52,8 @@ class Product implements Price\PricedInterface
 	protected $_entities = [];
 	protected $_defaultCurrency;
 
+	private $_optionPrices = [];
+
 	/**
 	 * Initiate the object and set some basic properties up
 	 *
@@ -291,6 +293,12 @@ class Product implements Price\PricedInterface
 	 */
 	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
 	{
+		$key = serialize($options);
+
+		if (array_key_exists($key, $this->_optionPrices)) {
+			return $this->_optionPrices[$key];
+		}
+
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$prices = [];
@@ -312,7 +320,11 @@ class Product implements Price\PricedInterface
 			}
 		}
 
-		return array_unique($prices);
+		$prices = array_unique($prices);
+
+		$this->_optionPrices[$key] = $prices;
+
+		return $prices;
 	}
 
 	/**
