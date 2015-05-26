@@ -448,7 +448,7 @@ class Services implements ServicesInterface
 			]);
 		});
 
-		$services['product.loader'] = $services->factory(function($c) {
+		$services['product.loader'] = function($c) {
 			return new Commerce\Product\Loader(
 				$c['db.query'],
 				$c['locale'],
@@ -458,9 +458,14 @@ class Services implements ServicesInterface
 				$c['product.entity_loaders'],
 				$c['product.price.types'],
 				$c['currency'],
-				$c['product.tax.strategy']
+				$c['product.tax.strategy'],
+				$c['product.cache']
 			);
-		});
+		};
+
+		$services['product.cache'] = function($c) {
+			return new Commerce\Product\Collection;
+		};
 
 		$services['product.searcher'] = $services->factory(function($c) {
 			return new Commerce\Product\Searcher(
@@ -470,7 +475,7 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$services['product.create'] = $services->factory(function($c) {
+		$services['product.create'] = function($c) {
 			$create = new Commerce\Product\Create($c['db.query'],
 				$c['locale'],
 				$c['user.current'],
@@ -481,7 +486,7 @@ class Services implements ServicesInterface
 			$create->setDefaultTaxStrategy($c['product.tax.strategy']);
 
 			return $create;
-		});
+		};
 
 		$services['product.form.data_transform'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\DataTransform\ProductTransform(
