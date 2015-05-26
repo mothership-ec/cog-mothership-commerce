@@ -331,6 +331,7 @@ class Loader
 			foreach ($productIDs as $key => $id) {
 				if ($this->_productCache->exists($id)) {
 					$cachedProduct = $this->_productCache->get($id);
+					// Only load deleted products from the cache if `_includeDeleted` is set to true
 					if ($this->_includeDeleted || !$cachedProduct->authorship->isDeleted()) {
 						$cachedProducts[] = $cachedProduct;
 						unset($productIDs[$key]);

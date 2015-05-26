@@ -330,6 +330,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Remove products from the cache if they have been edited
+	 *
+	 * @param Product\Event $event
+	 */
 	public function removeProductFromCache(Product\Event $event)
 	{
 		if ($this->get('product.cache')->exists($event->getProduct()->id)) {
