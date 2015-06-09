@@ -5,6 +5,8 @@ namespace Message\Mothership\Commerce\Controller\Product;
 use Message\Mothership\Commerce\Product\Upload\Exception\UploadFrontEndException;
 use Message\Mothership\Commerce\Product\Upload\SessionNames;
 
+use Message\Mothership\Commerce\Product\Image\Exception\AssignmentException;
+
 use Message\Cog\Controller\Controller;
 use Message\Cog\Filesystem\FileType\CSVFile;
 
@@ -93,7 +95,18 @@ class CsvPort extends Controller
 					$productRow = array_shift($productRow);
 					$product    = $this->get('product.upload.product_builder')->build($productRow);
 
-					$this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
+
+					$product = $this->get('product.upload.create_dispatcher')->create($product, $data, $productRow);
+
+					try {
+						$this->get('product.upload.image_create')->save($product, $productRow);
+					} catch (AssignmentException $e) {
+						$this->addFlash('error', 'ms.commerce.product.upload.image.error', [
+							'%message%'     => $e->getMessage(),
+							'%productName%' => $product->name,
+						]);
+					}
+
 					$productCount++;
 
 					foreach ($productRows as $row) {

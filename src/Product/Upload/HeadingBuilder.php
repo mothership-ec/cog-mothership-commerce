@@ -46,6 +46,7 @@ class HeadingBuilder implements \Countable
 		'shortDescription' => 'shortDescription',
 		'exportDescription' => 'exportDescription',
 		'supplierRef' => 'supplierRef',
+		'defaultImage' => 'defaultImage',
 		'weight' => 'weight',
 		'notes' => 'notes',
 		'exportManufactureCountryID' => 'exportManufactureCountryID',

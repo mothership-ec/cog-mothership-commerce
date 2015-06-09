@@ -535,6 +535,13 @@ class Services implements ServicesInterface
 			return new Commerce\Form\Product\Image\Delete;
 		});
 
+		$services['product.image.assignor'] = function($c) {
+			return new Commerce\Product\Image\Assignor(
+				$c['file_manager.file.loader'],
+				$c['locale']
+			);
+		};
+
 		$services['product.unit.loader'] = $services->factory(function($c) {
 			return $c['product.loader']->getEntityLoader('units');
 		});
@@ -644,6 +651,14 @@ class Services implements ServicesInterface
 				$c['product.upload.heading_keys']
 			);
 		});
+
+		$services['product.upload.image_create'] = function($c) {
+			return new Commerce\Product\Upload\ProductImageCreate(
+				$c['product.image.assignor'],
+				$c['product.image.create'],
+				$c['product.upload.heading_keys']
+			);
+		};
 
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
