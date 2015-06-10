@@ -10,24 +10,45 @@ use Message\Mothership\FileManager\File;
  * @package Message\Mothership\Commerce\Product\Image
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
+ *
+ * Class for assigning images to products using minimal details, e.g. filename
  */
 class Assignor
 {
+	/**
+	 * @var File\FileLoader
+	 */
 	private $_fileLoader;
+
+	/**
+	 * @var
+	 */
 	private $_locale;
 
+	/**
+	 * @param File\FileLoader $fileLoader
+	 * @param $locale
+	 */
 	public function __construct(File\FileLoader $fileLoader, $locale)
 	{
 		$this->_fileLoader = $fileLoader;
 		$this->_locale     = $locale;
 	}
 
-	public function assignByName($name, Product $product, $options = [], $type = 'default')
+	/**
+	 * Load image using by the filename, and assign a product to it.
+	 *
+	 * @param string $name                      The filename for the image
+	 * @param Product $product                  The product to assign to the image
+	 * @param array $options                    The product options to assign to the image
+	 * @param string $type                      The type to set against the image
+	 * @throws Exception\AssignmentException    Throws exception if file cannot be found
+	 * @throws Exception\AssignmentException    Throws exception if file is not an image
+	 *
+	 * @return Image                            Returns a new Image instance with the product assigned
+	 */
+	public function assignByName($name, Product $product, array $options = [], $type = 'default')
 	{
-		if (!is_string($type)) {
-			throw new \InvalidArgumentException('Image type must be a string, ' . gettype($type) . ' given');
-		}
-
 		$file = $this->_fileLoader->getByFilename($name);
 
 		if (is_array($file)) {
@@ -40,6 +61,26 @@ class Assignor
 
 		if ($file->typeID !== File\Type::IMAGE) {
 			throw new Exception\AssignmentException('File with name `' . $name . '` is not an image file');
+		}
+
+		return $this->_setProductToImage($product, $file, $options, $type);
+	}
+
+	/**
+	 * Assign the product and the loaded file to an image instance
+	 *
+	 * @param Product $product             The product to assign to the image
+	 * @param File\File $file              The loaded file to assign to the image
+	 * @param array $options               The product options to assign to the image
+	 * @param string $type                 The type to set against the image
+	 * @throws \InvalidArgumentException   Throws exception if $type is not a string
+	 *
+	 * @return Image                       Returns a new Image instance with the product and file assigned
+	 */
+	private function _setProductToImage(Product $product, File\File $file, array $options, $type)
+	{
+		if (!is_string($type)) {
+			throw new \InvalidArgumentException('Image type must be a string, ' . gettype($type) . ' given');
 		}
 
 		$image = new Image;
