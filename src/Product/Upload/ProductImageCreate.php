@@ -30,7 +30,7 @@ class ProductImageCreate
 		$this->_headingKeys   = $headingKeys;
 	}
 
-	public function save(Product\Product $product, array $row, $type = 'default', $options = [])
+	public function save(Product\Product $product, array $row, $options = [], $type = 'default')
 	{
 		$key = $this->_headingKeys->getKey(self::HEADING_KEY);
 
@@ -41,7 +41,7 @@ class ProductImageCreate
 		$filename = (string) $row[$key];
 
 		if ($filename !== '') {
-			$image = $this->_imageAssignor->assignByName($filename, $product, $type, $options);
+			$image = $this->_imageAssignor->assignByName($filename, $product, $options, $type);
 			$this->_imageCreate->create($image);
 		}
 	}

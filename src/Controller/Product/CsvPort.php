@@ -101,10 +101,10 @@ class CsvPort extends Controller
 					try {
 						$this->get('product.upload.image_create')->save($product, $productRow);
 					} catch (AssignmentException $e) {
-						$this->addFlash('error', 'ms.commerce.product.upload.image.error', [
+						$this->addFlash('error', $this->trans('ms.commerce.product.upload.image.error', [
 							'%message%'     => $e->getMessage(),
 							'%productName%' => $product->name,
-						]);
+						]));
 					}
 
 					$productCount++;

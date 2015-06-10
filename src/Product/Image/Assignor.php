@@ -22,7 +22,7 @@ class Assignor
 		$this->_locale     = $locale;
 	}
 
-	public function assignByName($name, Product $product, $type = 'default', $options = [])
+	public function assignByName($name, Product $product, $options = [], $type = 'default')
 	{
 		if (!is_string($type)) {
 			throw new \InvalidArgumentException('Image type must be a string, ' . gettype($type) . ' given');
