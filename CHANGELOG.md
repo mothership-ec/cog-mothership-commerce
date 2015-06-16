@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.5.1
+
+- `getUnit()` method on `ProductProxy` no longer excludes deleted or out of stock units
+
 ## 5.5.0
 
 - Implemented product caching
