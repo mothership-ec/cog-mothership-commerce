@@ -26,11 +26,7 @@ class ProductProxy extends Product
 	public function getAllUnits()
 	{
 		if (!in_array('units', $this->_loaded)) {
-			$this->_loaders->get('units')
-				->includeOutOfStock(true)
-				->includeInvisible(true);
-
-			$this->_load('units');
+			$this->_loadUnits();
 		}
 
 		return parent::getAllUnits();
@@ -39,11 +35,7 @@ class ProductProxy extends Product
 	public function getVisibleUnits()
 	{
 		if (!in_array('units', $this->_loaded)) {
-			$this->_loaders->get('units')
-				->includeOutOfStock(true)
-				->includeInvisible(true);
-
-			$this->_load('units');
+			$this->_loadUnits();
 		}
 
 		return parent::getVisibleUnits();
@@ -52,11 +44,7 @@ class ProductProxy extends Product
 	public function getUnitCollection()
 	{
 		if (!in_array('units', $this->_loaded)) {
-			$this->_loaders->get('units')
-				->includeOutOfStock(true)
-				->includeInvisible(true);
-
-			$this->_load('units');
+			$this->_loadUnits();
 		}
 
 		return parent::getUnitCollection();
@@ -65,11 +53,7 @@ class ProductProxy extends Product
 	public function getUnits($showOutOfStock = true, $showInvisible = false)
 	{
 		if (!in_array('units', $this->_loaded)) {
-			$this->_loaders->get('units')
-				->includeOutOfStock(true)
-				->includeInvisible(true);
-
-			$this->_load('units');
+			$this->_loadUnits();
 		}
 
 		return parent::getUnits($showOutOfStock, $showInvisible);
@@ -78,7 +62,7 @@ class ProductProxy extends Product
 	public function getUnit($unitID)
 	{
 		if (!in_array('units', $this->_loaded)) {
-			$this->_load('units');
+			$this->_loadUnits();
 		}
 
 		return parent::getUnit($unitID);
@@ -119,6 +103,15 @@ class ProductProxy extends Product
 		$this->_load('taxes');
 
 		return parent::getTaxRates();
+	}
+
+	private function _loadUnits()
+	{
+		$this->_loaders->get('units')
+			->includeOutOfStock(true)
+			->includeInvisible(true);
+
+		$this->_load('units');
 	}
 
 	protected function _load($entityName)
