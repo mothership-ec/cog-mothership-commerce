@@ -293,13 +293,13 @@ class Product implements Price\PricedInterface
 	 */
 	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
 	{
-		$key = serialize($options);
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+		
+		$key = $type . ':' . $currencyID . '#' . serialize($options);
 
 		if (array_key_exists($key, $this->_optionPrices)) {
 			return $this->_optionPrices[$key];
 		}
-
-		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$prices = [];
 
