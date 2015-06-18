@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.6.0
+
+- Add `getSaleUnits()` method to unit loader
+- `getOptionPrices()` method on `Product` object uses type and currency ID as part of key, to resolve issue where RRPs and retail prices were returning the same price
+
 ## 5.5.1
 
 - `getUnit()` method on `ProductProxy` no longer excludes deleted or out of stock units
