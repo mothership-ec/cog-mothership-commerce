@@ -296,11 +296,11 @@ class Product implements Price\PricedInterface
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		if(!is_string($type)) {
-			throw new \InvalidArgumentException('Argument $type must be of type string, ' . print_r($type, true) . ' given');
+			throw new \InvalidArgumentException('Argument $type must be of type string, ' . gettype($type) . ' given');
 		}
 
 		if(!is_string($currencyID)) {
-			throw new \InvalidArgumentException('Argument $currencyID must be of type string, ' . print_r($currencyID, true) . ' given');
+			throw new \InvalidArgumentException('Argument $currencyID must be of type string, ' . gettype($currencyID) . ' given');
 		}
 		
 		$key = $type . ':' . $currencyID . '#' . serialize($options);
