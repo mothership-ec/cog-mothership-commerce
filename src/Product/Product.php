@@ -293,13 +293,21 @@ class Product implements Price\PricedInterface
 	 */
 	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
 	{
-		$key = serialize($options);
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		if(!is_string($type)) {
+			throw new \InvalidArgumentException('Argument $type must be of type string, ' . gettype($type) . ' given');
+		}
+
+		if(!is_string($currencyID)) {
+			throw new \InvalidArgumentException('Argument $currencyID must be of type string, ' . gettype($currencyID) . ' given');
+		}
+		
+		$key = $type . ':' . $currencyID . '#' . serialize($options);
 
 		if (array_key_exists($key, $this->_optionPrices)) {
 			return $this->_optionPrices[$key];
 		}
-
-		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$prices = [];
 
