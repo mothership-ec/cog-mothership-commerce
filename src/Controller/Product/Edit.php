@@ -278,6 +278,7 @@ class Edit extends Controller
 			$product->notes                       = $data['notes'];
 			$product->weight                      = $data['weight_grams'];
 			$product->exportManufactureCountryID  = $data['export_manufacture_country_id'];
+			$product->type                        = $this->get('product.types')->get($data['product_type']);
 			$product->setExportCode($data['export_code']);
 
 			$product = $productEdit->save($product);

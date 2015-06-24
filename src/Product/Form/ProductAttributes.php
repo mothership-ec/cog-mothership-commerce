@@ -116,6 +116,21 @@ class ProductAttributes extends Handler
 			)
 		);
 
+		$typeChoices = [];
+
+		foreach ($this->_container['product.types'] as $type) {
+			$typeChoices[$type->getName()] = $type->getDisplayName();
+		}
+
+		$this->add('product_type',
+			'choice',
+			$this->_container['translator']->trans('ms.commerce.product.details.product-type.label'),
+			[
+				'data'        => $product->type->getName(),
+				'choices'     => $typeChoices,
+			]
+		);
+
 		return $this;
 	}
 
