@@ -48,7 +48,6 @@ class SalesByProduct extends AbstractSales
 	{
 		return [
 			'Product'     => 'string',
-			'Option'      => 'string',
 			'Currency'    => 'string',
 			'Net'         => 'number',
 			'Tax'         => 'number',
@@ -74,7 +73,6 @@ class SalesByProduct extends AbstractSales
 		$queryBuilder
 			->select('totals.product_id AS "ID"')
 			->select('totals.product AS "Product"')
-			->select('totals.option AS "Option"')
 			->select('totals.currency AS "Currency"')
 			->select('SUM(totals.net) AS "Net"')
 			->select('SUM(totals.tax) AS "Tax"')
@@ -123,7 +121,6 @@ class SalesByProduct extends AbstractSales
 							.ucwords($row->Product).'</a>'
 						]
 						: $row->Product,
-					ucwords($row->Option),
 					$row->Currency,
 					[
 						'v' => (float) $row->Net,
@@ -147,7 +144,6 @@ class SalesByProduct extends AbstractSales
 			foreach ($data as $row) {
 				$result[] = [
 					ucwords($row->Product),
-					ucwords($row->Option),
 					$row->Currency,
 					$row->Net,
 					$row->Tax,
