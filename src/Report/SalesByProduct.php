@@ -85,9 +85,9 @@ class SalesByProduct extends AbstractSales
 		;
 
 		// Filter type
-		if($this->_filters->exists('type')) {
+		if ($this->_filters->exists('type')) {
 			$type = $this->_filters->get('type');
-			if($type = $type->getChoices()) {
+			if ($type = $type->getChoices()) {
 				is_array($type) ?
 					$queryBuilder->where('Type IN (?js)', [$type]) :
 					$queryBuilder->where('Type = (?s)', [$type])
@@ -137,10 +137,9 @@ class SalesByProduct extends AbstractSales
 					(int) $row->NumberSold,
 				];
 			}
+
 			return json_encode($result);
-
 		} else {
-
 			foreach ($data as $row) {
 				$result[] = [
 					ucwords($row->Product),
@@ -151,6 +150,7 @@ class SalesByProduct extends AbstractSales
 					$row->NumberSold
 				];
 			}
+
 			return $result;
 		}
 	}
