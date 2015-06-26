@@ -6,6 +6,12 @@ use Message\Cog\DB\QueryBuilderFactory;
 use Message\Cog\Routing\UrlGenerator;
 use Message\Cog\Event\DispatcherInterface;
 
+/**
+ * Class SalesByUnit
+ * @package Message\Mothership\Commerce\Report
+ *
+ * @author  Thomas Marchant <thomas@mothership.ec>
+ */
 class SalesByUnit extends AbstractSales
 {
 	public function __construct(
@@ -28,6 +34,9 @@ class SalesByUnit extends AbstractSales
 		$this->getFilters()->get('date_range')->setStartDate($startDate->setTimestamp(strtotime(date('Y-m-d H:i')." -1 month")));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getColumns()
 	{
 		return [
@@ -41,6 +50,9 @@ class SalesByUnit extends AbstractSales
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function _getQuery()
 	{
 		$fromQuery = $this->_getFilteredQuery();
@@ -57,6 +69,7 @@ class SalesByUnit extends AbstractSales
 			->select('COUNT(totals.gross) AS "Transactions"')
 			->from('totals', $fromQuery)
 			->orderBy('totals.gross DESC')
+			// Group by product name and option string as unioned 'totals' parent query does not get unit ID
 			->groupBy('totals.product, totals.option, currency')
 		;
 
@@ -75,6 +88,9 @@ class SalesByUnit extends AbstractSales
 		return $queryBuilder->getQuery();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function _dataTransform($data, $output = null)
 	{
 		$result = [];
