@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\EventListener;
 
+use Message\Mothership\Commerce\Order\Order;
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status;
@@ -54,5 +55,20 @@ class ValidateListener implements SubscriberInterface
 		if (count($order->getItems()) <= 0) {
 			$event->addError('Order must have items set');
 		}
+
+		if (!$this->_validateTax($order)) {
+			$event->addError('Tax calculation error');
+		}
+	}
+
+	private function _validateTax(Order $order)
+	{
+		$itemTax = 0;
+
+		foreach ($order->getItems() as $item) {
+			$itemTax += $item->getTax();
+		}
+
+		return $order->productTax == $itemTax;
 	}
 }
