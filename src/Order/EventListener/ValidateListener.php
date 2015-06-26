@@ -61,6 +61,13 @@ class ValidateListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Recount the item tax and check that it matches the order product tax
+	 *
+	 * @param Order $order
+	 *
+	 * @return bool
+	 */
 	private function _validateTax(Order $order)
 	{
 		$itemTax = 0;
