@@ -47,12 +47,12 @@ class SalesByProduct extends AbstractSales
 	public function getColumns()
 	{
 		return [
-			'Product'     => 'string',
-			'Currency'    => 'string',
-			'Net'         => 'number',
-			'Tax'         => 'number',
-			'Gross'       => 'number',
-			'Number Sold' => 'number',
+			'Product'      => 'string',
+			'Currency'     => 'string',
+			'Net'          => 'number',
+			'Tax'          => 'number',
+			'Gross'        => 'number',
+			'Transactions' => 'number',
 		];
 	}
 

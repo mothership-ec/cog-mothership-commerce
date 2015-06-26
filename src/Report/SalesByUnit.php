@@ -31,13 +31,13 @@ class SalesByUnit extends AbstractSales
 	public function getColumns()
 	{
 		return [
-			'Product'     => 'string',
-			'Option'      => 'string',
-			'Currency'    => 'string',
-			'Net'         => 'number',
-			'Tax'         => 'number',
-			'Gross'       => 'number',
-			'Number Sold' => 'number',
+			'Product'      => 'string',
+			'Option'       => 'string',
+			'Currency'     => 'string',
+			'Net'          => 'number',
+			'Tax'          => 'number',
+			'Gross'        => 'number',
+			'Transactions' => 'number',
 		];
 	}
 
@@ -49,18 +49,15 @@ class SalesByUnit extends AbstractSales
 		$queryBuilder
 			->select('totals.product_id AS "Product_ID"')
 			->select('totals.product AS "Product"')
-//			->select('totals.unit_id AS "ID"')
 			->select('totals.option AS "Option"')
 			->select('totals.currency AS "Currency"')
 			->select('SUM(totals.net) AS "Net"')
 			->select('SUM(totals.tax) AS "Tax"')
 			->select('SUM(totals.gross) AS "Gross"')
-			->select('COUNT(totals.gross) AS "NumberSold"')
+			->select('COUNT(totals.gross) AS "Transactions"')
 			->from('totals', $fromQuery)
-			->leftJoin('oi', 'oi.order_id = totals.order_id', 'order_item')
-			->where('oi.unit_id IS NOT NULL')
 			->orderBy('totals.gross DESC')
-			->groupBy('oi.unit_id, currency')
+			->groupBy('totals.product, totals.option, currency')
 		;
 
 		if ($this->_filters->exists('type')) {
@@ -106,11 +103,11 @@ class SalesByUnit extends AbstractSales
 						'v' => (float) $row->Gross,
 						'f' => (string) number_format($row->Gross,2,'.',',')
 					],
-					(int) $row->NumberSold,
+					(int) $row->Transactions,
 				];
-
-				return json_encode($result);
 			}
+
+			return json_encode($result);
 		} else {
 			foreach ($data as $row) {
 				$result[] = [
@@ -119,11 +116,11 @@ class SalesByUnit extends AbstractSales
 					$row->Currency,
 					$row->Net,
 					$row->Gross,
-					$row->NumberSold
+					$row->Transactions
 				];
-
-				return $result;
 			}
+
+			return $result;
 		}
 	}
 }
