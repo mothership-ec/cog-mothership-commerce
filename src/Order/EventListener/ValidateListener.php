@@ -50,5 +50,9 @@ class ValidateListener implements SubscriberInterface
 		if (!$order->currencyID) {
 			$event->addError('Order must have a currency ID');
 		}
+
+		if (count($order->getItems()) <= 0) {
+			$event->addError('Order must have items set');
+		}
 	}
 }
