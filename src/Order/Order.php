@@ -471,12 +471,18 @@ class Order implements PayableInterface, Transaction\RecordInterface
 	 */
 	public function updateTotals()
 	{
+		$items = $this->getItems();
+
+		if (count($items) <= 0) {
+			throw new \LogicException('Cannot update totals, there are no items in this order');
+		}
+
 		$this->productNet      = 0;
 		$this->productDiscount = 0;
 		$this->productTax      = 0;
 		$this->productGross    = 0;
 
-		foreach ($this->items as $item) {
+		foreach ($items as $item) {
 			$this->productNet      += $item->net;
 			$this->productDiscount += $item->discount;
 			$this->productTax      += $item->getTax();
