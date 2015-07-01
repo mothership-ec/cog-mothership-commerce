@@ -35,7 +35,7 @@ abstract class AbstractSales extends AbstractReport
 		array $currencies
 	)
 	{
-		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher, $currencies);
+		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
 		$this->_eventDispatcher = $eventDispatcher;
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
