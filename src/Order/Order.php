@@ -473,10 +473,6 @@ class Order implements PayableInterface, Transaction\RecordInterface
 	{
 		$items = $this->getItems();
 
-		if (count($items) <= 0) {
-			throw new \LogicException('Cannot update totals, there are no items in this order');
-		}
-
 		$this->productNet      = 0;
 		$this->productDiscount = 0;
 		$this->productTax      = 0;
