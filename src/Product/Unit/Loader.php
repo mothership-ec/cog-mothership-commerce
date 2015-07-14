@@ -120,6 +120,73 @@ class Loader implements ProductEntityLoaderInterface
 		return count($result) ? $this->_load($result->flatten(), $alwaysReturnArray) : false;
 	}
 
+	/**
+	 * Gets the sale units
+	 * 
+	 * @return array The units which are in sale
+	 */
+	public function getSaleUnits($currency = null)
+	{
+		if ($currency === null) {
+			$currency = $this->_defaultCurrency;
+		} 
+
+		$result = $this->_query->run('
+			SELECT rrp.unit_id AS unit_id FROM
+				(SELECT
+					product_unit.unit_id      AS unit_id,
+					product_price.type        AS type,
+					product_price.currency_id AS currency_id,
+					IFNULL(
+						product_unit_price.price, product_price.price
+					)     					  AS price
+				FROM
+					product_price
+				JOIN
+					product_unit ON (product_price.product_id = product_unit.product_id)
+				LEFT JOIN
+					product_unit_price
+				ON (
+					product_unit.unit_id = product_unit_price.unit_id
+				AND
+					product_price.type = product_unit_price.type
+				AND
+					product_price.currency_id = product_unit_price.currency_id
+				)
+				WHERE product_price.type = \'rrp\') AS rrp 
+			JOIN
+				(SELECT
+					product_unit.unit_id      AS unit_id,
+					product_price.type        AS type,
+					product_price.currency_id AS currency_id,
+					IFNULL(
+						product_unit_price.price, product_price.price
+					)     					  AS price
+				FROM
+					product_price
+				JOIN
+					product_unit ON (product_price.product_id = product_unit.product_id)
+				LEFT JOIN
+					product_unit_price
+				ON (
+					product_unit.unit_id = product_unit_price.unit_id
+				AND
+					product_price.type = product_unit_price.type
+				AND
+					product_price.currency_id = product_unit_price.currency_id
+				)
+				WHERE product_price.type = \'retail\') AS retail
+			ON retail.unit_id = rrp.unit_id 
+			AND rrp.currency_id = retail.currency_id
+			AND (rrp.price - retail.price) > 0
+			AND rrp.currency_id = :currency?s;
+		', [
+			'currency' => $currency
+		]);
+
+		return count($result) ? $this->_load($result->flatten(), true) : [];
+	}
+
 	public function includeInvisible($bool)
 	{
 		$this->_loadInvisible = $bool;
@@ -166,7 +233,6 @@ class Loader implements ProductEntityLoaderInterface
 		if (0 === count($result)) {
 			return $alwaysReturnArray ? [] : false;
 		}
-
 		foreach ($result as $key => $data) {
 
 			// Hide units which are not visible
@@ -174,7 +240,6 @@ class Loader implements ProductEntityLoaderInterface
 				unset($units[$key]);
 				continue;
 			}
-
 			// Save stock units
 			foreach ($stock as $values) {
 				if ($values->id == $data->id) {
@@ -194,6 +259,7 @@ class Loader implements ProductEntityLoaderInterface
 				unset($units[$key]);
 				continue;
 			}
+
 			// Save prices to unit
 			foreach ($prices as $price) {
 				if ($price->id == $data->id) {

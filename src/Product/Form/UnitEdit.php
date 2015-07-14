@@ -61,7 +61,7 @@ class UnitEdit extends AbstractType
 			]);
 
 			$unitForm->add('weight', 'text', [
-				'data' => $unit->weight,
+				'data' => $unit->weight !== $unit->getProduct()->weight ? $unit->weight : null,
 				'attr' => [
 					'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
 				],

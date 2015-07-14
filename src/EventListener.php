@@ -52,11 +52,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 			OrderEvents::DISPATCH_SHIPPED => array(
 				array('recordOrderOut'),
 			),
-			// OrderEvents::DELETE_END => array(
-			// 	array('recordOrderDeleted'),
-			// 	array('recordSalesNetDeleted'),
-			// 	array('recordProductsSalesDeleted'),
-			// ),
 			DashboardEvent::DASHBOARD_INDEX => array(
 				array('buildDashboardProducts'),
 				array('buildDashboardOrders'),
@@ -78,6 +73,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			],
 			Events::TRANSACTIONS_REPORT => [
 				'buildTransactionReport'
+			],
+			Product\Events::PRODUCT_EDIT => [
+				'removeProductFromCache'
 			],
 		);
 	}
@@ -235,7 +233,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	/**
 	 * Decrement the orders.in stat.
 	 *
-	 * @param  EventEvent $event
+	 * @param  Event\Event $event
 	 */
 	public function recordOrderDeleted(Event\Event $event)
 	{
@@ -329,6 +327,18 @@ class EventListener extends BaseListener implements SubscriberInterface
 				$query->setFilters($event->getFilters());
 			}
 			$event->addQueryBuilder($query->getQueryBuilder());
+		}
+	}
+
+	/**
+	 * Remove products from the cache if they have been edited
+	 *
+	 * @param Product\Event $event
+	 */
+	public function removeProductFromCache(Product\Event $event)
+	{
+		if ($this->get('product.cache')->exists($event->getProduct()->id)) {
+			$this->get('product.cache')->remove($event->getProduct()->id);
 		}
 	}
 

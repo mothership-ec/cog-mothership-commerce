@@ -133,13 +133,11 @@ class Order implements PayableInterface, Transaction\RecordInterface
 	/**
 	 * Get the items for this order.
 	 *
-	 * @deprecated Access the "items" property directly instead
+	 * @param  mixed $id                            Item ID if you want to get a
+	 *                                              specific item
 	 *
-	 * @param  mixed $filter                 Item ID if you want to get a
-	 *                                       specific item
-	 *
-	 * @return Entity\Collection|Entity\Item Collection of all items, or a
-	 *                                       specific item
+	 * @return Entity\Collection|Entity\Item\Item   Collection of all items, or a
+	 *                                              specific item
 	 */
 	public function getItems($id = null)
 	{

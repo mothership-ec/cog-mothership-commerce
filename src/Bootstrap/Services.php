@@ -448,6 +448,8 @@ class Services implements ServicesInterface
 			]);
 		});
 
+		// Product loader should not be a singleton as 'includeDeleted' needs to be reset to false on every
+		// instanciation
 		$services['product.loader'] = $services->factory(function($c) {
 			return new Commerce\Product\Loader(
 				$c['db.query'],
@@ -458,9 +460,14 @@ class Services implements ServicesInterface
 				$c['product.entity_loaders'],
 				$c['product.price.types'],
 				$c['currency'],
-				$c['product.tax.strategy']
+				$c['product.tax.strategy'],
+				$c['product.cache']
 			);
 		});
+
+		$services['product.cache'] = function($c) {
+			return new Commerce\Product\Collection;
+		};
 
 		$services['product.searcher'] = $services->factory(function($c) {
 			return new Commerce\Product\Searcher(
@@ -499,7 +506,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.edit'] = $services->factory(function($c) {
-			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current']);
+			return new Commerce\Product\Edit($c['db.transaction'], $c['locale'], $c['user.current'], $c['event.dispatcher']);
 		});
 
 		$services['product.delete'] = $services->factory(function($c) {
@@ -1120,6 +1127,15 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$services['commerce.sales_by_unit'] = $services->factory(function($c) {
+			return new Commerce\Report\SalesByUnit(
+				$c['db.query.builder.factory'],
+				$c['routing.generator'],
+				$c['event.dispatcher'],
+				$c['currency.supported']
+			);
+		});
+
 		$services['commerce.sales_by_location'] = $services->factory(function($c) {
 			return new Commerce\Report\SalesByLocation(
 				$c['db.query.builder.factory'],
@@ -1148,6 +1164,7 @@ class Services implements ServicesInterface
 				->add($c['commerce.sales_by_order'])
 				->add($c['commerce.sales_by_item'])
 				->add($c['commerce.sales_by_product'])
+				->add($c['commerce.sales_by_unit'])
 				->add($c['commerce.sales_by_location'])
 				->add($c['commerce.sales_by_user'])
 			;

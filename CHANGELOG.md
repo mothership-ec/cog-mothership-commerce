@@ -1,5 +1,76 @@
 # Changelog
 
+# 5.7.0
+
+- Add `Sales by Unit` report, containing the following columns:
+    - Product
+    - Option
+    - Currency
+    - Net
+    - Tax
+    - Gross
+    - Transactions
+- Add `commerce.sales_by_unit` service which returns the `Report\SalesByUnit` report class
+- Add `commerce.sales_by_unit` to `commerce.reports` service
+- Removed nonsensical `Option` column from `Sales by Product`
+- Renamed "Number Sold" column in `Sales by Product` report to "Transactions"
+- Removed unnecessary forth parameter in `Report\AbstractSales` call to parent constructor
+- Units form no longer automatically populates the `Weight` field with the product's weight if there is no unit weight set or if the unit weight matches the product weight
+
+## 5.6.0
+
+- Add `getSaleUnits()` method to unit loader
+- `getOptionPrices()` method on `Product` object uses type and currency ID as part of key, to resolve issue where RRPs and retail prices were returning the same price
+
+## 5.5.1
+
+- `getUnit()` method on `ProductProxy` no longer excludes deleted or out of stock units
+
+## 5.5.0
+
+- Implemented product caching
+- Added `product.cache` service, an instance of `Product\Collection`
+- `product.cache` service given to `Product\Loader` constructor
+- `Product\Loader` caches products upon initial load. If product exists in cache it will not be loaded from the database, but taken from the cache instead.
+- Added `Product\Event` for events relating to changes to products
+- Added `Message\Cog\Event\Dispatcher` instance to `Product\Edit` constructor to allow dispatching of events upon product save. Dispatched event triggers removal of the product from the cache.
+- Added note informing users that spreadsheets for product upload must be encoded using UTF8
+- Added error message to product upload if non-UTF8 spreadsheet is uploaded
+
+## 5.4.0
+
+- Added `getOptionPrice()` to `Product`. This method can return either the highest or lowest product unit price based on variant options defaulting to the lowest price.
+- Added `getOptionPrices()` to `Product`. This method returns an array of prices for the product units with the given variant options.
+- Added `getOptionPriceTo()` to `Product`. This method returns the highest product unit price based on variant options.
+- Added `getOptionPriceTo()` to `Product`. This method returns the lowest product unit price based on variant options.
+- Added `PriceNotFoundException` exception to `Product\Exception` namespace. 
+
+## 5.3.1
+
+- Revert change to `Order\Entity\Collection::remove()` as it was removing items from baskets
+
+## 5.3.0
+
+- Fix issue on `Order\Entity\Collection::remove()` method where entity would sometimes be cast as an integer and break
+- Undeprecated `getItems()` method on `Order` class
+- Refactor sales reports to share methods
+- Fix issue where filters did nothing on `Sales by Location` reports
+- Added `TaxRateNotFoundException` to `Product\Tax\Exception` namespace
+- Added `UpdateFailedException` to `Order\Exception` namespace
+- Added `UpdatedFailedEvent` to `Order\Event` namespace
+- The `TaxResolver` class throws a `TaxRateNotFoundException` instead of `LogicException` if tax rate is not set in config
+- The `TotalsListener` catches `TaxRateNotFoundException` instead of `LogicException` to revert to old method of tax calculation (VAT assumption)
+- The `TotalsListener` catches `UpdateFailedException` and dispatches an `UpdateFailedEvent`
+
+## 5.2.3
+
+- Exceptions are caught more gracefully when creating a product via the CSV if a value cannot be set against a field on the product
+- Added `invalidateRow()` method to `Product\Upload\Validate` for redeclaring a valid row of a CSV as invalid
+
+## 5.2.2
+
+- Fix issue where all products in dashboard are loaded on AJAX requests
+
 ## 5.2.1
 
 - Updated CP requirement to 3.2
