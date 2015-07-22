@@ -86,9 +86,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 		foreach ($event->getOrder()->discounts as $discount) {
 			if ($discount->percentage) {
 				foreach ($discount->items as $item) {
-					$amount            = round($item->basePrice * ($discount->percentage / 100), 2);
-					$item->discount   += $amount;
-					$discount->amount += $amount;
+					$amount                = round($item->basePrice * ($discount->percentage / 100), 2);
+					$item->discount       += $amount;
+					$discount->amount     += $amount;
 				}
 			}
 			else {
