@@ -114,7 +114,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 				->setAssignProrateAmount(
 					function($item, $proratedValue)
 					{
-						$item->discount += round($proratedValue, 2);
+						$item->discount += $proratedValue;
 					}
 				);
 			$prorateHelper->prorateValue($discount->amount, $discount->items->all());
@@ -122,9 +122,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 		foreach ($percentages as $discount) {
 			foreach ($discount->items as $item) {
-				$amount                = round($item->getDiscountedPrice() * ($discount->percentage / 100), 2);
-				$item->discount       += $amount;
-				$discount->amount     += $amount;
+				$amount            = $item->getDiscountedPrice() * ($discount->percentage / 100);
+				$item->discount   += $amount;
+				$discount->amount += $amount;
 			}
 		}
 	}

@@ -26,21 +26,21 @@ class EventListener implements SubscriberInterface
 	{
 		return array(
 			OrderEvents::ENTITY_CREATE => array(
-				array('setDefaultActualPrice'),
-				array('setBasePrice', -100),
-				array('calculateTax', -200),
-				array('setDefaultStatus'),
+				['setDefaultActualPrice'],
+				['setBasePrice', -100],
+				['calculateTax', -200],
+				['setDefaultStatus'],
 			),
 			OrderEvents::CREATE_VALIDATE => array(
-				array('checkItemSet')
+				['checkItemSet']
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
-				array('setDefaultActualPrice'),
-				array('setBasePrice', -100),
-				array('calculateAllItemsTax', -200),
+				['setDefaultActualPrice'],
+				['setBasePrice', -100],
+				['calculateAllItemsTax', -200],
 			),
 			OrderEvents::STATUS_CHANGE => array(
-				array('updateStatus'),
+				['updateStatus'],
 			),
 		);
 	}
@@ -214,10 +214,11 @@ class EventListener implements SubscriberInterface
 		$adjustedGross += $adjustedGross * ($item->taxRate / 100);
 
 		// Gross is the product gross - discount
-		$item->gross = $adjustedGross;
-		$item->tax   = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
-		$item->net   = round($item->gross - $item->tax, 2);
-		$item->gross = round($item->gross, 2);
+		$item->gross    = $adjustedGross;
+		$item->tax      = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
+		$item->net      = round($item->gross - $item->tax, 2);
+		$item->gross    = round($item->gross);
+		$item->discount = round($item->discount);
 	}
 
 	protected function _calculateInclusiveTax($amount, $rate)
