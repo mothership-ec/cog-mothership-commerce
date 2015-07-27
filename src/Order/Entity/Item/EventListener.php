@@ -28,7 +28,7 @@ class EventListener implements SubscriberInterface
 			OrderEvents::ENTITY_CREATE => array(
 				['setDefaultActualPrice'],
 				['setBasePrice', -100],
-				['calculateTax', -200],
+				['calculateTax', -300],
 				['setDefaultStatus'],
 			),
 			OrderEvents::CREATE_VALIDATE => array(
@@ -37,7 +37,7 @@ class EventListener implements SubscriberInterface
 			OrderEvents::ASSEMBLER_UPDATE => array(
 				['setDefaultActualPrice'],
 				['setBasePrice', -100],
-				['calculateAllItemsTax', -200],
+				['calculateAllItemsTax', -300],
 			),
 			OrderEvents::STATUS_CHANGE => array(
 				['updateStatus'],
