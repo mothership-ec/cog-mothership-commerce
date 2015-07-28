@@ -1,6 +1,24 @@
 # Changelog
 
-# 5.7.0
+## 5.8.0
+
+- Added `setType()` method to `Order\Entity\Discount\Discount` which takes a string to mark which type of discount the entity represents
+- Added `getType()` method to `Order\Entity\Discount\Discount` for getting the type string
+- Added `type` column to `order_discount` table
+- Added `getTotal()` method to `Order\Entity\Discount\Collection`
+- Basket total price takes discount into account
+- Discount event listener calculates fixed discounts before calculating percentage discounts on items
+- Added `getDiscountedPrice()` method to `Order\Entity\Item\Item` class which returns the actual price minus the discount
+- Added `getTotalDiscountedPrice()` method to `Order\Entity\Item\Collection` class which returns the total discounted price of all items in the collection
+- Added `getTotalNetPrice()` method to `Order\Entity\Item\Collection` class which returns the total net price of all items in the collection
+- Set precedence on method calls in item event listener
+- Set precedence on method calls in order event listener
+- Fixed issue where tax deductions were made before discounts were calculated
+- Fixed broken exception message in `Order\Entity\Item\Row`
+- Changed text on exceptions on `Product\Product` class
+- Recalculation of tax on `Order\EventListener\ValidateListener` and error added if total item tax does not match product tax on order
+
+## 5.7.0
 
 - Add `Sales by Unit` report, containing the following columns:
     - Product
