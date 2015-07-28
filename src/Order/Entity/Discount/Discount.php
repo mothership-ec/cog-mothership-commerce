@@ -28,6 +28,8 @@ class Discount implements EntityInterface
 	public $name;
 	public $description;
 
+	private $_type;
+
 	public function __construct()
 	{
 		$this->authorship = new Authorship;
@@ -37,5 +39,19 @@ class Discount implements EntityInterface
 			->disableDelete();
 
 		$this->items = new Item\Collection;
+	}
+
+	public function setType($type)
+	{
+		if ($type && !is_string($type)) {
+			throw new \InvalidArgumentException('Discount type must be a string');
+		}
+
+		$this->_type = $type;
+	}
+
+	public function getType()
+	{
+		return $this->_type;
 	}
 }

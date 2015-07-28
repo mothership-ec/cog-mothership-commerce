@@ -83,38 +83,48 @@ class EventListener extends BaseListener implements SubscriberInterface
 	{
 		$this->resetDiscountAmounts($event);
 
+		$flat        = [];
+		$percentages = [];
+
 		foreach ($event->getOrder()->discounts as $discount) {
 			if ($discount->percentage) {
-				foreach ($discount->items as $item) {
-					$amount            = round($item->basePrice * ($discount->percentage / 100), 2);
-					$item->discount   += $amount;
-					$discount->amount += $amount;
-				}
+				$percentages[] = $discount;
+			} else {
+				$flat[] = $discount;
 			}
-			else {
-				$totalBasePrice = 0;
-				foreach($discount->items as $item) {
-					$totalBasePrice += $item->basePrice;
-				}
+		}
 
-				if ($totalBasePrice === 0 ) {
-					continue;
-				}
+		foreach ($flat as $discount) {
+			$totalBasePrice = 0;
+			foreach($discount->items as $item) {
+				$totalBasePrice += $item->basePrice;
+			}
 
-				$prorateHelper = $this->get('helper.prorate')
-					->setGetBasisPercentage(
-						function($item) use ($totalBasePrice)
-					 	{
-					 		return $item->basePrice / $totalBasePrice;
-					 	}
-					 )
-					->setAssignProrateAmount(
-						function($item, $proratedValue)
-						{
-							$item->discount += round($proratedValue, 2);
-						}
-					);
-				$prorateHelper->prorateValue($discount->amount, $discount->items->all());
+			if ($totalBasePrice === 0 ) {
+				continue;
+			}
+
+			$prorateHelper = $this->get('helper.prorate')
+				->setGetBasisPercentage(
+					function($item) use ($totalBasePrice)
+					{
+						return $item->basePrice / $totalBasePrice;
+					}
+				)
+				->setAssignProrateAmount(
+					function($item, $proratedValue)
+					{
+						$item->discount += $proratedValue;
+					}
+				);
+			$prorateHelper->prorateValue($discount->amount, $discount->items->all());
+		}
+
+		foreach ($percentages as $discount) {
+			foreach ($discount->items as $item) {
+				$amount            = $item->getDiscountedPrice() * ($discount->percentage / 100);
+				$item->discount   += $amount;
+				$discount->amount += $amount;
 			}
 		}
 	}

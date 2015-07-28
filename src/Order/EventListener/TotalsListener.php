@@ -34,11 +34,11 @@ class TotalsListener extends BaseListener implements SubscriberInterface
 	{
 		return array(
 			OrderEvents::CREATE_START => array(
-				array('calculateShippingTax'),
+				array('calculateShippingTax', -400),
 				array('setTotals', -900),
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
-				array('calculateShippingTax'),
+				array('calculateShippingTax', -400),
 				array('setTotals', -900),
 			),
 		);

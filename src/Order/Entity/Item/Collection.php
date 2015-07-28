@@ -51,6 +51,28 @@ class Collection extends BaseCollection
 		return $return;
 	}
 
+	public function getTotalDiscountedPrice()
+	{
+		$price = 0;
+
+		foreach ($this->all() as $item) {
+			$price += $item->getDiscountedPrice();
+		}
+
+		return $price;
+	}
+
+	public function getTotalNetPrice()
+	{
+		$net = 0;
+
+		foreach ($this->all() as $item) {
+			$net += $item->net;
+		}
+
+		return $net;
+	}
+
 	public function getTotalTax()
 	{
 		$tax = 0;

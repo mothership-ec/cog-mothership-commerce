@@ -49,15 +49,17 @@ class Create implements DB\TransactionalInterface
 				order_id    = :orderID?i,
 				created_at  = :createdAt?d,
 				created_by  = :createdBy?in,
+				`type`      = :type?sn,
 				code        = :code?sn,
 				amount      = :amount?f,
 				percentage  = :percentage?fn,
-				name        = :name?sn,
+				`name`      = :name?sn,
 				description = :description?sn
 		', array(
 			'orderID'     => $discount->order->id,
 			'createdAt'   => $discount->authorship->createdAt(),
 			'createdBy'   => $discount->authorship->createdBy(),
+			'type'        => $discount->getType(),
 			'code'        => $discount->code,
 			'amount'      => $discount->amount,
 			'percentage'  => $discount->percentage,
