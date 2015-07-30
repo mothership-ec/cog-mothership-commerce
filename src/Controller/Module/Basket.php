@@ -10,14 +10,16 @@ class Basket extends Controller
 	{
 		$order          = $this->get('basket')->getOrder();
 		$totalListPrice = 0;
+		$totalDiscount  = 0;
 
 		foreach ($order->items as $item) {
 			$totalListPrice += $item->listPrice;
+			$totalDiscount  += $item->discount;
 		}
 
 		return $this->render('Message:Mothership:Commerce::basket', array(
 			'order'          => $order,
-			'totalListPrice' => $totalListPrice,
+			'totalListPrice' => $totalListPrice - $totalDiscount,
 		));
 	}
 }

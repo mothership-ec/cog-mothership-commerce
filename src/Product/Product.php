@@ -92,7 +92,7 @@ class Product implements Price\PricedInterface
 			return $this->_entities[$var];
 		}
 
-		throw new \InvalidArgumentException(sprintf('Order entity `%s` does not exist', $var));
+		throw new \InvalidArgumentException(sprintf('Product entity `%s` does not exist', $var));
 
 	}
 
@@ -119,7 +119,7 @@ class Product implements Price\PricedInterface
 	public function addEntity($name, Unit\LoaderInterface $loader)
 	{
 		if (array_key_exists($name, $this->_entities)) {
-			throw new \InvalidArgumentException(sprintf('Order entity already exists with name `%s`', $name));
+			throw new \InvalidArgumentException(sprintf('Product entity already exists with name `%s`', $name));
 		}
 
 		$this->_entities[$name] = new Unit\Collection($this, $loader);
@@ -293,13 +293,21 @@ class Product implements Price\PricedInterface
 	 */
 	public function getOptionPrices(array $options, $type = 'retail', $currencyID = null)
 	{
-		$key = serialize($options);
+		$currencyID = $currencyID ?: $this->_defaultCurrency;
+
+		if(!is_string($type)) {
+			throw new \InvalidArgumentException('Argument $type must be of type string, ' . gettype($type) . ' given');
+		}
+
+		if(!is_string($currencyID)) {
+			throw new \InvalidArgumentException('Argument $currencyID must be of type string, ' . gettype($currencyID) . ' given');
+		}
+		
+		$key = $type . ':' . $currencyID . '#' . serialize($options);
 
 		if (array_key_exists($key, $this->_optionPrices)) {
 			return $this->_optionPrices[$key];
 		}
-
-		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
 		$prices = [];
 
