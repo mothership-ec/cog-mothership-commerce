@@ -29,7 +29,7 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 		");
 
 		$this->run('
-			REPLACE INTO
+			INSERT IGNORE INTO
 				`refund` (
 					refund_id,
 					payment_id,

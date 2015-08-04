@@ -25,7 +25,7 @@ class _1400163185_DecouplePaymentsFromOrders extends Migration
 		");
 
 		$this->run('
-			REPLACE INTO
+			INSERT IGNORE INTO
 				`payment` (
 					payment_id,
 					created_at,
