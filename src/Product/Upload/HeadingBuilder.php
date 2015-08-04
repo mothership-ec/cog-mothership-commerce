@@ -38,16 +38,17 @@ class HeadingBuilder implements \Countable
 	 * @var array
 	 */
 	private $_prefixCols = [
-		'name' => 'name',
-		'sortName' => 'sortName',
-		'category' => 'category',
-		'brand' => 'brand',
-		'description' => 'description',
-		'shortDescription' => 'shortDescription',
-		'exportDescription' => 'exportDescription',
-		'supplierRef' => 'supplierRef',
-		'weight' => 'weight',
-		'notes' => 'notes',
+		'name'                       => 'name',
+		'sortName'                   => 'sortName',
+		'category'                   => 'category',
+		'brand'                      => 'brand',
+		'description'                => 'description',
+		'shortDescription'           => 'shortDescription',
+		'exportDescription'          => 'exportDescription',
+		'supplierRef'                => 'supplierRef',
+		'defaultImage'               => 'defaultImage',
+		'weight'                     => 'weight',
+		'notes'                      => 'notes',
 		'exportManufactureCountryID' => 'exportManufactureCountryID',
 	];
 
