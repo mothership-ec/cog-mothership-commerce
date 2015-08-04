@@ -1,5 +1,19 @@
 # Changelog
 
+## 5.9.0
+
+- Added `Product\Image\Assignor` class for assigning images to products
+- Added `Product\Image\Exception\AssignmentException` to be thrown when an image cannot be assigned to a product
+- Added `Product\Upload\ProductImageCreate` class, which uses the `Assignor` to assign images to the newly created products based on the data from the CSV, and then save it to the database
+- Added `defaultImage` column to product upload CSV template
+- Display flash messages from `Product\Image\Exception\AssignmentException` if image could not be assigned to product
+- Alter `_1400150176_DecoupleRefundsFromOrders` migration to only create table if not exists
+- Alter `_1400150176_DecoupleRefundsFromOrders` migration to use `INSERT IGNORE INTO` when porting data from old tables
+- Alter `_1400163185_DecouplePaymentsFromOrders` migration to only create table if not exists
+- Alter `_1400163185_DecouplePaymentsFromOrders` migration to use `INSERT IGNORE INTO` when porting data from old tables
+- Added translations for product image upload
+- Increment `cog-mothership-file-manager` dependency to 3.1
+
 ## 5.8.0
 
 - Added `setType()` method to `Order\Entity\Discount\Discount` which takes a string to mark which type of discount the entity represents
