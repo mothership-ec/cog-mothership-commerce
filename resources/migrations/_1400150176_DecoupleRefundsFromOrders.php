@@ -7,7 +7,7 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `refund` (
+			CREATE TABLE IF NOT EXISTS `refund` (
 			  `refund_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `payment_id` int(11) unsigned DEFAULT NULL,
 			  `created_at` int(11) unsigned NOT NULL,
@@ -29,7 +29,7 @@ class _1400150176_DecoupleRefundsFromOrders extends Migration
 		");
 
 		$this->run('
-			INSERT INTO
+			REPLACE INTO
 				`refund` (
 					refund_id,
 					payment_id,

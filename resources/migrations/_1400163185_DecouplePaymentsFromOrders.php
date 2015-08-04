@@ -7,7 +7,7 @@ class _1400163185_DecouplePaymentsFromOrders extends Migration
 	public function up()
 	{
 		$this->run("
-			CREATE TABLE `payment` (
+			CREATE TABLE IF NOT EXISTS `payment` (
 			  `payment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			  `created_at` int(11) unsigned NOT NULL,
 			  `created_by` int(11) unsigned DEFAULT NULL,
@@ -25,7 +25,7 @@ class _1400163185_DecouplePaymentsFromOrders extends Migration
 		");
 
 		$this->run('
-			INSERT INTO
+			REPLACE INTO
 				`payment` (
 					payment_id,
 					created_at,
