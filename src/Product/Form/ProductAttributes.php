@@ -134,7 +134,7 @@ class ProductAttributes extends Handler
 		return $this;
 	}
 
-	protected function _trans($message,  $params = [], $domain = null, $locale = null)
+	protected function _trans($message, array $params = [], $domain = null, $locale = null)
 	{
 		return $this->_container['translator']->trans($message, $params, $domain, $locale);
 
