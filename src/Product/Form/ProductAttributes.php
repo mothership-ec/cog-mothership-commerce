@@ -72,8 +72,7 @@ class ProductAttributes extends Handler
 			[
 				'data' => $product->getExportCode(),
 				'attr' => ['data-help-key' => 'ms.commerce.product.details.export-code.help']
-			]
-		)
+			])
 			->val()
 			->optional()
 		;
@@ -94,15 +93,15 @@ class ProductAttributes extends Handler
 			->number()
 			->optional();
 		$this->add('tags', 'textarea', $this->_trans('ms.commerce.product.details.tags.label'), [
-					'data' => implode(', ', $product->tags),
-					'attr' => ['data-help-key' => 'ms.commerce.product.details.tags.help']
-				])
+				'data' => implode(', ', $product->tags),
+				'attr' => ['data-help-key' => 'ms.commerce.product.details.tags.help']
+			])
 			->val()
 			->optional();
 		$this->add('notes', 'textarea', $this->_trans('ms.commerce.product.details.notes.label'), [
-					'data' => $product->notes,
-					'attr' => ['data-help-key' => 'ms.commerce.product.details.notes.help']
-				])
+				'data' => $product->notes,
+				'attr' => ['data-help-key' => 'ms.commerce.product.details.notes.help']
+			])
 			->val()
 			->optional();
 		$this->add(
@@ -110,10 +109,10 @@ class ProductAttributes extends Handler
 			'choice',
 			$this->_container['translator']->trans('ms.commerce.product.details.export-manufacture-country.label'),
 			[
-							'data' 	  => $product->exportManufactureCountryID,
-							'choices' => $this->_container['country.list']->all(),
-							'attr'    => ['data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'],
-						]
+				'data' 	  => $product->exportManufactureCountryID,
+				'choices' => $this->_container['country.list']->all(),
+				'attr'    => ['data-help-key' => 'ms.commerce.product.details.export-manufacture-country.help'],
+			]
 		);
 
 		$typeChoices = [];
