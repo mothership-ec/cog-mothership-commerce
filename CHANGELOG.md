@@ -1,5 +1,40 @@
 # Changelog
 
+## 5.8.0
+
+- Added `setType()` method to `Order\Entity\Discount\Discount` which takes a string to mark which type of discount the entity represents
+- Added `getType()` method to `Order\Entity\Discount\Discount` for getting the type string
+- Added `type` column to `order_discount` table
+- Added `getTotal()` method to `Order\Entity\Discount\Collection`
+- Basket total price takes discount into account
+- Discount event listener calculates fixed discounts before calculating percentage discounts on items
+- Added `getDiscountedPrice()` method to `Order\Entity\Item\Item` class which returns the actual price minus the discount
+- Added `getTotalDiscountedPrice()` method to `Order\Entity\Item\Collection` class which returns the total discounted price of all items in the collection
+- Added `getTotalNetPrice()` method to `Order\Entity\Item\Collection` class which returns the total net price of all items in the collection
+- Set precedence on method calls in item event listener
+- Set precedence on method calls in order event listener
+- Fixed issue where tax deductions were made before discounts were calculated
+- Fixed broken exception message in `Order\Entity\Item\Row`
+- Changed text on exceptions on `Product\Product` class
+- Recalculation of tax on `Order\EventListener\ValidateListener` and error added if total item tax does not match product tax on order
+
+## 5.7.0
+
+- Add `Sales by Unit` report, containing the following columns:
+    - Product
+    - Option
+    - Currency
+    - Net
+    - Tax
+    - Gross
+    - Transactions
+- Add `commerce.sales_by_unit` service which returns the `Report\SalesByUnit` report class
+- Add `commerce.sales_by_unit` to `commerce.reports` service
+- Removed nonsensical `Option` column from `Sales by Product`
+- Renamed "Number Sold" column in `Sales by Product` report to "Transactions"
+- Removed unnecessary forth parameter in `Report\AbstractSales` call to parent constructor
+- Units form no longer automatically populates the `Weight` field with the product's weight if there is no unit weight set or if the unit weight matches the product weight
+
 ## 5.6.0
 
 - Add `getSaleUnits()` method to unit loader

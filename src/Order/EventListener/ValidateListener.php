@@ -2,6 +2,7 @@
 
 namespace Message\Mothership\Commerce\Order\EventListener;
 
+use Message\Mothership\Commerce\Order\Order;
 use Message\Mothership\Commerce\Order\Events as OrderEvents;
 use Message\Mothership\Commerce\Order\Event;
 use Message\Mothership\Commerce\Order\Status\Status;
@@ -50,5 +51,31 @@ class ValidateListener implements SubscriberInterface
 		if (!$order->currencyID) {
 			$event->addError('Order must have a currency ID');
 		}
+
+		if (count($order->getItems()) <= 0) {
+			$event->addError('Order must have items set');
+		}
+
+		if (!$this->_validateTax($order)) {
+			$event->addError('Tax calculation error');
+		}
+	}
+
+	/**
+	 * Recount the item tax and check that it matches the order product tax
+	 *
+	 * @param Order $order
+	 *
+	 * @return bool
+	 */
+	private function _validateTax(Order $order)
+	{
+		$itemTax = 0;
+
+		foreach ($order->getItems() as $item) {
+			$itemTax += $item->getTax();
+		}
+
+		return $order->productTax == $itemTax;
 	}
 }
