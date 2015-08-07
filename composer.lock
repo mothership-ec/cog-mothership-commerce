@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "669579c1d72273d33641da497c6ab9f7",
+    "hash": "35ba2dc9d691efc065612f7e40592415",
     "packages": [
         {
             "name": "dflydev/markdown",
@@ -676,16 +676,16 @@
         },
         {
             "name": "mothership-ec/cog",
-            "version": "4.6.0",
+            "version": "4.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog.git",
-                "reference": "5812baf3f8001debd8205a6bbbfb01b82718ef4b"
+                "reference": "324e0c02cd30696b70cf1befe582f9db24faf34e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog/zipball/5812baf3f8001debd8205a6bbbfb01b82718ef4b",
-                "reference": "5812baf3f8001debd8205a6bbbfb01b82718ef4b",
+                "url": "https://api.github.com/repos/mothership-ec/cog/zipball/324e0c02cd30696b70cf1befe582f9db24faf34e",
+                "reference": "324e0c02cd30696b70cf1befe582f9db24faf34e",
                 "shasum": ""
             },
             "require": {
@@ -767,7 +767,7 @@
                 "cog",
                 "framework"
             ],
-            "time": "2015-07-15 09:34:09"
+            "time": "2015-07-31 12:57:18"
         },
         {
             "name": "mothership-ec/cog-imageresize",
@@ -970,22 +970,23 @@
         },
         {
             "name": "mothership-ec/cog-mothership-user",
-            "version": "4.0.3",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog-mothership-user.git",
-                "reference": "e91ff34fb4c40469a897d1fb89ff26b1d7b58bb3"
+                "reference": "02def88a3d0bcbb86879ee85a40970ea5c16036b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog-mothership-user/zipball/e91ff34fb4c40469a897d1fb89ff26b1d7b58bb3",
-                "reference": "e91ff34fb4c40469a897d1fb89ff26b1d7b58bb3",
+                "url": "https://api.github.com/repos/mothership-ec/cog-mothership-user/zipball/02def88a3d0bcbb86879ee85a40970ea5c16036b",
+                "reference": "02def88a3d0bcbb86879ee85a40970ea5c16036b",
                 "shasum": ""
             },
             "require": {
                 "kevinlebrun/colors.php": "0.*",
-                "mothership-ec/cog": "~4.0",
+                "mothership-ec/cog": "~4.7",
                 "mothership-ec/cog-mothership-cp": "~3.0",
+                "mothership-ec/cog-mothership-file-manager": "~3.0",
                 "mothership-ec/cog-mothership-reports": "~2.0",
                 "mothership-ec/cog-user": "~2.0",
                 "php": ">=5.4.0"
@@ -1016,20 +1017,20 @@
                 "mothership",
                 "user"
             ],
-            "time": "2015-07-15 09:41:22"
+            "time": "2015-07-30 15:11:10"
         },
         {
             "name": "mothership-ec/cog-user",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog-user.git",
-                "reference": "56cbaa0046b5aed659edde3534e951bba829a4d1"
+                "reference": "9392dfdc39fbb2b58298076ddc855143c5db3851"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog-user/zipball/56cbaa0046b5aed659edde3534e951bba829a4d1",
-                "reference": "56cbaa0046b5aed659edde3534e951bba829a4d1",
+                "url": "https://api.github.com/repos/mothership-ec/cog-user/zipball/9392dfdc39fbb2b58298076ddc855143c5db3851",
+                "reference": "9392dfdc39fbb2b58298076ddc855143c5db3851",
                 "shasum": ""
             },
             "require": {
@@ -1062,7 +1063,7 @@
                 "cog",
                 "user"
             ],
-            "time": "2015-02-24 14:40:17"
+            "time": "2015-07-30 10:59:36"
         },
         {
             "name": "mtdowling/cron-expression",
@@ -1339,16 +1340,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "8cf484449130cabfd98dcb4694ca9945802a21ed"
+                "reference": "d6cf02fe73634c96677e428f840704bfbcaec29e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/8cf484449130cabfd98dcb4694ca9945802a21ed",
-                "reference": "8cf484449130cabfd98dcb4694ca9945802a21ed",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/d6cf02fe73634c96677e428f840704bfbcaec29e",
+                "reference": "d6cf02fe73634c96677e428f840704bfbcaec29e",
                 "shasum": ""
             },
             "require": {
@@ -1392,11 +1393,11 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-09 16:07:40"
+            "time": "2015-07-28 15:18:12"
         },
         {
             "name": "symfony/debug",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Debug.git",
@@ -1668,16 +1669,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation.git",
-                "reference": "88903c0531b90d4ecd90282b18f08c0c77bde0b2"
+                "reference": "863af6898081b34c65d42100c370b9f3c51b70ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/88903c0531b90d4ecd90282b18f08c0c77bde0b2",
-                "reference": "88903c0531b90d4ecd90282b18f08c0c77bde0b2",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/863af6898081b34c65d42100c370b9f3c51b70ca",
+                "reference": "863af6898081b34c65d42100c370b9f3c51b70ca",
                 "shasum": ""
             },
             "require": {
@@ -1717,7 +1718,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-09 16:07:40"
+            "time": "2015-07-22 10:11:00"
         },
         {
             "name": "symfony/http-kernel",
@@ -1795,16 +1796,16 @@
         },
         {
             "name": "symfony/intl",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Intl.git",
-                "reference": "35c44cc91b767b4d63897643067bd78b6851ac51"
+                "reference": "ea83ee897023537fcd9b15fe29ef5622ea8f1c4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Intl/zipball/35c44cc91b767b4d63897643067bd78b6851ac51",
-                "reference": "35c44cc91b767b4d63897643067bd78b6851ac51",
+                "url": "https://api.github.com/repos/symfony/Intl/zipball/ea83ee897023537fcd9b15fe29ef5622ea8f1c4b",
+                "reference": "ea83ee897023537fcd9b15fe29ef5622ea8f1c4b",
                 "shasum": ""
             },
             "require": {
@@ -1866,7 +1867,7 @@
                 "l10n",
                 "localization"
             ],
-            "time": "2015-06-28 17:13:14"
+            "time": "2015-07-31 13:24:29"
         },
         {
             "name": "symfony/options-resolver",
@@ -1969,16 +1970,16 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/PropertyAccess.git",
-                "reference": "e7e04d79fcf9c2bac53810cfd78c1afc3ac55005"
+                "reference": "e61e1a292c397273f654b15389600fe1d5a210de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/PropertyAccess/zipball/e7e04d79fcf9c2bac53810cfd78c1afc3ac55005",
-                "reference": "e7e04d79fcf9c2bac53810cfd78c1afc3ac55005",
+                "url": "https://api.github.com/repos/symfony/PropertyAccess/zipball/e61e1a292c397273f654b15389600fe1d5a210de",
+                "reference": "e61e1a292c397273f654b15389600fe1d5a210de",
                 "shasum": ""
             },
             "require": {
@@ -2025,7 +2026,7 @@
                 "property path",
                 "reflection"
             ],
-            "time": "2015-06-16 13:26:24"
+            "time": "2015-07-16 12:21:55"
         },
         {
             "name": "symfony/routing",
@@ -2664,12 +2665,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "612bde5e291b775a549ab15a56dcc84f9e490cba"
+                "reference": "e585573c91b0c821e511afd14666b4503ef7255b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/612bde5e291b775a549ab15a56dcc84f9e490cba",
-                "reference": "612bde5e291b775a549ab15a56dcc84f9e490cba",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/e585573c91b0c821e511afd14666b4503ef7255b",
+                "reference": "e585573c91b0c821e511afd14666b4503ef7255b",
                 "shasum": ""
             },
             "require": {
@@ -2721,7 +2722,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2015-07-27 08:38:58"
+            "time": "2015-07-31 13:51:58"
         }
     ],
     "aliases": [],

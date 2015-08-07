@@ -130,7 +130,6 @@ class ProductBuilder
 					return;
 				}
 			}
-
 		}
 
 		$this->_product->type = $this->_productTypes->getDefault();

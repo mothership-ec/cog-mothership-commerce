@@ -7,6 +7,60 @@ rates:
         - {name: VAT, rate: 20.000}
       shipping-tax:
         - {name: VAT, rate: 20.000}
+  AT:
+    <<: *GB
+  BE:
+    <<: *GB
+  BG:
+    <<: *GB
+  HR:
+    <<: *GB
+  CY:
+    <<: *GB
+  CZ:
+    <<: *GB
+  DK:
+    <<: *GB
+  EE:
+    <<: *GB
+  FI:
+    <<: *GB
+  FR:
+    <<: *GB
+  DE:
+    <<: *GB
+  GR:
+    <<: *GB
+  HU:
+    <<: *GB
+  IE:
+    <<: *GB
+  IT:
+    <<: *GB
+  LV:
+    <<: *GB
+  LT:
+    <<: *GB
+  LU:
+    <<: *GB
+  MT:
+    <<: *GB
+  NL:
+    <<: *GB
+  PL:
+    <<: *GB
+  PT:
+    <<: *GB
+  RO:
+    <<: *GB
+  SK:
+    <<: *GB
+  SI:
+    <<: *GB
+  ES:
+    <<: *GB
+  SE:
+    <<: *GB
   default:
     default:
       voucher-tax:
