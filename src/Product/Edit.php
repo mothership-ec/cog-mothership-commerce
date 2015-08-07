@@ -210,7 +210,8 @@ class Edit implements TransactionalInterface
 				tax_strategy = :taxStrategy?s,
 				supplier_ref = :supplierRef?sn,
 				weight_grams = :weightGrams?in,
-				category     = :category?sn
+				category     = :category?sn,
+				`type`       = :type?s
 			WHERE
 				product_id = :productID?i
 			", [
@@ -224,6 +225,7 @@ class Edit implements TransactionalInterface
 				'supplierRef'       => $this->_product->supplierRef,
 				'weightGrams'       => $this->_product->weight,
 				'category'          => $this->_product->category,
+				'type'              => $this->_product->type->getName(),
 		]);
 
 		return $this;

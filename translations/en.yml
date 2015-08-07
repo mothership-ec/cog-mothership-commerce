@@ -94,6 +94,9 @@ ms.commerce:
         label: Export value
         help: The nominal cost of the product for export purposes.
     details:
+      product-type:
+        label: Product Type
+        help: The type of product. This determines what content may be set on the product, how much tax is charged, and any special behaviour the product will exhibit.
       supplier-ref:
         label: Supplier Reference
         help: Optionally you can store a reference from the supplier of this product.

@@ -10,8 +10,10 @@
 					<dd>{{ dispatch.shippedBy }}</dd>
 				<dt>{{ 'Shipped on'|trans }}</dt>
 					<dd>{{ dispatch.shippedAt|date }}</dd>
-				<dt>{{ 'ms.commerce.order.dispatch.code'|trans }}</dt>
-					<dd>{{ dispatch.code }}</dd>
+				{% if dispatch.getCode() %}
+					<dt>{{ 'ms.commerce.order.dispatch.code'|trans }}</dt>
+						<dd>{{ dispatch.getCode }}</dd>
+				{% endif %}
 				<dt>{{ 'ms.commerce.order.dispatch.cost'|trans }}</dt>
 					<dd>{{ dispatch.cost|price(order.currencyID) }}</dd>
 				<dt>{{ 'ms.commerce.order.dispatch.weight'|trans }}</dt>
