@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.10.0
+
+- Added `NO_DELIVERY_CODE_PREFIX` constant to `Order\Entity\Dispatch\Dispatch` class for flagging a dispatch as being non-existent (not saved as null for BC purposes)
+- Added `getCode()` method to `Order\Entity\Dispatch\Dispatch` which returns the tracking code unless it is flagged as non-existent, in which case it returns null
+- Tracking codes do not display on **Dispatches** tab under order overview if none is set
+- `Product\Edit` class saves product type
+- Added ability to change product type from **Attributes** tab of product edit screen
+- Added EU countries to default tax configuration (VAT)
+
 ## 5.9.0
 
 - Added `Product\Image\Assignor` class for assigning images to products
