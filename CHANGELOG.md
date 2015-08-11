@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.10.1
+
+- Product listing in admin panel does not display images if there are over a thousand products
+
 ## 5.10.0
 
 - Added `NO_DELIVERY_CODE_PREFIX` constant to `Order\Entity\Dispatch\Dispatch` class for flagging a dispatch as being non-existent (not saved as null for BC purposes)
