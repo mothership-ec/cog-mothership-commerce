@@ -5,11 +5,14 @@
 		<a href="{{ url('ms.commerce.product.create')}}" class="button small create product" data-live>Add a new product</a>
 	</div>
 </hgroup>
+
 <div class="container-content">
-	<table class="table-filter products">
+	<table class="table-filter products" data-show-images="{{ showImages ? "true" : "false" }}">
 		<colgroup>
 			<col width="100">
-            <col width="50">
+			{% if showImages %}
+				<col width="50">
+			{% endif %}
             <col>
             <col>
             <col>
@@ -19,7 +22,9 @@
 		<thead>
 			<tr>
 				<th>ID</th>
-				<th class="disable">Photo</th>
+				{% if showImages %}
+					<th class="disable">Photo</th>
+				{% endif %}
 				<th>Name</th>
 				<th>Brand</th>
 				<th>Category</th>
@@ -30,7 +35,9 @@
 		<tfoot>
 			<tr>
 				<th>ID</th>
-				<th>-</th>
+				{% if showImages %}
+					<th>-</th>
+				{% endif %}
 				<th>Name</th>
 				<th>Brand</th>
 				<th>Category</th>
@@ -42,7 +49,9 @@
 			{% for product in products %}
 				<tr>
 					<td>{{ product.id }}</td>
-					<td>{{ getResizedImage(product.getImage(), 50, 50) }}</td>
+					{% if showImages %}
+						<td>{{ getResizedImage(product.getImage(), 50, 50) }}</td>
+					{% endif %}
 					<td><a href="{{ url('ms.commerce.product.edit.attributes', {productID:product.id}) }}" class="click" data-live>{{ product.defaultName }}</a></td>
 					<td>{{ product.brand }}</td>
 					<td>{{ product.category }}</td>
