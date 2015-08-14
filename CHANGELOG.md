@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.10.2
+
+- Removed empty `Product/Image/LoaderTest` test class
+
 ## 5.10.1
 
 - Product listing in admin panel does not display images if there are over a thousand products

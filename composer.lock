@@ -1021,16 +1021,16 @@
         },
         {
             "name": "mothership-ec/cog-user",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog-user.git",
-                "reference": "9392dfdc39fbb2b58298076ddc855143c5db3851"
+                "reference": "48d8655c3fb5004b676a9294031be20ea9ab7cef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog-user/zipball/9392dfdc39fbb2b58298076ddc855143c5db3851",
-                "reference": "9392dfdc39fbb2b58298076ddc855143c5db3851",
+                "url": "https://api.github.com/repos/mothership-ec/cog-user/zipball/48d8655c3fb5004b676a9294031be20ea9ab7cef",
+                "reference": "48d8655c3fb5004b676a9294031be20ea9ab7cef",
                 "shasum": ""
             },
             "require": {
@@ -1063,7 +1063,7 @@
                 "cog",
                 "user"
             ],
-            "time": "2015-07-30 10:59:36"
+            "time": "2015-08-14 10:13:05"
         },
         {
             "name": "mtdowling/cron-expression",
