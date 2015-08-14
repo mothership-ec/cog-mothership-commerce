@@ -5,3 +5,4 @@ Gruntfile.js
 package.json
 tmp
 .idea
+composer.lock
