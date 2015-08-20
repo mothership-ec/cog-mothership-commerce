@@ -52,6 +52,15 @@ class Unit implements PricedInterface
 		}
     }
 
+	public function __set($name, $val)
+	{
+		if ($name === 'product') {
+			$this->setProduct($val);
+		} else {
+			$this->{$name} = $val;
+		}
+	}
+
 	public function setOption($type, $value)
 	{
 		$this->options[$type] = $value;
