@@ -24,9 +24,16 @@ class UnitProxy extends Unit
 
 	public function setProductID($productID)
 	{
-		if (!is_numeric($productID)) {
-			throw new \InvalidArgumentException('Product ID must be numeric');
+		if (!is_numeric($productID) and $productID != (int) $productID) {
+			throw new \InvalidArgumentException('Product ID must be a whole number');
 		}
+
+		$this->_productID = $productID;
+	}
+
+	public function getProductID()
+	{
+		return $this->_productID;
 	}
 
 	public function getProduct()

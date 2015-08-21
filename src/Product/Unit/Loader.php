@@ -132,24 +132,21 @@ class Loader implements ProductEntityLoaderInterface
 			$currency = $this->_defaultCurrency;
 		}
 
-		$saleQuery = $this->_queryBuilderFactory
-			->getQueryBuilder()
-			->select('rrp.unit_id AS unit_id')
-			->from('rrp', $this->_getPriceQuery('rrp'))
-			->join('retail', '
-				retail.unit_id = rrp.unit_id AND
-				rrp.currency_id = retail.currency_id AND
-				(rrp.price - retail.price) > 0 AND
-				rrp.currency_id = :currency?s
-			', $this->_getPriceQuery('retail'))
-			->addParams(['currency' => $currency])
-		;
-
 		$this->_returnArray = true;
 		$this->_buildQuery();
-		$this->_queryBuilder->where('product_unit.unit_id IN (?q)', $saleQuery);
 
-		return $this->_loadFromQuery();
+		$units = $this->_loadFromQuery();
+
+		foreach ($units as $key => $unit) {
+			$rrp = $unit->getPrice('rrp', $currency);
+			$retail = $unit->getPrice('retail', $currency);
+
+			if ($retail >= $rrp) {
+				unset($units[$key]);
+			}
+		}
+
+		return $units;
 	}
 
 	public function includeInvisible($bool)
@@ -215,10 +212,12 @@ class Loader implements ProductEntityLoaderInterface
 				'product_unit_option.option_value AS optionValue',
 			])
 			->from('product_unit')
+			->join('product', 'product_unit.product_id = product.product_id') // Join product table to filter out units where product is hard deleted
 			->leftJoin('product_unit_info', '
 				product_unit_info.unit_id = product_unit.unit_id AND
 				revision_id = (:revisionID?q)
 			')
+			->addParams(['revisionID' => $getRevision])
 			->leftJoin('product_unit_stock', 'product_unit.unit_id = product_unit_stock.unit_id')
 			->leftJoin('product_price', 'product_unit.product_id = product_price.product_id')
 			->leftJoin('product_unit_price', '
@@ -227,7 +226,6 @@ class Loader implements ProductEntityLoaderInterface
 				product_price.currency_id = product_unit_price.currency_id
 			')
 			->leftJoin('product_unit_option', 'product_unit_option.unit_id = product_unit.unit_id')
-			->addParams(['revisionID' => $getRevision])
 		;
 
 		if (!$this->_loadInvisible) {
@@ -294,30 +292,5 @@ class Loader implements ProductEntityLoaderInterface
 		}
 
 		return $this->_returnArray ? $units : array_shift($units);
-	}
-
-	private function _getPriceQuery($type)
-	{
-		if (!is_string($type)) {
-			throw new \InvalidArgumentException('Price type must be a string, ' . gettype($type) . ' given');
-		}
-
-		return $this->_queryBuilderFactory
-			->getQueryBuilder()
-			->select([
-				'product_unit.unit_id AS unit_id',
-				'product_price.type AS `type`',
-				'product_price.currency_id AS currency_id',
-				'IFNULL (product_unit_price.price, product_price.price) AS price'
-			])
-			->from('product_price')
-			->join('product_unit', 'product_price.product_id = product_unit.product_id)')
-			->leftJoin('product_unit_price', '
-				product_unit.unit_id = product_unit_price.unit_id AND
-				product_price.type = product_unit_price.type AND
-				product_price.currency_id = product_unit_price.currency_id
-			')
-			->where('product_price.type = ?s', [$type])
-			;
 	}
 }
