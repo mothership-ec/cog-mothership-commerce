@@ -149,14 +149,14 @@ class Loader implements ProductEntityLoaderInterface
 		return $units;
 	}
 
-	public function includeInvisible($bool)
+	public function includeInvisible($bool = true)
 	{
 		$this->_loadInvisible = $bool;
 
 		return $this;
 	}
 
-	public function includeOutOfStock($bool)
+	public function includeOutOfStock($bool = true)
 	{
 		$this->_loadOutOfStock = $bool;
 
