@@ -90,7 +90,7 @@ class Loader implements ProductEntityLoaderInterface
 			$unitID = [$unitID];
 		}
 
-		$this->_queryBuilder->where('product_unit.unit_id IN (?ji)', $unitID);
+		$this->_queryBuilder->where('product_unit.unit_id IN (?ji)', [$unitID]);
 
 		return $this->_loadFromQuery($product);
 	}
@@ -116,7 +116,7 @@ class Loader implements ProductEntityLoaderInterface
 
 		$this->_buildQuery();
 
-		$this->_queryBuilder->where('product_unit.barcode IN (?js)', $barcode);
+		$this->_queryBuilder->where('product_unit.barcode IN (?js)', [$barcode]);
 
 		return $this->_loadFromQuery();
 	}
@@ -230,6 +230,10 @@ class Loader implements ProductEntityLoaderInterface
 
 		if (!$this->_loadInvisible) {
 			$this->_queryBuilder->where('product_unit.visible = ?i', [0]);
+		}
+
+		if (!$this->_loadOutOfStock) {
+			$this->_queryBuilder->where('product_unit_stock.stock > 0');
 		}
 	}
 
