@@ -62,6 +62,15 @@ class Loader implements ProductEntityLoaderInterface
 		$this->_entityLoaderCollection->add('product', $this->_productLoader);
 	}
 
+	public function getAll()
+	{
+		$this->_buildQuery();
+
+		$this->_returnArray = true;
+
+		return $this->_loadFromQuery();
+	}
+
 	/**
 	 * Load all the units for a given Product object
 	 *
