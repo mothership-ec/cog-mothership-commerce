@@ -101,8 +101,8 @@ class StockSummary extends AbstractReport
 			->select('options AS "Options"')
 			->select('stock.stock AS "Stock"')
 			->join("unit","unit.unit_id = stock.unit_id","product_unit")
-			->leftJoin("product","unit.product_id = product.product_id")
-			->leftJoin("unit_options","unit_options.unit_id = unit.unit_id",
+			->join("product","unit.product_id = product.product_id")
+			->join("unit_options","unit_options.unit_id = unit.unit_id",
 				$this->_builderFactory->getQueryBuilder()
 					->select('unit_id')
 					->select('revision_id')
