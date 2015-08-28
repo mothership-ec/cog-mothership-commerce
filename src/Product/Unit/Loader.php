@@ -268,6 +268,7 @@ class Loader implements ProductEntityLoaderInterface
 				$unit->barcode     = $row->barcode;
 				$unit->weight      = $row->weight;
 				$unit->supplierRef = $row->supplierRef;
+				$unit->revisionID  = $unit->revisionID ?: 1;
 
 				$unit->setSKU($row->sku);
 				$unit->setVisible((bool) $row->visible);
