@@ -181,11 +181,7 @@ class Loader implements ProductEntityLoaderInterface
 				->addParams(['revisionID' => $revisionID])
 				->groupBy('revisionID')
 			:
-			$this->_queryBuilderFactory->getQueryBuilder()
-				->select('IFNULL(MAX(revision_id), 1)')
-				->from('info', 'product_unit_info')
-				->where('info.unit_id = product_unit.unit_id')
-				->groupBy('unit_id')
+			null
 		;
 
 		$this->_queryBuilder = $this->_queryBuilderFactory->getQueryBuilder()
@@ -222,11 +218,25 @@ class Loader implements ProductEntityLoaderInterface
 			])
 			->from('product_unit')
 			->join('product', 'product_unit.product_id = product.product_id') // Join product table to filter out units where product is hard deleted
-			->leftJoin('product_unit_info', '
-				product_unit_info.unit_id = product_unit.unit_id AND
-				revision_id = (:revisionID?q)
-			')
-			->addParams(['revisionID' => $getRevision])
+			;
+
+			if (null !== $getRevision) {
+				$this->_queryBuilder
+					->leftJoin('product_unit_info', '
+						product_unit_info.unit_id = product_unit.unit_id AND
+						revision_id = (:revisionID?q)
+					')
+					->addParams(['revisionID' => $getRevision]);
+			} else {
+				$this->_queryBuilder
+					->leftJoin('product_unit_info', '
+						product_unit_info.unit_id = product_unit.unit_id AND
+						revision_id = 1
+					')
+				;
+			}
+
+		$this->_queryBuilder
 			->leftJoin('product_unit_stock', 'product_unit.unit_id = product_unit_stock.unit_id')
 			->leftJoin('product_price', 'product_unit.product_id = product_price.product_id')
 			->leftJoin('product_unit_price', '
@@ -268,7 +278,7 @@ class Loader implements ProductEntityLoaderInterface
 				$unit->barcode     = $row->barcode;
 				$unit->weight      = $row->weight;
 				$unit->supplierRef = $row->supplierRef;
-				$unit->revisionID  = $unit->revisionID ?: 1;
+				$unit->revisionID  = $row->revisionID;
 
 				$unit->setSKU($row->sku);
 				$unit->setVisible((bool) $row->visible);
