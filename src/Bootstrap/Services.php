@@ -801,6 +801,7 @@ class Services implements ServicesInterface
 		$services['product.barcode.sheet.collection'] = function($c) {
 			$collection = new Commerce\Product\Barcode\Sheet\Collection;
 			$collection->add(new Commerce\Product\Barcode\Sheet\Size5x13);
+			$collection->add(new Commerce\Product\Barcode\Sheet\Size3x8);
 
 			return $collection;
 		};
