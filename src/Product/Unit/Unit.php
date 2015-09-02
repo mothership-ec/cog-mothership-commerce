@@ -30,7 +30,7 @@ class Unit implements PricedInterface
 
 	);
 
-	private $_product;
+	protected $_product;
 
 	protected $_locale;
 	protected $_defaultCurrency;

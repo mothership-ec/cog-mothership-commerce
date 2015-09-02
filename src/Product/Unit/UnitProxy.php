@@ -4,6 +4,7 @@ namespace Message\Mothership\Commerce\Product\Unit;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\DB\Entity\EntityLoaderCollection;
+use Message\Mothership\Commerce\Product\Product;
 
 class UnitProxy extends Unit
 {
@@ -36,6 +37,15 @@ class UnitProxy extends Unit
 		return $this->_productID;
 	}
 
+	public function setProduct(Product $product)
+	{
+		if (null === $this->_productID) {
+			$this->_productID = $product->id;
+		}
+
+		return parent::setProduct($product);
+	}
+
 	public function getProduct()
 	{
 		if ($this->_productID && !parent::getProduct() && $this->_loaders->exists('product')) {
@@ -44,6 +54,11 @@ class UnitProxy extends Unit
 		}
 
 		return parent::getProduct();
+	}
+
+	public function __sleep()
+	{
+		return array_diff(array_keys(get_object_vars($this)), ['_product']);
 	}
 
 }
