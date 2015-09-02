@@ -30,7 +30,7 @@ class Unit implements PricedInterface
 
 	);
 
-	public $product;
+	protected $_product;
 
 	protected $_locale;
 	protected $_defaultCurrency;
@@ -51,6 +51,24 @@ class Unit implements PricedInterface
 			$this->price[$name] = clone $pricing;
 		}
     }
+
+	public function __set($name, $val)
+	{
+		if ($name === 'product') {
+			$this->setProduct($val);
+		} else {
+			$this->{$name} = $val;
+		}
+	}
+
+	public function __get($name)
+	{
+		if ($name === 'product') {
+			return $this->getProduct();
+		}
+
+		return $this->{$name};
+	}
 
 	public function setOption($type, $value)
 	{
@@ -164,7 +182,7 @@ class Unit implements PricedInterface
 
 	public function getProduct()
 	{
-		return $this->product;
+		return $this->_product;
 	}
 
     /**
@@ -176,7 +194,7 @@ class Unit implements PricedInterface
      */
     public function setProduct($product)
     {
-        $this->product = $product;
+        $this->_product = $product;
 
         return $this;
     }
