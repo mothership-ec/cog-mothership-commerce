@@ -37,7 +37,7 @@ class UnitProxy extends Unit
 		return $this->_productID;
 	}
 
-	public function setProduct(Product $product)
+	public function setProduct($product)
 	{
 		if (null === $this->_productID) {
 			$this->_productID = $product->id;
