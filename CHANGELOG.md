@@ -12,6 +12,7 @@
 - `Product\Unit\Unit::__set()` method calls `setProduct()` if `$name` is 'product'
 - `Product\Unit\Unit::__get()` method calls `getProduct()` if `$name` is 'product'
 - Added `Product\Unit\UnitProxy` class for lazy loading products
+- `Product\ProductProxy` class drops lazy loaded data upon serialization
 - `Report\StockSummary` calls `join()` instead of `leftJoin()` when joining onto the `product` and `unit_options` tables
 - Set default value in `barcode.yml` fixture to '5x13'
 
