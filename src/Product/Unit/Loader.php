@@ -2,23 +2,28 @@
 
 namespace Message\Mothership\Commerce\Product\Unit;
 
-use Message\Mothership\Commerce\Product\Unit\LoaderInterface;
 use Message\Mothership\Commerce\Product\Product;
 use Message\Mothership\Commerce\Product\ProductEntityLoaderInterface;
 use Message\Mothership\Commerce\Product\Loader as ProductLoader;
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
 
-use Message\Cog\DB\Query;
+use Message\Cog\DB\Entity\EntityLoaderCollection;
+use Message\Cog\DB;
 use Message\Cog\DB\Result;
 
 
 class Loader implements ProductEntityLoaderInterface
 {
 	/**
-	 * @var \Message\Cog\DB\Query
+	 * @var \Message\Cog\DB\QueryBuilderFactory
 	 */
-	protected $_query;
+	protected $_queryBuilderFactory;
+
+	/**
+	 * @var \Message\Cog\DB\QueryBuilder
+	 */
+	protected $_queryBuilder;
 
 	/**
 	 * @var \Message\Cog\Localisation\Locale
@@ -38,19 +43,15 @@ class Loader implements ProductEntityLoaderInterface
 
 	protected $_returnArray = false;
 
-	/**
-	 * Load depencancies
-	 *
-	 * @param Query  $query  Query Object
-	 * @param Locale $locale Locale Object
-	 * @param array $prices
-	 */
-	public function __construct(Query $query, Locale $locale, array $prices, $defaultCurrency)
+	private $_entityLoaderCollection;
+
+	public function __construct(DB\QueryBuilderFactory $queryBuilderFactory, Locale $locale, array $prices, $defaultCurrency)
 	{
 		$this->_defaultCurrency = $defaultCurrency;
-		$this->_query   = $query;
+		$this->_queryBuilderFactory   = $queryBuilderFactory;
 		$this->_locale  = $locale;
 		$this->_prices  = $prices;
+		$this->_entityLoaderCollection = new EntityLoaderCollection();
 	}
 
 	public function setProductLoader(ProductLoader $loader)
@@ -58,6 +59,16 @@ class Loader implements ProductEntityLoaderInterface
 		// @todo this should be set to product loader's include deleted flag
 		$loader->includeDeleted(true);
 		$this->_productLoader = $loader;
+		$this->_entityLoaderCollection->add('product', $this->_productLoader);
+	}
+
+	public function getAll()
+	{
+		$this->_buildQuery();
+
+		$this->_returnArray = true;
+
+		return $this->_loadFromQuery();
 	}
 
 	/**
@@ -69,24 +80,28 @@ class Loader implements ProductEntityLoaderInterface
 	 */
 	public function getByProduct(Product $product)
 	{
-		$result = $this->_query->run('
-			SELECT
-				unit_id
-			FROM
-				product_unit
-			WHERE
-				product_id = ?i
-		', 	array(
-				$product->id
-			)
-		);
+		$this->_buildQuery();
 
-		return count($result) ? $this->_load($result->flatten(), true, $product) : false;
+		$this->_returnArray = true;
+
+		$this->_queryBuilder->where('product_unit.product_id = ?i', [$product->id]);
+
+		return $this->_loadFromQuery($product);
 	}
 
 	public function getByID($unitID, $revisionID = null, Product $product = null)
 	{
-		return $this->_load($unitID, false, $product, $revisionID);
+		$this->_buildQuery($revisionID);
+
+		$this->_returnArray = is_array($unitID);
+
+		if (!is_array($unitID)) {
+			$unitID = [$unitID];
+		}
+
+		$this->_queryBuilder->where('product_unit.unit_id IN (?ji)', [$unitID]);
+
+		return $this->_loadFromQuery($product);
 	}
 
 	/**
@@ -102,22 +117,17 @@ class Loader implements ProductEntityLoaderInterface
 	 */
 	public function getByBarcode($barcode)
 	{
-		$alwaysReturnArray = is_array($barcode);
+		$this->_returnArray = is_array($barcode);
 
 		if (!is_array($barcode)) {
-			$barcode = array($barcode);
+			$barcode = [$barcode];
 		}
 
-		$result = $this->_query->run('
-			SELECT
-				unit_id
-			FROM
-				product_unit
-			WHERE
-				barcode IN (?js)
-		', array($barcode));
+		$this->_buildQuery();
 
-		return count($result) ? $this->_load($result->flatten(), $alwaysReturnArray) : false;
+		$this->_queryBuilder->where('product_unit.barcode IN (?js)', [$barcode]);
+
+		return $this->_loadFromQuery();
 	}
 
 	/**
@@ -129,343 +139,182 @@ class Loader implements ProductEntityLoaderInterface
 	{
 		if ($currency === null) {
 			$currency = $this->_defaultCurrency;
-		} 
+		}
 
-		$result = $this->_query->run('
-			SELECT rrp.unit_id AS unit_id FROM
-				(SELECT
-					product_unit.unit_id      AS unit_id,
-					product_price.type        AS type,
-					product_price.currency_id AS currency_id,
-					IFNULL(
-						product_unit_price.price, product_price.price
-					)     					  AS price
-				FROM
-					product_price
-				JOIN
-					product_unit ON (product_price.product_id = product_unit.product_id)
-				LEFT JOIN
-					product_unit_price
-				ON (
-					product_unit.unit_id = product_unit_price.unit_id
-				AND
-					product_price.type = product_unit_price.type
-				AND
-					product_price.currency_id = product_unit_price.currency_id
-				)
-				WHERE product_price.type = \'rrp\') AS rrp 
-			JOIN
-				(SELECT
-					product_unit.unit_id      AS unit_id,
-					product_price.type        AS type,
-					product_price.currency_id AS currency_id,
-					IFNULL(
-						product_unit_price.price, product_price.price
-					)     					  AS price
-				FROM
-					product_price
-				JOIN
-					product_unit ON (product_price.product_id = product_unit.product_id)
-				LEFT JOIN
-					product_unit_price
-				ON (
-					product_unit.unit_id = product_unit_price.unit_id
-				AND
-					product_price.type = product_unit_price.type
-				AND
-					product_price.currency_id = product_unit_price.currency_id
-				)
-				WHERE product_price.type = \'retail\') AS retail
-			ON retail.unit_id = rrp.unit_id 
-			AND rrp.currency_id = retail.currency_id
-			AND (rrp.price - retail.price) > 0
-			AND rrp.currency_id = :currency?s;
-		', [
-			'currency' => $currency
-		]);
+		$this->_returnArray = true;
+		$this->_buildQuery();
 
-		return count($result) ? $this->_load($result->flatten(), true) : [];
+		$units = $this->_loadFromQuery();
+
+		foreach ($units as $key => $unit) {
+			$rrp = $unit->getPrice('rrp', $currency);
+			$retail = $unit->getPrice('retail', $currency);
+
+			if ($retail >= $rrp) {
+				unset($units[$key]);
+			}
+		}
+
+		return $units;
 	}
 
-	public function includeInvisible($bool)
+	public function includeInvisible($bool = true)
 	{
 		$this->_loadInvisible = $bool;
 
 		return $this;
 	}
 
-	public function includeOutOfStock($bool)
+	public function includeOutOfStock($bool = true)
 	{
 		$this->_loadOutOfStock = $bool;
 
 		return $this;
 	}
 
-	/**
-	 * @param int | array $unitIDs         $unitIDs Array or single untiID to load
-	 * @param bool $alwaysReturnArray
-	 * @param Product $product             $product Product associated to the product
-	 * @param int | null $revisionID
-	 * @throws \RuntimeException
-	 *
-	 * @return array|bool|mixed             Array of, or singular Unit object
-	 */
-	protected function _load($unitIDs, $alwaysReturnArray = false, Product $product = null, $revisionID = null)
+	private function _buildQuery($revisionID = null)
 	{
-		// Load the data for the units
-		$result = $this->_loadUnits($unitIDs, $revisionID);
-		// Load stock levels
-		$stock = $this->_loadStock($unitIDs);
-		// Load the prices
-		$prices = $this->_loadPrices($unitIDs);
-		// Load the options
-		$options = $this->_loadOptions($unitIDs, $revisionID);
-		// Bind the results to the Unit Object
-		$units = $result->bindTo(
-			'Message\\Mothership\\Commerce\\Product\\Unit\\Unit',
-			[
-				$this->_locale,
-				$this->_prices,
-				$this->_defaultCurrency
-			]
-		);
+		$getRevision = $revisionID ?
+			$this->_queryBuilderFactory->getQueryBuilder()
+				->select(':revisionID?i AS revisionID')
+				->from('product_unit_info')
+				->addParams(['revisionID' => $revisionID])
+				->groupBy('revisionID')
+			:
+			null
+		;
 
-		if (0 === count($result)) {
-			return $alwaysReturnArray ? [] : false;
-		}
-		foreach ($result as $key => $data) {
+		$this->_queryBuilder = $this->_queryBuilderFactory->getQueryBuilder()
+			->select([
+				// Unit info
+				'product_unit.product_id    AS productID',
+				'product_unit.unit_id      	AS id',
+				'product_unit.weight_grams 	AS weight',
+				'product_unit_info.sku     	AS sku',
+				'product_unit.barcode      	AS barcode',
+				'product_unit.visible      	AS visible',
+				'product_unit.created_at   	AS createdAt',
+				'product_unit.created_by   	AS createdBy',
+				'product_unit.updated_at   	AS updatedAt',
+				'product_unit.updated_by   	AS updatedBy',
+				'product_unit.deleted_at   	AS deletedAt',
+				'product_unit.deleted_by   	AS deletedBy',
+				'product_unit.supplier_ref 	AS supplierRef',
+				'IFNULL(product_unit_info.revision_id,1) AS revisionID',
+				'product_unit_info.sku      AS sku',
 
-			// Hide units which are not visible
-			if (!$this->_loadInvisible && !$data->visible) {
-				unset($units[$key]);
-				continue;
-			}
-			// Save stock units
-			foreach ($stock as $values) {
-				if ($values->id == $data->id) {
-					$units[$key]->stock[$values->location] = $values->stock;
-				}
-			}
+				// Stock
+				'product_unit_stock.stock    AS stock',
+				'product_unit_stock.location AS stockLocation',
 
-			// Save unit options
-			foreach ($options as $option) {
-				if ($option->id == $data->id) {
-					$units[$key]->options[$option->name] = $option->value;
-				}
-			}
+				// Prices
+				'product_price.type AS priceType',
+				'product_price.currency_id AS currencyID',
+				'IFNULL(product_unit_price.price, product_price.price) AS price',
 
-			// Remove items that are out of stock if needed
-			if (!$this->_loadOutOfStock && array_sum($units[$key]->stock) == 0) {
-				unset($units[$key]);
-				continue;
-			}
+				// Options
+				'product_unit_option.option_name  AS optionName',
+				'product_unit_option.option_value AS optionValue',
+			])
+			->from('product_unit')
+			->join('product', 'product_unit.product_id = product.product_id') // Join product table to filter out units where product is hard deleted
+			;
 
-			// Save prices to unit
-			foreach ($prices as $price) {
-				if ($price->id == $data->id) {
-					$units[$key]->price[$price->type]->setPrice($price->currencyID, (float) $price->price, $this->_locale);
-				}
-			}
-
-			// Set Authorship details
-			$units[$key]->authorship->create(new DateTimeImmutable(date('c',$data->createdAt)), $data->createdBy);
-			$units[$key]->visible = (bool)$data->visible;
-
-			if ($data->updatedAt) {
-				$units[$key]->authorship->update(new DateTimeImmutable(date('c',$data->updatedAt)), $data->updatedBy);
-			}
-
-			if ($data->deletedAt) {
-				$units[$key]->authorship->delete(new DateTimeImmutable(date('c',$data->deletedAt)), $data->deletedBy);
+			if (null !== $getRevision) {
+				$this->_queryBuilder
+					->leftJoin('product_unit_info', '
+						product_unit_info.unit_id = product_unit.unit_id AND
+						revision_id = (:revisionID?q)
+					')
+					->addParams(['revisionID' => $getRevision]);
+			} else {
+				$this->_queryBuilder
+					->leftJoin('product_unit_info', '
+						product_unit_info.unit_id = product_unit.unit_id AND
+						revision_id = 1
+					')
+				;
 			}
 
-			if ($product) {
-				$units[$key]->product = $product;
-			}
-			else {
-				if (!$this->_productLoader) {
-					throw new \RuntimeException('Cannot load product on unit(s) without a product loader instance');
-				}
-
-				$units[$key]->product = $this->_productLoader->getByID($data->product_id);
-			}
-
-			if (is_null($units[$key]->weight)) {
-				$units[$key]->weight = $units[$key]->product->weight;
-			}
-
-		}
-
-		// Reload the array to put the unitID as the key
-		$ordered = array();
-		foreach ($units as $unit) {
-			$ordered[$unit->id] = $unit;
-		}
-
-		return $alwaysReturnArray  ? $ordered : reset($ordered);
-	}
-
-	/**
-	 * Load the options for the given units
-	 *
-	 * @param  int|array $unitIDs UnitIDs to load options for
-	 *
-	 * @return Result 			  DB Result object
-	 */
-	protected function _loadOptions($unitIDs, $revisionID = null)
-	{
-		$getRevision = ' IFNULL(MAX(product_unit_info.revision_id),1) ';
-		if ($revisionID) {
-			$getRevision = $revisionID;
-		}
-
-		return $this->_query->run(
-			'SELECT
-				product_unit_option.unit_id      AS id,
-				product_unit_option.option_name  AS name,
-				product_unit_option.option_value AS value
-			FROM
-				product_unit_option
-			LEFT JOIN
-				product_unit_info ON (
-					product_unit_info.unit_id = product_unit_option.unit_id
-					AND product_unit_option.revision_id = (
-						SELECT
-							'.$getRevision.'
-						FROM
-							product_unit_info AS info
-						WHERE
-							info.unit_id = product_unit_option.unit_id
-						GROUP BY unit_id
-					)
-				)
-			WHERE
-				product_unit_option.unit_id IN (:unitIDs?ij)
-				'.(!is_null($revisionID) ? ' AND product_unit_option.revision_id = '.$getRevision.' ' : ''),
-			array(
-				'unitIDs' => (array) $unitIDs,
-			)
-		);
-	}
-
-	/**
-	 * Load prices for the gievn units for each type. If there is no unit level
-	 * specific pricing then it will use the Product price instead
-	 *
-	 * @param  int|array $unitIDs UnitIDs to load
-	 *
-	 * @return Result 			  DB Result object
-	 */
-	protected function _loadPrices($unitIDs)
-	{
-		return $this->_query->run(
-			'SELECT
-				product_unit.unit_id      AS id,
-				product_price.type        AS type,
-				product_price.currency_id AS currencyID,
-				IFNULL(
-					product_unit_price.price, product_price.price
-				)     					  AS price
-			FROM
-				product_price
-			JOIN
-				product_unit ON (product_price.product_id = product_unit.product_id)
-			LEFT JOIN
-				product_unit_price
-			ON (
-				product_unit.unit_id = product_unit_price.unit_id
-			AND
-				product_price.type = product_unit_price.type
-			AND
+		$this->_queryBuilder
+			->leftJoin('product_unit_stock', 'product_unit.unit_id = product_unit_stock.unit_id')
+			->leftJoin('product_price', 'product_unit.product_id = product_price.product_id')
+			->leftJoin('product_unit_price', '
+				product_unit.unit_id = product_unit_price.unit_id AND
+				product_price.type = product_unit_price.type AND
 				product_price.currency_id = product_unit_price.currency_id
-			)
-			WHERE
-				product_unit.unit_id IN (?ij)
-		', 	array(
-				(array) $unitIDs,
-			)
-		);
-	}
+			')
+			->leftJoin('product_unit_option', 'product_unit_option.unit_id = product_unit.unit_id')
+		;
 
-	/**
-	 * Load the stock levels for each of the given units
-	 *
-	 * @param  int|array $unitIDs UnitIDs to load
-	 *
-	 * @return Result 			  DB Result object
-	 */
-	protected function _loadStock($unitIDs)
-	{
-		return $this->_query->run(
-			'SELECT
-				product_unit_stock.unit_id     	AS id,
-				product_unit_stock.stock       	AS stock,
-				product_unit_stock.location 	AS location
-			FROM
-				product_unit_stock
-			WHERE
-				product_unit_stock.unit_id IN (?ij)
-		', 	array(
-				(array) $unitIDs,
-			)
-		);
-	}
-
-	/**
-	 * Load the attributes for the given unit IDs
-	 *
-	 * @param  int|array $unitIDs UnitIDs to load
-	 *
-	 * @return Result 			  DB Result object
-	 */
-	protected function _loadUnits($unitIDs, $revisionID = null)
-	{
-		$getRevision = '
-			SELECT
-				IFNULL(MAX(revision_id),1)
-			FROM
-				product_unit_info AS info
-			WHERE
-				info.unit_id = product_unit.unit_id
-			GROUP BY
-				unit_id';
-		if ($revisionID) {
-			$getRevision = $revisionID;
+		if (!$this->_loadInvisible) {
+			$this->_queryBuilder->where('product_unit.visible = ?i', [0]);
 		}
 
+		if (!$this->_loadOutOfStock) {
+			$this->_queryBuilder->where('product_unit_stock.stock > 0');
+		}
+	}
 
-		return $this->_query->run(
-			'SELECT
-				product_unit.product_id,
-				product_unit.unit_id      	AS id,
-				product_unit.weight_grams 	AS weight,
-				product_unit_info.sku     	AS sku,
-				product_unit.barcode      	AS barcode,
-				product_unit.visible      	AS visible,
-				product_unit.created_at   	AS createdAt,
-				product_unit.created_by   	AS createdBy,
-				product_unit.updated_at   	AS updatedAt,
-				product_unit.updated_by   	AS updatedBy,
-				product_unit.deleted_at   	AS deletedAt,
-				product_unit.deleted_by   	AS deletedBy,
-				product_unit.supplier_ref 	AS suppliderRef,
-				IFNULL(product_unit_info.revision_id,1) AS revisionID
-			FROM
-				product_unit
-			LEFT JOIN
-				product_unit_info ON (
-					product_unit_info.unit_id = product_unit.unit_id
-					AND revision_id = ('.$getRevision.')
-				)
-			WHERE
-				product_unit.unit_id IN (?ij)
-			AND
-				deleted_at IS NULL
-			GROUP BY
-				product_unit.unit_id',
-			array(
-				(array) $unitIDs,
-			)
-		);
+	private function _loadFromQuery(Product $product = null)
+	{
+		if (null === $this->_queryBuilder) {
+			throw new \LogicException('Cannot load from query as query has not been built yet');
+		}
+
+		$result = $this->_queryBuilder->run();
+
+		$units = [];
+
+		foreach ($result as $row) {
+			if (!array_key_exists($row->id, $units)) {
+				$unit = new UnitProxy(
+					$this->_entityLoaderCollection,
+					$this->_locale,
+					$this->_prices,
+					$this->_defaultCurrency
+				);
+				$unit->id          = $row->id;
+				$unit->barcode     = $row->barcode;
+				$unit->weight      = $row->weight;
+				$unit->supplierRef = $row->supplierRef;
+				$unit->revisionID  = $row->revisionID;
+
+				$unit->setSKU($row->sku);
+				$unit->setVisible((bool) $row->visible);
+
+				if ($product) {
+					$unit->setProduct($product);
+				} else {
+					$unit->setProductID($row->productID);
+				}
+
+				$unit->authorship->create(new DateTimeImmutable(date('c', $row->createdAt)), $row->createdBy);
+
+				if ($row->updatedAt) {
+					$unit->authorship->update(new DateTimeImmutable(date('c', $row->updatedAt)), $row->updatedBy);
+				}
+
+				if ($row->deletedAt) {
+					$unit->authorship->delete(new DateTimeImmutable(date('c', $row->deletedAt)), $row->deletedBy);
+				}
+
+				$units[$row->id] = $unit;
+			}
+
+			$unit = $units[$row->id];
+
+			if (!array_key_exists($row->optionName, $unit->options)) {
+				$unit->options[$row->optionName] = $row->optionValue;
+			}
+
+			if (!array_key_exists($row->stockLocation, $unit->stock)) {
+				$unit->stock[$row->stockLocation] = $row->stock;
+			}
+
+			$unit->setPrice($row->price, $row->priceType, $row->currencyID);
+		}
+
+		return $this->_returnArray ? $units : array_shift($units);
 	}
 }
