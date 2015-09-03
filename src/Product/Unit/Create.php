@@ -6,6 +6,7 @@ use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\Localisation\Locale;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Message\User\UserInterface;
 
 class Create
@@ -13,13 +14,15 @@ class Create
 	protected $_query;
 	protected $_user;
 	protected $_locale;
+	protected $_dispatcher;
 
-	public function __construct(Query $query, UserInterface $user, Locale $locale)
+	public function __construct(Query $query, UserInterface $user, Locale $locale, EventDispatcher $dispatcher)
 
 	{
-		$this->_query  = $query;
-		$this->_user   = $user;
-		$this->_locale = $locale;
+		$this->_query      = $query;
+		$this->_user       = $user;
+		$this->_locale     = $locale;
+		$this->_dispatcher = $dispatcher;
 	}
 
 	public function save(Unit $unit)
@@ -29,6 +32,9 @@ class Create
 
 	public function create(Unit $unit)
 	{
+		$event = new Event($unit);
+		$this->_dispatcher->dispatch(Events::PRODUCT_UNIT_BEFORE_CREATE, $event);
+
 		if (!$unit->authorship->createdAt()) {
 			$unit->authorship->create(new DateTimeImmutable, $this->_user->id);
 		}
@@ -93,6 +99,8 @@ class Create
 
 		$this->_savePrices($unit);
 
+		$event = new Event($unit);
+		$this->_dispatcher->dispatch(Events::PRODUCT_UNIT_AFTER_CREATE, $event);
 		return $unit;
 	}
 
