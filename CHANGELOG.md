@@ -1,5 +1,17 @@
 # Changelog
 
+## 5.12.0
+
+- Added `Product\Barcode\Sheet\Size3x8` class for printing 24 barcodes on a 3 x 8 grid
+- Added `Product\Unit\Event` class to fire unit related events
+- Added `Product\Unit\Events` class for storing unit event names
+- `Product\Unit\Create` class requires a third parameter on construction that implements `Symfony\Component\EventDispatcher\EventDispatcher`
+- `Product\Unit\Create#create()` method fires event at start of creation process
+- `Product\Unit\Create#create()` method fires event and end of creation process
+- Set default value in `barcode.yml` fixture to '5x13'
+- Barcode template appends `size-` to the sheetname when assigning a CSS class
+- Added styling for 3x8 barcode printing
+
 ## 5.11.0
 
 - Refactor `Product\Unit\Loader` to use `QueryBuilder` - all unit data is now loaded in one query and instances are built by looping over the results
@@ -14,7 +26,6 @@
 - Added `Product\Unit\UnitProxy` class for lazy loading products
 - `Product\ProductProxy` class drops lazy loaded data upon serialization
 - `Report\StockSummary` calls `join()` instead of `leftJoin()` when joining onto the `product` and `unit_options` tables
-- Set default value in `barcode.yml` fixture to '5x13'
 
 ## 5.10.2
 
