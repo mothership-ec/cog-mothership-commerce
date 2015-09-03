@@ -129,7 +129,7 @@ class Loader implements ProductEntityLoaderInterface
 	{
 		if ($currency === null) {
 			$currency = $this->_defaultCurrency;
-		} 
+		}
 
 		$result = $this->_query->run('
 			SELECT rrp.unit_id AS unit_id FROM

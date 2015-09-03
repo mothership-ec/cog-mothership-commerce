@@ -551,7 +551,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.unit.create'] = $services->factory(function($c) {
-			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale']);
+			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale'], $c['event.dispatcher']);
 		});
 
 		$services['product.unit.delete'] = $services->factory(function($c) {
