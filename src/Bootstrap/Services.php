@@ -423,7 +423,7 @@ class Services implements ServicesInterface
 		$services['product.entity_loaders'] = $services->factory(function($c) {
 			return 	new EntityLoaderCollection([
 				'units'  => new Commerce\Product\Unit\Loader(
-					$c['db.query'],
+					$c['db.query.builder.factory'],
 					$c['locale'],
 					$c['product.price.types'],
 					$c['currency']

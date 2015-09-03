@@ -1,5 +1,21 @@
 # Changelog
 
+## 5.11.0
+
+- Refactor `Product\Unit\Loader` to use `QueryBuilder` - all unit data is now loaded in one query and instances are built by looping over the results
+- Added `Product\Unit\Loader::getAll()` method for loading all units
+- Changed `Product\Unit\Loader::__construct()` first parameter to take `DB\QueryBuilderFactory` instead of `DB\Query`
+- `Product\Unit\Loader` instanciates `EntityLoaderCollection` on construct
+- `Product\Unit\Loader::includeOutOfStock()` method parameter is no longer required, defaults to true
+- `Product\Unit\Loader::includeInvisible()` method parameter is no longer required, defaults to true
+- `Product\Unit\Unit::product` renamed to `Product\Unit\Unit::_product` and made protected
+- `Product\Unit\Unit::__set()` method calls `setProduct()` if `$name` is 'product'
+- `Product\Unit\Unit::__get()` method calls `getProduct()` if `$name` is 'product'
+- Added `Product\Unit\UnitProxy` class for lazy loading products
+- `Product\ProductProxy` class drops lazy loaded data upon serialization
+- `Report\StockSummary` calls `join()` instead of `leftJoin()` when joining onto the `product` and `unit_options` tables
+- Set default value in `barcode.yml` fixture to '5x13'
+
 ## 5.10.2
 
 - Removed empty `Product/Image/LoaderTest` test class
