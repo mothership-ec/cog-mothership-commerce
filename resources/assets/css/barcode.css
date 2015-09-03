@@ -82,6 +82,32 @@ img {
 	bottom: 0.5mm;
 }
 
+.size-3x8 {
+	overflow: hidden;
+}
+
+.size-3x8 .page {
+	border-top: 1.2cm solid #FFF;
+
+}
+
+.size-3x8 .label {
+	width: 6.4cm;
+	height: 3.5cm;
+	margin-right: 2.5mm;
+	padding: 5mm 0.5cm;
+}
+
+.size-3x8 .label .price {
+	bottom: 1.5cm;
+}
+
+.size-3x8 .label img {
+	width: 95%;	
+	bottom: 5mm;
+}
+
+
 @media print {
     @page {
       size: A4;
