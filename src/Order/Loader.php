@@ -308,6 +308,14 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		return $this->_load($result->flatten(), true);
 	}
 
+	/**
+	 * Set the order in which the loader should load the orders. Use constants declared within `OrderOrder` class
+	 *
+	 * @param $orderBy
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return Loader
+	 */
 	public function orderBy($orderBy)
 	{
 		if (!is_string($orderBy)) {
@@ -468,6 +476,11 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		return $returnArray ? $orders : reset($orders);
 	}
 
+	/**
+	 * Return ORDER BY statement for queries based on what `$this->_orderBy` is set to
+	 *
+	 * @return null|string
+	 */
 	private function _getOrderByStatement()
 	{
 		switch ($this->_orderBy) {
