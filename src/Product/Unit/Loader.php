@@ -37,6 +37,7 @@ class Loader implements ProductEntityLoaderInterface
 
 	protected $_loadInvisible  = true;
 	protected $_loadOutOfStock = false;
+	protected $_loadDeleted = false;
 
 	protected $_prices;
 	protected $_defaultCurrency;
@@ -172,6 +173,13 @@ class Loader implements ProductEntityLoaderInterface
 		return $this;
 	}
 
+	public function includeDeleted($bool = true)
+	{
+		$this->_loadDeleted = $bool;
+
+		return $this;
+	}
+
 	private function _buildQuery($revisionID = null)
 	{
 		$getRevision = $revisionID ?
@@ -253,6 +261,10 @@ class Loader implements ProductEntityLoaderInterface
 
 		if (!$this->_loadOutOfStock) {
 			$this->_queryBuilder->where('product_unit_stock.stock > 0');
+		}
+
+		if (!$this->_loadDeleted) {
+			$this->_queryBuilder->where('product_unit.deleted_at IS NULL');
 		}
 	}
 
