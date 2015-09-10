@@ -287,6 +287,90 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		return $this->_load(array_unique($result->flatten()), true);
 	}
 
+	/**
+	 * Search for an order based on a given term. The term will be split by spaces, and the following fields will be
+	 * searched:
+	 *
+	 * - Order ID
+	 * - User email address
+	 * - Customer forename
+	 * - Customer surname
+	 * - Address lines 1-4
+	 * - Address country
+	 * - Address postcode
+	 * - Address telephone number
+	 * - Address town
+	 * - Address state (full name, not code)
+	 * - Address country (full name, not code)
+	 * - Discount code
+	 * - Dispatch ID
+	 * - Dispatch code
+	 * - Order note
+	 * - Payment reference
+	 *
+	 * Results must make at least one match of each word, therefore more words narrows the search further. The order ID
+	 * will be searched first and if it matches, that will be the only order that is loaded.
+	 *
+	 * @param $term
+	 * @return array|bool|mixed
+	 */
+	public function getBySearchTerm($term)
+	{
+		if (!is_string($term)) {
+			throw new \InvalidArgumentException('Search term must be a string');
+		}
+
+		if (is_numeric($term)) {
+			$order = $this->_load($term, true);
+
+			if (count($order) > 0) {
+				return $order;
+			}
+		}
+
+		$queryBuilder = $this->_qbFactory->getQueryBuilder()
+			->select('os.order_id')
+			->from('os', 'order_summary')
+			->leftJoin('addr', 'addr.order_id = os.order_id', 'order_address')
+			->leftJoin('disc', 'disc.order_id = os.order_id', 'order_discount')
+			->leftJoin('disp', 'disp.order_id = os.order_id', 'order_dispatch')
+			->leftJoin('note', 'note.order_id = os.order_id', 'order_note')
+			->leftJoin('order_payment', 'order_payment.payment_id = os.order_id')
+			->leftJoin('payment', 'payment.payment_id = order_payment.payment_id')
+		;
+
+		$terms = explode(' ', $term);
+
+		foreach ($terms as $term) {
+			$term = '%' . trim($term) . '%';
+
+			$queryBuilder->where('(
+				os.user_email LIKE :term?s OR
+				addr.forename LIKE :term?s OR
+				addr.surname LIKE :term?s OR
+				addr.line_1 LIKE :term?s OR
+				addr.line_2 LIKE :term?s OR
+				addr.line_3 LIKE :term?s OR
+				addr.line_4 LIKE :term?s OR
+				addr.country LIKE :term?s OR
+				addr.postcode LIKE :term?s OR
+				addr.telephone LIKE :term?s OR
+				addr.town LIKE :term?s OR
+				addr.state LIKE :term?s OR
+				disc.code LIKE :term?s OR
+				disp.dispatch_id LIKE :term?s OR
+				disp.code LIKE :term?s OR
+				note.note LIKE :term?s OR
+				payment.reference LIKE :term?s
+			)', ['term' => $term]);
+		}
+
+		$ids = $queryBuilder->run()->flatten();
+
+		return $this->_load($ids, true);
+
+	}
+
 	public function getByTrackingCode($code)
 	{
 		$result = $this->_query->run('
