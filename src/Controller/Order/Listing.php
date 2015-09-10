@@ -4,11 +4,10 @@ namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
 
+use Message\Mothership\Commerce\Order\OrderOrder;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\Commerce\Order\Statuses;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
-
-use Message\Mothership\Ecommerce\OrderItemStatuses;
 
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
@@ -136,7 +135,7 @@ class Listing extends Controller
 	{
 		$page = (int) $this->get('request')->get('list-page');
 		return $this->get('pagination')
-			->setAdapter($this->get('order.pagination.adapter'))
+			->setAdapter($this->get('order.pagination.adapter')->orderBy(OrderOrder::CREATED_DATE_REVERSE))
 			->setMaxPerPage(self::DEFAULT_PAGINATION_COUNT)
 			->setCurrentPage($page)
 		;

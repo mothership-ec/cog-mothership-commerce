@@ -10,9 +10,18 @@ class OrderAdapter implements AdapterInterface
 	private $_orderLoader;
 	private $_statuses;
 
+	private $_orderBy;
+
 	public function __construct(OrderLoader $orderLoader)
 	{
 		$this->_orderLoader  = $orderLoader;
+	}
+
+	public function orderBy($orderBy)
+	{
+		$this->_orderBy = $orderBy;
+
+		return $this;
 	}
 
 	public function getCount()
@@ -23,6 +32,10 @@ class OrderAdapter implements AdapterInterface
 	public function getSlice($offset, $limit)
 	{
 		$offset = $offset * $limit;
+
+		if ($this->_orderBy) {
+			$this->_orderLoader->orderBy($this->_orderBy);
+		}
 
 		if ($this->_statuses) {
 			return $this->_orderLoader->getByStatus($this->_statuses, $offset, $limit);

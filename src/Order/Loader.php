@@ -83,12 +83,17 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 
 	public function getBySlice($offset, $limit)
 	{
-		$qb = $this->_qbFactory->getQueryBuilder();
-
-		$ids = $qb
+		$qb = $this->_qbFactory->getQueryBuilder()
 			->select('order_id')
 			->from('order_summary')
 			->limit($offset, $limit)
+		;
+
+		if ($this->_getOrderByStatement()) {
+			$qb->orderBy($this->_getOrderByStatement());
+		}
+
+		$ids = $qb
 			->getQuery()
 			->run()
 			->flatten()
@@ -220,7 +225,7 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 			->select('order_id')
 			->from('order_summary')
 			->where('status_code IN (?ij)', [$statuses])
-			->orderBy('created_at DESC')
+			->orderBy($this->_getOrderByStatement() ?: 'order_summary.created_at DESC')
 		;
 
 		if ($limitFrom) {
@@ -231,7 +236,7 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 
 		$result = $qb->getQuery()->run();
 
-		$this->_orderBy = 'order_summary.created_at DESC';
+		$this->_orderBy = $this->_orderBy ?: OrderOrder::CREATED_DATE;
 
 		return $this->_load($result->flatten(), true);
 	}
@@ -303,11 +308,30 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		return $this->_load($result->flatten(), true);
 	}
 
+	/**
+	 * Set the order in which the loader should load the orders. Use constants declared within `OrderOrder` class
+	 *
+	 * @param $orderBy
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return Loader
+	 */
+	public function orderBy($orderBy)
+	{
+		if (!is_string($orderBy)) {
+			throw new \InvalidArgumentException('Order by statement must be a string constant from the `OrderOrder` class, ' . gettype($orderBy) . ' given');
+		}
+
+		$this->_orderBy = $orderBy;
+
+		return $this;
+	}
+
 	protected function _load($ids, $returnArray = false)
 	{
-		$orderBy = $this->_orderBy ? 'ORDER BY ' . $this->_orderBy : '';
+		$orderBy = $this->_getOrderByStatement();
 		$includeDeleted = $this->_includeDeleted ? '' : 'AND deleted_at IS NULL';
-		$this->_orderBy = '';
+		$this->_orderBy = null;
 
 		if (!is_array($ids)) {
 			$ids = (array) $ids;
@@ -352,7 +376,7 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 			' . $includeDeleted .'
 			GROUP BY
 				order_summary.order_id
-			' . ($orderBy) . '
+			' . ($orderBy ? 'ORDER BY ' . $orderBy : '') . '
 		', array($ids));
 		if (0 === count($result)) {
 			return $returnArray ? array() : false;
@@ -450,6 +474,33 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		});
 
 		return $returnArray ? $orders : reset($orders);
+	}
+
+	/**
+	 * Return ORDER BY statement for queries based on what `$this->_orderBy` is set to
+	 *
+	 * @return null|string
+	 */
+	private function _getOrderByStatement()
+	{
+		switch ($this->_orderBy) {
+			case OrderOrder::ID :
+				return 'order_summary.order_id ASC';
+			case OrderOrder::ID_REVERSE :
+				return 'order_summary.order_id DESC';
+			case OrderOrder::UPDATED_DATE :
+				return 'order_summary.updated_at ASC';
+			case OrderOrder::UPDATED_DATE_REVERSE :
+				return 'order_summary.updated_at DESC';
+			case OrderOrder::CREATED_DATE :
+				return 'order_summary.created_at ASC';
+			case OrderOrder::CREATED_DATE_REVERSE :
+				return 'order_summary.created_at DESC';
+			case OrderOrder::NONE :
+				return null;
+			default :
+				return null;
+		}
 	}
 
 	/**
