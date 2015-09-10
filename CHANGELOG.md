@@ -1,5 +1,35 @@
 # Changelog
 
+## 5.13.0
+
+- Added `Order\OrderOrder` class, which contains a set of constants to be used by the `Order\Loader` for setting the order in which orders should be loaded
+- Added `orderBy()` method to `Order\Loader` which takes constants declared in `Order\OrderOrder`, to set the order in which orders should be loaded
+- Added `orderBy()` method to `Pagination\OrderAdapter`, which calls `Order\Loader::orderBy()` with value given
+- Added `getBySearchTerm()` method to `Order\Loader` which takes a string, and each word within that string must match with at least one of the following:
+    - Order ID
+    - User email address
+    - Customer forename
+    - Customer surname
+    - Address lines 1-4
+    - Address country
+    - Address postcode
+    - Address telephone number
+    - Address town
+    - Address state (full name, not code)
+    - Address country (full name, not code)
+    - Discount code
+    - Dispatch ID
+    - Dispatch code
+    - Order note
+    - Payment reference
+- Added protected `_loadDeleted` property to `Product\Unit\Loader`, which is set to false by default. If it is set to false then deleted units will not be loaded
+- Added `includeDeleted()` method to `Product\Unit\Loader` to allow deleted units to be loaded by setting `_loadDeleted` to true
+- Reversed order in which orders are displayed in 'All orders' tab
+- Reversed order in which orders are displayed in 'Shipped orders' tab
+- `Controller\Order\Listing::searchAction()` controller now uses `Order\Loader::getBySearchTerm()` instead of `Order\Loader::getByID()` and `Order\Loader::getByTrackingCode()`
+- Added translations for flash messages and heading when using search functionality
+- Order view no longer has 'Back to orders' link in sidebar, instead the sidebar is the same as that in the order listings
+
 ## 5.12.0
 
 - Added `Product\Barcode\Sheet\Size3x8` class for printing 24 barcodes on a 3 x 8 grid
