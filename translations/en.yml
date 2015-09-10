@@ -333,6 +333,10 @@ ms.commerce:
         issue-refund: Issue a refund?
         notify-customer: Notify the customer by email?
         password-confirm: Please confirm your account password to continue
+      search:
+        one-result: Showing the only order matching the term "%term%"
+        results: Found %amount% results matching the term "%term%"
+        no-results: No results found matching search term "%term%"
 
     item:
       none: There are no items to view.
