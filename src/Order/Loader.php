@@ -341,8 +341,14 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 
 		$terms = explode(' ', $term);
 
+		array_walk($terms, function (&$term) {
+			$term = trim($term);
+		});
+
+		$terms = array_unique($terms);
+
 		foreach ($terms as $term) {
-			$term = '%' . trim($term) . '%';
+			$term = '%' . $term . '%';
 
 			$queryBuilder->where('(
 				os.user_email LIKE :term?s OR
