@@ -423,7 +423,7 @@ class Services implements ServicesInterface
 		$services['product.entity_loaders'] = $services->factory(function($c) {
 			return 	new EntityLoaderCollection([
 				'units'  => new Commerce\Product\Unit\Loader(
-					$c['db.query'],
+					$c['db.query.builder.factory'],
 					$c['locale'],
 					$c['product.price.types'],
 					$c['currency']
@@ -535,6 +535,13 @@ class Services implements ServicesInterface
 			return new Commerce\Form\Product\Image\Delete;
 		});
 
+		$services['product.image.assignor'] = function($c) {
+			return new Commerce\Product\Image\Assignor(
+				$c['file_manager.file.loader'],
+				$c['locale']
+			);
+		};
+
 		$services['product.unit.loader'] = $services->factory(function($c) {
 			return $c['product.loader']->getEntityLoader('units');
 		});
@@ -544,7 +551,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.unit.create'] = $services->factory(function($c) {
-			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale']);
+			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale'], $c['event.dispatcher']);
 		});
 
 		$services['product.unit.delete'] = $services->factory(function($c) {
@@ -644,6 +651,14 @@ class Services implements ServicesInterface
 				$c['product.upload.heading_keys']
 			);
 		});
+
+		$services['product.upload.image_create'] = function($c) {
+			return new Commerce\Product\Upload\ProductImageCreate(
+				$c['product.image.assignor'],
+				$c['product.image.create'],
+				$c['product.upload.heading_keys']
+			);
+		};
 
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
@@ -786,6 +801,7 @@ class Services implements ServicesInterface
 		$services['product.barcode.sheet.collection'] = function($c) {
 			$collection = new Commerce\Product\Barcode\Sheet\Collection;
 			$collection->add(new Commerce\Product\Barcode\Sheet\Size5x13);
+			$collection->add(new Commerce\Product\Barcode\Sheet\Size3x8);
 
 			return $collection;
 		};

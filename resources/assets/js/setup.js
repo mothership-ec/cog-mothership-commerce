@@ -1,6 +1,9 @@
 $(function() {
+
 	// Product table JS setup
-	var dataTable = $('.table-filter.products').dataTable({
+	var	showImages = $('.table-filter.products').data('show-images'),
+		columns = getColumns(),
+		dataTable = $('.table-filter.products').dataTable({
 		iDisplayLength: 25,
 		"oLanguage": {
 			"sLengthMenu": 'Display <select>'+
@@ -12,19 +15,28 @@ $(function() {
 			'</select> products',
 		"sInfo": "Showing (_START_ to _END_) of _TOTAL_ Products"}
     }).columnFilter({
-		aoColumns: [
+		aoColumns: columns
+	});
+
+	function getColumns() {
+		columns = [
 			{ type: "text" },
 			null,
 			{ type: "text" },
 			{ type: "text" },
 			{ type: "text" },
 			null
-		]
-	});
+		];
 
+		if (!showImages) {
+			columns.splice(1,1);
+		}
+
+		return columns;
+	}
 
     // Hide and show columns when ajax slide happens
-	var showCol = 2;
+	var showCol = showImages ? 2 : 1;
 	$('#main-slide').on('show.cp-livePane-slide', function(e, data) {
 		$('.dataTables_length').hide();
 

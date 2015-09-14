@@ -66,7 +66,7 @@ class Row implements \IteratorAggregate, \Countable
 		if ($this->count() < 1) {
 			throw new \BadMethodCallException(sprintf(
 				'Cannot sum `%s` property for item row: no items have been set',
-				$property
+				$name
 			));
 		}
 

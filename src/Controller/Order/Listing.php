@@ -4,11 +4,10 @@ namespace Message\Mothership\Commerce\Controller\Order;
 
 use Message\Cog\Controller\Controller;
 
+use Message\Mothership\Commerce\Order\OrderOrder;
 use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\Commerce\Order\Statuses;
 use Message\Mothership\Commerce\Product\Stock\Location\Location;
-
-use Message\Mothership\Ecommerce\OrderItemStatuses;
 
 use Message\Mothership\ControlPanel\Event\BuildMenuEvent;
 use Message\Mothership\ControlPanel\Event\Dashboard\DashboardEvent;
@@ -58,25 +57,33 @@ class Listing extends Controller
 		if ($form->isValid()) {
 			$term = $form->get('term')->getData();
 
-			$order = $this->get('order.loader')->getById($term);
+			$orders = $this->get('order.loader')->getBySearchTerm($term);
 
-			if ($order) {
-				return $this->redirectToRoute('ms.commerce.order.detail.view', array('orderID' => $order->id));
+			if (count($orders) === 1) {
+				$order = array_shift($orders);
+				$this->addFlash('success', $this->trans('ms.commerce.order.order.search.one-result', [
+					'%term%' => $term,
+				]));
+
+				return $this->redirectToRoute('ms.commerce.order.detail.view', ['orderID' => $order->id]);
 			}
-
-			// If search did not match an ID instead look for a tracking code match.
-			$orders = $this->get('order.loader')->getByTrackingCode($term);
 
 			if (count($orders)) {
 				return $this->render('Message:Mothership:Commerce::order:listing:order-listing', array(
 					'orders' => $orders,
-					'heading' => sprintf('Orders matching tracking code "%s".', $term),
+					'heading' => $this->trans('ms.commerce.order.order.search.results', [
+						'%amount%' => count($orders),
+						'%term%'   => $term
+					]),
 				));
 			}
 
+			// If there were no matches return the error
+			$this->addFlash('warning', $this->trans('ms.commerce.order.order.search.no-results', [
+				'%term%' => $term,
+			]));
 		}
-		// If there were no matches return the error
-		$this->addFlash('warning', sprintf('No search results were found for "%s".', $term));
+
 		return $this->redirectToReferer();
 	}
 
@@ -136,7 +143,7 @@ class Listing extends Controller
 	{
 		$page = (int) $this->get('request')->get('list-page');
 		return $this->get('pagination')
-			->setAdapter($this->get('order.pagination.adapter'))
+			->setAdapter($this->get('order.pagination.adapter')->orderBy(OrderOrder::CREATED_DATE_REVERSE))
 			->setMaxPerPage(self::DEFAULT_PAGINATION_COUNT)
 			->setCurrentPage($page)
 		;

@@ -94,6 +94,9 @@ ms.commerce:
         label: Export value
         help: The nominal cost of the product for export purposes.
     details:
+      product-type:
+        label: Product Type
+        help: The type of product. This determines what content may be set on the product, how much tax is charged, and any special behaviour the product will exhibit.
       supplier-ref:
         label: Supplier Reference
         help: Optionally you can store a reference from the supplier of this product.
@@ -177,6 +180,8 @@ ms.commerce:
       description: The upload CSV function will create products based on the data that has been uploaded. Please ensure that this data is correct. It will check which columns have been filled and attempt to work out the product type based on that information.
       utf8-note: <strong>Note:</strong> CSVs must have a character encoding of UTF-8, please see the preferences of your spreadsheet software to ensure this is the case.
       no-valid-rows: Could not detect any rows. Note that when exporting the CSV via your spreadsheet software, you must select UTF-8 as the character encoding format. Unfortunately, this is not currently supported by the OS X version of Microsoft Excel.
+      image:
+        error: Could not assign image to product with the name '%productName%' for the following reason: %message%
       csv:
         # these names need to match
         name:
@@ -201,6 +206,9 @@ ms.commerce:
           help:
         supplierRef:
           name: Supplier reference
+          help:
+        defaultImage:
+          name: Default image name (must have already been uploaded)
           help:
         weight:
           name: Weight (grams)
@@ -232,6 +240,7 @@ ms.commerce:
         var_val:
           name: Variant value
           help:
+
       empty: No units have been added yet.
       sku:
         label: SKU
@@ -324,6 +333,10 @@ ms.commerce:
         issue-refund: Issue a refund?
         notify-customer: Notify the customer by email?
         password-confirm: Please confirm your account password to continue
+      search:
+        one-result: Showing the only order matching the term "%term%"
+        results: Found %amount% results matching the term "%term%"
+        no-results: No results found matching search term "%term%"
 
     item:
       none: There are no items to view.

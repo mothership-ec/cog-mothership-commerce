@@ -1,6 +1,6 @@
 {% extends 'Message:Mothership:ControlPanel::_templates/left_sidebar' %}
 {% block sidebar %}
-	{{ render(controller('Message:Mothership:Commerce::Controller:Order:OrderDetail#sidebar', { 'orderID': order.id } )) }}
+	{{ render(controller('Message:Mothership:Commerce::Controller:Order:Listing#sidebar')) }}
 {% endblock %}
 {% block main %}
 	<hgroup class="title">
