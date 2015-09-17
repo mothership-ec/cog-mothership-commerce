@@ -92,8 +92,8 @@ class Loader implements ProductEntityLoaderInterface
 
 	public function getByID($unitID, $revisionID = null, Product $product = null)
 	{
-		if (!is_numeric($revision_id) || $revision_id !== null) {
-			throw new \InvalidArgumentException('Revision ID must be numeric or null '.gettype($revision_id).' given');
+		if (!is_numeric($revisionID) || $revisionID !== null) {
+			throw new \InvalidArgumentException('Revision ID must be numeric or null '.gettype($revisionID).' given');
 		}
 
 		$this->_buildQuery($revisionID);
