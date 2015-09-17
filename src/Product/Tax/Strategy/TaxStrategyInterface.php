@@ -16,7 +16,6 @@ interface TaxStrategyInterface
 	 * Gets the net price based on a price and a tax rate
 	 * 
 	 * @param  double                    $price   The price
-	 * @param  TaxRate|TaxRateCollection $taxRate The tax rate to use
 	 * @return double                    The display price
 	 */
 	public function getNetPrice($price);
