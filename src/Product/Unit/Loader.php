@@ -92,6 +92,10 @@ class Loader implements ProductEntityLoaderInterface
 
 	public function getByID($unitID, $revisionID = null, Product $product = null)
 	{
+		if (!is_numeric($revision_id) || $revision_id !== null) {
+			throw new \InvalidArgumentException('Revision ID must be numeric or null %s given' . gettype($revision_id));
+		}
+
 		$this->_buildQuery($revisionID);
 
 		$this->_returnArray = is_array($unitID);
@@ -182,14 +186,11 @@ class Loader implements ProductEntityLoaderInterface
 
 	private function _buildQuery($revisionID = null)
 	{
-		$getRevision = $revisionID ?
+		$getRevision = $revisionID ?:
 			$this->_queryBuilderFactory->getQueryBuilder()
-				->select(':revisionID?i AS revisionID')
+				->select('MAX(revision_id)')
 				->from('product_unit_info')
-				->addParams(['revisionID' => $revisionID])
-				->groupBy('revisionID')
-			:
-			null
+				->where('unit_id = product_unit.unit_id')
 		;
 
 		$this->_queryBuilder = $this->_queryBuilderFactory->getQueryBuilder()
@@ -228,21 +229,22 @@ class Loader implements ProductEntityLoaderInterface
 			->join('product', 'product_unit.product_id = product.product_id') // Join product table to filter out units where product is hard deleted
 			;
 
-			if (null !== $getRevision) {
-				$this->_queryBuilder
-					->leftJoin('product_unit_info', '
-						product_unit_info.unit_id = product_unit.unit_id AND
-						revision_id = (:revisionID?q)
-					')
-					->addParams(['revisionID' => $getRevision]);
-			} else {
-				$this->_queryBuilder
-					->leftJoin('product_unit_info', '
-						product_unit_info.unit_id = product_unit.unit_id AND
-						revision_id = 1
-					')
-				;
-			}
+		if (is_numeric($getRevision)) {
+			$this->_queryBuilder
+				->leftJoin('product_unit_info', '
+					product_unit_info.unit_id = product_unit.unit_id AND
+					revision_id = :revisionID?i
+				')
+				->addParams(['revisionID' => $getRevision]);
+			;
+		} else {
+			$this->_queryBuilder
+				->leftJoin('product_unit_info', '
+					product_unit_info.unit_id = product_unit.unit_id AND
+					revision_id = (:revisionID?q)
+				')
+				->addParams(['revisionID' => $getRevision]);
+		}
 
 		$this->_queryBuilder
 			->leftJoin('product_unit_stock', 'product_unit.unit_id = product_unit_stock.unit_id')
