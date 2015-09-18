@@ -1086,7 +1086,8 @@ class Services implements ServicesInterface
 		$services['commerce.stock_summary'] = $services->factory(function($c) {
 			return new Commerce\Report\StockSummary(
 				$c['db.query.builder.factory'],
-				$c['routing.generator']
+				$c['routing.generator'],
+				$c['currency']
 			);
 		});
 
