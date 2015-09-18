@@ -92,9 +92,12 @@ class StockSummary extends AbstractReport
 			$date = $dateFilter->getDateChoice();
 
 			if($date->format('YMd') < $today->format('YMd')) {
-				$queryBuilder->from("product_unit_stock_snapshot stock");
-				$queryBuilder->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?d), INTERVAL 3 HOUR)', [$date->format('U')]);
-				$queryBuilder->where('?d <= stock.created_at', [$date->format('U')]);
+				$date->sub(new \DateInterval('PT2H'));
+
+				$queryBuilder->from('stock', 'product_unit_stock_snapshot')
+					->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?d), INTERVAL 3 HOUR)', [$date->format('U')])
+					->where('?d <= stock.created_at', [$date->format('U')])
+				;
 			}
 		}
 
