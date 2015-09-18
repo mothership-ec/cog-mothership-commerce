@@ -1,5 +1,17 @@
 # Changelog
 
+## 5.14.0
+
+- Added `ProductPageMapper\AbstractMapper::includeDeletedPages()` for including deleted pages when loading product pages
+- Added `ProductPageMapper\AbstractMapper::includeUnpublishedPages()` for including unpublished pages when loading product pages
+- Added `Events::PRODUCT_ADMIN_TAB_BUILD` constant to be called when building product tab menu in admin panel
+- `Controller\Tabs::index()` now fires `Events::PRODUCT_ADMIN_TAB_BUILD` event
+- Product tab menu now built using an event
+- Stock Summary report includes columns for brand name and cost price
+- Remove unnecessary extra parameter when calling `Product\Tax\Strategy\TaxStrategyInterface::getNetPrice()`
+- `Product\Unit\Loader::getByID()` throws `\InvalidArgumentException` if revision ID is neither numeric nor null
+- Resolve issue where `Product\Unit\Loader` would load the first revision instead of the most recent
+
 ## 5.13.0
 
 - Added `Order\OrderOrder` class, which contains a set of constants to be used by the `Order\Loader` for setting the order in which orders should be loaded
