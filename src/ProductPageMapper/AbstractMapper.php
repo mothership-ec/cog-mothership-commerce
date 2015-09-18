@@ -30,6 +30,9 @@ abstract class AbstractMapper implements ProductPageMapperInterface, PageProduct
 
 	protected $_filters = [];
 
+	protected $_includeDeletedPages = false;
+	protected $_includeUnpublishedPages = false;
+
 	/**
 	 * Constructor.
 	 *
@@ -51,6 +54,32 @@ abstract class AbstractMapper implements ProductPageMapperInterface, PageProduct
 		$this->_pageAuth      = $pageAuth;
 		$this->_productLoader = $productLoader;
 		$this->_unitLoader    = $unitLoader;
+	}
+
+	/**
+	 * Include deleted pages
+	 * 
+	 * @param  boolean $bool wheather to include deleted pages
+	 * @return AbstractMapper $this
+	 */
+	public function includeDeletedPages($bool = true)
+	{
+		$this->_includeDeletedPages = $bool;
+
+		return $this;
+	}
+
+	/**
+	 * Include unpublished pages
+	 * 
+	 * @param  boolean $bool wheather to include unpublished pages
+	 * @return AbstractMapper $this
+	 */
+	public function includeUnpublishedPages($bool = true)
+	{
+		$this->_includeUnpublishedPages = $bool;
+
+		return $this;
 	}
 
 	/**
@@ -184,10 +213,14 @@ abstract class AbstractMapper implements ProductPageMapperInterface, PageProduct
 		$result = $this->_query->run($query, $params);
 
 		// Filter out any pages not visible; not published or not to show on aggregator pages
-		foreach ($this->_pageLoader->getByID($result->flatten()) as $key => $page) {
+		foreach (
+				$this->_pageLoader
+					->includeUnpublished($this->_includeUnpublishedPages)
+					->includeDeleted($this->_includeDeletedPages)
+					->getByID($result->flatten()) as $key => $page
+			) {
 			// Filter out any pages that aren't viewable or published
-			if (!$this->_pageAuth->isViewable($page)
-			 || !$this->_pageAuth->isPublished($page)) {
+			if (!$this->_pageAuth->isViewable($page)) {
 				continue;
 			}
 
