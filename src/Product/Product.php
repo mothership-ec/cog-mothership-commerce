@@ -342,7 +342,7 @@ class Product implements Price\PricedInterface
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		return $this->_taxStrategy->getNetPrice($this->getPrice($type, $currencyID), $this->getTaxRates());
+		return $this->_taxStrategy->getNetPrice($this->getPrice($type, $currencyID));
 	}
 
 	/**
@@ -352,7 +352,7 @@ class Product implements Price\PricedInterface
 	{
 		$currencyID = $currencyID ?: $this->_defaultCurrency;
 
-		return $this->_taxStrategy->getNetPrice($this->getPriceFrom($type, $currencyID), $this->getTaxRates());
+		return $this->_taxStrategy->getNetPrice($this->getPriceFrom($type, $currencyID));
 	}
 
 	/**

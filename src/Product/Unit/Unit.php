@@ -107,10 +107,7 @@ class Unit implements PricedInterface
 	{
 		$product = $this->getProduct();
 
-		return $product->getTaxStrategy()->getNetPrice(
-			$this->getPrice($type, $currencyID),
-			$product->getTaxRates()
-		);
+		return $product->getTaxStrategy()->getNetPrice($this->getPrice($type, $currencyID));
 	}
 
 	/**

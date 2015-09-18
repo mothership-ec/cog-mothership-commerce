@@ -19,13 +19,7 @@ class ExclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 		$strategy = new ExclusiveTaxStrategy;
 		$price = 100;
 
-		$this->_taxRate->shouldReceive('getTaxedPrice')
-			->with($price)
-			->zeroOrMoreTimes()
-			->andReturn($price);
-
-
-		$this->assertEquals($price, $strategy->getNetPrice($price, $this->_taxRate));
+		$this->assertEquals($price, $strategy->getNetPrice($price));
 	}
 
 	public function testGetGrossPrice()
