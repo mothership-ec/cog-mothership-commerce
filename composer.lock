@@ -676,16 +676,16 @@
         },
         {
             "name": "mothership-ec/cog",
-            "version": "4.9.0",
+            "version": "4.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog.git",
-                "reference": "4b2f79b6b54a585fb2c434473fc42200f6b3213d"
+                "reference": "573e30fd3768547fd485ecb9ef2bfd396e56058c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog/zipball/4b2f79b6b54a585fb2c434473fc42200f6b3213d",
-                "reference": "4b2f79b6b54a585fb2c434473fc42200f6b3213d",
+                "url": "https://api.github.com/repos/mothership-ec/cog/zipball/573e30fd3768547fd485ecb9ef2bfd396e56058c",
+                "reference": "573e30fd3768547fd485ecb9ef2bfd396e56058c",
                 "shasum": ""
             },
             "require": {
@@ -767,7 +767,7 @@
                 "cog",
                 "framework"
             ],
-            "time": "2015-09-02 09:22:13"
+            "time": "2015-09-18 16:07:12"
         },
         {
             "name": "mothership-ec/cog-imageresize",
@@ -869,16 +869,16 @@
         },
         {
             "name": "mothership-ec/cog-mothership-file-manager",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog-mothership-file-manager.git",
-                "reference": "ab8d6cee543297a6fe17a253c49fd95524d5a98f"
+                "reference": "98c54b33cee39b85425a26c9469ff075dcf1bcf8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog-mothership-file-manager/zipball/ab8d6cee543297a6fe17a253c49fd95524d5a98f",
-                "reference": "ab8d6cee543297a6fe17a253c49fd95524d5a98f",
+                "url": "https://api.github.com/repos/mothership-ec/cog-mothership-file-manager/zipball/98c54b33cee39b85425a26c9469ff075dcf1bcf8",
+                "reference": "98c54b33cee39b85425a26c9469ff075dcf1bcf8",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +918,7 @@
                 "upload",
                 "uploads"
             ],
-            "time": "2015-07-01 09:58:57"
+            "time": "2015-09-11 13:29:13"
         },
         {
             "name": "mothership-ec/cog-mothership-reports",
@@ -970,21 +970,21 @@
         },
         {
             "name": "mothership-ec/cog-mothership-user",
-            "version": "4.1.0",
+            "version": "4.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog-mothership-user.git",
-                "reference": "02def88a3d0bcbb86879ee85a40970ea5c16036b"
+                "reference": "1f146f6a3e8f585383631a2ddc8f71317719359f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog-mothership-user/zipball/02def88a3d0bcbb86879ee85a40970ea5c16036b",
-                "reference": "02def88a3d0bcbb86879ee85a40970ea5c16036b",
+                "url": "https://api.github.com/repos/mothership-ec/cog-mothership-user/zipball/1f146f6a3e8f585383631a2ddc8f71317719359f",
+                "reference": "1f146f6a3e8f585383631a2ddc8f71317719359f",
                 "shasum": ""
             },
             "require": {
                 "kevinlebrun/colors.php": "0.*",
-                "mothership-ec/cog": "~4.7",
+                "mothership-ec/cog": "~4.9",
                 "mothership-ec/cog-mothership-cp": "~3.0",
                 "mothership-ec/cog-mothership-file-manager": "~3.0",
                 "mothership-ec/cog-mothership-reports": "~2.0",
@@ -1017,20 +1017,20 @@
                 "mothership",
                 "user"
             ],
-            "time": "2015-07-30 15:11:10"
+            "time": "2015-09-16 10:45:17"
         },
         {
             "name": "mothership-ec/cog-user",
-            "version": "2.0.2",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mothership-ec/cog-user.git",
-                "reference": "48d8655c3fb5004b676a9294031be20ea9ab7cef"
+                "reference": "70ab03451001ddbaa65643738cb175d4813e48ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mothership-ec/cog-user/zipball/48d8655c3fb5004b676a9294031be20ea9ab7cef",
-                "reference": "48d8655c3fb5004b676a9294031be20ea9ab7cef",
+                "url": "https://api.github.com/repos/mothership-ec/cog-user/zipball/70ab03451001ddbaa65643738cb175d4813e48ce",
+                "reference": "70ab03451001ddbaa65643738cb175d4813e48ce",
                 "shasum": ""
             },
             "require": {
@@ -1063,7 +1063,7 @@
                 "cog",
                 "user"
             ],
-            "time": "2015-08-14 10:13:05"
+            "time": "2015-09-15 12:58:16"
         },
         {
             "name": "mtdowling/cron-expression",
@@ -2661,12 +2661,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "2c146209820df8ad38e257cd8089aaf4671ebd6f"
+                "reference": "22b57c778cfd1fc46e14bff071c5126d9cd50820"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/2c146209820df8ad38e257cd8089aaf4671ebd6f",
-                "reference": "2c146209820df8ad38e257cd8089aaf4671ebd6f",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/22b57c778cfd1fc46e14bff071c5126d9cd50820",
+                "reference": "22b57c778cfd1fc46e14bff071c5126d9cd50820",
                 "shasum": ""
             },
             "require": {
@@ -2718,7 +2718,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2015-09-10 13:17:59"
+            "time": "2015-09-10 18:19:39"
         }
     ],
     "aliases": [],
