@@ -130,10 +130,10 @@ class StockSummary extends AbstractReport
 				unit_price.type = :priceType?s AND
 				unit_price.currency_id = :currency?s
 			)', 'product_unit_price')
-			->join('product_price', '(
+			->leftJoin('product_price', '(
 				product_price.product_id = product.product_id AND
 			 	product_price.type = :priceType?s AND
-				unit_price.currency_id = :currency?s
+				product_price.currency_id = :currency?s
 			)')
 			->addParams([
 				'priceType' => 'cost',
