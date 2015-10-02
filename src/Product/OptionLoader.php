@@ -29,7 +29,10 @@ class OptionLoader
 			FROM
 				product_unit_option
 			GROUP BY
-				HEX(option_name)'
+				HEX(option_name)
+			ORDER BY
+				option_name ASC
+			'
 		);
 
 		return $result->flatten();
@@ -44,7 +47,10 @@ class OptionLoader
 			FROM
 				product_unit_option
 			GROUP BY
-				HEX(option_value)'
+				HEX(option_value)
+			ORDER BY
+				option_value ASC
+			'
 		);
 
 		return $result->flatten();
@@ -63,7 +69,10 @@ class OptionLoader
 			WHERE
 				product_id = ?i
 			GROUP BY
-				HEX(product_unit_option.option_name)',
+				HEX(product_unit_option.option_name)
+			ORDER BY
+				option_name ASC
+			',
 			array(
 				$product->id
 			)
@@ -89,7 +98,10 @@ class OptionLoader
 			WHERE
 				product_id = ?i
 			GROUP BY
-				HEX(product_unit_option.option_value)',
+				HEX(product_unit_option.option_value)
+			ORDER BY
+				option_value ASC
+			',
 			array(
 				$product->id
 			)
@@ -120,7 +132,10 @@ class OptionLoader
 			WHERE
 				option_name = ?s
 			GROUP BY
-				HEX(option_value)',
+				HEX(option_value)
+			ORDER BY
+				option_value ASC
+			',
 			array(
 				$type
 			)
