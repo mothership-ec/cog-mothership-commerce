@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.14.1
+
+- Resolve issue where `Product\OptionLoader` would not load options in alphabetical order
+
 ## 5.14.0
 
 - Added `ProductPageMapper\AbstractMapper::includeDeletedPages()` for including deleted pages when loading product pages
