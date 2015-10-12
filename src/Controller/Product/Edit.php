@@ -183,8 +183,8 @@ class Edit extends Controller
 			$unit = $this->get('product.unit.loader')
 				->includeInvisible()
 				->includeOutOfStock()
-				->includeDeleted()
-				->getByID((int) $data['unit']);
+				->getByID((int) $data['unit'])
+			;
 
 			$unit->barcode = $data['barcode'];
 
