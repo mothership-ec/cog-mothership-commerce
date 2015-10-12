@@ -75,6 +75,9 @@ class Routes implements RoutesInterface
 			->setMethod('GET')
 			->enableCsrf('csrfHash');
 
+		$router['ms.product']->add('ms.commerce.product.unit.barcode', 'edit/{productID}/units/barcode', 'Message:Mothership:Commerce::Controller:Product:Edit#barcodeAction')
+			->setMethod('POST');
+
 
 		$router['ms.product']->add('ms.commerce.product.edit.stock.action', 'edit/{productID}/stock', 'Message:Mothership:Commerce::Controller:Product:Edit#processStock')
 			->setRequirement('productID', '\d+')

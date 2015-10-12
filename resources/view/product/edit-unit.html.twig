@@ -1,6 +1,18 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 {% import 'Message:Mothership:Commerce::options' as option %}
 
+{% block javascripts %}
+	{{ parent() }}
+	{% javascripts
+		'@Message:Mothership:Commerce::resources/assets/js/unit-edit.js'
+
+		output='/assets/js/ms_unit_edit.js'
+		filter='?jsmin'
+	%}
+	<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
 {% block edit %}
 	{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 	<table>
@@ -8,6 +20,7 @@
 			<col width="125">
 			<col width="200">
 			<col>
+			<col width="75">
 			<col width="75">
 			<col width="75">
 			<col width="100">
@@ -19,6 +32,7 @@
 				<th>{{ 'ms.commerce.product.units.prices.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.details.weight-grams.label'|trans }}</th>
 				<th class="a-center">{{ 'ms.commerce.product.units.visible.label'|trans }}</th>
+				<th>{{ 'ms.commerce.product.units.barcode.label'|trans }}</th>
 				<th>{{ 'ms.commerce.product.units.delete.label'|trans }}</th>
 			</tr>
 		</thead>
@@ -32,17 +46,25 @@
 					<td>
 						<div class="multi-inline">
 							<div class="inline">
-									{% for currency, price in form[unit.id].prices.currencies %}
+								{% for currency, price in form[unit.id].prices.currencies %}
 									<div class="currency-units">
 										<h4>{{ currency }}</h4>
 									    {{ form_widget(price) }}
 									</div>
-									{% endfor %}
+								{% endfor %}
 							</div>
 						</div>
 					</td>
 					<td>{{ form_widget(form[unit.id]['weight']) }}</td>
 					<td class="a-center">{{ form_widget(form[unit.id]['visible']) }}</td>
+					<td class="a-center">
+						<a class="button small barcode-edit"
+						data-unit="{{ unit.id }}"
+						data-barcode="{{ unit.barcode }}"
+						data-modal-open data-modal="#barcode-modal">
+							Edit Barcode
+						</a>
+					</td>
 					<td><a class="button delete small" href="{{ url('ms.commerce.product.unit.delete', {productID: unit.product.id, unitID: unit.id})}}" data-confirm="Are you sure you want to delete this unit?">Delete</a></td>
 				</tr>
 			{% endfor %}
@@ -50,25 +72,27 @@
 	</table>
 	{{ form_end(form) }}
 
-<div class="group">
-	<h2 class="title">Add Unit</h2>
-	<div class="content">
-		{{ form_start(addForm) }}
-			{{ form_row(addForm.sku) }}
-			{{ option.renderRepeatable(addForm.options) }}
-			{% for currency, price in addForm.prices.currencies %}
-				<div class="currency-units">
-				    <h4>{{ currency }}</h4>
-					{{ form_widget(price) }}
-				</div>
-			{% endfor %}
-			{{ form_rest(addForm) }}
-			<button type="submit" class="button small update">
-				{{ 'ms.commerce.product.button.sku'|trans }}
-			</button>
-		{{ form_end(addForm) }}
+	<div class="group">
+		<h2 class="title">Add Unit</h2>
+		<div class="content">
+			{{ form_start(addForm) }}
+				{{ form_row(addForm.sku) }}
+				{{ option.renderRepeatable(addForm.options) }}
+				{% for currency, price in addForm.prices.currencies %}
+					<div class="currency-units">
+					    <h4>{{ currency }}</h4>
+						{{ form_widget(price) }}
+					</div>
+				{% endfor %}
+				{{ form_rest(addForm) }}
+				<button type="submit" class="button small update">
+					{{ 'ms.commerce.product.button.sku'|trans }}
+				</button>
+			{{ form_end(addForm) }}
+		</div>
 	</div>
-</div>
+
+	{% include 'Message:Mothership:Commerce::product:modals:modal-barcode' with {form: barcodeForm} only %}
 {% endblock %}
 
 {% block slide %}
