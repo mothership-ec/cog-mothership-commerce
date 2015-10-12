@@ -1,0 +1,11 @@
+{% extends 'Message:Mothership:ControlPanel::modal:standard' %}
+
+{% block title 'ms.commerce.unit.barcode'|trans %}
+{% block id 'barcode-modal' %}
+{% block attr 'style="display:none;"' %}
+{% block content %}
+	{{ form_start(form, {attr: {id: 'barcode-form'}}) }}
+		<p id="barcode-content">{{ form_rest(form) }}</p>
+		<button class="button small save form-submit right">{{'ms.commerce.product.button.continue'|trans}}</button>
+	{{ form_end(form) }}
+{% endblock %}
