@@ -9,9 +9,15 @@ use Message\Cog\Console\Task\Task;
  * @package Message\Mothership\Commerce\Task\Product
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
+ *
+ * Task for deleting units that have no options assigned to them. It was previously possible to create units
+ * with no options, which would break on the unit edit screen. This task marks any of those units as deleted.
  */
 class DeleteOptionlessUnits extends Task
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function process()
 	{
 		$units = $this->get('product.unit.loader')
