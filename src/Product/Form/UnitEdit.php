@@ -31,6 +31,12 @@ class UnitEdit extends AbstractType
 		}
 
 		foreach ($units as $unit) {
+
+			// If a unit has no options, it is broken so we should ignore it
+			if (count($unit->options) <= 0) {
+				continue;
+			}
+
 			$unitForm = $builder->create($unit->id, 'form');
 
 			$unitForm->add('sku', 'text', [
@@ -41,7 +47,7 @@ class UnitEdit extends AbstractType
 
 			// Create options form
 			$optionsForm = $builder->create('options', 'form');
-			foreach($headings as $type => $displayName) {
+			foreach ($headings as $type => $displayName) {
 				$choices = [];
 				foreach ($this->_optionLoader->getByName($type) as $choice) {
 					$choice = trim($choice);

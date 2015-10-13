@@ -293,6 +293,7 @@ class Loader implements ProductEntityLoaderInterface
 				$unit->weight      = $row->weight;
 				$unit->supplierRef = $row->supplierRef;
 				$unit->revisionID  = $row->revisionID;
+				$unit->options     = [];
 
 				$unit->setSKU($row->sku);
 				$unit->setVisible((bool) $row->visible);
@@ -318,7 +319,7 @@ class Loader implements ProductEntityLoaderInterface
 
 			$unit = $units[$row->id];
 
-			if (!array_key_exists($row->optionName, $unit->options)) {
+			if ($row->optionName && $row->optionValue && !array_key_exists($row->optionName, $unit->options)) {
 				$unit->options[$row->optionName] = $row->optionValue;
 			}
 
