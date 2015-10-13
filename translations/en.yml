@@ -28,7 +28,7 @@ ms.commerce:
     button:
       save: Save changes
       create: Create product
-      sku: Add SKU
+      sku: Add unit
       barcodes: Print barcodes
       variant: Add Variant
       back: Back
