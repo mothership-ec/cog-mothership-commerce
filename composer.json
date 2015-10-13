@@ -29,6 +29,7 @@
 		"mothership-ec/cog-mothership-file-manager": "~3.1",
 		"mothership-ec/cog-mothership-cp"          : "~3.2",
         "mothership-ec/cog-mothership-reports"     : "~2.0",
+        "mothership-ec/cog-mothership-google-merchant" : "dev-master as 1.0.0",
 
 		"domisys/image_barcode2"             : "3.0.0"
 	},

@@ -172,6 +172,8 @@ ms.commerce:
           help: Depending on the option type set above, enter the value. (i.e.: an option type of 'Colour' could have a value of 'Red')
         button:
           create: Add unit
+      barcode:
+        label: Barcode
     upload:
       title: Upload a CSV
       form:
