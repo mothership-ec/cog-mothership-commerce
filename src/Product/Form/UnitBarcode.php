@@ -13,7 +13,7 @@ class UnitBarcode extends AbstractType
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
-		$builder->add('unit', 'hidden');
+		$builder->add('unit', 'hidden', ['required' => true]);
 
 		$builder->add('barcode', 'number', [
 			'attr' => [
