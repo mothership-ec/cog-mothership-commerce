@@ -19,6 +19,7 @@ class UnitBarcode extends AbstractType
 			'attr' => [
 				'data-help-key' => 'ms.commerce.product.units.barcode.help'
 			],
+			'required' => true
 		]);
 	}
 
