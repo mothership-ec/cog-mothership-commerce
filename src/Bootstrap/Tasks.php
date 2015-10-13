@@ -21,5 +21,6 @@ class Tasks implements TasksInterface
 
 		$tasks->add(new Product\Barcode\GenerateTask('commerce:barcode:generate'), 'Creates barcode images for all units in the database');
 
+		$tasks->add(new Task\Product\DeleteOptionlessUnits('commerce:delete_optionless_units'), 'Marks units with no options as deleted');
 	}
 }
