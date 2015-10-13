@@ -1,6 +1,8 @@
 ms.commerce:
   general:
     warning: Warning
+  unit:
+    barcode: Barcode  
   product:
     create:
       name:
