@@ -32,6 +32,10 @@ class Create
 
 	public function create(Unit $unit)
 	{
+		if (count($unit->options === 0)) {
+			throw new \LogicException('Cannot create a unit as it has no options!');
+		}
+
 		$event = new Event($unit);
 		$this->_dispatcher->dispatch(Events::PRODUCT_UNIT_BEFORE_CREATE, $event);
 

@@ -225,10 +225,10 @@ class Edit extends Controller
 		$form->handleRequest();
 
 		if ($form->isValid() && $data = $form->getData()) {
+			de($data);
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
-			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
