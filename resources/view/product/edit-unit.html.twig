@@ -91,7 +91,9 @@
 			{{ form_end(addForm) }}
 		</div>
 	</div>
+{% endblock %}
 
+{% block after %}
 	{% include 'Message:Mothership:Commerce::product:modals:modal-barcode' with {form: barcodeForm} only %}
 {% endblock %}
 
