@@ -225,7 +225,6 @@ class Edit extends Controller
 		$form->handleRequest();
 
 		if ($form->isValid() && $data = $form->getData()) {
-			de($data);
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
