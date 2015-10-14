@@ -5,9 +5,10 @@ namespace Message\Mothership\Commerce\Product\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Message\Mothership\Commerce\Product\OptionLoader;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Message\Mothership\Commerce\Product\OptionLoader;
 use Message\Mothership\Commerce\Field\OptionType;
+use Message\Mothership\Commerce\Constraint\Product\UnitHasOptions;
 
 class UnitAdd extends AbstractType
 {
@@ -63,7 +64,10 @@ class UnitAdd extends AbstractType
 				'type'         => $optionType,
 				'label'        => 'Options',
 				'allow_add'    => true,
-				'allow_delete' => true
+				'allow_delete' => true,
+				'constraints'  => [
+					new UnitHasOptions
+				]
 			]
 		);
 

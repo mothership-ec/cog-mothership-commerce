@@ -771,6 +771,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\UnitEdit($c['currency.supported'], $c['product.option.loader']);
 		});
 
+		$services['product.form.unit.barcode'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\UnitBarcode;
+		});
+
 		$services['product.form.unit.add'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\UnitAdd($c['currency.supported'], $c['product.option.loader']);
 		});

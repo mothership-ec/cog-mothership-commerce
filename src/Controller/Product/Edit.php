@@ -77,6 +77,9 @@ class Edit extends Controller
 			'product'     => $this->_product,
 			'units'       => $this->_units ,
 			'form'        => $this->_getUnitForm(),
+			'barcodeForm' => $this->createForm($this->get('product.form.unit.barcode'), null, [
+				'action' => $this->get('routing.generator')->generate('ms.commerce.product.unit.barcode', ['productID' => $this->_product->id]),
+			]),
 			'addForm'     => $this->_addNewUnitForm(),
 			'optionValue' => $this->get('option.loader')->getAllOptionValues(),
 		));
@@ -171,6 +174,26 @@ class Edit extends Controller
 		return $this->render('Message:Mothership:Commerce::product:image:delete-form', ['form' => $form]);
 	}
 
+	public function barcodeAction($productID)
+	{
+		$form = $this->createForm($this->get('product.form.unit.barcode'));
+		$form->handleRequest();
+
+		if ($form->isValid() && $data = $form->getData()) {
+			$unit = $this->get('product.unit.loader')
+				->includeInvisible()
+				->includeOutOfStock()
+				->getByID((int) $data['unit'])
+			;
+
+			$unit->barcode = $data['barcode'];
+
+			$this->get('product.unit.edit')->save($unit);
+		}
+
+		return $this->redirectToReferer();
+	}
+
 	/**
 	 * Process the updating of the units data
 	 *
@@ -228,7 +251,6 @@ class Edit extends Controller
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
-			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
@@ -399,7 +421,7 @@ class Edit extends Controller
 			foreach ($data['units'] as $unitID => $locationArray) {
 				foreach ($locationArray as $location => $stock) {
 					// remove all spaces and tabs and cast stock to int
-					$stock = (int)(preg_replace('/\s+/','',$stock));
+					$stock = (int) (preg_replace('/\s+/','',$stock));
 
 					if ($stock > 0) {
 						$stockManager->increment(
