@@ -259,7 +259,10 @@ class Loader implements ProductEntityLoaderInterface
 				product_price.type = product_unit_price.type AND
 				product_price.currency_id = product_unit_price.currency_id
 			')
-			->leftJoin('product_unit_option', 'product_unit_option.unit_id = product_unit.unit_id')
+			->leftJoin('product_unit_option', '
+				product_unit_option.unit_id = product_unit.unit_id AND
+				product_unit_option.revision_id = product_unit_info.revision_id
+			')
 		;
 
 		if (!$this->_loadInvisible) {
@@ -298,6 +301,7 @@ class Loader implements ProductEntityLoaderInterface
 				$unit->weight      = $row->weight;
 				$unit->supplierRef = $row->supplierRef;
 				$unit->revisionID  = $row->revisionID;
+				$unit->options     = [];
 
 				$unit->setSKU($row->sku);
 				$unit->setVisible((bool) $row->visible);
@@ -323,7 +327,7 @@ class Loader implements ProductEntityLoaderInterface
 
 			$unit = $units[$row->id];
 
-			if (!array_key_exists($row->optionName, $unit->options)) {
+			if ($row->optionName && $row->optionValue && !array_key_exists($row->optionName, $unit->options)) {
 				$unit->options[$row->optionName] = $row->optionValue;
 			}
 

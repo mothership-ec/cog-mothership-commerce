@@ -251,7 +251,6 @@ class Edit extends Controller
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
-			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
@@ -422,7 +421,7 @@ class Edit extends Controller
 			foreach ($data['units'] as $unitID => $locationArray) {
 				foreach ($locationArray as $location => $stock) {
 					// remove all spaces and tabs and cast stock to int
-					$stock = (int)(preg_replace('/\s+/','',$stock));
+					$stock = (int) (preg_replace('/\s+/','',$stock));
 
 					if ($stock > 0) {
 						$stockManager->increment(
