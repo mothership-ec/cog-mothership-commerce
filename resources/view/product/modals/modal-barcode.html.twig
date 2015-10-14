@@ -5,7 +5,7 @@
 {% block attr 'style="display:none;"' %}
 {% block content %}
 	{{ form_start(form, {attr: {id: 'barcode-form'}}) }}
-		<p id="barcode-content">{{ form_rest(form) }}</p>
+		<div id="barcode-content">{{ form_rest(form) }}</div>
 		<button class="button small save form-submit right">{{'ms.commerce.product.button.continue'|trans}}</button>
 	{{ form_end(form) }}
 {% endblock %}
