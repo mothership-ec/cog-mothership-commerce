@@ -398,7 +398,7 @@ class Edit extends Controller
 			foreach ($data['units'] as $unitID => $locationArray) {
 				foreach ($locationArray as $location => $stock) {
 					// remove all spaces and tabs and cast stock to int
-					$stock = (int)(preg_replace('/\s+/','',$stock));
+					$stock = (int) (preg_replace('/\s+/','',$stock));
 
 					if ($stock > 0) {
 						$stockManager->increment(

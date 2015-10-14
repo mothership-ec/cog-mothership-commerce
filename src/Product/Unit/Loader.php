@@ -254,7 +254,10 @@ class Loader implements ProductEntityLoaderInterface
 				product_price.type = product_unit_price.type AND
 				product_price.currency_id = product_unit_price.currency_id
 			')
-			->leftJoin('product_unit_option', 'product_unit_option.unit_id = product_unit.unit_id')
+			->leftJoin('product_unit_option', '
+				product_unit_option.unit_id = product_unit.unit_id AND
+				product_unit_option.revision_id = product_unit_info.revision_id
+			')
 		;
 
 		if (!$this->_loadInvisible) {
