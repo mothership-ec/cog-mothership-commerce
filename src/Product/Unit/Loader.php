@@ -63,6 +63,11 @@ class Loader implements ProductEntityLoaderInterface
 		$this->_entityLoaderCollection->add('product', $this->_productLoader);
 	}
 
+	public function getDefaultCurrency()
+	{
+		return $this->_defaultCurrency;
+	}
+
 	public function getAll()
 	{
 		$this->_buildQuery();

@@ -47,6 +47,14 @@ class ApparelProductType implements ProductTypeInterface
 		$factory->add($factory->getField('richtext', 'care_instructions', 'Care instructions'));
 
 		$factory->add($factory->getField('richtext', 'sizing', 'Sizing'));
+
+		$factory->add($factory->getField('choice', 'gender', 'Gender')->setFieldOptions([
+			'choices' => [
+				'unisex' => 'Unisex',
+				'male'   => 'Male',
+				'female' => 'Female',
+			],
+		]));
 	}
 
 	public function getProductDisplayName(Product $product)
