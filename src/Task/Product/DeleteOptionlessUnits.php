@@ -46,6 +46,6 @@ class DeleteOptionlessUnits extends Task
 			$this->writeln('<info>Unit ' . $unit->id . ' deleted</info>');
 		}
 
-		$this->writeln('<info>Deletion completion</info>');
+		$this->writeln('<info>Deletion completed</info>');
 	}
 }
