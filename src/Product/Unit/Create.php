@@ -32,7 +32,7 @@ class Create
 
 	public function create(Unit $unit)
 	{
-		if (count($unit->options === 0)) {
+		if (count($unit->options) === 0) {
 			throw new \LogicException('Cannot create a unit as it has no options!');
 		}
 
