@@ -816,19 +816,43 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$services['product.barcode.generator.collection'] = function ($c) {
-			return new Commerce\Product\Barcode\CodeGenerator\GeneratorCollection([
-				$c['product.barcode.generator.code39'],
-				$c['product.barcode.generator.ean13'],
-			]);
+		$services['product.barcode.edit'] = function ($c) {
+			return new Commerce\Product\Unit\BarcodeEdit($c['db.query'], $c['product.barcode.code_generator']);
 		};
 
-		$services['product.barcode.generator.code39'] = function ($c) {
+		$services['product.barcode.code_generator'] = function ($c) {
+			$config = $c['cfg']->barcode;
+			$collection = $c['product.barcode.code_generator.collection'];
+
+			if (isset($config->barcodeGenerator)) {
+				return $collection->get($config->barcodeGenerator);
+			}
+
+			if (isset($config->barcodeType)) {
+				return $collection->getByType($config->barcodeType);
+			}
+
+			return $collection->getDefault();
+		};
+
+		$services['product.barcode.code_generator.collection'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\GeneratorCollection([
+				$c['product.barcode.code_generator.code39'],
+				$c['product.barcode.code_generator.ean13'],
+				$c['product.barcode.code_generator.default'],
+			], 'default');
+		};
+
+		$services['product.barcode.code_generator.code39'] = function ($c) {
 			return new Commerce\Product\Barcode\CodeGenerator\Code39Generator;
 		};
 
-		$services['product.barcode.generator.ean13'] = function ($c) {
+		$services['product.barcode.code_generator.ean13'] = function ($c) {
 			return new Commerce\Product\Barcode\CodeGenerator\Ean13Generator;
+		};
+
+		$services['product.barcode.code_generator.default'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\DefaultGenerator;
 		};
 
 		/**

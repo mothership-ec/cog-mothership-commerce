@@ -7,6 +7,14 @@ use Message\Mothership\Commerce\Product\Barcode;
 
 class GeneratorCollection extends Collection
 {
+	private $_default;
+
+	public function __construct(array $generators, $default)
+	{
+		parent::__construct($generators);
+		$this->setDefault($default);
+	}
+
 	protected function _configure()
 	{
 		$this->setType('\\Message\\Mothership\\Commerce\\Product\\Barcode\\CodeGenerator\\GeneratorInterface');
@@ -49,6 +57,31 @@ class GeneratorCollection extends Collection
 			}
 		}
 
+		if (empty($matches)) {
+			throw new \LogicException('No barcode generators of type `' . $type . '` exist on collection');
+		}
+
 		return $matches;
+	}
+
+	public function setDefault($default)
+	{
+		if (!is_string($default) && !$default instanceof GeneratorInterface) {
+			$type = gettype($default) === 'object' ? get_class($default) : gettype($default);
+			throw new \InvalidArgumentException('Default must be either a string or instance of GeneratorInterface, ' . $type . ' given');
+		}
+
+		$default = ($default instanceof GeneratorInterface) ? $default->getName() : $default;
+
+		if (!$this->exists($default)) {
+			throw new \LogicException('`' . $default . '` not set on collection');
+		}
+
+		$this->_default = $default;
+	}
+
+	public function getDefault()
+	{
+		return $this->get($this->_default);
 	}
 }

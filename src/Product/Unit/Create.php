@@ -17,12 +17,11 @@ class Create
 	protected $_dispatcher;
 
 	public function __construct(Query $query, UserInterface $user, Locale $locale, EventDispatcher $dispatcher)
-
 	{
-		$this->_query      = $query;
-		$this->_user       = $user;
-		$this->_locale     = $locale;
-		$this->_dispatcher = $dispatcher;
+		$this->_query       = $query;
+		$this->_user        = $user;
+		$this->_locale      = $locale;
+		$this->_dispatcher  = $dispatcher;
 	}
 
 	public function save(Unit $unit)
@@ -49,11 +48,7 @@ class Create
 			SET
 				product_id   = :productID?i,
 				visible      = :visible?i,
-				barcode      = IF(
-					:barcode?sn IS NOT NULL,
-					:barcode?sn,
-					(SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='product_unit')
-				),
+				barcode      = :barcode?sn,
 				supplier_ref = :sup_ref?sn,
 				weight_grams = :weight?i,
 				created_at   = :createdAt?d,

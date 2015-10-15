@@ -38,6 +38,7 @@ class Create extends Controller
 			foreach ($product->getAllUnits() as $unit) {
 				$unit->authorship->create(new DateTimeImmutable, $this->get('user.current'));
 				$unit = $unitCreator->create($unit);
+
 				foreach($unit->getStockArray() as $location => $stock) {
 					$stockManager->set(
 						$unit,
@@ -45,7 +46,6 @@ class Create extends Controller
 						$stock
 					);
 				}
-
 			}
 
 			if (!$stockManager->commit()) {
