@@ -5,16 +5,34 @@ namespace Message\Mothership\Commerce\Product\Barcode\CodeGenerator;
 use Message\Cog\ValueObject\Collection;
 use Message\Mothership\Commerce\Product\Barcode;
 
+/**
+ * Class GeneratorCollection
+ * @package Message\Mothership\Commerce\Product\Barcode\CodeGenerator
+ *
+ * @author  Thomas Marchant <thomas@mothership.ec>
+ *
+ * Collection for storing instances of GeneratorInterface
+ */
 class GeneratorCollection extends Collection
 {
+	/**
+	 * @var string
+	 */
 	private $_default;
 
+	/**
+	 * @param array $generators
+	 * @param $default
+	 */
 	public function __construct(array $generators, $default)
 	{
 		parent::__construct($generators);
 		$this->setDefault($default);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function _configure()
 	{
 		$this->setType('\\Message\\Mothership\\Commerce\\Product\\Barcode\\CodeGenerator\\GeneratorInterface');
@@ -35,6 +53,15 @@ class GeneratorCollection extends Collection
 		});
 	}
 
+	/**
+	 * Get a generator that generates barcodes of a specific type. Will return the first it finds, unless $asArray
+	 * is set to true, in which case it will return all of them
+	 *
+	 * @param $type
+	 * @param bool $asArray
+	 *
+	 * @return array | GeneratorInterface
+	 */
 	public function getByType($type, $asArray = false)
 	{
 		if (!is_string($type)) {
@@ -64,6 +91,11 @@ class GeneratorCollection extends Collection
 		return $matches;
 	}
 
+	/**
+	 * Set which generator to return if none is set in the site config
+	 *
+	 * @param string | GeneratorInterface  $default
+	 */
 	public function setDefault($default)
 	{
 		if (!is_string($default) && !$default instanceof GeneratorInterface) {
@@ -80,6 +112,11 @@ class GeneratorCollection extends Collection
 		$this->_default = $default;
 	}
 
+	/**
+	 * Get the default generator
+	 *
+	 * @return GeneratorInterface
+	 */
 	public function getDefault()
 	{
 		return $this->get($this->_default);
