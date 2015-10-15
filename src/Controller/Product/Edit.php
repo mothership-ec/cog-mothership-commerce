@@ -273,10 +273,13 @@ class Edit extends Controller
 					'%sku%' => $unit->sku,
 				]);
 			}
+
+			$this->addFlash('success', 'ms.commerce.product.units.create.success', [
+				'%sku%' => $unit->sku,
+			]);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
-
 	}
 
 	public function processProductAttributes($productID)
@@ -312,7 +315,6 @@ class Edit extends Controller
 			$product = $productEdit->save($product);
 			$product = $productEdit->saveTags($product);
 			$trans->commit();
-
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');

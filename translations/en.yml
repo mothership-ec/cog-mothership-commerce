@@ -175,6 +175,8 @@ ms.commerce:
       barcode:
         label: Barcode
         modal-title: Edit barcode
+      create:
+        success: Unit with SKU '%sku%' successfully created
     upload:
       title: Upload a CSV
       form:
