@@ -1,18 +1,6 @@
 {% extends 'Message:Mothership:Commerce::product:edit-layout' %}
 {% import 'Message:Mothership:Commerce::options' as option %}
 
-{% block javascripts %}
-	{{ parent() }}
-	{% javascripts
-		'@Message:Mothership:Commerce::resources/assets/js/unit-edit.js'
-
-		output='/assets/js/ms_unit_edit.js'
-		filter='?jsmin'
-	%}
-	<script src="{{ asset_url }}"></script>
-	{% endjavascripts %}
-{% endblock %}
-
 {% block edit %}
 	{{ form_start(form, {attr: {id: 'product-edit-form'}}) }}
 	<table>
@@ -97,6 +85,15 @@
 
 {% block after %}
 	{% include 'Message:Mothership:Commerce::product:modals:modal-barcode' with {form: barcodeForm} only %}
+
+	{% javascripts
+		'@Message:Mothership:Commerce::resources/assets/js/unit-edit.js'
+
+		output='/assets/js/ms_unit_edit.js'
+		filter='?jsmin'
+	%}
+	<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
 {% endblock %}
 
 {% block slide %}
