@@ -812,6 +812,21 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$services['product.barcode.generator.collection'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\GeneratorCollection([
+				$c['product.barcode.generator.code39'],
+				$c['product.barcode.generator.ean13'],
+			]);
+		};
+
+		$services['product.barcode.generator.code39'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\Code39Generator;
+		};
+
+		$services['product.barcode.generator.ean13'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\Ean13Generator;
+		};
+
 		/**
 		 * @deprecated User 'user.address.loader' instead
 		 */

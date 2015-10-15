@@ -26,4 +26,29 @@ class GeneratorCollection extends Collection
 			return $item->getName();
 		});
 	}
+
+	public function getByType($type, $asArray = false)
+	{
+		if (!is_string($type)) {
+			throw new \InvalidArgumentException('Type must be a string, ' . gettype($type) . ' given');
+		}
+
+		if (!Barcode\ValidTypes::isValid($type)) {
+			throw new \LogicException('`' . $type . '` is not a valid barcode type');
+		}
+
+		$matches = [];
+
+		foreach ($this as $generator) {
+			if ($generator->getBarcodeType() === $type) {
+				if (!$asArray) {
+					return $generator;
+				}
+
+				$matches[$generator->getName()] = $generator;
+			}
+		}
+
+		return $matches;
+	}
 }
