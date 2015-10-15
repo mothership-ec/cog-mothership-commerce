@@ -345,6 +345,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 	}
 
+	/**
+	 * Generate a barcode and save it to the database if it hasn't already been set against the unit
+	 *
+	 * @param Product\Unit\Event $event
+	 */
 	public function saveBarcode(Product\Unit\Event $event)
 	{
 		$unit = $event->getUnit();
