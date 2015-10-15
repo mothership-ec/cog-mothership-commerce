@@ -7,7 +7,7 @@ use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Message\Mothership\Commerce\Field;
-use Message\Mothership\Commerce\Product\Type\Detail;
+use Message\Mothership\Commerce\Product\Barcode\CodeGenerator\Exception\BarcodeGenerationException;
 
 use Message\Mothership\FileManager\File;
 
@@ -266,7 +266,13 @@ class Edit extends Controller
 				$unit->setOption($optionArray['name'], $optionArray['value']);
 			}
 
-			$unit = $this->get('product.unit.create')->create($unit);
+			try {
+				$unit = $this->get('product.unit.create')->create($unit);
+			} catch (BarcodeGenerationException $e) {
+				$this->addFlash('warning', 'ms.commerce.product.barcode.create.error', [
+					'%sku%' => $unit->sku,
+				]);
+			}
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));

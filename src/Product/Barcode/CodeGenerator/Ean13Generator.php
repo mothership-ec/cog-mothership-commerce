@@ -34,14 +34,14 @@ class Ean13Generator extends AbstractGenerator
 
 		$prefix = (string) $this->_prefixNumber;
 
-		if (strlen($unit->id) + strlen($prefix) > self::LENGTH) {
-			throw new Exception\BarcodeGenerationException('Could not create barcode, as the combination of the prefix number and the unit ID are too long');
-		}
-
 		$padding = self::LENGTH - 1 - strlen($prefix);
 
 		$barcode = $prefix . str_pad($unit->id, $padding, $this->_paddingNumber, STR_PAD_LEFT);
 		$total = 0;
+
+		if (strlen($barcode) + 1 > self::LENGTH) {
+			throw new Exception\BarcodeGenerationException('Could not create barcode, as the combination of the prefix number and the unit ID are too long');
+		}
 
 		foreach (str_split($barcode) as $i => $char) {
 			if ($i % 2 !== 0) {
