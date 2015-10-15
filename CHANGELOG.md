@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.15.1
+
+- Fix issue where barcode edit form would not autopopulate after an AJAX request
+
 ## 5.15.0
 
 - Added ability to edit barcodes from the product unit edit screen
