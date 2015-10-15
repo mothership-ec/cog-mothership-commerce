@@ -142,7 +142,8 @@ class ProductProxy extends Product
 	{
 		$this->_loaders->get('units')
 			->includeOutOfStock(true)
-			->includeInvisible(true);
+			->includeInvisible(true)
+		;
 
 		$this->_load('units');
 	}

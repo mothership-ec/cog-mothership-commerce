@@ -65,6 +65,11 @@ class Loader implements EntityLoaderInterface
 	 */
 	private $_productCache;
 
+	/**
+	 * @var string
+	 */
+	private $_defaultCurrency;
+
 	public function __construct(
 		Query $query,
 		Locale $locale,
@@ -100,6 +105,11 @@ class Loader implements EntityLoaderInterface
 	public function getEntityLoaders()
 	{
 		return $this->_entityLoaders;
+	}
+
+	public function getDefaultCurrency()
+	{
+		return $this->_defaultCurrency;
 	}
 
 	/**

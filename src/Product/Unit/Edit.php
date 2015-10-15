@@ -43,6 +43,7 @@ class Edit implements DB\TransactionalInterface
 				visible      = ?b,
 				supplier_ref = ?s,
 				weight_grams = ?in,
+				barcode      = ?i,
 				updated_at   = ?d,
 				updated_by   = ?in
 			WHERE
@@ -51,6 +52,7 @@ class Edit implements DB\TransactionalInterface
 					(bool) $unit->visible,
 					$unit->supplierRef,
 					$unit->weight,
+					$unit->barcode,
 					$unit->authorship->updatedAt(),
 					$unit->authorship->updatedBy(),
 					$unit->id

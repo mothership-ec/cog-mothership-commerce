@@ -1,5 +1,29 @@
 # Changelog
 
+## 5.15.1
+
+- Fix issue where barcode edit form would not autopopulate after an AJAX request
+
+## 5.15.0
+
+- Added ability to edit barcodes from the product unit edit screen
+- No longer possible to create units with no options
+- Added `Product\Form\UnitBarcode` form class for editing barcodes
+- Added `Task\Product\DeleteOptionlessUnits` task for marking units with no options as deleted
+- Added `Constraint\Product\UnitHasOptions` constraint (with validator `Constraint\Product\UnitHasOptionsValidator`) to apply to the `Product\Form\UnitEdit` form class to ensure that a unit has at least one option set
+- Added `Product\Loader::getDefaultCurrency()` method for getting the default currency set against the product loader
+- Added `product.form.unit.barcode` service which returns instance of `Product\Form\UnitBarcode`
+- Added `Controller\Product\Edit::barcodeAction()` controller rendering and handling the barcode edit form
+- Added `ms.commerce.product.unit.barcode` route which directs to `Controller\Product\Edit::barcodeAction()` if post data exists
+- Added `product/modals/modal-barcode.html.twig` view file for displaying the barcode edit form
+- Added `assets/js/unit-edit.js` javascript file for rendering barcode edit form and setting placeholder
+- Added `gender` field to `Product\Type\ApparelProductType` for assigning gender to apparel products
+- `Product\Unit\Create::create()` class throws exception if `Unit` parameter has no options set against it
+- Unit edit form will not include units that have no options
+- Resolve issue where if no options existed on unit the `options` parameter would be `['' => null]`
+- `Product\Unit\Loader` uses revision ID as well as unit ID when joining unit options
+- Altered 'Add SKU' text on unit create form to 'Add unit'
+
 ## 5.14.1
 
 - Resolve issue where `Product\OptionLoader` would not load options in alphabetical order
