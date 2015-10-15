@@ -839,8 +839,7 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Barcode\CodeGenerator\GeneratorCollection([
 				$c['product.barcode.code_generator.code39'],
 				$c['product.barcode.code_generator.ean13'],
-				$c['product.barcode.code_generator.default'],
-			], 'default');
+			], 'code39');
 		};
 
 		$services['product.barcode.code_generator.code39'] = function ($c) {
@@ -849,10 +848,6 @@ class Services implements ServicesInterface
 
 		$services['product.barcode.code_generator.ean13'] = function ($c) {
 			return new Commerce\Product\Barcode\CodeGenerator\Ean13Generator;
-		};
-
-		$services['product.barcode.code_generator.default'] = function ($c) {
-			return new Commerce\Product\Barcode\CodeGenerator\DefaultGenerator;
 		};
 
 		/**

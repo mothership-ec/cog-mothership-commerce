@@ -61,6 +61,10 @@ class Ean13Generator extends AbstractGenerator
 
 	public function setPrefixNumber($prefixNumber)
 	{
+		if (!is_numeric($prefixNumber)) {
+			throw new \InvalidArgumentException('Prefix number must be numeric');
+		}
+
 		if ((int) $prefixNumber != $prefixNumber) {
 			throw new \InvalidArgumentException('Prefix number must be a whole number');
 		}
@@ -75,8 +79,16 @@ class Ean13Generator extends AbstractGenerator
 
 	public function setPaddingNumber($paddingNumber)
 	{
+		if (!is_numeric($paddingNumber)) {
+			throw new \InvalidArgumentException('Padding number must be numeric');
+		}
+
 		if ((int) $paddingNumber != $paddingNumber) {
 			throw new \InvalidArgumentException('Prefix number must be a whole number');
+		}
+
+		if (strlen((string) $paddingNumber) !== 1) {
+			throw new \LogicException('Padding number may only be one digit');
 		}
 
 		$this->_paddingNumber = $paddingNumber;
