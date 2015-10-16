@@ -188,7 +188,7 @@ class Edit extends Controller
 
 			$unit->barcode = $data['barcode'];
 
-			$this->get('product.unit.edit')->save($unit);
+			$this->get('product.barcode.edit')->save($unit);
 		}
 
 		return $this->redirectToReferer();

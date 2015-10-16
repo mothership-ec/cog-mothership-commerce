@@ -44,6 +44,18 @@ class BarcodeEdit
 	{
 		$unit->barcode = $this->_generator->generateFromUnit($unit);
 
+		$this->save($unit);
+	}
+
+	/**
+	 * Save a barcode the database
+	 *
+	 * @param Unit $unit
+	 */
+	public function save(Unit $unit)
+	{
+		$this->_validateBarcode($unit->barcode);
+
 		$this->_query->run("
 			UPDATE
 				product_unit
@@ -56,4 +68,21 @@ class BarcodeEdit
 			'id'      => $unit->id,
 		]);
 	}
+
+	/**
+	 * Check that the barcode is valid
+	 *
+	 * @param $barcode
+	 */
+	private function _validateBarcode($barcode)
+	{
+		if (!$barcode) {
+			throw new \InvalidArgumentException('Barcode cannot be blank');
+		}
+
+		if (!is_scalar($barcode)) {
+			throw new \InvalidArgumentException('Barcode must be scalar, ' . gettype($barcode) . ' given');
+		}
+	}
+
 }
