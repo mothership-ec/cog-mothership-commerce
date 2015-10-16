@@ -48,7 +48,7 @@ class BarcodeEdit
 	}
 
 	/**
-	 * Save a barcode the database
+	 * Save a barcode the database without generating a new one
 	 *
 	 * @param Unit $unit
 	 */
