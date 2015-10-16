@@ -65,9 +65,13 @@ class ItemTest extends \PHPUnit_Framework_TestCase
 		;
 		
 		$this->_unit    = m::mock('Message\Mothership\Commerce\Product\Unit\Unit')
+			->shouldReceive('setProduct')
+			->zeroOrMoreTimes()
+
 			->shouldReceive('getProduct')
 			->zeroOrMoreTimes()
 			->andReturn($this->_product)
+
 			->getMock()
 		;
 
