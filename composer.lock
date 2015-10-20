@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3d64e3b11c8cfd9d4f03b06d91ce5bdc",
+    "hash": "a852c4d187527c6dd555b4e81764d46b",
     "packages": [
         {
             "name": "dflydev/markdown",
