@@ -41,7 +41,7 @@ class GeneratorCollection extends Collection
 			if (!Barcode\ValidTypes::isValid($item->getBarcodeType())) {
 				if (!is_string($item->getBarcodeType())) {
 					throw new \InvalidArgumentException(
-						'`GeneratorInterface::getBarcodeType()` must return a string, , returns ' . gettype($item->getBarcodeType())
+						'`GeneratorInterface::getBarcodeType()` must return a string, returns ' . gettype($item->getBarcodeType())
 					);
 				}
 				throw new \LogicException('`' . $item->getBarcodeType() . '` is not a valid barcode type');
