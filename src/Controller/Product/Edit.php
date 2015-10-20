@@ -7,7 +7,7 @@ use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Message\Mothership\Commerce\Field;
-use Message\Mothership\Commerce\Product\Type\Detail;
+use Message\Mothership\Commerce\Product\Barcode\CodeGenerator\Exception\BarcodeGenerationException;
 
 use Message\Mothership\FileManager\File;
 
@@ -188,7 +188,7 @@ class Edit extends Controller
 
 			$unit->barcode = $data['barcode'];
 
-			$this->get('product.unit.edit')->save($unit);
+			$this->get('product.barcode.edit')->save($unit);
 		}
 
 		return $this->redirectToReferer();
@@ -266,11 +266,20 @@ class Edit extends Controller
 				$unit->setOption($optionArray['name'], $optionArray['value']);
 			}
 
-			$unit = $this->get('product.unit.create')->create($unit);
+			try {
+				$unit = $this->get('product.unit.create')->create($unit);
+			} catch (BarcodeGenerationException $e) {
+				$this->addFlash('warning', 'ms.commerce.product.barcode.create.error', [
+					'%sku%' => $unit->sku,
+				]);
+			}
+
+			$this->addFlash('success', 'ms.commerce.product.units.create.success', [
+				'%sku%' => $unit->sku,
+			]);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
-
 	}
 
 	public function processProductAttributes($productID)
@@ -306,7 +315,6 @@ class Edit extends Controller
 			$product = $productEdit->save($product);
 			$product = $productEdit->saveTags($product);
 			$trans->commit();
-
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');
@@ -494,6 +502,11 @@ class Edit extends Controller
 
 		// Create a nested form for each unit
 		foreach ($this->_units as $id => $unit) {
+
+			if (count($unit->options) <= 0) {
+				continue;
+			}
+
 			$stockForm = $this->get('form')
 				->setName($id)
 				->addOptions(array(

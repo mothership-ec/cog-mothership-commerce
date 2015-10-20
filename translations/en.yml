@@ -175,6 +175,8 @@ ms.commerce:
       barcode:
         label: Barcode
         modal-title: Edit barcode
+      create:
+        success: Unit with SKU '%sku%' successfully created
     upload:
       title: Upload a CSV
       form:
@@ -302,6 +304,10 @@ ms.commerce:
       offset:
         label: Number of used labels
         help: This allows you to re-use label sheets. Set this to the number of labels already used on the label sheet. For instance, if you set this to 5, the first barcode will be set to print on the 6th label.
+      create:
+        error: Barcode could not be saved against unit with SKU '%sku%'
+      print:
+        error: Could not generate barcode. The barcodes may be incompatible with the registered barcode type, please contact your developer for further investigation.
   order:
     feedback:
       general:

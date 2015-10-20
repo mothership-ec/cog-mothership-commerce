@@ -39,7 +39,14 @@ class Barcode extends Controller
 
 			if (count($quantities) > 0) {
 				$offset   = (int) $data['offset'] ?: 0;
-				$barcodes = $this->get('product.barcode.generate')->getUnitBarcodes($quantities, $offset);
+
+				try {
+					$barcodes = $this->get('product.barcode.generate')->getUnitBarcodes($quantities, $offset);
+				} catch (\Image_Barcode2_Exception $e) {
+					$this->addFlash('error', 'ms.commerce.product.barcode.print.error');
+
+					return $this->redirectToReferer();
+				}
 
 				return $this->forward('Message:Mothership:Commerce::Controller:Product:Barcode#printBarcodes', [
 					'barcodes' => $barcodes,
@@ -105,8 +112,11 @@ class Barcode extends Controller
 			if (false !== strpos($key, 'unit_')) {
 				$unitID = explode('_', $key);
 				$unitID = (int) array_pop($unitID);
+				$value = (int) $value;
 
-				$quantities[$unitID] = (int) $value;
+				if ($value !== 0) {
+					$quantities[$unitID] = $value;
+				}
 			}
 		}
 

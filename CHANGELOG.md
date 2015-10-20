@@ -1,5 +1,40 @@
 # Changelog
 
+## 5.16.0
+
+- Added `Product\Barcode\CodeGenerator` namespace to allow for automated barcode generation based on the unit
+- Added `Product\Barcode\CodeGenerator\GeneratorInterface` interface representing a barcode generator class
+- Added `Product\Barcode\CodeGenerator\GeneratorCollection` collection class for storing registered barcode generators
+- Added `Product\Barcode\CodeGenerator\AbstractGenerator` abstract class that implements `Product\Barcode\GeneratorInterface` to handle basic functionality for barcode generators
+- Added `Product\Barcode\CodeGenerator\Code39Generator` class that extends `Product\Barcode\AbstractGenerator` for generating **CODE 39** style barcodes (in practice this means it uses the unit ID as the barcode)
+- Added `Product\Barcode\CodeGenerator\Ean13Generator` class that extends `Product\Barcode\AbstractGenerator` for generating **EAN 13** style barcodes by generating a number based on the unit ID, a prefix number, and a single digit to pad it out with
+- Added `Product\Barcode\CodeGenerator\Exception\BarcodeGenerationException` to be thrown when a barcode cannot be generated. This is caught by the `Controller\Product\Edit::processAddUnit()` controller, which will display a flash message informing the user that the unit has been created but a barcode could not be generated.
+- Added `Product\Barcode\ValidTypes` class, containing static methods and properties for checking the validity of given barcode types
+- Added `Product\Unit\BarcodeEdit` class for a saving unit barcodes without having to update the entire unit
+- Added `EventListener::saveBarcode()` event listener to generate and save barcodes on unit creation
+- Added `generator` option to `barcode.yml` fixture to determine which barcode generator to use. Defaults to `ean13`.
+- Removed `barcode-type` option from `barcode.yml` and it can now be considered as deprecated
+- Added `product.barcode.code_generator.collection` service which returns instance of `Product\Barcode\CodeGenerator\GeneratorCollection` with all registered barcode generators
+- Added `product.barcode.code_generator.code39` service which returns instance of `Product\Barcode\CodeGenerator\Code39Generator`
+- Added `product.barcode.code_generator.ean13` service which returns instance of `Product\Barcode\CodeGenerator\Ean13Generator`
+- Added `product.barcode.code_generator` service which returns barcode generator taken from the collection. The generator is primarily determined by the `generator` config option in `barcode.yml`, if set it will return the generator with the name that matches that config. If `generator` is not set, it will check for the now deprecated `barcode-type` config, and return the first generator it finds that generates that type of barcode. If neither `generator` nor `barcode-type` are set in the config file, it will return the default generator, whose name is given to the `Product\Barcode\CodeGenerator\GeneratorCollection` constructor as a second parameter.
+- Added `product.barcode.edit` service which returns instance of `Product\Unit\BarcodeEdit`
+- `product.barcode.generate` service now uses the barcode type returned by the registered barcode generator to pass to its returned instance of `Commerce\Product\Barcode\Generate`
+- `Controller\Product\Barcode::_getQuantities()` method now filters out units with a quantity of zero
+- Migration to allow `barcode` column on `product_unit` table to be null
+- Flash message displayed after unit creation
+- Flash message displayed if barcodes cannot be generated for printing
+- Product stock form no longer displays units that have invalid options
+- `Product\Unit\Create::create()` now allows unit weights to be saved as `NULL`
+- 'SKU' field on **Add unit** form is no longer a required field (defaults to unit ID)
+- 'Weight' field on **Add unit** form is no longer a required field (defaults to `NULL`, inherits product weight)
+- 'Option Name' and 'Option Value' fields are now required fields on **Add unit** form
+- 'Option Name' and 'Option Value' fields now have placeholder text to make it clearer how they should be used
+- Fixed `Order\Entity\Item\ItemTest` tests where they would not ignore the `Product\Unit\Unit::setProduct()` method
+- Added unit tests for barcode generators
+- Implement Travis
+- Increased Cog dependency to 4.10
+
 ## 5.15.1
 
 - Fix issue where barcode edit form would not autopopulate after an AJAX request
