@@ -798,7 +798,7 @@ class Services implements ServicesInterface
 				$c['product.barcode.sheet']->getBarcodeHeight(),
 				$c['product.barcode.sheet']->getBarcodeWidth(),
 				$c['cfg']->barcode->fileType,
-				$c['cfg']->barcode->barcodeType
+				$c['product.barcode.code_generator']->getBarcodeType()
 			);
 		};
 
@@ -824,13 +824,11 @@ class Services implements ServicesInterface
 			$config = $c['cfg']->barcode;
 			$collection = $c['product.barcode.code_generator.collection'];
 
-			if (isset($config->barcodeGenerator)) {
-				$generator = $collection->get($config->barcodeGenerator);
-				if ($generator->getBarcodeType() !== $config->barcodeType) {
-					throw new Commerce\Product\Barcode\CodeGenerator\Exception\BarcodeGenerationException('Barcode generator `' . $generator->getName() . '` does not generate barcodes of type `' . $config->barcodeType . '`, please review the config settings');
-				}
+			if (isset($config->generator)) {
+				return $collection->get($config->generator);
 			}
 
+			// Check deprecated 'barcode-type' option
 			if (isset($config->barcodeType)) {
 				return $collection->getByType($config->barcodeType);
 			}
