@@ -825,7 +825,10 @@ class Services implements ServicesInterface
 			$collection = $c['product.barcode.code_generator.collection'];
 
 			if (isset($config->barcodeGenerator)) {
-				return $collection->get($config->barcodeGenerator);
+				$generator = $collection->get($config->barcodeGenerator);
+				if ($generator->getBarcodeType() !== $config->barcodeType) {
+					throw new Commerce\Product\Barcode\CodeGenerator\Exception\BarcodeGenerationException('Barcode generator `' . $generator->getName() . '` does not generate barcodes of type `' . $config->barcodeType . '`, please review the config settings');
+				}
 			}
 
 			if (isset($config->barcodeType)) {
@@ -839,7 +842,7 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Barcode\CodeGenerator\GeneratorCollection([
 				$c['product.barcode.code_generator.code39'],
 				$c['product.barcode.code_generator.ean13'],
-			], 'code39');
+			], 'ean13');
 		};
 
 		$services['product.barcode.code_generator.code39'] = function ($c) {

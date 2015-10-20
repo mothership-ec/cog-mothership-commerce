@@ -1,9 +1,9 @@
 file-type: 'png'
-barcode-type: 'code39'
+barcode-type: 'ean13'
 
-# determines the class that will be used to automatically assign barcodes to products, will typically be the same as
-# the barcode-type
-barcode-generator: 'code39'
+# determines the class that will be used to automatically assign barcodes to products. If left blank, Mothership
+# will use the first generator it finds that is compatible with the barcode type
+barcode-generator:
 
 # determines the template that will be used to output the barcodes in a printable format
 sheet-type: '5x13'
