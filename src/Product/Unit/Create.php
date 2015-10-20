@@ -50,7 +50,7 @@ class Create
 				visible      = :visible?i,
 				barcode      = :barcode?sn,
 				supplier_ref = :sup_ref?sn,
-				weight_grams = :weight?i,
+				weight_grams = :weight?in,
 				created_at   = :createdAt?d,
 				created_by   = :createdBy?i
 		", [

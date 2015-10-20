@@ -35,16 +35,10 @@ class UnitAdd extends AbstractType
 				'placeholder' 	=> 'ms.commerce.product.units.sku.placeholder',
 				'data-help-key' => 'ms.commerce.product.image.option.units.sku.help',
 			],
-			'constraints' => [
-				new NotBlank,
-			],
 		])
 		->add('weight', 'number', [
 			'attr' => [
 				'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
-			],
-			'constraints' => [
-				new NotBlank,
 			],
 		]);
 
@@ -53,7 +47,7 @@ class UnitAdd extends AbstractType
 				'data-help-key' => [
 					'name'  => 'ms.commerce.product.units.option.name.help',
 					'value' => 'ms.commerce.product.units.option.value.help',
-				]
+				],
 		]]);
 
 		$optionType
