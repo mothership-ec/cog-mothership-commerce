@@ -55,7 +55,7 @@ class Create
 					(SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='product_unit')
 				),
 				supplier_ref = :sup_ref?sn,
-				weight_grams = :weight?i,
+				weight_grams = :weight?in,
 				created_at   = :createdAt?d,
 				created_by   = :createdBy?i
 		", [
@@ -63,7 +63,7 @@ class Create
 			'visible'	=> (bool) $unit->visible,
 			'barcode'	=> $unit->barcode,
 			'sup_ref'	=> $unit->supplierRef,
-			'weight'	=> $unit->weight ?: $unit->product->weight,
+			'weight'	=> $unit->weight,
 			'createdAt' => $unit->authorship->createdAt(),
 			'createdBy' => $unit->authorship->createdBy()->id,
 		]);
