@@ -494,6 +494,11 @@ class Edit extends Controller
 
 		// Create a nested form for each unit
 		foreach ($this->_units as $id => $unit) {
+
+			if (count($unit->options) <= 0) {
+				continue;
+			}
+
 			$stockForm = $this->get('form')
 				->setName($id)
 				->addOptions(array(

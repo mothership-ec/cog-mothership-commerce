@@ -55,7 +55,7 @@ class Create
 					(SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='product_unit')
 				),
 				supplier_ref = :sup_ref?sn,
-				weight_grams = :weight?i,
+				weight_grams = :weight?in,
 				created_at   = :createdAt?d,
 				created_by   = :createdBy?i
 		", [
