@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.16.1
+
+- Allow units to be priced at 0 when processing orders
+- `Order\Entity\Item\Item::$actualPrice` defaults to null
+- `Payment\Create::_validate()` now throws `InvalidArgumentException` if payment amount is less than 0 instead of less than or equal to 0
+- Placeholder text on `value` field of `Field\OptionType` form field changed from **e.g. 'Red, Blue'** to **e.g. 'Red'**
+
 ## 5.16.0
 
 - Added `Product\Barcode\CodeGenerator` namespace to allow for automated barcode generation based on the unit
