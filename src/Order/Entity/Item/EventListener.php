@@ -88,7 +88,7 @@ class EventListener implements SubscriberInterface
 		}
 
 		foreach ($items as $item) {
-			if (!$item->actualPrice) {
+			if ($item->actualPrice === null) {
 				$item->actualPrice = $item->listPrice;
 			}
 		}

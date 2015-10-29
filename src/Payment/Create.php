@@ -118,8 +118,8 @@ class Create implements DB\TransactionalInterface
 
 	protected function _validate(Payment $payment)
 	{
-		if ($payment->amount <= 0) {
-			throw new InvalidArgumentException('Could not create payment: amount must be greater than 0');
+		if ($payment->amount < 0) {
+			throw new InvalidArgumentException('Could not create payment: amount must be 0 or greater');
 		}
 
 		if (!$payment->currencyID) {
