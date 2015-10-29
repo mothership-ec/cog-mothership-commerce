@@ -26,7 +26,7 @@ class Item implements EntityInterface, RecordInterface
 	public $status;
 
 	public $listPrice          = 0; // Retail price of the item as advertised
-	public $actualPrice        = 0; // Same as list price unless it was overriden
+	public $actualPrice        = null; // Same as list price unless it was overriden
 	public $basePrice          = 0; // Price of the item for this order (before discounts) (actual price with or without tax, as appropriate)
 	public $net                = 0; // Net amount, calculated on discounted price
 	public $discount           = 0; // Discount amount for this item
