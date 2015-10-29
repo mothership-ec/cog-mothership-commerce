@@ -86,7 +86,7 @@ class OptionType extends AbstractType {
 					'label'    => ($this->_valueLabel ? $this->_valueLabel : 'Value'),
 					'attr'  => [
 						'data-help-key' => $valueHelpKey,
-						'placeholder' => "e.g. 'Red, Blue'",
+						'placeholder' => "e.g. 'Red'",
 					],
 					'constraints' => [
 						new Constraints\NotBlank
