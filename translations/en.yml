@@ -103,8 +103,6 @@ ms.commerce:
       weight-grams:
         label: Weight (g)
         help: This field can be used to calculate shipping costs, depending on your delivery preferences.
-        error:
-          numeric: Must be numeric
       fabric:
         label: Fabric
         help:
