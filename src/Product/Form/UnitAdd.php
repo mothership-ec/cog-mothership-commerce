@@ -5,7 +5,7 @@ namespace Message\Mothership\Commerce\Product\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints;
 use Message\Mothership\Commerce\Product\OptionLoader;
 use Message\Mothership\Commerce\Field\OptionType;
 use Message\Mothership\Commerce\Constraint\Product\UnitHasOptions;
@@ -36,10 +36,17 @@ class UnitAdd extends AbstractType
 				'data-help-key' => 'ms.commerce.product.image.option.units.sku.help',
 			],
 		])
-		->add('weight', 'number', [
+		->add('weight', 'text', [
+			'label' => 'ms.commerce.product.details.weight-grams.label',
 			'attr' => [
 				'data-help-key' => 'ms.commerce.product.details.weight-grams.help',
 			],
+			'constraints' => [
+				new Constraints\Type([
+					'type' => 'numeric',
+					'message' => 'Must be numeric',
+				]),
+			]
 		]);
 
 		$optionType = new OptionType($headings, [
