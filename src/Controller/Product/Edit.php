@@ -659,7 +659,6 @@ class Edit extends Controller
 	 */
 	protected function _addNewUnitForm()
 	{
-
 		$data = $this->get('http.session')->get(self::UNIT_DATA) ?: [];
 
 		$form = $this->createForm($this->get('product.form.unit.add'), $data, [
