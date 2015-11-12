@@ -72,7 +72,13 @@ class UnitAdd extends AbstractType
 			]
 		);
 
-		$builder->add('prices', 'price_form');
+		if (!empty($options['data']) && !empty($options['data']['prices'])) {
+			$data = $options['data']['prices'];
+		} else {
+			$data = [];
+		}
+
+		$builder->add('prices', 'price_form', ['data' => $data]);
 	}
 
 	/**

@@ -659,16 +659,17 @@ class Edit extends Controller
 	 */
 	protected function _addNewUnitForm()
 	{
-		$form = $this->createForm($this->get('product.form.unit.add'), null, [
+
+		$data = $this->get('http.session')->get(self::UNIT_DATA) ?: [];
+
+		$form = $this->createForm($this->get('product.form.unit.add'), $data, [
 			'action' => $this->generateUrl('ms.commerce.product.edit.units.create.action', [
 				'productID' => $this->_product->id,
 			]),
+			'data' => $data,
 		]);
 
-		$data = $this->get('http.session')->get(self::UNIT_DATA);
-
 		if ($data) {
-			$form->setData($data);
 			$this->get('http.session')->remove(self::UNIT_DATA);
 		}
 
