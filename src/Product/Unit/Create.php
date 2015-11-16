@@ -6,6 +6,7 @@ use Message\Cog\DB\Query;
 use Message\Cog\ValueObject\DateTimeImmutable;
 use Message\Cog\Localisation\Locale;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Message\User\UserInterface;
 
 class Create
@@ -13,13 +14,14 @@ class Create
 	protected $_query;
 	protected $_user;
 	protected $_locale;
+	protected $_dispatcher;
 
-	public function __construct(Query $query, UserInterface $user, Locale $locale)
-
+	public function __construct(Query $query, UserInterface $user, Locale $locale, EventDispatcher $dispatcher)
 	{
-		$this->_query  = $query;
-		$this->_user   = $user;
-		$this->_locale = $locale;
+		$this->_query       = $query;
+		$this->_user        = $user;
+		$this->_locale      = $locale;
+		$this->_dispatcher  = $dispatcher;
 	}
 
 	public function save(Unit $unit)
@@ -29,6 +31,13 @@ class Create
 
 	public function create(Unit $unit)
 	{
+		if (count($unit->options) === 0) {
+			throw new \LogicException('Cannot create a unit as it has no options!');
+		}
+
+		$event = new Event($unit);
+		$this->_dispatcher->dispatch(Events::PRODUCT_UNIT_BEFORE_CREATE, $event);
+
 		if (!$unit->authorship->createdAt()) {
 			$unit->authorship->create(new DateTimeImmutable, $this->_user->id);
 		}
@@ -39,13 +48,9 @@ class Create
 			SET
 				product_id   = :productID?i,
 				visible      = :visible?i,
-				barcode      = IF(
-					:barcode?sn IS NOT NULL,
-					:barcode?sn,
-					(SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='product_unit')
-				),
+				barcode      = :barcode?sn,
 				supplier_ref = :sup_ref?sn,
-				weight_grams = :weight?i,
+				weight_grams = :weight?in,
 				created_at   = :createdAt?d,
 				created_by   = :createdBy?i
 		", [
@@ -93,6 +98,8 @@ class Create
 
 		$this->_savePrices($unit);
 
+		$event = new Event($unit);
+		$this->_dispatcher->dispatch(Events::PRODUCT_UNIT_AFTER_CREATE, $event);
 		return $unit;
 	}
 

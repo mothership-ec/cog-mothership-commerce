@@ -15,6 +15,8 @@ class Dashboard extends Controller
 
 	public function productTable()
 	{
+		$imageThreshold = 1000;
+
 		// skip loading all the products if ajax request
 		if ($this->get('request')->server->has('HTTP_X_REQUESTED_WITH') && 
 			strtolower($this->get('request')->server->get('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest') {
@@ -28,10 +30,10 @@ class Dashboard extends Controller
 
 		$products = $this->get('product.loader')->getAll();
 
-
 		return $this->render('Message:Mothership:Commerce::product:product-table', [
 			'products' => $products,
-			'dashboardReferences' => $event->getReferences()
+			'dashboardReferences' => $event->getReferences(),
+			'showImages' => count($products) < $imageThreshold,
 		]);
 	}
 }

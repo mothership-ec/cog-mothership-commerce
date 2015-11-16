@@ -25,16 +25,16 @@ class Item implements EntityInterface, RecordInterface
 	public $authorship;
 	public $status;
 
-	public $listPrice      = 0; // Retail price of the item as advertised
-	public $actualPrice    = 0; // Same as list price unless it was overriden
-	public $basePrice      = 0; // Price of the item for this order (before discounts) (actual price with or without tax, as appropriate)
-	public $net            = 0; // Net amount, calculated on discounted price
-	public $discount       = 0; // Discount amount for this item
-	public $tax            = 0; // Tax amount for this item
-	public $gross          = 0; // Gross amount paid for this item (after discounts)
-	public $rrp            = 0; // Recommended retail price of the item at time of purchase
-	public $taxRate        = 0; // Tax rate for this item as used on this order
-	public $productTaxRate = 0; // Tax rate of the product (regardless of tax actually being paid)
+	public $listPrice          = 0; // Retail price of the item as advertised
+	public $actualPrice        = null; // Same as list price unless it was overriden
+	public $basePrice          = 0; // Price of the item for this order (before discounts) (actual price with or without tax, as appropriate)
+	public $net                = 0; // Net amount, calculated on discounted price
+	public $discount           = 0; // Discount amount for this item
+	public $tax                = 0; // Tax amount for this item
+	public $gross              = 0; // Gross amount paid for this item (after discounts)
+	public $rrp                = 0; // Recommended retail price of the item at time of purchase
+	public $taxRate            = 0; // Tax rate for this item as used on this order
+	public $productTaxRate     = 0; // Tax rate of the product (regardless of tax actually being paid)
 	public $taxStrategy;
 
 	public $productID;
@@ -150,6 +150,11 @@ class Item implements EntityInterface, RecordInterface
 		}
 
 		return round($this->listPrice - $this->discount - $this->net, 2);
+	}
+
+	public function getDiscountedPrice()
+	{
+		return $this->actualPrice - $this->discount;
 	}
 
 	/**

@@ -77,6 +77,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			Product\Events::PRODUCT_EDIT => [
 				'removeProductFromCache'
 			],
+			Product\Unit\Events::PRODUCT_UNIT_AFTER_CREATE => [
+				'saveBarcode'
+			]
 		);
 	}
 
@@ -339,6 +342,20 @@ class EventListener extends BaseListener implements SubscriberInterface
 	{
 		if ($this->get('product.cache')->exists($event->getProduct()->id)) {
 			$this->get('product.cache')->remove($event->getProduct()->id);
+		}
+	}
+
+	/**
+	 * Generate a barcode and save it to the database if it hasn't already been set against the unit
+	 *
+	 * @param Product\Unit\Event $event
+	 */
+	public function saveBarcode(Product\Unit\Event $event)
+	{
+		$unit = $event->getUnit();
+
+		if (!$unit->barcode) {
+			$this->get('product.barcode.edit')->generateAndSave($unit);
 		}
 	}
 

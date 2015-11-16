@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Product;
 use Message\Cog\DB\Query;
 use Message\Cog\DB\Result;
 use Message\Cog\DB\Entity\EntityLoaderCollection;
+use Message\Cog\DB\Entity\EntityLoaderInterface;
 
 use Message\Cog\Localisation\Locale;
 use Message\Cog\ValueObject\DateTimeImmutable;
@@ -12,7 +13,7 @@ use Message\Mothership\FileManager\File\Loader as FileLoader;
 use Message\Mothership\Commerce\Product\Image\TypeCollection as ImageTypes;
 use Message\Mothership\Commerce\Product\Tax\Strategy\TaxStrategyInterface;
 
-class Loader
+class Loader implements EntityLoaderInterface
 {
 	/**
 	 * @var Query
@@ -64,6 +65,11 @@ class Loader
 	 */
 	private $_productCache;
 
+	/**
+	 * @var string
+	 */
+	private $_defaultCurrency;
+
 	public function __construct(
 		Query $query,
 		Locale $locale,
@@ -99,6 +105,11 @@ class Loader
 	public function getEntityLoaders()
 	{
 		return $this->_entityLoaders;
+	}
+
+	public function getDefaultCurrency()
+	{
+		return $this->_defaultCurrency;
 	}
 
 	/**

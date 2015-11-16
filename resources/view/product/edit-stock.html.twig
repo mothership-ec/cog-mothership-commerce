@@ -22,21 +22,23 @@
 				</thead>
 				<tbody>
 					{% for unit in units %}
-						<tr>
-							<td><span>{{ unit.sku }}</span></td>
-							{% for key, name in headings %}
-								<td>
-								{% if key in unit.options|keys %}
-									{{ unit.getOption(key) }}
-								{% endif %}
-								</td>
-							{% endfor %}
-							{% for location in locations %}
-								<div class="inline">
-									<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
-								</div>
-							{% endfor %}
-						</tr>
+						{% if unit.options | length %}
+							<tr>
+								<td><span>{{ unit.sku }}</span></td>
+								{% for key, name in headings %}
+									<td>
+									{% if key in unit.options|keys %}
+										{{ unit.getOption(key) }}
+									{% endif %}
+									</td>
+								{% endfor %}
+								{% for location in locations %}
+									<div class="inline">
+										<td>{{ unit.getStockForLocation(location) }} {{ form_widget(form['units'][unit.id][location.name]) }}</td>
+									</div>
+								{% endfor %}
+							</tr>
+						{% endif %}
 					{% endfor %}
 				</tbody>
 			</table>

@@ -41,4 +41,15 @@ class Collection extends BaseCollection
 
 		return false;
 	}
+
+	public function getTotal()
+	{
+		$total = 0;
+
+		foreach ($this->_items as $discount) {
+			$total += $discount->discount;
+		}
+
+		return $total;
+	}
 }

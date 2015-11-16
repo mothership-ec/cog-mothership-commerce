@@ -7,7 +7,7 @@ use Message\Mothership\Commerce\Product\Image;
 use Message\Mothership\Commerce\Product\Stock;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reason;
 use Message\Mothership\Commerce\Field;
-use Message\Mothership\Commerce\Product\Type\Detail;
+use Message\Mothership\Commerce\Product\Barcode\CodeGenerator\Exception\BarcodeGenerationException;
 
 use Message\Mothership\FileManager\File;
 
@@ -77,6 +77,9 @@ class Edit extends Controller
 			'product'     => $this->_product,
 			'units'       => $this->_units ,
 			'form'        => $this->_getUnitForm(),
+			'barcodeForm' => $this->createForm($this->get('product.form.unit.barcode'), null, [
+				'action' => $this->get('routing.generator')->generate('ms.commerce.product.unit.barcode', ['productID' => $this->_product->id]),
+			]),
 			'addForm'     => $this->_addNewUnitForm(),
 			'optionValue' => $this->get('option.loader')->getAllOptionValues(),
 		));
@@ -171,6 +174,26 @@ class Edit extends Controller
 		return $this->render('Message:Mothership:Commerce::product:image:delete-form', ['form' => $form]);
 	}
 
+	public function barcodeAction($productID)
+	{
+		$form = $this->createForm($this->get('product.form.unit.barcode'));
+		$form->handleRequest();
+
+		if ($form->isValid() && $data = $form->getData()) {
+			$unit = $this->get('product.unit.loader')
+				->includeInvisible()
+				->includeOutOfStock()
+				->getByID((int) $data['unit'])
+			;
+
+			$unit->barcode = $data['barcode'];
+
+			$this->get('product.barcode.edit')->save($unit);
+		}
+
+		return $this->redirectToReferer();
+	}
+
 	/**
 	 * Process the updating of the units data
 	 *
@@ -228,7 +251,6 @@ class Edit extends Controller
 			$unit              = $this->get('product.unit');
 			$unit->sku         = $data['sku'];
 			$unit->weight 	   = $data['weight'];
-			// TODO: Where does that 1 come from? -> constant??
 			$unit->revisionID  = 1;
 			$unit->product     = $this->_product;
 
@@ -244,11 +266,20 @@ class Edit extends Controller
 				$unit->setOption($optionArray['name'], $optionArray['value']);
 			}
 
-			$unit = $this->get('product.unit.create')->create($unit);
+			try {
+				$unit = $this->get('product.unit.create')->create($unit);
+			} catch (BarcodeGenerationException $e) {
+				$this->addFlash('warning', 'ms.commerce.product.barcode.create.error', [
+					'%sku%' => $unit->sku,
+				]);
+			}
+
+			$this->addFlash('success', 'ms.commerce.product.units.create.success', [
+				'%sku%' => $unit->sku,
+			]);
 		}
 
 		return $this->redirectToRoute('ms.commerce.product.edit.units', array('productID' => $this->_product->id));
-
 	}
 
 	public function processProductAttributes($productID)
@@ -278,12 +309,12 @@ class Edit extends Controller
 			$product->notes                       = $data['notes'];
 			$product->weight                      = $data['weight_grams'];
 			$product->exportManufactureCountryID  = $data['export_manufacture_country_id'];
+			$product->type                        = $this->get('product.types')->get($data['product_type']);
 			$product->setExportCode($data['export_code']);
 
 			$product = $productEdit->save($product);
 			$product = $productEdit->saveTags($product);
 			$trans->commit();
-
 
 			if ($product->id) {
 				$this->addFlash('success', 'Product updated successfully');
@@ -398,7 +429,7 @@ class Edit extends Controller
 			foreach ($data['units'] as $unitID => $locationArray) {
 				foreach ($locationArray as $location => $stock) {
 					// remove all spaces and tabs and cast stock to int
-					$stock = (int)(preg_replace('/\s+/','',$stock));
+					$stock = (int) (preg_replace('/\s+/','',$stock));
 
 					if ($stock > 0) {
 						$stockManager->increment(
@@ -471,6 +502,11 @@ class Edit extends Controller
 
 		// Create a nested form for each unit
 		foreach ($this->_units as $id => $unit) {
+
+			if (count($unit->options) <= 0) {
+				continue;
+			}
+
 			$stockForm = $this->get('form')
 				->setName($id)
 				->addOptions(array(

@@ -17,7 +17,6 @@ class Routes implements RoutesInterface
 
 		$router['ms.product']->add('ms.commerce.product.dashboard', '', 'Message:Mothership:Commerce::Controller:Product:Dashboard#index');
 
-
 		$router['ms.product']->add('ms.commerce.product.create.action', 'create', 'Message:Mothership:Commerce::Controller:Product:Create#process')
 			->setMethod('POST');
 		$router['ms.product']->add('ms.commerce.product.create', 'create', 'Message:Mothership:Commerce::Controller:Product:Create#index');
@@ -75,6 +74,8 @@ class Routes implements RoutesInterface
 			->setMethod('GET')
 			->enableCsrf('csrfHash');
 
+		$router['ms.product']->add('ms.commerce.product.unit.barcode', 'edit/{productID}/units/barcode', 'Message:Mothership:Commerce::Controller:Product:Edit#barcodeAction')
+			->setMethod('POST');
 
 		$router['ms.product']->add('ms.commerce.product.edit.stock.action', 'edit/{productID}/stock', 'Message:Mothership:Commerce::Controller:Product:Edit#processStock')
 			->setRequirement('productID', '\d+')
@@ -103,7 +104,6 @@ class Routes implements RoutesInterface
 			->setRequirement('productID', '\d+');
 
 		$router['ms.product']->add('ms.commerce.product.barcode.stock_take', '/barcode/stock-take', 'Message:Mothership:Commerce::Controller:Product:Barcode#stockTake');
-
 
 		$router['ms.order']->add('ms.commerce.order.view.dashboard', 'view', 'Message:Mothership:Commerce::Controller:Order:Listing#dashboard');
 		$router['ms.order']->add('ms.commerce.order.view.all', 'view/all', 'Message:Mothership:Commerce::Controller:Order:Listing#all');

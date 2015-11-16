@@ -9,4 +9,5 @@ final class Events
 	const CURRENCY_CHANGE          = 'commerce.currency.change';
 	const SALES_REPORT             = 'commerce.report.sales-report';
 	const TRANSACTIONS_REPORT      = 'commerce.report.transaction-report';
+	const PRODUCT_ADMIN_TAB_BUILD  = 'commerce.product.tabs.build';
 }

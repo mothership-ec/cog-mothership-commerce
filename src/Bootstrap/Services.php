@@ -423,7 +423,7 @@ class Services implements ServicesInterface
 		$services['product.entity_loaders'] = $services->factory(function($c) {
 			return 	new EntityLoaderCollection([
 				'units'  => new Commerce\Product\Unit\Loader(
-					$c['db.query'],
+					$c['db.query.builder.factory'],
 					$c['locale'],
 					$c['product.price.types'],
 					$c['currency']
@@ -535,6 +535,13 @@ class Services implements ServicesInterface
 			return new Commerce\Form\Product\Image\Delete;
 		});
 
+		$services['product.image.assignor'] = function($c) {
+			return new Commerce\Product\Image\Assignor(
+				$c['file_manager.file.loader'],
+				$c['locale']
+			);
+		};
+
 		$services['product.unit.loader'] = $services->factory(function($c) {
 			return $c['product.loader']->getEntityLoader('units');
 		});
@@ -544,7 +551,7 @@ class Services implements ServicesInterface
 		});
 
 		$services['product.unit.create'] = $services->factory(function($c) {
-			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale']);
+			return new Commerce\Product\Unit\Create($c['db.query'], $c['user.current'], $c['locale'], $c['event.dispatcher']);
 		});
 
 		$services['product.unit.delete'] = $services->factory(function($c) {
@@ -644,6 +651,14 @@ class Services implements ServicesInterface
 				$c['product.upload.heading_keys']
 			);
 		});
+
+		$services['product.upload.image_create'] = function($c) {
+			return new Commerce\Product\Upload\ProductImageCreate(
+				$c['product.image.assignor'],
+				$c['product.image.create'],
+				$c['product.upload.heading_keys']
+			);
+		};
 
 		$services->extend('field.collection', function($fields, $c) {
 			$fields->add(new \Message\Mothership\Commerce\FieldType\Product($c['product.loader'], $c['commerce.field.product_list']));
@@ -756,6 +771,10 @@ class Services implements ServicesInterface
 			return new Commerce\Product\Form\UnitEdit($c['currency.supported'], $c['product.option.loader']);
 		});
 
+		$services['product.form.unit.barcode'] = $services->factory(function($c) {
+			return new Commerce\Product\Form\UnitBarcode;
+		});
+
 		$services['product.form.unit.add'] = $services->factory(function($c) {
 			return new Commerce\Product\Form\UnitAdd($c['currency.supported'], $c['product.option.loader']);
 		});
@@ -779,13 +798,14 @@ class Services implements ServicesInterface
 				$c['product.barcode.sheet']->getBarcodeHeight(),
 				$c['product.barcode.sheet']->getBarcodeWidth(),
 				$c['cfg']->barcode->fileType,
-				$c['cfg']->barcode->barcodeType
+				$c['product.barcode.code_generator']->getBarcodeType()
 			);
 		};
 
 		$services['product.barcode.sheet.collection'] = function($c) {
 			$collection = new Commerce\Product\Barcode\Sheet\Collection;
 			$collection->add(new Commerce\Product\Barcode\Sheet\Size5x13);
+			$collection->add(new Commerce\Product\Barcode\Sheet\Size3x8);
 
 			return $collection;
 		};
@@ -794,6 +814,41 @@ class Services implements ServicesInterface
 			return $c['product.barcode.sheet.collection']->get(
 				$c['cfg']->barcode->sheetType
 			);
+		};
+
+		$services['product.barcode.edit'] = function ($c) {
+			return new Commerce\Product\Unit\BarcodeEdit($c['db.query'], $c['product.barcode.code_generator']);
+		};
+
+		$services['product.barcode.code_generator'] = function ($c) {
+			$config = $c['cfg']->barcode;
+			$collection = $c['product.barcode.code_generator.collection'];
+
+			if (isset($config->generator)) {
+				return $collection->get($config->generator);
+			}
+
+			// Check deprecated 'barcode-type' option
+			if (isset($config->barcodeType)) {
+				return $collection->getByType($config->barcodeType);
+			}
+
+			return $collection->getDefault();
+		};
+
+		$services['product.barcode.code_generator.collection'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\GeneratorCollection([
+				$c['product.barcode.code_generator.code39'],
+				$c['product.barcode.code_generator.ean13'],
+			], 'ean13');
+		};
+
+		$services['product.barcode.code_generator.code39'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\Code39Generator;
+		};
+
+		$services['product.barcode.code_generator.ean13'] = function ($c) {
+			return new Commerce\Product\Barcode\CodeGenerator\Ean13Generator;
 		};
 
 		/**
@@ -1070,7 +1125,8 @@ class Services implements ServicesInterface
 		$services['commerce.stock_summary'] = $services->factory(function($c) {
 			return new Commerce\Report\StockSummary(
 				$c['db.query.builder.factory'],
-				$c['routing.generator']
+				$c['routing.generator'],
+				$c['currency']
 			);
 		});
 

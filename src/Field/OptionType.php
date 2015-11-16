@@ -5,6 +5,7 @@ namespace Message\Mothership\Commerce\Field;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Validator\Constraints;
 
 class OptionType extends AbstractType {
 
@@ -56,9 +57,13 @@ class OptionType extends AbstractType {
 				'label'    => ($this->_nameLabel ? $this->_nameLabel : 'Name'),
 				'choices'  => $this->_nameChoice,
 				'required' => true,
-				'attr'     => array(
+				'attr'     => [
 					'data-help-key' => $nameHelpKey,
-				),
+					'placeholder' => "e.g. 'Colour'",
+				],
+				'constraints' => [
+					new Constraints\NotBlank
+				]
 			)
 		);
 		if(count($this->_valueChoice) > 0) {
@@ -67,19 +72,26 @@ class OptionType extends AbstractType {
 					'label'    => ($this->_valueLabel ? $this->_valueLabel : 'Value'),
 					'choices'  => $this->_valueChoice,
 					'required' => true,
-					'attr'     => array(
+					'attr'     => [
 						'data-help-key' => $valueHelpKey,
-					),
+					],
+					'constraints' => [
+						new Constraints\NotBlank
+					]
 				)
 			);
 		} else {
 			$builder->add('value', 'text',
-				array(
+				[
 					'label'    => ($this->_valueLabel ? $this->_valueLabel : 'Value'),
-					'attr'  => array(
+					'attr'  => [
 						'data-help-key' => $valueHelpKey,
-					)
-				)
+						'placeholder' => "e.g. 'Red'",
+					],
+					'constraints' => [
+						new Constraints\NotBlank
+					]
+				]
 			);
 		}
 
@@ -92,14 +104,14 @@ class OptionType extends AbstractType {
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
 
-    	$resolver->setDefaults(array(
-            'attr' => array(
-            	'data-help-key' => array(
+    	$resolver->setDefaults([
+            'attr' => [
+            	'data-help-key' => [
             		'name'  => '',
             		'value' => ''
-            	)
-            )
-        ));
+            	]
+            ]
+        ]);
     }
 
 	public function getName()

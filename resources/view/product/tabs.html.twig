@@ -1,7 +1,7 @@
 <div class="topbar products">
 	<ul class="tabs">
-		{% for name, url in tabs %}
-			<li class="{{ url == current ? 'active' : '' }}"><a href="{{ url(url, {'productID': productID}) }}" data-live>{{ name }}</a></li>
+		{% for item in tabs %}
+			<li class="{{ item.classes|join(' ') }}"><a href="{{ url(item.target, {'productID': productID}) }}" data-live>{{ item.label }}</a></li>
 		{% endfor %}
 	</ul>
 

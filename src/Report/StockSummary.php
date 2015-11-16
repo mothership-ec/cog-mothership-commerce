@@ -18,10 +18,12 @@ class StockSummary extends AbstractReport
 	 *
 	 * @param QueryBuilderFactory   $builderFactory
 	 * @param UrlGenerator          $routingGenerator
+	 * @param string				$currency
 	 */
-	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator)
+	public function __construct(QueryBuilderFactory $builderFactory, UrlGenerator $routingGenerator, $currency)
 	{
 		parent::__construct($builderFactory, $routingGenerator);
+		$this->_currency = $currency;
 		$this->_setName('stock_summary');
 		$this->_setDisplayName('Stock Summary');
 		$this->_setReportGroup('Products');
@@ -62,8 +64,10 @@ class StockSummary extends AbstractReport
 	{
 		return [
 			'Category' => 'string',
+			'Brand'    => 'string',
 			'Name'     => 'string',
 			'Options'  => 'string',
+			'Cost'     => 'number',
 			'Stock'    => 'number',
 		];
 	}
@@ -88,9 +92,12 @@ class StockSummary extends AbstractReport
 			$date = $dateFilter->getDateChoice();
 
 			if($date->format('YMd') < $today->format('YMd')) {
-				$queryBuilder->from("product_unit_stock_snapshot stock");
-				$queryBuilder->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?d), INTERVAL 3 HOUR)', [$date->format('U')]);
-				$queryBuilder->where('?d <= stock.created_at', [$date->format('U')]);
+				$date->sub(new \DateInterval('PT2H'));
+
+				$queryBuilder->from('stock', 'product_unit_stock_snapshot')
+					->where('FROM_UNIXTIME(stock.created_at) <= DATE_ADD(FROM_UNIXTIME(?d), INTERVAL 3 HOUR)', [$date->format('U')])
+					->where('?d <= stock.created_at', [$date->format('U')])
+				;
 			}
 		}
 
@@ -98,11 +105,13 @@ class StockSummary extends AbstractReport
 			->select('product.product_id AS "ID"')
 			->select('product.category AS "Category"')
 			->select('product.name AS "Name"')
+			->select('product.brand AS "Brand"')
 			->select('options AS "Options"')
 			->select('stock.stock AS "Stock"')
-			->join("unit","unit.unit_id = stock.unit_id","product_unit")
-			->leftJoin("product","unit.product_id = product.product_id")
-			->leftJoin("unit_options","unit_options.unit_id = unit.unit_id",
+			->select('IF(unit_price.price IS NOT NULL, unit_price.price, product_price.price) AS "Cost"')
+			->join('unit','unit.unit_id = stock.unit_id','product_unit')
+			->join("product","unit.product_id = product.product_id")
+			->join("unit_options","unit_options.unit_id = unit.unit_id",
 				$this->_builderFactory->getQueryBuilder()
 					->select('unit_id')
 					->select('revision_id')
@@ -119,6 +128,20 @@ class StockSummary extends AbstractReport
 						)
 					->groupBy('unit_id')
 				)
+			->leftJoin('unit_price', '(
+				unit_price.unit_id = unit.unit_id AND
+				unit_price.type = :priceType?s AND
+				unit_price.currency_id = :currency?s
+			)', 'product_unit_price')
+			->leftJoin('product_price', '(
+				product_price.product_id = product.product_id AND
+			 	product_price.type = :priceType?s AND
+				product_price.currency_id = :currency?s
+			)')
+			->addParams([
+				'priceType' => 'cost',
+				'currency' => $this->_currency,
+			])
 			->where("stock.location = 'web'")
 			->where("product.deleted_at IS NULL")
 			->where("unit.deleted_at IS NULL")
@@ -149,15 +172,21 @@ class StockSummary extends AbstractReport
 			foreach ($data as $row) {
 				$result[] = [
 					$row->Category,
+					$row->Brand,
 					[
 						'v' => ucwords($row->Name),
 						'f' => (string) '<a href ="'.$this->generateUrl('ms.commerce.product.edit.attributes', ['productID' => $row->ID]).'">'
 						.ucwords($row->Name).'</a>'
 					],
 					$row->Options,
+					[
+						'v' => (float) $row->Cost,
+						'f' => (string) number_format($row->Cost,2,'.',',')
+					],
 					(int) $row->Stock,
 				];
 			}
+
 			return json_encode($result);
 
 		} else {
@@ -165,8 +194,10 @@ class StockSummary extends AbstractReport
 			foreach ($data as $row) {
 				$result[] = [
 					$row->Category,
+					$row->Brand,
 					$row->Name,
 					$row->Options,
+					$row->Cost,
 					$row->Stock,
 				];
 			}

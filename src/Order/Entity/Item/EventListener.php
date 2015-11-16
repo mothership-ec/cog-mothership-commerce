@@ -26,21 +26,21 @@ class EventListener implements SubscriberInterface
 	{
 		return array(
 			OrderEvents::ENTITY_CREATE => array(
-				array('setDefaultActualPrice'),
-				array('setBasePrice'),
-				array('calculateTax'),
-				array('setDefaultStatus'),
+				['setDefaultActualPrice'],
+				['setBasePrice', -100],
+				['calculateTax', -300],
+				['setDefaultStatus'],
 			),
 			OrderEvents::CREATE_VALIDATE => array(
-				array('checkItemSet')
+				['checkItemSet']
 			),
 			OrderEvents::ASSEMBLER_UPDATE => array(
-				array('setDefaultActualPrice'),
-				array('setBasePrice'),
-				array('calculateAllItemsTax'),
+				['setDefaultActualPrice'],
+				['setBasePrice', -100],
+				['calculateAllItemsTax', -300],
 			),
 			OrderEvents::STATUS_CHANGE => array(
-				array('updateStatus'),
+				['updateStatus'],
 			),
 		);
 	}
@@ -88,7 +88,7 @@ class EventListener implements SubscriberInterface
 		}
 
 		foreach ($items as $item) {
-			if (!$item->actualPrice) {
+			if ($item->actualPrice === null) {
 				$item->actualPrice = $item->listPrice;
 			}
 		}
@@ -113,7 +113,7 @@ class EventListener implements SubscriberInterface
 		}
 
 		foreach ($items as $item) {
-			$item->basePrice = $item->actualPrice;
+			$item->basePrice       = $item->actualPrice;
 
 			// Skip if tax strategy is exclusive or the order is taxable
 			if ('exclusive' === $item->taxStrategy
@@ -124,6 +124,7 @@ class EventListener implements SubscriberInterface
 			$includedTax = $item->getProduct()->getTaxStrategy()->getIncludedTaxRate();
 			// Remove the tax discount
 			$item->basePrice -= $this->_calculateInclusiveTax($item->actualPrice, $includedTax);
+			$item->net       -= $this->_calculateInclusiveTax($item->net, $includedTax);
 		}
 	}
 
@@ -185,10 +186,9 @@ class EventListener implements SubscriberInterface
 		if (false === $item->order->taxable) {
 			// Resetting the gross is important because if the tax strategy is
 			// exclusive this will include the tax amount
-			$item->gross   = $item->basePrice - $item->discount;
+			$item->gross   = $item->net;
 			$item->taxRate = 0;
 			$item->tax     = 0;
-			$item->net     = $item->gross;
 
 			return;
 		}
@@ -200,23 +200,25 @@ class EventListener implements SubscriberInterface
 		// Takes off included tax and add actual tax.
 		if ('exclusive' === $item->taxStrategy) {
 			// actual
-			$adjustedGross = $item->actualPrice;
+			$adjustedGross = $item->getDiscountedPrice();
 		} else {
 			// actual - included tax
 			$includedTax   = $this->_calculateInclusiveTax(
-				$item->actualPrice,
+				$item->getDiscountedPrice(),
 				$item->getProduct()->getTaxStrategy()->getIncludedTaxRate()
 			);
-			
-			$adjustedGross = $item->actualPrice - $includedTax;
+			$adjustedGross = $item->getDiscountedPrice() - $includedTax;
 		}
+
 		// adjusted + tax
 		$adjustedGross += $adjustedGross * ($item->taxRate / 100);
 
 		// Gross is the product gross - discount
-		$item->gross = round($adjustedGross - $item->discount, 2);
-		$item->tax   = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
-		$item->net   = round($item->gross - $item->tax, 2);
+		$item->gross    = $adjustedGross;
+		$item->tax      = $this->_calculateInclusiveTax($item->gross, $item->taxRate);
+		$item->net      = round($item->gross - $item->tax, 2);
+		$item->gross    = round($item->gross, 2);
+		$item->discount = round($item->discount, 2);
 	}
 
 	protected function _calculateInclusiveTax($amount, $rate)

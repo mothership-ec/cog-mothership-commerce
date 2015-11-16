@@ -38,7 +38,7 @@ class InclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetNetPrice()
 	{
-		$this->assertEquals(100, $this->_strategy->getNetPrice(120, $this->_taxRate));
+		$this->assertEquals(100, $this->_strategy->getNetPrice(120));
 	}
 	
 	public function testGetGrossPrice()
@@ -69,6 +69,6 @@ class InclusiveTaxStrategyTest extends \PHPUnit_Framework_TestCase
 	public function testInvalidPriceException()
 	{
 		$strategy = $this->_strategy;
-		$strategy->getNetPrice('Not a string', $this->_taxRate);
+		$strategy->getNetPrice('Not a number');
 	}
 }
