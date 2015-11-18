@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.16.2
+
+- Resolve issue where unit weights would not default to product weight on load if not set
+
 ## 5.16.1
 
 - Allow units to be priced at 0 when processing orders
