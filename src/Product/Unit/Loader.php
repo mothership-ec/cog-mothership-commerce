@@ -203,7 +203,7 @@ class Loader implements ProductEntityLoaderInterface
 				// Unit info
 				'product_unit.product_id    AS productID',
 				'product_unit.unit_id      	AS id',
-				'product_unit.weight_grams 	AS weight',
+				'IFNULL(product_unit.weight_grams, product.weight_grams) AS weight',
 				'product_unit_info.sku     	AS sku',
 				'product_unit.barcode      	AS barcode',
 				'product_unit.visible      	AS visible',
