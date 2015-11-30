@@ -109,6 +109,7 @@ class Cancel extends Controller
 					$payable->setTax($this->_order->totalTax);
 
 					$gateway = null;
+
 					foreach ($this->_order->payments as $p) {
 						$gateway = $this->get('payment.gateway.loader')->getGatewayByPayment($p->payment);
 						break;
@@ -119,6 +120,7 @@ class Cancel extends Controller
 					}
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+
 					return $this->forward($gateway->getRefundControllerReference(), [
 						'payable'   => $payable,
 						'reference' => $this->_getPaymentReference(),
@@ -219,6 +221,7 @@ class Cancel extends Controller
 					$payable->setTax($item->getTax());
 
 					$gateway = null;
+
 					foreach ($this->_order->payments as $p) {
 						$gateway = $this->get('payment.gateway.loader')->getGatewayByPayment($p->payment);
 						break;
@@ -229,6 +232,7 @@ class Cancel extends Controller
 					}
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+
 					return $this->forward($gateway->getRefundControllerReference(), [
 						'payable'   => $payable,
 						'reference' => $this->_getPaymentReference(),
