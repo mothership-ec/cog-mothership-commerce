@@ -177,7 +177,6 @@ class HeadingBuilder implements \Countable
 	 */
 	public function getColumnDependencies()
 	{
-		de($this->_dependantCols);
 		return $this->_dependantCols;
 	}
 
