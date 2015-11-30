@@ -177,6 +177,7 @@ class HeadingBuilder implements \Countable
 	 */
 	public function getColumnDependencies()
 	{
+		de($this->_dependantCols);
 		return $this->_dependantCols;
 	}
 
@@ -217,10 +218,14 @@ class HeadingBuilder implements \Countable
 			$this->_variantColumns[$varVal] = $transVal;
 
 			isset($this->_dependantCols[$transName]) || $this->_dependantCols[$transName] = [];
-			$this->_dependantCols[$transName][] = $transVal;
+			if (!in_array($transVal, $this->_dependantCols[$transName])) {
+				$this->_dependantCols[$transName][] = $transVal;
+			}
 
 			isset($this->_dependantCols[$transVal]) || $this->_dependantCols[$transVal] = [];
-			$this->_dependantCols[$transVal][] = $transName;
+			if (!in_array($transName, $this->_dependantCols[$transVal])) {
+				$this->_dependantCols[$transVal][] = $transName;
+			}
 		}
 	}
 
