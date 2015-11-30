@@ -33,9 +33,11 @@ class Validate
 				return false;
 			}
 
-			if (isset($this->_dependantCols[$key])) {
+			if (isset($this->_dependantCols[$key]) && !empty($row[$key])) {
 				foreach ($this->_dependantCols[$key] as $dep) {
 					if (empty($row[$dep])) {
+						$this->_invalidRows[] = $row;
+
 						return false;
 					}
 				}

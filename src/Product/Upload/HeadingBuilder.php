@@ -216,11 +216,11 @@ class HeadingBuilder implements \Countable
 			$this->_variantColumns[$varName] = $transName;
 			$this->_variantColumns[$varVal] = $transVal;
 
-			isset($this->_dependantCols[$varName]) || $this->_dependantCols[$varName] = [];
-			$this->_dependantCols[$varName][] = $varVal;
+			isset($this->_dependantCols[$transName]) || $this->_dependantCols[$transName] = [];
+			$this->_dependantCols[$transName][] = $transVal;
 
-			isset($this->_dependantCols[$varVal]) || $this->_dependantCols[$varVal] = [];
-			$this->_dependantCols[$varVal][] = $varName;
+			isset($this->_dependantCols[$transVal]) || $this->_dependantCols[$transVal] = [];
+			$this->_dependantCols[$transVal][] = $transName;
 		}
 	}
 
