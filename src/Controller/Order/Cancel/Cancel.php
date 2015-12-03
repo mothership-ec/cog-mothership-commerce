@@ -3,8 +3,9 @@
 namespace Message\Mothership\Commerce\Controller\Order\Cancel;
 
 use Message\Cog\Controller\Controller;
+use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\Commerce\Order;
-use Message\Mothership\Commerce\Order\Entity\Note\Note;
+use Message\Mothership\Commerce\Order\Event\CancelEvent;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reasons;
 use Message\Mothership\Commerce\Product\Stock\Location;
 use Message\Mothership\Commerce\Form\Order\Cancel as CancelForm;
@@ -103,25 +104,26 @@ class Cancel extends Controller
 				$this->_addFlashes();
 
 				if ($refundable && true === $form->get('refund')->getData()) {
-					$payable = new Order\CancellationRefund($this->_order);
 
+					$payable = new Order\CancellationRefund($this->_order);
 					$payable->setPayableAmount($refundAmount);
 					$payable->setTax($this->_order->totalTax);
 
-					$gateway = null;
+					$event = new CancelEvent($this->_order, $payable);
+					$this->get('event.dispatcher')->dispatch(
+						Events::ORDER_CANCEL_REFUND,
+						$event
+					);
 
-					foreach ($this->_order->payments as $p) {
-						$gateway = $this->get('payment.gateway.loader')->getGatewayByPayment($p->payment);
-						break;
-					}
+					$forward = $event->getControllerReference();
 
-					if (!$gateway) {
-						$gateway = $this->get('gateway');
+					if ($forward) {
+						return $this->forward($forward, $event->getParams());
 					}
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
-					return $this->forward($gateway->getRefundControllerReference(), [
+					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
 						'payable'   => $payable,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
@@ -220,20 +222,21 @@ class Cancel extends Controller
 					$payable->setPayableAmount($item->gross);
 					$payable->setTax($item->getTax());
 
-					$gateway = null;
+					$event = new CancelEvent($this->_order, $payable);
+					$this->get('event.dispatcher')->dispatch(
+						Events::ITEM_CANCEL_REFUND,
+						$event
+					);
 
-					foreach ($this->_order->payments as $p) {
-						$gateway = $this->get('payment.gateway.loader')->getGatewayByPayment($p->payment);
-						break;
-					}
+					$forward = $event->getControllerReference();
 
-					if (!$gateway) {
-						$gateway = $this->get('gateway');
+					if ($forward) {
+						return $this->forward($forward, $event->getParams());
 					}
 
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
-					return $this->forward($gateway->getRefundControllerReference(), [
+					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
 						'payable'   => $payable,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
