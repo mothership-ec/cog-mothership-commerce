@@ -108,8 +108,20 @@ class Cancel extends Controller
 					$payable->setPayableAmount($refundAmount);
 					$payable->setTax($this->_order->totalTax);
 
+					$gateway = null;
+
+					foreach ($this->_order->payments as $p) {
+						$gateway = $this->get('payment.gateway.loader')->getGatewayByPayment($p->payment);
+						break;
+					}
+
+					if (!$gateway) {
+						$gateway = $this->get('gateway');
+					}
+
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
-					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
+
+					return $this->forward($gateway->getRefundControllerReference(), [
 						'payable'   => $payable,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
@@ -208,8 +220,20 @@ class Cancel extends Controller
 					$payable->setPayableAmount($item->gross);
 					$payable->setTax($item->getTax());
 
+					$gateway = null;
+
+					foreach ($this->_order->payments as $p) {
+						$gateway = $this->get('payment.gateway.loader')->getGatewayByPayment($p->payment);
+						break;
+					}
+
+					if (!$gateway) {
+						$gateway = $this->get('gateway');
+					}
+
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
-					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
+
+					return $this->forward($gateway->getRefundControllerReference(), [
 						'payable'   => $payable,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
