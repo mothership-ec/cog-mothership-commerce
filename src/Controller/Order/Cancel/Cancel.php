@@ -105,11 +105,11 @@ class Cancel extends Controller
 
 				if ($refundable && true === $form->get('refund')->getData()) {
 
-					$payable = new Order\CancellationRefund($this->_order);
-					$payable->setPayableAmount($refundAmount);
-					$payable->setTax($this->_order->totalTax);
+					$refund = new Order\CancellationRefund($this->_order);
+					$refund->setPayableAmount($refundAmount);
+					$refund->setTax($this->_order->totalTax);
 
-					$event = new CancelEvent($this->_order, $payable);
+					$event = new CancelEvent($this->_order, $refund);
 					$this->get('event.dispatcher')->dispatch(
 						Events::ORDER_CANCEL_REFUND,
 						$event
@@ -124,7 +124,7 @@ class Cancel extends Controller
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
-						'payable'   => $payable,
+						'payable'   => $refund,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
 							'failure' => $controller . '#orderFailure',
@@ -218,11 +218,11 @@ class Cancel extends Controller
 				$this->_addFlashes();
 
 				if ($refundable && true === $form->get('refund')->getData()) {
-					$payable = new Order\CancellationRefund($this->_order);
-					$payable->setPayableAmount($item->gross);
-					$payable->setTax($item->getTax());
+					$refund = new Order\CancellationRefund($this->_order);
+					$refund->setPayableAmount($item->gross);
+					$refund->setTax($item->getTax());
 
-					$event = new CancelEvent($this->_order, $payable);
+					$event = new CancelEvent($this->_order, $refund);
 					$this->get('event.dispatcher')->dispatch(
 						Events::ITEM_CANCEL_REFUND,
 						$event
@@ -237,7 +237,7 @@ class Cancel extends Controller
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
-						'payable'   => $payable,
+						'payable'   => $refund,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
 							'failure' => $controller . '#itemFailure',
