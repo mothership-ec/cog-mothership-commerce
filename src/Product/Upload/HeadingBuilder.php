@@ -114,6 +114,11 @@ class HeadingBuilder implements \Countable
 	private $_currencies;
 
 	/**
+	 * @var array The dependent columns, [column => dependencies]
+	 */
+	private $_dependantCols = [];
+
+	/**
 	 * @todo inject column headings via HeadingKeys, caused a dependency loop so that will need working out
 	 *
 	 * @param FieldCrawler $crawler
@@ -166,6 +171,16 @@ class HeadingBuilder implements \Countable
 	}
 
 	/**
+	 * Gets column dependencies
+	 * 
+	 * @return array The dependent columns, column => dependencies
+	 */
+	public function getColumnDependencies()
+	{
+		return $this->_dependantCols;
+	}
+
+	/**
 	 * Create an array of columns for product upload CSV
 	 */
 	private function _setColumns()
@@ -200,6 +215,16 @@ class HeadingBuilder implements \Countable
 
 			$this->_variantColumns[$varName] = $transName;
 			$this->_variantColumns[$varVal] = $transVal;
+
+			isset($this->_dependantCols[$transName]) || $this->_dependantCols[$transName] = [];
+			if (!in_array($transVal, $this->_dependantCols[$transName])) {
+				$this->_dependantCols[$transName][] = $transVal;
+			}
+
+			isset($this->_dependantCols[$transVal]) || $this->_dependantCols[$transVal] = [];
+			if (!in_array($transName, $this->_dependantCols[$transVal])) {
+				$this->_dependantCols[$transVal][] = $transName;
+			}
 		}
 	}
 

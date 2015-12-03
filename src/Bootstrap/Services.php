@@ -573,7 +573,10 @@ class Services implements ServicesInterface
 		};
 
 		$services['product.upload.heading_keys'] = function($c) {
-			return new Commerce\Product\Upload\HeadingKeys($c['product.upload.heading_builder']->getColumns(), $c['currency.supported']);
+			$headingKeys = new Commerce\Product\Upload\HeadingKeys($c['product.upload.heading_builder']->getColumns(), $c['currency.supported']);
+			$headingKeys->setColumnDependencies($c['product.upload.heading_builder']->getColumnDependencies());
+
+			return $headingKeys;
 		};
 
 		$services['product.upload.csv_template'] = function($c) {
