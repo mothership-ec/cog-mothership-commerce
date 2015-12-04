@@ -122,7 +122,7 @@ class Cancel extends Controller
 						return $this->forward($forward, $event->getParams());
 					}
 
-					trigger_error('Using deprecated refund code, please ensure you `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
+					trigger_error('Using deprecated refund code, please ensure `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
@@ -237,7 +237,7 @@ class Cancel extends Controller
 						return $this->forward($forward, $event->getParams());
 					}
 
-					trigger_error('Using deprecated refund code, please ensure you `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
+					trigger_error('Using deprecated refund code, please ensure `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
