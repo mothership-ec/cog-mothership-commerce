@@ -996,6 +996,10 @@ class Services implements ServicesInterface
 		$services['order.basket.token'] = $services->factory(function($c) {
 			return new Commerce\Order\Basket\Token($c['user.password_hash'], $c['cfg']);
 		});
+
+		$services['gateway'] = $services->factory(function ($c) {
+			throw new \LogicException('`gateway` service does not exist in `cog-mothership-commerce`. Relying on soft dependency of `cog-mothership-ecommerce` to process refund.');
+		});
 	}
 
 	public function registerEmails($services)

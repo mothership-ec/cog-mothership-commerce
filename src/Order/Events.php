@@ -18,6 +18,8 @@ final class Events
 	const DISPATCH_POSTAGE_AUTO = 'commerce.order.dispatch.postage.automatically';
 	const DISPATCH_SHIPPED      = 'commerce.order.dispatch.shipped';
 	const DISPATCH_NOTIFICATION = 'commerce.order.dispatch.notification';
+	const ORDER_CANCEL_REFUND   = 'commerce.order.cancel.refund';
+	const ITEM_CANCEL_REFUND    = 'commerce.order.item.cancel.refund';
 
 	const ENTITY_CREATE         = 'commerce.order.entity.create';
 	const ENTITY_CREATE_END     = 'commerce.order.entity.create.end';
