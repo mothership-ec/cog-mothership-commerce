@@ -117,10 +117,12 @@ class Cancel extends Controller
 
 					$forward = $event->getControllerReference();
 
+					// $forward should exist if e-commerce module is up to date. If not, default to old behaviour.
 					if ($forward) {
 						return $this->forward($forward, $event->getParams());
 					}
 
+					trigger_error('Using deprecated refund code, please ensure you `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
@@ -230,10 +232,12 @@ class Cancel extends Controller
 
 					$forward = $event->getControllerReference();
 
+					// $forward should exist if e-commerce module is up to date. If not, default to old behaviour.
 					if ($forward) {
 						return $this->forward($forward, $event->getParams());
 					}
 
+					trigger_error('Using deprecated refund code, please ensure you `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
 
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
@@ -359,6 +363,10 @@ class Cancel extends Controller
 		return ($payment ? $payment->reference : null);
 	}
 
+	/**
+	 * @todo remove necessity for this method, this module should not have any references to e-commerce module
+	 * @return bool
+	 */
 	protected function _doesEcommerceExist()
 	{
 		$exists = true;
