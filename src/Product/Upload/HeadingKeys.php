@@ -30,6 +30,11 @@ class HeadingKeys
 		'rrp',
 	];
 
+	/**
+	 * @var array The dependent columns, [column => dependencies]
+	 */
+	private $_dependantCols = [];
+
 	public function __construct(array $headingColumns, array $currencies)
 	{
 		$this->_columns = $headingColumns;
@@ -69,6 +74,41 @@ class HeadingKeys
 		$this->_floats = $floats;
 
 		return $this;
+	}
+
+	/**
+	 * Gets column dependencies
+	 * 
+	 * @return array The dependent columns, column => dependencies
+	 */
+	public function getColumnDependencies()
+	{
+		return $this->_dependantCols;
+	}
+
+	/**
+	 * Sets column dependencies
+	 * 
+	 * @param array $dependencies The dependent columns, column => dependencies
+	 */
+	public function setColumnDependencies(array $dependencies)
+	{
+		$this->_dependantCols = $dependencies;
+	}
+
+	/**
+	 * Adds a column dependency
+	 * 
+	 * @param string $column     The column name
+	 * @param string $dependency The dependency to add
+	 */
+	public function addColumnDependency($column, $dependency)
+	{
+		if (!isset($this->_dependantCols[$column])) {
+			$this->_dependantCols[$column] = [];
+		}
+
+		$this->_dependantCols[$column][] = $dependency;
 	}
 
 	private function _getFlippedKey($key)

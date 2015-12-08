@@ -11,16 +11,17 @@ class Validate
 {
 	private $_headingKeys = [];
 
-	private $_validRows   = [];
-	private $_invalidRows = [];
-
+	private $_validRows     = [];
+	private $_invalidRows   = [];
+	private $_dependantCols = [];
 	private $_required;
 
 	public function __construct(HeadingKeys $headingKeys, FieldCrawler $fieldCrawler)
 	{
-		$this->_headingKeys  = $headingKeys;
-		$this->_required     = $headingKeys->getRequired();
-		$this->_fieldCrawler = $fieldCrawler;
+		$this->_headingKeys   = $headingKeys;
+		$this->_required      = $headingKeys->getRequired();
+		$this->_dependantCols = $headingKeys->getColumnDependencies();
+		$this->_fieldCrawler  = $fieldCrawler;
 	}
 
 	public function validateRow(array $row)
@@ -30,6 +31,16 @@ class Validate
 				$this->_invalidRows[] = $row;
 
 				return false;
+			}
+
+			if (isset($this->_dependantCols[$key]) && !empty($row[$key])) {
+				foreach ($this->_dependantCols[$key] as $dep) {
+					if (empty($row[$dep])) {
+						$this->_invalidRows[] = $row;
+
+						return false;
+					}
+				}
 			}
 		}
 

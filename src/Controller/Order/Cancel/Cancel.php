@@ -3,8 +3,9 @@
 namespace Message\Mothership\Commerce\Controller\Order\Cancel;
 
 use Message\Cog\Controller\Controller;
+use Message\Mothership\Commerce\Order\Events;
 use Message\Mothership\Commerce\Order;
-use Message\Mothership\Commerce\Order\Entity\Note\Note;
+use Message\Mothership\Commerce\Order\Event\CancelEvent;
 use Message\Mothership\Commerce\Product\Stock\Movement\Reason\Reasons;
 use Message\Mothership\Commerce\Product\Stock\Location;
 use Message\Mothership\Commerce\Form\Order\Cancel as CancelForm;
@@ -103,14 +104,29 @@ class Cancel extends Controller
 				$this->_addFlashes();
 
 				if ($refundable && true === $form->get('refund')->getData()) {
-					$payable = new Order\CancellationRefund($this->_order);
 
-					$payable->setPayableAmount($refundAmount);
-					$payable->setTax($this->_order->totalTax);
+					$refund = new Order\CancellationRefund($this->_order);
+					$refund->setPayableAmount($refundAmount);
+					$refund->setTax($this->_order->totalTax);
 
+					$event = new CancelEvent($this->_order, $refund);
+					$this->get('event.dispatcher')->dispatch(
+						Events::ORDER_CANCEL_REFUND,
+						$event
+					);
+
+					$forward = $event->getControllerReference();
+
+					// $forward should exist if e-commerce module is up to date. If not, default to old behaviour.
+					if ($forward) {
+						return $this->forward($forward, $event->getParams());
+					}
+
+					trigger_error('Using deprecated refund code, please ensure `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
-						'payable'   => $payable,
+						'payable'   => $refund,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
 							'failure' => $controller . '#orderFailure',
@@ -204,13 +220,28 @@ class Cancel extends Controller
 				$this->_addFlashes();
 
 				if ($refundable && true === $form->get('refund')->getData()) {
-					$payable = new Order\CancellationRefund($this->_order);
-					$payable->setPayableAmount($item->gross);
-					$payable->setTax($item->getTax());
+					$refund = new Order\CancellationRefund($this->_order);
+					$refund->setPayableAmount($item->gross);
+					$refund->setTax($item->getTax());
 
+					$event = new CancelEvent($this->_order, $refund);
+					$this->get('event.dispatcher')->dispatch(
+						Events::ITEM_CANCEL_REFUND,
+						$event
+					);
+
+					$forward = $event->getControllerReference();
+
+					// $forward should exist if e-commerce module is up to date. If not, default to old behaviour.
+					if ($forward) {
+						return $this->forward($forward, $event->getParams());
+					}
+
+					trigger_error('Using deprecated refund code, please ensure `cog-mothership-ecommerce` installation is version 3.7.0 or higher', E_USER_DEPRECATED);
 					$controller = 'Message:Mothership:Commerce::Controller:Order:Cancel:Refund';
+
 					return $this->forward($this->get('gateway')->getRefundControllerReference(), [
-						'payable'   => $payable,
+						'payable'   => $refund,
 						'reference' => $this->_getPaymentReference(),
 						'stages'    => [
 							'failure' => $controller . '#itemFailure',
@@ -332,6 +363,10 @@ class Cancel extends Controller
 		return ($payment ? $payment->reference : null);
 	}
 
+	/**
+	 * @todo remove necessity for this method, this module should not have any references to e-commerce module
+	 * @return bool
+	 */
 	protected function _doesEcommerceExist()
 	{
 		$exists = true;
