@@ -11,19 +11,41 @@ use Message\Cog\ValueObject\Authorship;
 
 use Exception;
 
+/**
+ * Class Image
+ * @package Message\Mothership\Commerce\Product\Image
+ *
+ * @author  Thomas Marchant <thomas@mothership.ec>
+ */
 class Image implements ResizableInterface
 {
+	/**
+	 * @var int
+	 */
 	public $id;
+
+	/**
+	 * @var Authorship
+	 */
 	public $authorship;
+
+	/**
+	 * @var string
+	 */
 	public $type;
+
+	/**
+	 * @var
+	 */
 	public $locale;
 	public $fileID;
-	public $options = array();
-
 	public $product;
 
 	protected $_file;
+
 	protected $_fileLoader;
+
+	private $_options = [];
 
 	public function __construct()
 	{
@@ -31,6 +53,51 @@ class Image implements ResizableInterface
 
 		$this->authorship
 			->disableUpdate(); // remove when making update class
+	}
+
+	public function &__get($key)
+	{
+		if ('file' == $key) {
+			if (null === $this->_file) {
+				$this->_loadFile();
+			}
+
+			return $this->_file;
+		}
+
+		if ('options' == $key) {
+			$this->_options = $this->_cleanOptions($this->_options);
+
+			return $this->_options;
+		}
+	}
+
+	public function __set($key, $value)
+	{
+		if ('options' === $key) {
+			$this->setOptions($value);
+		}
+	}
+
+	public function __isset($key)
+	{
+		return ('file' === $key);
+	}
+
+	public function __sleep()
+	{
+		$this->_loadFile();
+
+		return array(
+			'id',
+			'authorship',
+			'type',
+			'locale',
+			'fileID',
+			'product',
+			'_options',
+			'_file'
+		);
 	}
 
 	public function getUrl()
@@ -56,11 +123,14 @@ class Image implements ResizableInterface
 		$this->_fileLoader = $fileLoader;
 	}
 
-	public function __get($key)
+	public function setOptions(array $options)
 	{
-		if ('file' == $key) {
-			return $this->getFile();
-		}
+		$this->_options = $this->_cleanOptions($options);
+	}
+
+	public function getOptions()
+	{
+		return $this->_options;
 	}
 
 	public function getFile()
@@ -85,24 +155,19 @@ class Image implements ResizableInterface
 		$this->_file = $this->_fileLoader->getByID($this->fileID);
 	}
 
-	public function __isset($key)
+	private function _cleanOptions($options)
 	{
-		return ('file' === $key);
-	}
+		$clean = [];
 
-	public function __sleep()
-	{
-		$this->_loadFile();
+		foreach ($options as $name => $value) {
+			$name = strtolower($name);
+			if (array_key_exists($name, $clean)) {
+				throw new \LogicException('Option names are parsed to lower case, `' . $name . '` already exists in image options');
+			}
 
-		return array(
-			'id',
-			'authorship',
-			'type',
-			'locale',
-			'fileID',
-			'options',
-			'product',
-			'_file',
-		);
+			$clean[$name] = $value;
+		}
+
+		return $clean;
 	}
 }
