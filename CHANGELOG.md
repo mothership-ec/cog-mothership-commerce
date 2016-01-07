@@ -1,5 +1,22 @@
 # Changelog
 
+## 5.17.0
+
+- Resolved issue where units could be created with invalid unit options via the product CSV upload feature
+- Resolve issue where refunds would not check which payment gateway to refund through (if E-commerce module is installed)
+- Begin to remove coupling of E-commerce and commerce module with regards to refunding
+- Added `Product\Upload\HeadingBuilder::getColumnDependencies()` method for determining which columns require a value in other columns of the spreadsheet
+- Added `Product\Upload\HeadingKeys::setColumnDependencies()` method for setting which columns require a value in another column of the spreadsheet
+- Added `Product\Upload\HeadingKeys::addColumnDependency()` method for adding a new column dependency to the spreadsheet
+- Added `Product\Upload\HeadingKeys::getColumnDependencies()` method for getting the column dependencies for the spreadsheet
+- Added `Order\Event\CancelEvent` event class to be fired when an order or item is cancelled
+- Added `Order\Events::ORDER_CANCEL_REFUND` constant for labelling an event for a total order refund
+- Added `Order\Events::ITEM_CANCEL_REFUND` constant for labelling an event for an item refund
+- Added `gateway` service, which throws a `LogicException` if called (it should be overridden by `E-commerce`)
+- Refactored `Controller\Order\Cancel\Cancel::cancelOrder()` method to use `CancelEvent` to allow for E-commerce module to process refunds if installed. If not installed, throws a deprecated error and defaults to old code
+- Refactored `Controller\Order\Cancel\Cancel::cancelItem()` method to use `CancelEvent` to allow for E-commerce module to process refunds if installed. If not installed, throws a deprecated error and defaults to old code
+- `Product\Upload\HeadingBuilder` sets variant values and names to depend on each other
+
 ## 5.16.2
 
 - Resolve issue where unit weights would not default to product weight on load if not set
