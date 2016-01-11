@@ -1,9 +1,13 @@
 # Changelog
 
+## 5.17.1
+
+- Resolved issue where *only* invisible units would be loaded by the unit loader if `Product\Unit\Loader::$_loadInvisible` is set to false.
+
 ## 5.17.0
 
 - Resolved issue where units could be created with invalid unit options via the product CSV upload feature
-- Resolve issue where refunds would not check which payment gateway to refund through (if E-commerce module is installed)
+- Resolved issue where refunds would not check which payment gateway to refund through (if E-commerce module is installed)
 - Begin to remove coupling of E-commerce and commerce module with regards to refunding
 - Added `Product\Upload\HeadingBuilder::getColumnDependencies()` method for determining which columns require a value in other columns of the spreadsheet
 - Added `Product\Upload\HeadingKeys::setColumnDependencies()` method for setting which columns require a value in another column of the spreadsheet
