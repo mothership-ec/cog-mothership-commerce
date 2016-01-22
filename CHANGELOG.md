@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.17.2
+
+- Resolve issue where actual price would be unset on units after changing currency
+
 ## 5.17.1
 
 - Resolved issue where *only* invisible units would be loaded by the unit loader if `Product\Unit\Loader::$_loadInvisible` is set to false.
