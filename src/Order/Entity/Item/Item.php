@@ -93,6 +93,7 @@ class Item implements EntityInterface, RecordInterface
 		if ($this->order instanceof Order) {
 			$this->listPrice   = $unit->getPrice('retail', $this->order->currencyID);
 			$this->rrp         = $unit->getPrice('rrp', $this->order->currencyID);
+			$this->actualPrice = $this->actualPrice ?: $this->listPrice;
 		}
 
 		$this->productTaxRate  = (float) $product->getTaxRates()->getTotalTaxRate();
