@@ -186,6 +186,25 @@ class Loader implements EntityLoaderInterface
 		return $this->_loadProduct($result->flatten(), $limit);
 	}
 
+
+	public function getBySupplier($supplier, $limit = null)
+	{
+		$this->_checkLimit($limit);
+
+		$result = $this->_query->run('
+			SELECT
+				product_id
+			FROM
+				product
+			WHERE
+				supplier_ref = ?s
+		', [
+			$supplier
+		]);
+
+		return $this->_loadProduct($result->flatten(), $limit);
+	}
+
 	public function getByType($type)
 	{
 		$result = $this->_query->run("
