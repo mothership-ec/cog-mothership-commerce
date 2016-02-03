@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.18.0
+
+- Add `getBySupplier()` method to product loader for loading products with a specific supplier reference
+- Amend `mockery/mockery` requirement to be 0.9 instead of master
+
 ## 5.17.2
 
 - Resolve issue where actual price would be unset on units after changing currency
