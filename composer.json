@@ -33,6 +33,6 @@
 		"domisys/image_barcode2"             : "3.0.0"
 	},
 	"require-dev": {
-		"mockery/mockery" : "dev-master@dev"
+		"mockery/mockery" : "~0.9"
 	}
 }
