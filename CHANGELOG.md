@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.18.1
+
+- `Order\Loader::getBySearchTerms()` searches by metadata
+- `Order\Loader::getBySearchTerms()` uses `USING` statements instead of `ON` statements in its query
+
 ## 5.18.0
 
 - Add `getBySupplier()` method to product loader for loading products with a specific supplier reference

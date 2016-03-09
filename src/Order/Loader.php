@@ -336,12 +336,13 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 		$queryBuilder = $this->_qbFactory->getQueryBuilder()
 			->select('os.order_id')
 			->from('os', 'order_summary')
-			->leftJoin('addr', 'addr.order_id = os.order_id', 'order_address')
-			->leftJoin('disc', 'disc.order_id = os.order_id', 'order_discount')
-			->leftJoin('disp', 'disp.order_id = os.order_id', 'order_dispatch')
-			->leftJoin('note', 'note.order_id = os.order_id', 'order_note')
-			->leftJoin('order_payment', 'order_payment.payment_id = os.order_id')
-			->leftJoin('payment', 'payment.payment_id = order_payment.payment_id')
+			->leftJoinUsing('addr', 'order_id', 'order_address')
+			->leftJoinUsing('disc', 'order_id', 'order_discount')
+			->leftJoinUsing('disp', 'order_id', 'order_dispatch')
+			->leftJoinUsing('note', 'order_id', 'order_note')
+			->leftJoinUsing('order_payment', 'order_id')
+			->leftJoinUsing('meta', 'order_id', 'order_metadata')
+			->leftJoinUsing('payment', 'payment_id')
 		;
 
 		$terms = explode(' ', $term);
@@ -372,6 +373,7 @@ class Loader implements Transaction\DeletableRecordLoaderInterface
 				disp.dispatch_id LIKE :term?s OR
 				disp.code LIKE :term?s OR
 				note.note LIKE :term?s OR
+				meta.value LIKE :term?s OR
 				payment.reference LIKE :term?s
 			)', ['term' => $term]);
 		}
