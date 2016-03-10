@@ -107,6 +107,10 @@ class Edit implements DB\TransactionalInterface
 			));
 		}
 
+		if ($this->_query instanceof DB\Transaction) {
+			return $unit;
+		}
+
 		return $result->affected() ? $unit : false;
 	}
 
