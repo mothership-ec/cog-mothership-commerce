@@ -64,6 +64,8 @@ class Edit implements TransactionalInterface
 	{
 		$this->_product = $product;
 
+		$product->authorship->update(null, $this->_user);
+
 		$this->_saveProduct()
 			->_saveProductInfo()
 			->_saveProductExport();
