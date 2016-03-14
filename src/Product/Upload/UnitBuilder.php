@@ -121,7 +121,7 @@ class UnitBuilder
 		foreach ($row as $key => $value) {
 			$key = $this->_headingKeys->getKey($key);
 			if ($value && property_exists($this->_unit, $key)) {
-				$this->_unit->$key = $key;
+				$this->_unit->$key = $value;
 			}
 		}
 

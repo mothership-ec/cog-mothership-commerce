@@ -294,8 +294,6 @@ class Edit extends Controller
 			$productEdit = $this->get('product.edit');
 			$productEdit->setTransaction($trans);
 
-			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
-
 			$product->name                        = $data['name'];
 			$product->shortDescription            = $data['short_description'];
 			$product->displayName                 = $data['display_name'];
@@ -347,8 +345,6 @@ class Edit extends Controller
 			$productEdit = $this->get('product.edit');
 			$productEdit->setTransaction($trans);
 
-			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
-
 			$product->setDetails($detailEdit->updateDetails($data, $product->getDetails()));
 			$detailEdit->save($product);
 
@@ -379,7 +375,6 @@ class Edit extends Controller
 		if ($form->isValid() && $data = $form->getData()) {
 			$product = $this->_product;
 
-			$product->authorship->update(new DateTimeImmutable, $this->get('user.current'));
 			$product->exportValue                = $data['export_value'];
 			//set prices on the product
 			foreach($data['prices']['currencies'] as $currency => $typePrices) {

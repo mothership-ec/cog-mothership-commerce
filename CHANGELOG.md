@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.18.2
+
+- Fix issue where weights would not be saved correctly against units created using the product spreadsheet upload
+- Product `$_authorship::update()` method called in `Product\Edit` instead of in controllers
+- `Product\Unit\Edit::save()` no longer attempts to check affected rows if query object has been replaced with a database transaction object (as this results in fatal error), and simply returns the unit instead
+
 ## 5.18.1
 
 - `Order\Loader::getBySearchTerms()` searches by metadata
