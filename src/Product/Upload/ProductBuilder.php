@@ -137,6 +137,7 @@ class ProductBuilder
 					}
 					$productType = $this->_productTypes->get($type);
 					$this->_product->type = $productType;
+					break;
 				}
 			}
 		}
