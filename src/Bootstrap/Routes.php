@@ -83,7 +83,6 @@ class Routes implements RoutesInterface
 		$router['ms.product']->add('ms.commerce.product.edit.stock', 'edit/{productID}/stock', 'Message:Mothership:Commerce::Controller:Product:Edit#stock')
 			->setRequirement('productID', '\d+');
 
-
 		$router['ms.product']->add('ms.commerce.product.edit.images.action', 'edit/{productID}/images', 'Message:Mothership:Commerce::Controller:Product:Edit#processImage')
 			->setRequirement('productID', '\d+')
 			->setMethod('POST');

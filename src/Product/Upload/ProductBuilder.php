@@ -105,7 +105,14 @@ class ProductBuilder
 
 			$key = $this->_headingKeys->getKey('name');
 			if (array_key_exists($key, $data)) {
-				throw new Exception\UploadFrontEndException('Could not create product `' . $data[$key] . '`');
+				throw new Exception\UploadFrontEndException(
+					$e->getMessage(),
+					'ms.commerce.product.upload.build-fail',
+					[
+						'%productName%' => $data[$key],
+						'%message%' => $e->getMessage(),
+					]
+				);
 			}
 
 			throw $e;
@@ -122,15 +129,18 @@ class ProductBuilder
 	private function _addProductType(array $data)
 	{
 		foreach ($this->_fieldCrawler->getTypeFields() as $type => $fields) {
+			$typeSet = (bool) $this->_product->type;
 			foreach ($fields as $name) {
 				if (!empty($data[$name])) {
-					$this->_product->type = $this->_productTypes->get($type);
-					$this->_setDetails($data);
-
-					return;
+					if ($typeSet) {
+						throw new \LogicException('Product type has been set to `' . $this->_product->type->getDisplayName() . '`, but contains data that belongs to the `' . $this->_productTypes->get($type)->getDisplayName() . '` product type');
+					}
+					$productType = $this->_productTypes->get($type);
+					$this->_product->type = $productType;
 				}
 			}
 		}
+		$this->_setDetails($data);
 
 		$this->_product->type = $this->_productTypes->getDefault();
 	}
