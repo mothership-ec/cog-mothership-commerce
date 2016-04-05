@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.19.0
+
+- Improved validation on product creation when using product upload feature
+- `Product\Upload\Exception\UploadFrontEndException` now extends `Message\Cog\Exception\TranslationLoginException`
+- Exceptions thrown in `Product\Upload\ProductBuilder::build()` method will be rethrown as `UploadFrontEndException`, including original exception message
+- `LogicException` thrown if a row in the product upload CSV contains data which fits into two separate product types
+- Resolved issue in sales reports where voided orders were being included in dataset
+- Resolved issue in sales reports where deleted orders were being included in dataset
+
 ## 5.18.2
 
 - Fix issue where weights would not be saved correctly against units created using the product spreadsheet upload
