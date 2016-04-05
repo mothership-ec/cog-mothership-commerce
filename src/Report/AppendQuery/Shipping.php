@@ -74,6 +74,7 @@ class Shipping implements FilterableInterface
 			->join('order_summary', 'order_shipping.order_id = order_summary.order_id')
 			->leftJoin('order_address', 'order_summary.order_id = order_address.order_id AND order_address.type = "delivery"') // AND order_address.deleted_at IS NULL
 			->leftJoin('user', 'order_summary.user_id = user.user_id')
+			->where('order_summary.deleted_at IS NULL')
 			->where('order_summary.status_code >= 0')
 		;
 

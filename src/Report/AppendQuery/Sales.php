@@ -53,6 +53,14 @@ class Sales implements FilterableInterface
 	{
 		$data = $this->_builderFactory->getQueryBuilder();
 
+		$voids = $this->_builderFactory->getQueryBuilder()
+			->select('transaction_record.record_id', true)
+			->from('transaction')
+			->joinUsing('transaction_record', 'transaction_id')
+			->where('transaction_record.type = ?s', ['order'])
+			->where('transaction.voided_at IS NOT NULL')
+		;
+
 		$data
 			->select('item.created_at AS "Date"')
 			->select('order_summary.currency_id AS "Currency"')
@@ -80,7 +88,9 @@ class Sales implements FilterableInterface
 			->leftJoin('product', 'item.product_id = product.product_id')
 			->where('product.type != "voucher"')
 			->where('order_summary.status_code >= 0')
+			->where('order_summary.deleted_at IS NULL')
 			->where('return_item.exchange_item_id IS NULL')
+			->where('item.order_id NOT IN (?q)', [$voids]) // Exclude voided orders
 		;
 
 		// Filter dates

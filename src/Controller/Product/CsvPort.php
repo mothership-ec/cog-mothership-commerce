@@ -117,7 +117,7 @@ class CsvPort extends Controller
 					}
 				}
 				catch (UploadFrontEndException $e) {
-					$this->addFlash('error', $e->getMessage());
+					$this->addFlash('error', $e->getTranslation(), $e->getParams());
 				}
 			}
 
