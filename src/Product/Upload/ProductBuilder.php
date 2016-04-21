@@ -137,11 +137,11 @@ class ProductBuilder
 					}
 					$productType = $this->_productTypes->get($type);
 					$this->_product->type = $productType;
-					break;
+					$this->_setDetails($data);
+					return;
 				}
 			}
 		}
-		$this->_setDetails($data);
 
 		$this->_product->type = $this->_productTypes->getDefault();
 	}
