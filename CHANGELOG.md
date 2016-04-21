@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.19.1
+
+- Fix issue where product types were being incorrectly assigned to the default type when using the product upload
+
 ## 5.19.0
 
 - Improved validation on product creation when using product upload feature
