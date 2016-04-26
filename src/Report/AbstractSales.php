@@ -14,6 +14,7 @@ use Message\Mothership\Report\Filter\DateRange;
 use Message\Mothership\Report\Filter\Choices;
 use Message\Mothership\Report\Filter\Collection as FilterCollecion;
 
+use Message\Mothership\Commerce\Report\Filter\BrandFilter;
 use Message\Mothership\Commerce\Events;
 
 abstract class AbstractSales extends AbstractReport

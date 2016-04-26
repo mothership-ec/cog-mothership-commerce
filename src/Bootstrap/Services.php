@@ -1246,6 +1246,10 @@ class Services implements ServicesInterface
 				new Commerce\Report\AppendQuery\Payments($c['db.query.builder.factory']),
 			]);
 		};
+
+		$services['commerce.report.filter.brand'] = $services->factory(function ($c) {
+			return new Commerce\Report\Filter\BrandFilter;
+		});
 	}
 
 	public function setupCurrencies($services)
