@@ -12,7 +12,7 @@ use Message\Mothership\Report\Event\ReportEvent;
 use Message\Mothership\Report\Chart\TableChart;
 use Message\Mothership\Report\Filter\DateRange;
 use Message\Mothership\Report\Filter\Choices;
-use Message\Mothership\Report\Filter\Collection as FilterCollecion;
+use Message\Mothership\Report\Filter\Collection as FilterCollection;
 
 use Message\Mothership\Commerce\Report\Filter\BrandFilter;
 use Message\Mothership\Commerce\Events;
@@ -20,6 +20,7 @@ use Message\Mothership\Commerce\Events;
 abstract class AbstractSales extends AbstractReport
 {
 	private $_eventDispatcher;
+	protected $_builderFactory;
 
 	/**
 	 * Constructor.
@@ -38,6 +39,7 @@ abstract class AbstractSales extends AbstractReport
 	{
 		parent::__construct($builderFactory, $routingGenerator, $eventDispatcher);
 		$this->_eventDispatcher = $eventDispatcher;
+		$this->_builderFactory = $builderFactory;
 		$this->_charts[]   = new TableChart;
 		$this->_filters->add(new DateRange);
 		// Params for Choices filter: unique filter name, label, choices, multi-choice
@@ -58,6 +60,10 @@ abstract class AbstractSales extends AbstractReport
 			],
 			true
 		));
+		$this->_filters->add(new BrandFilter(
+			"Brand",
+			$this->_getBrands()
+		));
 		$this->_filters->add(new Choices(
 			"source",
 			"Source",
@@ -68,6 +74,16 @@ abstract class AbstractSales extends AbstractReport
 			true
 		));
 	}
+
+	private function _getBrands(){
+		return $this->_builderFactory->getQueryBuilder()
+			->select('DISTINCT brand')
+			->from('product')
+			->getQuery()
+			->run()
+			->flatten();
+	}
+
 	/**
 	 * Retrieves JSON representation of the data and columns.
 	 * Applies data to chart types set on report.
@@ -107,11 +123,11 @@ abstract class AbstractSales extends AbstractReport
 	/**
 	 * Dispatch event.
 	 *
-	 * @param  FilterCollecion $filters  Any filters to be used in subqueries.
+	 * @param  FilterCollection $filters  Any filters to be used in subqueries.
 	 *
 	 * @return ReportEvent
 	 */
-	protected function _dispatchEvent(FilterCollecion $filters = null)
+	protected function _dispatchEvent(FilterCollection $filters = null)
 	{
 		$event = new ReportEvent;
 

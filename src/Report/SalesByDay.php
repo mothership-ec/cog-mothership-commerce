@@ -69,7 +69,6 @@ class SalesByDay extends AbstractSales
 	protected function _getQuery()
 	{
 		$fromQuery = $this->_getFilteredQuery();
-
 		$queryBuilder = $this->_builderFactory->getQueryBuilder();
 		$queryBuilder
 			->select('date AS "UnixDate"')
