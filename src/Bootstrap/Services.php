@@ -1247,18 +1247,6 @@ class Services implements ServicesInterface
 			]);
 		};
 
-		// $services['commerce.report.filter.brand'] = $services->factory(function ($c) {
-		// 	return new Commerce\Report\Filter\BrandFilter;
-		// });
-		//
-		// $services['commerce.report.filter'] = $services->factory(function ($c) {
-		// 	$collection = new \Message\Mothership\Report\Filter\Collection([
-		// 		$c['commerce.report.filter.brand']
-		// 	]);
-		// 	$collection->setSort();
-		// 	return $collection;
-		// });
-
 	}
 
 	public function setupCurrencies($services)
