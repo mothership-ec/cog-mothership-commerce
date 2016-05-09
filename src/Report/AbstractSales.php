@@ -79,6 +79,7 @@ abstract class AbstractSales extends AbstractReport
 		return $this->_builderFactory->getQueryBuilder()
 			->select('DISTINCT brand')
 			->from('product')
+			->orderBy('brand')
 			->getQuery()
 			->run()
 			->flatten();
