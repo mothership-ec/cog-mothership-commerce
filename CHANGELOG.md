@@ -6,6 +6,7 @@
 - `EventListener::buildSalesReport()` now loops through filters to modify queries if any filters implement `ModifyQueryInterface`
 - Sales reports include brand filter
 - Fixed typo in `Report\AbstractTransactions`
+- Increased reports dependency to 2.1
 
 ## 5.19.1
 
