@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.20.0
+
+- Added `Report\Filter\BrandFilter` class which implements the `ModifyQueryInterface` for allowing reports to filter by brand
+- `EventListener::buildSalesReport()` now loops through filters to modify queries if any filters implement `ModifyQueryInterface`
+- Sales reports include brand filter
+- Fixed typo in `Report\AbstractTransactions`
+
 ## 5.19.1
 
 - Fix issue where product types were being incorrectly assigned to the default type when using the product upload

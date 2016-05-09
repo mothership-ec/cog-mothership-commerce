@@ -1246,6 +1246,7 @@ class Services implements ServicesInterface
 				new Commerce\Report\AppendQuery\Payments($c['db.query.builder.factory']),
 			]);
 		};
+
 	}
 
 	public function setupCurrencies($services)

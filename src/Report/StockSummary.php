@@ -205,4 +205,3 @@ class StockSummary extends AbstractReport
 		}
 	}
 }
-
