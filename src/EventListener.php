@@ -16,6 +16,7 @@ use Message\Mothership\ControlPanel\Event\Dashboard\ActivitySummaryEvent;
 
 use Message\Mothership\Report\Event as ReportEvents;
 use Message\Mothership\Report\Report\AppendQuery\FilterableInterface;
+use Message\Mothership\Report\Filter\ModifyQueryInterface;
 
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -315,6 +316,15 @@ class EventListener extends BaseListener implements SubscriberInterface
 				$query->setFilters($event->getFilters());
 			}
 			$event->addQueryBuilder($query->getQueryBuilder());
+		}
+
+		foreach ($event->getQueryBuilders() as $queryBuilder) {
+			foreach ($event->getFilters() as $filter) {
+
+				if ($filter instanceof ModifyQueryInterface) {
+					$filter->apply($queryBuilder);
+				}
+			}
 		}
 	}
 

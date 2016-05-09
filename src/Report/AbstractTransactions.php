@@ -9,7 +9,7 @@ use Message\Cog\Event\DispatcherInterface;
 
 use Message\Mothership\Report\Report\AbstractReport;
 use Message\Mothership\Report\Event\ReportEvent;
-use Message\Mothership\Report\Filter\Collection as FilterCollecion;
+use Message\Mothership\Report\Filter\Collection as FilterCollection;
 
 use Message\Mothership\Commerce\Events;
 
@@ -33,11 +33,11 @@ abstract class AbstractTransactions extends AbstractReport
 	/**
 	 * Dispatch event.
 	 *
-	 * @param  FilterCollecion $filters  Any filters to be used in subqueries.
+	 * @param  FilterCollection $filters  Any filters to be used in subqueries.
 	 *
 	 * @return ReportEvent
 	 */
-	protected function _dispatchEvent(FilterCollecion $filters = null)
+	protected function _dispatchEvent(FilterCollection $filters = null)
 	{
 		$event = new ReportEvent;
 
