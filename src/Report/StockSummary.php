@@ -105,6 +105,7 @@ class StockSummary extends AbstractReport
 			->select('product.product_id AS "ID"')
 			->select('product.category AS "Category"')
 			->select('product.name AS "Name"')
+			->select('product.brand AS "Brand"')
 			->select('options AS "Options"')
 			->select('stock.stock AS "Stock"')
 			->select('IF(unit_price.price IS NOT NULL, unit_price.price, product_price.price) AS "Cost"')
